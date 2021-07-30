@@ -4,7 +4,8 @@ import factoryV2RegistryAbi from '../../constants/abis/factory-v2-registry.json'
 import factoryPoolAbi from '../../constants/abis/factory-v2/Plain2Balances.json';
 import erc20Abi from '../../constants/abis/erc20.json';
 import { multiCall } from '../../utils/Calls';
-import { flattenArray } from '../../utils/Array';
+import { flattenArray, sum } from '../../utils/Array';
+import getTokensPrices from '../../utils/data/tokens-prices';
 
 const web3 = new Web3(`https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
 
@@ -95,6 +96,8 @@ export default fn(async () => {
     return accu;
   }, []);
 
+  const coinPrices = await getTokensPrices(allCoinAddresses.map(({ address }) => address));
+
   const coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
     const coinContract = new web3.eth.Contract(erc20Abi, address);
     const poolAddress = poolAddresses[poolId];
@@ -118,11 +121,13 @@ export default fn(async () => {
   const mergedCoinData = coinData.reduce((accu, { data, metaData: { poolId, coinAddress, type } }) => {
     const key = `factory-v2-${poolId}-${coinAddress}`;
     const coinInfo = accu[key];
+    const coinPrice = coinPrices[coinAddress.toLowerCase()] || 0;
 
     // eslint-disable-next-line no-param-reassign
     accu[key] = {
       ...coinInfo,
       address: coinAddress,
+      usdPrice: coinPrice,
       [type]: data,
     };
 
@@ -154,11 +159,16 @@ export default fn(async () => {
         return mergedCoinData[key];
       });
 
+    const usdTotal = sum(coins.map(({ usdPrice, poolBalance, decimals }) => (
+      poolBalance / (10 ** decimals) * usdPrice
+    )));
+
     return {
       ...poolInfo,
       implementation,
       assetTypeName,
       coins,
+      usdTotal,
     };
   });
 

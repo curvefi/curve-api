@@ -38,6 +38,12 @@ const sumBN = (arr) => (
   ), BN(0))
 );
 
+const sum = (arr) => (
+  arr.reduce((total, number) => (
+    total + (number || 0)
+  ), 0)
+);
+
 module.exports = {
   uniq,
   uniqBy,
@@ -48,4 +54,5 @@ module.exports = {
   sumBy,
   sumByBN,
   sumBN,
+  sum,
 };
