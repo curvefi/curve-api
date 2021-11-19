@@ -33,7 +33,8 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-3', // non pegged
     'factory-v2-6', // duplicate,
     'factory-v2-8', // non pegged
-    'factory-v2-13',  // non pegged
+    'factory-v2-13', // non pegged
+    'factory-v2-35', // by request (charlie)
   ],
 };
 
