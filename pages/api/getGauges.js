@@ -369,13 +369,6 @@ export default fn(async () => {
         gauge: '0xd8b712d29381748dB89c36BCa0138d7c75866ddF',
         type: 'stable',
       },
-      "mim": {
-        swap: '0x5a6A4D54456819380173272A5E8E9B9904BdF41B',
-        swap_token: '0x5a6A4D54456819380173272A5E8E9B9904BdF41B',
-        name: 'mim',
-        gauge: '0xd8b712d29381748dB89c36BCa0138d7c75866ddF',
-        type: 'stable',
-      },
       "f-cvxcrv": {
         swap: '0x9d0464996170c6b9e75eed71c68b99ddedf279e8',
         swap_token: '0x9d0464996170c6b9e75eed71c68b99ddedf279e8',
