@@ -12,6 +12,8 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-18', //ruler dead
     'factory-v2-19', //ruler dead
     'factory-v2-26', //never seeded
+    'factory-v2-39', //broken non pegged
+    'factory-v2-40', //broken non pegged
     'factory-v2-46', //non pegged
     'factory-v2-54', //duplicate
   ],
