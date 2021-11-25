@@ -5,6 +5,7 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-0', // non pegged andre boo boo
     'factory-v2-4', // scrv doesnt exist
     'factory-v2-6', // old cvxcrv pool
+    'factory-v2-8', // by team request
     'factory-v2-36', //by team request
     'factory-v2-15', //ruler dead
     'factory-v2-17', //ruler dead
