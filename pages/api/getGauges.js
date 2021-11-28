@@ -608,6 +608,14 @@ export default fn(async () => {
         type: 'stable',
         factory: true,
       },
+      "f-tbtc2": {
+        swap: '0xfa65aa60a9d45623c57d383fb4cf8fb8b854cc4d',
+        swap_token: '0xfa65aa60a9d45623c57d383fb4cf8fb8b854cc4d',
+        name: 'f-tbtc2',
+        gauge: '0x29284d30bcb70e86a6C3f84CbC4de0Ce16b0f1CA',
+        type: 'bitcoin',
+        factory: true,
+      },
     }
 
     // get pool addresses
