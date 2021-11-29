@@ -616,6 +616,14 @@ export default fn(async () => {
         type: 'bitcoin',
         factory: true,
       },
+      "f-ageur": {
+        swap: '0xb9446c4ef5ebe66268da6700d26f96273de3d571',
+        swap_token: '0xb9446c4ef5ebe66268da6700d26f96273de3d571',
+        name: 'f-ageur',
+        gauge: '0x1E212e054d74ed136256fc5a5DDdB4867c6E003F',
+        type: 'tether-eurt',
+        factory: true,
+      },
     }
 
     // get pool addresses
