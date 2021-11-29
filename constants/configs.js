@@ -14,7 +14,7 @@ const configs = {
     nativeCurrencySymbol: 'ETH',
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'ethereum',
-    rpcUrl: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    rpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`,
     getFactoryRegistryAddress: async () => '0xb9fc157394af804a3578134a6585c0dc9cc990d4',
     factoryImplementationAddressMap: new Map([
       ['0x6523Ac15EC152Cb70a334230F6c5d62C5Bd963f1'.toLowerCase(), 'plain2basic'],
@@ -43,7 +43,7 @@ const configs = {
     nativeCurrencySymbol: 'MATIC',
     nativeCurrencyCoingeckoId: 'matic-network',
     platformCoingeckoId: 'polygon-pos',
-    rpcUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
+    rpcUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_POLYGON}`,
     multicallAddress: getPolygonMulticall(),
     getFactoryRegistryAddress: async () => getPolygonFactoryRegistry(),
     factoryImplementationAddressMap: new Map([
@@ -103,7 +103,7 @@ const configs = {
     nativeCurrencySymbol: 'ETH',
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'ethereum',
-    rpcUrl: `https://arbitrum-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    rpcUrl: `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_ARBITRUM}`,
     multicallAddress: getArbitrumMulticall(),
     getFactoryRegistryAddress: async () => getArbitrumFactoryRegistry(),
     factoryImplementationAddressMap: new Map([

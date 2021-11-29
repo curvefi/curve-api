@@ -7,7 +7,7 @@ import multicallAbi from '../../constants/abis/multicall.json';
 import { getFactoryRegistry, getMultiCall, getRegistry } from '../../utils/getters';
 import erc20Abi from '../../constants/abis/erc20.json';
 
-const web3 = new Web3(`https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
+const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
 const BASE_API_DOMAIN = 'https://api.curve.fi';
 
 export default fn(async () => {

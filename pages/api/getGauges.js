@@ -9,7 +9,7 @@ import swapAbi from '../../constants/abis/tripool_swap.json';
 
 import { getFactoryRegistry, getMultiCall } from '../../utils/getters';
 
-const web3 = new Web3(`https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
+const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
 
 export default fn(async () => {
 
