@@ -1,7 +1,7 @@
 import memoize from 'memoizee';
 import Web3 from 'web3';
 import addressGetterAbi from '../constants/abis/address_getter.json';
-const web3 = new Web3(`https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
+const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
 const addressGetter = '0x0000000022d53366457f9d5e68ec105046fc4383'
 const multiCall = '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441'
 const fantomMulticall = '0xb828c456600857abd4ed6c32facc607bd0464f4f'

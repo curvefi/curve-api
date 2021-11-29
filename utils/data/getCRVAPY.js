@@ -9,7 +9,7 @@ import pools, { poolGauges } from 'constants/pools';
 import Web3 from 'web3';
 import Multicall from 'constants/abis/multicall.json';
 
-const web3 = new Web3(`https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`);
+const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
 const MulticallContract = new web3.eth.Contract(Multicall, '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441');
 
 const getCRVAPY = memoize(async (userAddress) => {
