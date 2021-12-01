@@ -624,6 +624,13 @@ export default fn(async () => {
         type: 'tether-eurt',
         factory: true,
       },
+      "crveth": {
+        swap: '0x8301AE4fc9c624d1D396cbDAa1ed877821D7C511',
+        swap_token: '0xEd4064f376cB8d68F770FB1Ff088a3d0F3FF5c4d',
+        name: 'crveth',
+        gauge: '0x1cEBdB0856dd985fAe9b8fEa2262469360B8a3a6',
+        type: 'crypto',
+      },
     }
 
     // get pool addresses
