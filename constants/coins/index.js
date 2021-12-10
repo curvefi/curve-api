@@ -25,7 +25,13 @@ const defaultCoinTemplate = {
 
 class Coin {
   constructor(props) {
-    Object.assign(this, defaultCoinTemplate, props);
+    // Normalize decimals prop to the number of decimals (i.e. 18 not 1e18)
+    const decimals = props.decimals > 30 ? Math.log10(props.decimals) : props.decimals;
+
+    Object.assign(this, defaultCoinTemplate, {
+      ...props,
+      decimals,
+    });
   }
 
   isWrappedCoin() {

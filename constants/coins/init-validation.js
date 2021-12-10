@@ -2,9 +2,6 @@ const { flattenArray } = require('../../utils/Array');
 const { IS_DEV } = require('../AppConstants');
 
 const checks = [{
-  description: 'Coins which aren’t lp tokens (`isLpToken = false`) must have a `coingeckoId` prop defined',
-  failsIfFn: (coin) => (!coin.isLpToken && typeof coin.coingeckoId === 'undefined'),
-}, {
   description: '`decimals` must indicate the number of decimals of a coin (e.g. 18 not 1e18)',
   failsIfFn: (coin) => (coin?.decimals > 30),
 }];
