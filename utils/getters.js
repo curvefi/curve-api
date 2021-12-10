@@ -25,7 +25,7 @@ const getRegistry = memoize(async () => {
   maxAge: 10 * 60 * 1000, // 10 min
 });
 
-const getMultiCall = async () => {
+const getMultiCall = () => {
   return multiCall
 }
 

@@ -10,7 +10,7 @@ const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEM
 export default fn(async () => {
 
   const registryAddress = await getRegistry();
-  const multicallAddress = await getMultiCall();
+  const multicallAddress = getMultiCall();
   const registry = new web3.eth.Contract(registryAbi, registryAddress);
   const poolCount = await registry.methods.pool_count().call();
   const multicall = new web3.eth.Contract(multicallAbi, multicallAddress);

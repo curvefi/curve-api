@@ -8,8 +8,8 @@ import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import getTokensPrices from 'utils/data/tokens-prices';
 import getAssetsPrices from 'utils/data/assets-prices';
 import getFactoryV2GaugeRewards from 'utils/data/getFactoryV2GaugeRewards';
-import getMainRegistryPools from 'pages/api/getMainRegistryPools';
-import getGauges from 'pages/api/getGauges';
+import getMainRegistryPoolsApiFn from 'pages/api/getMainRegistryPools';
+import getGaugesApiFn from 'pages/api/getGauges';
 import { IS_DEV } from 'constants/AppConstants';
 import configs from 'constants/configs';
 
@@ -21,8 +21,8 @@ const getEthereumOnlyData = async () => {
     { gauges: gaugesData },
     gaugeRewards,
   ] = await Promise.all([
-    getMainRegistryPools.straightCall(),
-    getGauges.straightCall(),
+    getMainRegistryPoolsApiFn.straightCall(),
+    getGaugesApiFn.straightCall(),
     getFactoryV2GaugeRewards(),
   ]);
 

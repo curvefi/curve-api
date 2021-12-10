@@ -19,6 +19,7 @@ const defaultPoolTemplate = {
   },
   assets: undefined,
   coins: undefined,
+  coinsInPlaceReplacements: [],
   underlyingCoins: undefined, // Must be set when isLendingPool=true
   metaCoins: undefined, // Must be set when isMetaPool=true
   referenceAsset: REFERENCE_ASSETS.USD, // Pool type, from the enum REFERENCE_ASSETS

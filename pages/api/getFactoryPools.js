@@ -14,7 +14,7 @@ export default fn(async () => {
   const LP_TOKEN_DECIMALS = 18;
 
   const registryAddress = await getFactoryRegistry();
-  const multicallAddress = await getMultiCall();
+  const multicallAddress = getMultiCall();
   const registry = new web3.eth.Contract(registryAbi, registryAddress);
   const poolCount = await registry.methods.pool_count().call();
   const multicall = new web3.eth.Contract(multicallAbi, multicallAddress);

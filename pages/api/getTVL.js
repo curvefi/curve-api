@@ -58,7 +58,7 @@ export default fn(async () => {
     let price_feed = await (await fetch('https://api.coingecko.com/api/v3/simple/price?ids=stasis-eurs,ethereum,bitcoin,curve-dao-token,chainlink&vs_currencies=usd')).json()
 
     let registryAddress = await getRegistry()
-    let multicallAddress = await getMultiCall()
+    let multicallAddress = getMultiCall()
   	let registry = new web3.eth.Contract(registryAbi, registryAddress);
   	let poolCount = await registry.methods.pool_count().call();
   	let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)

@@ -7,9 +7,15 @@ import { web3 } from 'utils/Web3';
 // `balance` can be either a Number or a BigNumber; the returned value will be
 // either a Number or a BigNumber accordingly.
 const getPoolUsdFigure = async (balance, pool, web3Instance = undefined) => {
-  const refAssetPrice = pool.cryptoPool ?
-    (await getCryptoPoolTokenPrices(undefined, web3Instance || web3, 1))[pool.id] :
-    await getRefAssetPrice(pool.referenceAsset);
+  const isFactoryV2Pool = (
+    typeof pool.totalSupply !== 'undefined' &&
+    typeof pool.usdTotal !== 'undefined'
+  );
+  const refAssetPrice = (
+    isFactoryV2Pool ? (pool.usdTotal / (parseFloat(pool.totalSupply) === 0 ? 1 : pool.totalSupply) * 1e18) :
+    pool.cryptoPool ? (await getCryptoPoolTokenPrices(undefined, web3Instance || web3, 1))[pool.id] :
+    await getRefAssetPrice(pool.referenceAsset)
+  );
 
   return balance instanceof BN ?
     balance.times(refAssetPrice) :

@@ -16,7 +16,7 @@ export default fn(async (query) => {
     const version = query.version === '2' ? 2 : 1;
 
     let registryAddress = await getFactoryRegistry()
-    let multicallAddress = await getMultiCall()
+    let multicallAddress = getMultiCall()
   	let registry = new web3.eth.Contract(registryAbi, registryAddress);
   	let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
 

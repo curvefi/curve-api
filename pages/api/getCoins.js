@@ -15,7 +15,7 @@ export default fn(async () => {
   const registryFactory = new web3.eth.Contract(registryAbi, registryAddress);
   const registryMainAddress = await getRegistry();
   const registryMain = new web3.eth.Contract(registryAbi, registryMainAddress);
-  const multicallAddress = await getMultiCall()
+  const multicallAddress = getMultiCall()
   const multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
 
   ///get factory list

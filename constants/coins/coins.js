@@ -477,6 +477,14 @@ module.exports = {
         decimals: 1e6,
         address: '0xC581b735A1688071A1746c968e0798D642EDE491',
     },
+    stkaave: {
+        id: 'stkaave',
+        coingeckoId: 'aave',
+        type: REFERENCE_ASSETS.AAVE,
+        symbol: 'stkAAVE',
+        decimals: 1e18,
+        address: '0x4da27a545c0c5B758a6BA100e3a049001de870f5',
+    },
     rai: {
         id: 'rai',
         coingeckoId: 'rai',

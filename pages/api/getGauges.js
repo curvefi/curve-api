@@ -13,7 +13,7 @@ const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEM
 
 export default fn(async () => {
 
-  const multicallAddress = await getMultiCall();
+  const multicallAddress = getMultiCall();
   const multicall = new web3.eth.Contract(multicallAbi, multicallAddress);
   const gaugeControllerAddress = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB'
   const gaugeController = new web3.eth.Contract(gaugeControllerAbi, gaugeControllerAddress);

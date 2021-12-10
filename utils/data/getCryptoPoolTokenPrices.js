@@ -2,12 +2,21 @@ import memoize from 'memoizee';
 import { arrayToHashmap, flattenArray } from 'utils/Array';
 import { multiCall } from 'utils/Web3';
 import ERC20ABI from 'constants/abis/erc20.json';
+import MULTICALL_ABI from 'constants/abis/multicall.json';
 import getRefAssetPrice from 'utils/data/getRefAssetPrice';
 import pools from 'constants/pools';
+import configs from 'constants/configs';
 
 const getCryptoPoolTokenPrices = memoize(async (account, library, chainId) => {
+  const config = Array.from(Object.values(configs)).find(({ networkId }) => networkId === chainId);
+
   const cryptoPools = pools.filter(({ cryptoPool }) => cryptoPool);
-  const callsConfig = flattenArray(cryptoPools.map(({ id, addresses: { swap, lpToken }, coins }) => [
+  const callsConfig = flattenArray(cryptoPools.map(({
+    id,
+    addresses: { swap, lpToken },
+    coins,
+    coinsInPlaceReplacements,
+  }) => [
     {
       address: lpToken,
       abi: ERC20ABI,
@@ -15,14 +24,30 @@ const getCryptoPoolTokenPrices = memoize(async (account, library, chainId) => {
       metaData: { type: 'totalSupply', poolId: id },
       web3Data: { account, library, chainId },
     },
-    ...coins.map(({ address, type, decimals }) => ({
-      address,
-      abi: ERC20ABI,
-      methodName: 'balanceOf',
-      params: [swap],
-      metaData: { type: 'balance', referenceAsset: type, poolId: id, decimals },
-      web3Data: { account, library, chainId },
-    })),
+    ...coins.map((coin, i) => {
+      const actualCoin = coinsInPlaceReplacements[i] || coin;
+      const { symbol, address, type, decimals } = actualCoin;
+
+      if (symbol.toUpperCase() === config.nativeCurrencySymbol.toUpperCase()) {
+        return {
+          address: config.multicallAddress,
+          abi: MULTICALL_ABI,
+          methodName: 'getEthBalance', // Multicall helper method, must use compatible multicall impl
+          params: [swap],
+          metaData: { type: 'balance', referenceAsset: coin.type, poolId: id, decimals },
+          web3Data: { account, library, chainId },
+        };
+      }
+
+      return {
+        address,
+        abi: ERC20ABI,
+        methodName: 'balanceOf',
+        params: [swap],
+        metaData: { type: 'balance', referenceAsset: type, poolId: id, decimals },
+        web3Data: { account, library, chainId },
+      };
+    }),
   ]));
 
   const cryptoPoolsData = await multiCall(callsConfig);
