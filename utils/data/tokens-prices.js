@@ -35,7 +35,7 @@ const getTokensPrices = memoize(async (addresses, platform = 'ethereum') => {
 
   if (attachRkp3rPrice) {
     // Estimation: rkp3r is a kp3r option redeemable for 50% asset price
-    mergedPrices[RKP3R_ADDRESS_ON_ETHEREUM] = mergedPrices[KP3R_ADDRESS_ON_ETHEREUM] / 2;
+    mergedPrices[RKP3R_ADDRESS_ON_ETHEREUM] = mergedPrices[KP3R_ADDRESS_ON_ETHEREUM] * 0.1;
   }
 
   return mergedPrices;
