@@ -89,6 +89,10 @@ export default fn(async (query) => {
               //   console.log('$',t, trade.transactionHash)
               // }
             })
+
+            if (pool.address.toLowerCase() === '0x8461a004b50d321cb22b7d034969ce6803911899') {
+              volume  = 0
+            }
           }
 
 
