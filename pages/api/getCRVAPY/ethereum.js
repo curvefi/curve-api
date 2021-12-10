@@ -8,6 +8,7 @@ import getPoolUsdFigure from 'utils/data/getPoolUsdFigure';
 import getFactoryV2PoolsApiFn from 'pages/api/getFactoryV2Pools';
 import getGaugesApiFn from 'pages/api/getGauges';
 import pools, { poolGauges } from 'constants/pools';
+import coins from 'constants/coins';
 import Multicall from 'constants/abis/multicall.json';
 
 const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
@@ -40,6 +41,15 @@ const getEthereumFactoryV2Pools = async () => {
       },
       cryptoPool: false, // No crypto facto pools yet
       referenceAsset: assetTypeName,
+      coingeckoInfo: {
+        referenceAssetId: (
+          assetTypeName === 'eth' ? 'ethereum' :
+          assetTypeName === 'btc' ? 'bitcoin' : (
+            pools.find((pool) => pool.referenceAsset === assetTypeName)?.coingeckoInfo?.referenceAssetId ||
+            Array.from(Object.values(coins)).find((coin) => coin.type === assetTypeName)?.coingeckoId
+          )
+        ),
+      },
       isGaugeKilled: gaugeData?.is_killed === true,
       totalSupply,
       usdTotal,

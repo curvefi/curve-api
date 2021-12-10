@@ -27,6 +27,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'compound',
         symbol: 'COMP',
+        referenceAssetId: 'dollar',
     },
     assets: 'cDAI+cUSDC',
     coins: [
@@ -61,6 +62,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'tether',
         symbol: 'USDT',
+        referenceAssetId: 'dollar',
     },
     assets: 'cDAI+cUSDC+USDT',
     coins: [
@@ -93,6 +95,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'paxos-standard',
         symbol: 'PAX',
+        referenceAssetId: 'dollar',
     },
     assets: 'ycDAI+ycUSDC+ycUSDT+PAX',
     coins: [
@@ -133,6 +136,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'yearn-finance',
         symbol: 'YFI',
+        referenceAssetId: 'dollar',
     },
     assets: 'yDAI+yUSDC+yUSDT+yTUSD',
     coins: [
@@ -172,6 +176,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'binance-usd',
         symbol: 'BUSD',
+        referenceAssetId: 'dollar',
     },
     assets: 'yDAI+yUSDC+yUSDT+yBUSD',
     coins: [
@@ -206,6 +211,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'nusd',
         symbol: 'SUSD',
+        referenceAssetId: 'dollar',
     },
     assets: 'DAI+USDC+USDT+sUSD',
     coins: [
@@ -324,6 +330,9 @@ module.exports = [{
         coins.usdc,
         coins.usdt,
     ],
+    coingeckoInfo: {
+        referenceAssetId: 'dollar',
+    },
     addresses: {
         swap: '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7',
         lpToken: '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
@@ -341,6 +350,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'gemini-dollar',
         symbol: 'GUSD',
+        referenceAssetId: 'dollar',
     },
     assets: 'GUSD+3pool',
     isMetaPool: true,
@@ -370,6 +380,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'husd',
         symbol: 'HUSD',
+        referenceAssetId: 'dollar',
     },
     assets: 'HUSD+3pool',
     isMetaPool: true,
@@ -399,6 +410,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'usdk',
         symbol: 'USDK',
+        referenceAssetId: 'dollar',
     },
     assets: 'USDK+3pool',
     isMetaPool: true,
@@ -428,6 +440,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'neutrino',
         symbol: 'USDN',
+        referenceAssetId: 'dollar',
     },
     assets: 'USDN+3pool',
     isMetaPool: true,
@@ -457,6 +470,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'linkusd',
         symbol: 'LINKUSD',
+        referenceAssetId: 'dollar',
     },
     assets: 'LINKUSD+3pool',
     isMetaPool: true,
@@ -488,6 +502,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'musd',
         symbol: 'MUSD',
+        referenceAssetId: 'dollar',
     },
     assets: 'musd+3pool',
     isMetaPool: true,
@@ -522,6 +537,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'reserve',
         symbol: 'RSV',
+        referenceAssetId: 'dollar',
     },
     assets: 'rsv+3pool',
     isMetaPool: true,
@@ -591,6 +607,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'defidollar',
         symbol: 'DUSD',
+        referenceAssetId: 'dollar',
     },
     assets: 'dusd+3pool',
     isMetaPool: true,
@@ -733,6 +750,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'terrausd',
         symbol: 'UST',
+        referenceAssetId: 'dollar',
     },
     assets: 'ust+3pool',
     isMetaPool: true,
@@ -819,6 +837,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'aave',
         symbol: 'AAVE',
+        referenceAssetId: 'dollar',
     },
     assets: 'aDAI+aUSDC+aUSDT',
     coins: [
@@ -889,6 +908,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'aave',
         symbol: 'AAVE',
+        referenceAssetId: 'dollar',
     },
     assets: 'aDAI+asUSD',
     coins: [
@@ -964,6 +984,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'usdp',
         symbol: 'USDP',
+        referenceAssetId: 'dollar',
     },
     assets: 'usdp+3pool',
     isMetaPool: true,
@@ -1001,6 +1022,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'cream-2',
         symbol: 'CREAM',
+        referenceAssetId: 'dollar',
     },
     assets: 'cyDAI+cyUSDC+cyUSDT',
     coins: [
@@ -1054,6 +1076,9 @@ module.exports = [{
         name: 'tusdCurve',
         symbol: 'tusdCrv',
     },
+    coingeckoInfo: {
+      referenceAssetId: 'dollar',
+    },
     assets: 'tusd+3pool',
     isMetaPool: true,
     coins: [
@@ -1083,6 +1108,7 @@ module.exports = [{
     coingeckoInfo: {
         id: 'frax',
         symbol: 'FRAX',
+        referenceAssetId: 'dollar',
     },
     assets: 'frax+3pool',
     isMetaPool: true,
@@ -1123,6 +1149,7 @@ module.exports = [{
       coingeckoInfo: {
           id: 'liquity-usd',
           symbol: 'LUSD',
+          referenceAssetId: 'dollar',
       },
       assets: 'lusd+3pool',
       isMetaPool: true,
@@ -1160,6 +1187,7 @@ module.exports = [{
         coingeckoInfo: {
             id: 'binance-usd',
             symbol: 'BUSD',
+            referenceAssetId: 'dollar',
         },
         assets: 'busd+3pool',
         isMetaPool: true,
@@ -1224,6 +1252,7 @@ module.exports = [{
           coingeckoInfo: {
               id: 'alchemix-usd',
               symbol: 'alUSD',
+              referenceAssetId: 'dollar',
           },
           assets: 'alusd+3pool',
           isMetaPool: true,
@@ -1284,6 +1313,9 @@ module.exports = [{
             lpTokenInfo: {
                 name: 'mimCurve',
                 symbol: 'mimCrv',
+            },
+            coingeckoInfo: {
+                referenceAssetId: 'dollar',
             },
             assets: 'mim+3pool',
             isMetaPool: true,
@@ -1377,6 +1409,7 @@ module.exports = [{
                 coingeckoInfo: {
                     id: 'tether-eurt',
                     symbol: 'EURt',
+                    referenceAssetId: 'tether-eurt',
                 },
                 isMetaPool: true,
                 cryptoPool: true,
@@ -1412,6 +1445,7 @@ module.exports = [{
                 coingeckoInfo: {
                     id: 'stasis-eurs',
                     symbol: 'EURs',
+                    referenceAssetId: 'stasis-eurs',
                 },
                 assets: 'EURs+USDC',
                 coins: [
@@ -1438,6 +1472,7 @@ module.exports = [{
                 coingeckoInfo: {
                     id: 'curve-dao-token',
                     symbol: 'CRV',
+                    referenceAssetId: 'curve-dao-token',
                 },
                 assets: 'CRV+ETH',
                 useAssetsStringForDisplayPurposes: true,
@@ -1466,6 +1501,7 @@ module.exports = [{
                 coingeckoInfo: {
                     id: 'rai',
                     symbol: 'RAI',
+                    referenceAssetId: 'dollar',
                 },
                 assets: 'RAI+3pool',
                 isMetaPool: true,

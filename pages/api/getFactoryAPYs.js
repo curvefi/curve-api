@@ -2,7 +2,8 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 import { IS_DEV } from 'constants/AppConstants';
 
-import { fn } from '../../utils/api';
+import { fn } from 'utils/api';
+import getPoolUsdFigure from 'utils/data/getPoolUsdFigure';
 import { getFactoryRegistry, getMultiCall } from '../../utils/getters';
 import registryAbi from '../../constants/abis/factory_registry.json';
 import multicallAbi from '../../constants/abis/multicall.json';
@@ -112,7 +113,7 @@ export default fn(async (query) => {
             apyFormatted,
             apy,
             'virtualPrice':vPriceFetch,
-            volume,
+            volume: await getPoolUsdFigure(volume, pool),
           }
           poolDetails.push(p)
       })

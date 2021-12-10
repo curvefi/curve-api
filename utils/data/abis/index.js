@@ -52,6 +52,7 @@ import rethSwapABI from './json/reth/swap.json';
 import fraxRewardsabi from './json/frax/rewards.json';
 import alusdSwapABI from './json/alusd/swap.json';
 import triCryptoSwap from './json/tricrypto/swap.json';
+import FixedForexRegistryABI from './json/FixedForexRegistry.json';
 
 const abiData = {
   compound: {
@@ -268,6 +269,10 @@ const abiData = {
   },
   balancerAbi,
   balancer_address: '0x330416C863f2acCE7aF9C9314B422d24c672534a',
+  FixedForexRegistry: {
+    address: '0x5C08bC10F45468F18CbDC65454Cbd1dd2cB1Ac65',
+    abi: FixedForexRegistryABI,
+  },
 };
 
 export default abiData;

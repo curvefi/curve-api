@@ -32,7 +32,7 @@ const getAPY = memoize(async () => {
   for (const [key] of Object.entries(volumes)) {
     if (volumes[key] && volumes[key][0] === -1) {
       // Note: this doesn't work for crypto pools, needs some minor adaptation to look
-      // in the right stats object, but volumes aren't used on convex so nvm for now
+      // in the right stats object
       const volume = stablePoolStats.volume[toStatsKeyResolver(key)];
 
       const pool = pools.find(({ id }) => id === key);

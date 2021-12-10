@@ -15,7 +15,7 @@ const defaultPoolTemplate = {
   coingeckoInfo: {
     id: undefined, // Must be defined
     symbol: undefined, // Must be defined
-    referenceAssetId: 'dollar',
+    referenceAssetId: undefined, // Must be defined
   },
   assets: undefined,
   coins: undefined,
@@ -51,7 +51,7 @@ const poolContractNameResolver = (name) => (
 );
 
 const augmentedPools = pools
-  .filter(({ hasNoGauge }) => hasNoGauge !== true) // Convex only deals w/ pools that have gauges
+  .filter(({ hasNoGauge }) => hasNoGauge !== true)
   .map((pool) => ({
     ...defaultPoolTemplate,
     ...pool,
