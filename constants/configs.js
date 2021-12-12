@@ -93,10 +93,14 @@ const configs = {
       ['0x09C62ad0694e3f1ad8cF8876aaBe56138C586f5F'.toLowerCase(), 'metausdbalances'],
       ['0xC9438d8928486bD9621D326002F4672bF684187A'.toLowerCase(), 'metabtc'],
       ['0x2b70A5B878665FfDB4A06Ba40a264d6c70f68F4B'.toLowerCase(), 'metabtcbalances'],
+      ['0x210c806f6ae850279f7e298de749ec4b427d00dd'.toLowerCase(), 'metausd-geist'],
+      ['0xf82162bb68ad5a168345bb7efb2faa0edcca5177'.toLowerCase(), 'metausdbalances-geist'],
+
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x27e611fd27b276acbd5ffd632e5eaebec9761e40', '0x8866414733F22295b7563f9C5299715D2D76CAf4'], // meta usd
       ['0x5B5CFE992AdAC0C9D48E05854B2d91C73a003858', '0x2db0E83599a91b508Ac268a6197b8B14F5e72840'], // meta btc
+      ['0x0fa949783947Bf6c1b171DB13AEACBB488845B3f', '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F'], // meta usd2
     ])
   },
   arbitrum: {
