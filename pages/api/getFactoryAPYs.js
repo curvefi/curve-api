@@ -13,7 +13,7 @@ const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEM
 const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
 
 export default fn(async (query) => {
-    const version = query.version === '2' ? 2 : 1;
+    const version = Number(query.version) === 2 ? 2 : 1;
 
     let registryAddress = await getFactoryRegistry()
     let multicallAddress = await getMultiCall()
