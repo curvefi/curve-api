@@ -1172,4 +1172,252 @@ module.exports = [{
   hasNoGauge: true,
   cryptoPool: true,
   referenceAsset: REFERENCE_ASSETS.CRYPTO,
-}];
+}, {
+            dataIndex: 38,
+            id: 'mim',
+            name: 'mim',
+            lpTokenInfo: {
+                name: 'mimCurve',
+                symbol: 'mimCrv',
+            },
+            coingeckoInfo: {
+                referenceAssetId: 'dollar',
+            },
+            assets: 'mim+3pool',
+            isMetaPool: true,
+            coins: [
+                coins.mim,
+                coins.tricrv,
+            ],
+            metaCoins: [
+                coins.dai,
+                coins.usdc,
+                coins.usdt,
+            ],
+            addresses: {
+                swap: '0x5a6A4D54456819380173272A5E8E9B9904BdF41B',
+                lpToken: '0x5a6A4D54456819380173272A5E8E9B9904BdF41B',
+                deposit: '0xA79828DF1850E8a3A3064576f380D90aECDD3359',
+                gauge: '0xd8b712d29381748dB89c36BCa0138d7c75866ddF'
+            },
+            additionalRewards: [{
+                name: 'SPELL',
+                amountDataKey: 'spellRewards',
+                rewardTokenCoingeckoId: 'spell-token',
+                amountDataKey: 'spellRewards',
+                rewardTokenAddress: '0x090185f2135308bad17527004364ebcc2d37e5f6',
+                rewardTokenDecimals: 18,
+            }],
+            gaugeVersion: 2,
+          }, {
+              dataIndex: 39,
+              id: 'tricrypto2',
+              name: 'tricrypto2',
+              lpTokenInfo: {
+                  name: '3CrvCrypto2',
+                  symbol: '3CrvCrypto2',
+              },
+              assets: 'usdt+weth+wbtc',
+              coins: [
+                  coins.usdt,
+                  coins.wbtc,
+                  coins.weth,
+              ],
+              allowTradingEth: true,
+              addresses: {
+                  swap: '0xD51a44d3FaE010294C616388b506AcdA1bfAAE46',
+                  lpToken: '0xc4AD29ba4B3c580e6D59105FFf484999997675Ff',
+                  deposit: '0x3993d34e7e99Abf6B6f367309975d1360222D446',
+                  gauge: '0xDeFd8FdD20e0f34115C7018CCfb655796F6B2168',
+                  migrator: '0x0ce658f9bc3af831271199578449810023dba703'
+              },
+              gaugeVersion: 4,
+              cryptoPool: true,
+              referenceAsset: REFERENCE_ASSETS.CRYPTO,
+            },
+            {
+                dataIndex: 40,
+                id: 'eurt',
+                name: 'eurt',
+                lpTokenInfo: {
+                    name: 'eurtCurve',
+                    symbol: 'eurtCrv',
+                },
+                coingeckoInfo: {
+                    id: 'tether-eurt',
+                    symbol: 'EURT',
+                    referenceAssetId: 'stasis-eurs', // Using stasis-eurs as the oracle for EUR/USD
+                },
+                assets: 'eurt+seur',
+                coins: [
+                    coins.eurt,
+                    coins.seur,
+                ],
+                referenceAsset: REFERENCE_ASSETS.EUR,
+                addresses: {
+                    swap: '0xfd5db7463a3ab53fd211b4af195c5bccc1a03890',
+                    lpToken: '0xfd5db7463a3ab53fd211b4af195c5bccc1a03890',
+                    gauge: '0xe8060Ad8971450E624d5289A10017dD30F5dA85F',
+                },
+                gaugeVersion: 4,
+            },
+
+            {
+                dataIndex: 41,
+                id: 'eurtusd',
+                name: 'eurtusd',
+                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                isForexMetaPool: true,
+                lpTokenInfo: {
+                    name: 'eurUsdCurve',
+                    symbol: 'eurUsdCrv',
+                },
+                coingeckoInfo: {
+                    id: 'tether-eurt',
+                    symbol: 'EURt',
+                    referenceAssetId: 'tether-eurt',
+                },
+                isMetaPool: true,
+                cryptoPool: true,
+                assets: 'EURt+3pool',
+                coins: [
+                    coins.eurt,
+                    coins.tricrv
+                ],
+                metaCoins: [
+                    coins.dai,
+                    coins.usdc,
+                    coins.usdt,
+                ],
+                addresses: {
+                    swap: '0x9838eCcC42659FA8AA7daF2aD134b53984c9427b',
+                    lpToken: '0x3b6831c0077a1e44ED0a21841C3bC4dC11bCE833',
+                    gauge: '0x4Fd86Ce7Ecea88F7E0aA78DC12625996Fb3a04bC',
+                    deposit: '0x5D0F47B32fDd343BfA74cE221808e2abE4A53827',
+                },
+                gaugeVersion: 4
+            },
+            {
+                dataIndex: 42,
+                id: 'eursusd',
+                name: 'eursusd',
+                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                cryptoPool: true,
+                isPlainCryptoPool: true,
+                lpTokenInfo: {
+                    name: 'eurUsdCurve',
+                    symbol: 'eurUsdCrv',
+                },
+                coingeckoInfo: {
+                    id: 'stasis-eurs',
+                    symbol: 'EURs',
+                    referenceAssetId: 'stasis-eurs',
+                },
+                assets: 'EURs+USDC',
+                coins: [
+                    coins.usdc,
+                    coins.eurs,
+                ],
+                addresses: {
+                    swap: '0x98a7F18d4E56Cfe84E3D081B40001B3d5bD3eB8B',
+                    lpToken: '0x3D229E1B4faab62F621eF2F6A610961f7BD7b23B',
+                    gauge: '0x65CA7Dc5CB661fC58De57B1E1aF404649a27AD35',
+              }
+            },
+            {
+                dataIndex: 42,
+                id: 'crveth',
+                name: 'crveth',
+                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                cryptoPool: true,
+                isPlainCryptoPool: true,
+                lpTokenInfo: {
+                    name: 'CrvEthCurve',
+                    symbol: 'CrvEthCrv',
+                },
+                coingeckoInfo: {
+                    id: 'curve-dao-token',
+                    symbol: 'CRV',
+                    referenceAssetId: 'curve-dao-token',
+                },
+                assets: 'CRV+ETH',
+                useAssetsStringForDisplayPurposes: true,
+                coins: [
+                    coins.weth,
+                    coins.crv,
+                ],
+                coinsInPlaceReplacements: [
+                    coins.eth,
+                ],
+                addresses: {
+                    swap: '0x8301AE4fc9c624d1D396cbDAa1ed877821D7C511',
+                    lpToken: '0xEd4064f376cB8d68F770FB1Ff088a3d0F3FF5c4d',
+                    gauge: '0x1cEBdB0856dd985fAe9b8fEa2262469360B8a3a6',
+                },
+                allowTradingEth: true,
+            },
+            {
+                dataIndex: 38,
+                id: 'rai',
+                name: 'rai',
+                lpTokenInfo: {
+                    name: 'raiCurve',
+                    symbol: 'raiCrv',
+                },
+                coingeckoInfo: {
+                    id: 'rai',
+                    symbol: 'RAI',
+                    referenceAssetId: 'dollar',
+                },
+                assets: 'RAI+3pool',
+                isMetaPool: true,
+                coins: [
+                    coins.rai,
+                    coins.tricrv,
+                ],
+                metaCoins: [
+                    coins.dai,
+                    coins.usdc,
+                    coins.usdt,
+                ],
+                addresses: {
+                    swap: '0x618788357D0EBd8A37e763ADab3bc575D54c2C7d',
+                    lpToken: '0x6BA5b4e438FA0aAf7C1bD179285aF65d13bD3D90',
+                    deposit: '0xcB636B81743Bb8a7F1E355DEBb7D33b07009cCCC',
+                },
+                hasNoGauge: true,
+                isRiskier: true,
+                riskLevel: 3,
+                isStablePoolWithSpecialUnpeggedAssets: true, // Special stable pool implementation to pair rai+usd
+            },
+            {
+                dataIndex: 42,
+                id: 'cvxeth',
+                name: 'cvxeth',
+                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                cryptoPool: true,
+                isPlainCryptoPool: true,
+                lpTokenInfo: {
+                    name: 'CvxEthCurve',
+                    symbol: 'CvxEthCrv',
+                },
+                coingeckoInfo: {
+                    id: 'convex-finance',
+                    symbol: 'CVX',
+                },
+                assets: 'CVX+ETH',
+                useAssetsStringForDisplayPurposes: true,
+                coins: [
+                    coins.weth,
+                    coins.cvx,
+                ],
+                coinsInPlaceReplacements: [
+                    coins.eth,
+                ],
+                addresses: {
+                    swap: '0xB576491F1E6e5E62f1d8F26062Ee822B40B0E0d4',
+                    lpToken: '0x3A283D9c08E8b55966afb64C515f5143cf907611',
+                    gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
+                },
+                allowTradingEth: true,
+            },];

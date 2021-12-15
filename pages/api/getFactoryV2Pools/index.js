@@ -43,7 +43,7 @@ const getEthereumOnlyData = async () => {
   );
 
   return {
-    mainRegistryPoolList,
+    mainRegistryPoolList: mainRegistryPoolList.map((address) => address.toLowerCase()),
     gaugesDataArray,
     gaugeRewards,
     factoryGaugesPoolAddressesAndAssetPricesMap,
@@ -371,7 +371,7 @@ export default fn(async ({ blockchainId }) => {
     ...(typeof ethereumOnlyData !== 'undefined' ? {
       tvl: sum(
         augmentedData
-          .filter(({ address }) => !ethereumOnlyData.mainRegistryPoolList.includes(address))
+          .filter(({ address }) => !ethereumOnlyData.mainRegistryPoolList.includes(address.toLowerCase()))
           .map(({ usdTotal }) => usdTotal)
       ),
     } : {}),
