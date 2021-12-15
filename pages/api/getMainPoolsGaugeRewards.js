@@ -69,8 +69,7 @@ export default fn(async () => {
     'eurtusd', // Todo adapt script to this new type of gauges
     'eursusd', // Todo adapt script to this new type of gauges
     'crveth', // Todo adapt script to this new type of gauges
-    'f-ibbtc',
-    'f-dola'
+    'rai'
   ]
   remove.map(async (p) => {
     delete gauges[p]
