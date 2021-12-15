@@ -272,9 +272,11 @@ export default fn(async ({ blockchainId }) => {
     )];
   })));
 
-  //
-  (coinData.find(x => x.data === 'USDL Stablecoin')) ? coinData.find(x => x.data === 'USDL Stablecoin').data = 'USDL' : ''
-  (coinData.find(x => x.data === 'Fantom-L')) ? coinData.find(x => x.data === 'Fantom-L').data = 'FTM-L' : ''
+  if (blockchainId === 'fantom' || blockchainId === 'avalanche') {
+    (coinData.find(x => x.data === 'USDL Stablecoin')) ? coinData.find(x => x.data === 'USDL Stablecoin').data = 'USDL' : ''
+    (coinData.find(x => x.data === 'Fantom-L')) ? coinData.find(x => x.data === 'Fantom-L').data = 'FTM-L' : ''
+  }
+
 
   const mergedCoinData = coinData.reduce((accu, { data, metaData: { poolId, poolAddress, coinAddress, type, isNativeEth } }) => {
     const key = `factory-v2-${poolId}-${coinAddress}`;
