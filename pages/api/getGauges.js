@@ -631,6 +631,13 @@ export default fn(async () => {
         gauge: '0x1cEBdB0856dd985fAe9b8fEa2262469360B8a3a6',
         type: 'crypto',
       },
+      rai: {
+        swap: '0x618788357D0EBd8A37e763ADab3bc575D54c2C7d',
+        swap_token: '0x6BA5b4e438FA0aAf7C1bD179285aF65d13bD3D90',
+        name: 'rai',
+        gauge: '0x66ec719045bBD62db5eBB11184c18237D3Cc2E62',
+        type: 'stable',
+      },
     }
 
     // get pool addresses
