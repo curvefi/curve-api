@@ -226,7 +226,7 @@ export default fn(async ({ blockchainId }) => {
   const coinAddressesAndPricesMap =
     await getTokensPrices(allCoinAddresses.map(({ address }) => address), platformCoingeckoId);
 
-  const coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
+  let coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
     const isNativeEth = address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
     const coinContract = isNativeEth ? undefined : new web3.eth.Contract(erc20Abi, address);
 
@@ -271,6 +271,10 @@ export default fn(async ({ blockchainId }) => {
         []
     )];
   })));
+
+  //
+  coinData.find(x => x.data === 'USDL Stablecoin').data = 'USDL'
+  coinData.find(x => x.data === 'Fantom-L').data = 'FTM-L'
 
   const mergedCoinData = coinData.reduce((accu, { data, metaData: { poolId, poolAddress, coinAddress, type, isNativeEth } }) => {
     const key = `factory-v2-${poolId}-${coinAddress}`;
