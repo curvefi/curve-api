@@ -638,6 +638,13 @@ export default fn(async () => {
         gauge: '0x66ec719045bBD62db5eBB11184c18237D3Cc2E62',
         type: 'stable',
       },
+      "cvxeth": {
+        swap: '0xB576491F1E6e5E62f1d8F26062Ee822B40B0E0d4',
+        swap_token: '0x3A283D9c08E8b55966afb64C515f5143cf907611',
+        name: 'cvxeth',
+        gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
+        type: 'crypto',
+      },
     }
 
     // get pool addresses
