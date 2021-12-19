@@ -67,6 +67,7 @@ export default fn(async () => {
     'eurtusd', // Todo adapt script to this new type of gauges
     'eursusd', // Todo adapt script to this new type of gauges
     'crveth', // Todo adapt script to this new type of gauges
+    'cvxeth', // Todo adapt script to this new type of gauges
     'rai'
   ]
   remove.map(async (p) => {
