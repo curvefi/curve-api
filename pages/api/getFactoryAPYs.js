@@ -93,6 +93,9 @@ export default fn(async (query) => {
             if (pool.address.toLowerCase() === '0x8461a004b50d321cb22b7d034969ce6803911899') {
               volume  = 0
             }
+            if (pool.address.toLowerCase() === '0x8818a9bb44Fbf33502bE7c15c500d0C783B73067') {
+              volume  = 0
+            }
           }
 
 
