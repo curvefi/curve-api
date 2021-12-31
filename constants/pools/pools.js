@@ -1325,7 +1325,7 @@ module.exports = [{
               }
             },
             {
-                dataIndex: 42,
+                dataIndex: 43,
                 id: 'crveth',
                 name: 'crveth',
                 referenceAsset: REFERENCE_ASSETS.CRYPTO,
@@ -1357,7 +1357,7 @@ module.exports = [{
                 allowTradingEth: true,
             },
             {
-                dataIndex: 38,
+                dataIndex: 44,
                 id: 'rai',
                 name: 'rai',
                 lpTokenInfo: {
@@ -1385,13 +1385,12 @@ module.exports = [{
                     lpToken: '0x6BA5b4e438FA0aAf7C1bD179285aF65d13bD3D90',
                     deposit: '0xcB636B81743Bb8a7F1E355DEBb7D33b07009cCCC',
                 },
-                hasNoGauge: true,
                 isRiskier: true,
                 riskLevel: 3,
                 isStablePoolWithSpecialUnpeggedAssets: true, // Special stable pool implementation to pair rai+usd
             },
             {
-                dataIndex: 42,
+                dataIndex: 45,
                 id: 'cvxeth',
                 name: 'cvxeth',
                 referenceAsset: REFERENCE_ASSETS.CRYPTO,
@@ -1420,4 +1419,40 @@ module.exports = [{
                     gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
                 },
                 allowTradingEth: true,
-            },];
+            },
+            {
+                dataIndex: 46,
+                id: 'xautusd',
+                name: 'xautusd',
+                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                isForexMetaPool: true,
+                lpTokenInfo: {
+                    name: 'xautUsdCurve',
+                    symbol: 'xautUsdCrv',
+                },
+                coingeckoInfo: {
+                    id: 'tether-gold',
+                    symbol: 'XAUt',
+                    referenceAssetId: 'tether-gold',
+                },
+                isMetaPool: true,
+                cryptoPool: true,
+                assets: 'XAUt+3pool',
+                coins: [
+                    coins.xaut,
+                    coins.tricrv
+                ],
+                metaCoins: [
+                    coins.dai,
+                    coins.usdc,
+                    coins.usdt,
+                ],
+                addresses: {
+                    swap: '0xAdCFcf9894335dC340f6Cd182aFA45999F45Fc44',
+                    lpToken: '0x8484673cA7BfF40F82B041916881aeA15ee84834',
+                    gauge: '0x1B3E14157ED33F60668f2103bCd5Db39a1573E5B',
+                    deposit: '0xc5FA220347375ac4f91f9E4A4AAb362F22801504',
+                },
+                gaugeVersion: 4,
+            },
+          ];

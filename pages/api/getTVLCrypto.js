@@ -69,9 +69,18 @@ export default fn(async () => {
         'tvl': 0,
         'lpPrice': 0
       },
+      'xaut': {
+        'address': '0xAdCFcf9894335dC340f6Cd182aFA45999F45Fc44',
+        'token': '0x8484673cA7BfF40F82B041916881aeA15ee84834',
+        'coins': 2,
+        'keys': ['tether-gold', 'tether'],
+        'decimals': [6, 18],
+        'tvl': 0,
+        'lpPrice': 0
+      },
     }
 
-    let price_feed = await (await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether,ethereum,bitcoin,tether-eurt,stasis-eurs,curve-dao-token,convex-finance&vs_currencies=usd')).json()
+    let price_feed = await (await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether,ethereum,bitcoin,tether-eurt,stasis-eurs,curve-dao-token,convex-finance,tether-gold&vs_currencies=usd')).json()
 
     for (const [key, pool] of Object.entries(cryptoPools)) {
       let poolContract = new web3.eth.Contract(cryptoPoolAbi, pool.address);
