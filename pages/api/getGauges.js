@@ -645,6 +645,13 @@ export default fn(async () => {
         gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
         type: 'crypto',
       },
+      "xautusd": {
+        swap: '0xAdCFcf9894335dC340f6Cd182aFA45999F45Fc44',
+        swap_token: '0x8484673cA7BfF40F82B041916881aeA15ee84834',
+        name: 'xautusd',
+        gauge: '0x1B3E14157ED33F60668f2103bCd5Db39a1573E5B',
+        type: 'crypto',
+      },
     }
 
     // get pool addresses
