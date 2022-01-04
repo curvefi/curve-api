@@ -69,7 +69,7 @@ export default fn(async () => {
         'tvl': 0,
         'lpPrice': 0
       },
-      'xaut': {
+      'xautusd': {
         'address': '0xAdCFcf9894335dC340f6Cd182aFA45999F45Fc44',
         'token': '0x8484673cA7BfF40F82B041916881aeA15ee84834',
         'coins': 2,
