@@ -69,7 +69,7 @@ export default fn(async () => {
         'tvl': 0,
         'lpPrice': 0
       },
-      'xaut': {
+      'xautusd': {
         'address': '0xAdCFcf9894335dC340f6Cd182aFA45999F45Fc44',
         'token': '0x8484673cA7BfF40F82B041916881aeA15ee84834',
         'coins': 2,
@@ -78,9 +78,27 @@ export default fn(async () => {
         'tvl': 0,
         'lpPrice': 0
       },
+      'spelleth': {
+        'address': '0x98638FAcf9a3865cd033F36548713183f6996122',
+        'token': '0x8282BD15dcA2EA2bDf24163E8f2781B30C43A2ef',
+        'coins': 2,
+        'keys': ['ethereum', 'spell-token'],
+        'decimals': [18, 18],
+        'tvl': 0,
+        'lpPrice': 0
+      },
+      'teth': {
+        'address': '0x752eBeb79963cf0732E9c0fec72a49FD1DEfAEAC',
+        'token': '0xCb08717451aaE9EF950a2524E33B6DCaBA60147B',
+        'coins': 2,
+        'keys': ['ethereum', 'threshold-network-token'],
+        'decimals': [18, 18],
+        'tvl': 0,
+        'lpPrice': 0
+      },
     }
 
-    let price_feed = await (await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether,ethereum,bitcoin,tether-eurt,stasis-eurs,curve-dao-token,convex-finance,tether-gold&vs_currencies=usd')).json()
+    let price_feed = await (await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether,ethereum,bitcoin,tether-eurt,stasis-eurs,curve-dao-token,convex-finance,tether-gold,spell-token,threshold-network-token&vs_currencies=usd')).json()
 
     for (const [key, pool] of Object.entries(cryptoPools)) {
       let poolContract = new web3.eth.Contract(cryptoPoolAbi, pool.address);

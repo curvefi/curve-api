@@ -1384,6 +1384,7 @@ module.exports = [{
                     swap: '0x618788357D0EBd8A37e763ADab3bc575D54c2C7d',
                     lpToken: '0x6BA5b4e438FA0aAf7C1bD179285aF65d13bD3D90',
                     deposit: '0xcB636B81743Bb8a7F1E355DEBb7D33b07009cCCC',
+                    gauge: '0x66ec719045bBD62db5eBB11184c18237D3Cc2E62',
                 },
                 isRiskier: true,
                 riskLevel: 3,
@@ -1454,5 +1455,66 @@ module.exports = [{
                     deposit: '0xc5FA220347375ac4f91f9E4A4AAb362F22801504',
                 },
                 gaugeVersion: 4,
+            },
+            {
+                dataIndex: 44,
+                id: 'spelleth',
+                name: 'spelleth',
+                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                cryptoPool: true,
+                isPlainCryptoPool: true,
+                lpTokenInfo: {
+                    name: 'SpellEthCurve',
+                    symbol: 'SpellEthCrv',
+                },
+                coingeckoInfo: {
+                    id: 'spell-token',
+                    symbol: 'SPELL',
+                },
+                assets: 'SPELL+ETH',
+                useAssetsStringForDisplayPurposes: true,
+                coins: [
+                    coins.weth,
+                    coins.spell,
+                ],
+                coinsInPlaceReplacements: [
+                    coins.eth,
+                ],
+                addresses: {
+                    swap: '0x98638FAcf9a3865cd033F36548713183f6996122',
+                    lpToken: '0x8282BD15dcA2EA2bDf24163E8f2781B30C43A2ef',
+                    gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
+                },
+                allowTradingEth: true,
+                hasNoGauge: true
+            },
+            {
+                dataIndex: 45,
+                id: 'teth',
+                name: 'teth',
+                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                cryptoPool: true,
+                isPlainCryptoPool: true,
+                lpTokenInfo: {
+                    name: 'TEthCurve',
+                    symbol: 'TEthCrv',
+                },
+
+                assets: 'T+ETH',
+                useAssetsStringForDisplayPurposes: true,
+                coins: [
+                    coins.weth,
+                    coins.t,
+                ],
+                coinsInPlaceReplacements: [
+                    coins.eth,
+                ],
+                addresses: {
+                    swap: '0x752eBeb79963cf0732E9c0fec72a49FD1DEfAEAC',
+                    lpToken: '0xCb08717451aaE9EF950a2524E33B6DCaBA60147B',
+                    gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
+                },
+                allowTradingEth: true,
+                hasNoGauge: true
             },
           ];
