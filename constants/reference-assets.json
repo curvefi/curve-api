@@ -4,5 +4,7 @@
     "BTC": "btc",
     "ETH": "eth",
     "LINK": "link",
+    "SPELL": "spell",
+    "T": "t",
     "SNX": "snx"
 }

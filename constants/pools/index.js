@@ -50,7 +50,6 @@ const poolContractNameResolver = (name) => (
 );
 
 const augmentedPools = pools
-  .filter(({ hasNoGauge }) => hasNoGauge !== true) // Convex only deals w/ pools that have gauges
   .map((pool) => ({
     ...defaultPoolTemplate,
     ...pool,

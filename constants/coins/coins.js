@@ -627,6 +627,22 @@ module.exports = {
         decimals: 18,
         address: '0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3',
     },
+    spell: {
+        id: 'spell',
+        coingeckoId: 'spell-token',
+        type: REFERENCE_ASSETS.SPELL,
+        symbol: 'SPELL',
+        decimals: 18,
+        address: '0x090185f2135308bad17527004364ebcc2d37e5f6',
+    },
+    t: {
+        id: 't',
+        coingeckoId: 'threshold-network-token',
+        type: REFERENCE_ASSETS.T,
+        symbol: 'T',
+        decimals: 18,
+        address: '0xCdF7028ceAB81fA0C6971208e83fa7872994beE5',
+    },
     crv: {
         id: 'crv',
         coingeckoId: 'curve-dao-token',
