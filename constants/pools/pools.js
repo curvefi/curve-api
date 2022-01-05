@@ -1456,4 +1456,65 @@ module.exports = [{
                 },
                 gaugeVersion: 4,
             },
+            {
+                dataIndex: 44,
+                id: 'spelleth',
+                name: 'spelleth',
+                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                cryptoPool: true,
+                isPlainCryptoPool: true,
+                lpTokenInfo: {
+                    name: 'SpellEthCurve',
+                    symbol: 'SpellEthCrv',
+                },
+                coingeckoInfo: {
+                    id: 'spell-token',
+                    symbol: 'SPELL',
+                },
+                assets: 'SPELL+ETH',
+                useAssetsStringForDisplayPurposes: true,
+                coins: [
+                    coins.weth,
+                    coins.spell,
+                ],
+                coinsInPlaceReplacements: [
+                    coins.eth,
+                ],
+                addresses: {
+                    swap: '0x98638FAcf9a3865cd033F36548713183f6996122',
+                    lpToken: '0x8282BD15dcA2EA2bDf24163E8f2781B30C43A2ef',
+                    gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
+                },
+                allowTradingEth: true,
+                hasNoGauge: true
+            },
+            {
+                dataIndex: 45,
+                id: 'teth',
+                name: 'teth',
+                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                cryptoPool: true,
+                isPlainCryptoPool: true,
+                lpTokenInfo: {
+                    name: 'TEthCurve',
+                    symbol: 'TEthCrv',
+                },
+
+                assets: 'T+ETH',
+                useAssetsStringForDisplayPurposes: true,
+                coins: [
+                    coins.weth,
+                    coins.t,
+                ],
+                coinsInPlaceReplacements: [
+                    coins.eth,
+                ],
+                addresses: {
+                    swap: '0x752eBeb79963cf0732E9c0fec72a49FD1DEfAEAC',
+                    lpToken: '0xCb08717451aaE9EF950a2524E33B6DCaBA60147B',
+                    gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
+                },
+                allowTradingEth: true,
+                hasNoGauge: true
+            },
           ];

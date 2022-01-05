@@ -69,7 +69,9 @@ export default fn(async () => {
     'crveth', // Todo adapt script to this new type of gauges
     'cvxeth', // Todo adapt script to this new type of gauges
     'rai',
-    'xautusd'
+    'xautusd',
+    'spelleth',
+    'teth',
   ]
   remove.map(async (p) => {
     delete gauges[p]
