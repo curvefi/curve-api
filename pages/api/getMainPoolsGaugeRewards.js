@@ -64,7 +64,7 @@ export default fn(async () => {
 
   //empty gauges cause reverts
   const remove = [
-    'eurtusd', // Todo adapt script to this new type of gauges
+     'eurtusd', // Todo adapt script to this new type of gauges
     'eursusd', // Todo adapt script to this new type of gauges
     'crveth', // Todo adapt script to this new type of gauges
     'cvxeth', // Todo adapt script to this new type of gauges
