@@ -20,10 +20,14 @@ export default fn(async ({ address }) => {
     baseApy: baseApys[index],
     crvApy: crvApys[pool.id],
     crvBoost: boosts[pool.id],
-    additionalRewards: mainPoolsGaugeRewards[pool.addresses.gauge.toLowerCase()]?.map(({ symbol, apy }) => ({
-      name: symbol,
-      apy,
-    })) || [],
+    additionalRewards: (
+      pool.addresses.gauge ? (
+        mainPoolsGaugeRewards[pool.addresses.gauge.toLowerCase()]?.map(({ symbol, apy }) => ({
+          name: symbol,
+          apy,
+        })) || []
+      ) : []
+    ),
     crvPrice,
   }]));
 }, {
