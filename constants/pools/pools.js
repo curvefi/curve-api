@@ -1499,7 +1499,10 @@ module.exports = [{
                     name: 'TEthCurve',
                     symbol: 'TEthCrv',
                 },
-
+                coingeckoInfo: {
+                    id: 'threshold-network-token',
+                    symbol: 'T',
+                },
                 assets: 'T+ETH',
                 useAssetsStringForDisplayPurposes: true,
                 coins: [
