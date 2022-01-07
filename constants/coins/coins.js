@@ -683,4 +683,20 @@ module.exports = {
         decimals: 6,
         address: '0x68749665ff8d2d112fa859aa293f07a622782f38',
     },
+    spell: {
+        id: 'spell',
+        coingeckoId: 'spell-token',
+        type: REFERENCE_ASSETS.SPELL,
+        symbol: 'SPELL',
+        decimals: 18,
+        address: '0x090185f2135308bad17527004364ebcc2d37e5f6',
+    },
+    t: {
+        id: 't',
+        type: REFERENCE_ASSETS.T,
+        symbol: 'T',
+        coingeckoId: 'threshold-network-token',
+        decimals: 18,
+        address: '0xCdF7028ceAB81fA0C6971208e83fa7872994beE5',
+    },
 };
