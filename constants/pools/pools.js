@@ -1457,10 +1457,10 @@ module.exports = [{
                 gaugeVersion: 4,
             },
             {
-                dataIndex: 44,
+                dataIndex: 47,
                 id: 'spelleth',
                 name: 'spelleth',
-                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                referenceAsset: REFERENCE_ASSETS.SPELL,
                 cryptoPool: true,
                 isPlainCryptoPool: true,
                 lpTokenInfo: {
@@ -1483,16 +1483,16 @@ module.exports = [{
                 addresses: {
                     swap: '0x98638FAcf9a3865cd033F36548713183f6996122',
                     lpToken: '0x8282BD15dcA2EA2bDf24163E8f2781B30C43A2ef',
-                    gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
+                    gauge: '0x08380a4999Be1a958E2abbA07968d703C7A3027C',
                 },
                 allowTradingEth: true,
-                hasNoGauge: true
+                gaugeVersion: 4,
             },
             {
-                dataIndex: 45,
+                dataIndex: 48,
                 id: 'teth',
                 name: 'teth',
-                referenceAsset: REFERENCE_ASSETS.CRYPTO,
+                referenceAsset: REFERENCE_ASSETS.T,
                 cryptoPool: true,
                 isPlainCryptoPool: true,
                 lpTokenInfo: {
@@ -1515,9 +1515,9 @@ module.exports = [{
                 addresses: {
                     swap: '0x752eBeb79963cf0732E9c0fec72a49FD1DEfAEAC',
                     lpToken: '0xCb08717451aaE9EF950a2524E33B6DCaBA60147B',
-                    gauge: '0x7E1444BA99dcdFfE8fBdb42C02F0005D14f13BE1',
+                    gauge: '0x6070fBD4E608ee5391189E7205d70cc4A274c017',
                 },
                 allowTradingEth: true,
-                hasNoGauge: true
+                gaugeVersion: 4,
             },
           ];

@@ -21,17 +21,22 @@ const getAavePoolRewardsInfo = memoize(async (gaugesRewardData, CUSTOM_LOGIC_REW
   const { [coins.stkaave.coingeckoId]: stkaavePrice } = await getAssetsPrices([coins.stkaave.coingeckoId]);
 
   const aaveGaugesRewardData = gaugesRewardData.filter(({ rewardContract }) => CUSTOM_LOGIC_REWARD_CONTRACTS.includes(rewardContract));
-
   const poolTokenBalances = await multiCall(flattenArray(aaveGaugesRewardData.map(({ address }) => {
-    const pool = pools.find(({ addresses: { gauge: gaugeAddress } }) => gaugeAddress.toLowerCase() === address.toLowerCase());
 
-    return pool.coins.map(({ address, decimals }, i) => ({
-      address: pool.addresses.swap,
-      abi: AAVE_SWAP_PARTIAL_ABI,
-      methodName: 'balances',
-      params: [i],
-      metaData: { coinAddress: address, decimals, poolId: pool.id },
-    }));
+
+    //previous line was throwing is a pool didn't have a gauge, needs refactoring
+    for (var i = 0; i < pools.length; i++) {
+      if (pools[i].addresses.gauge && pools[i].addresses.gauge.toLowerCase()  === address.toLowerCase()) {
+        let pool = pools[i]
+        return pool.coins.map(({ address, decimals }, i) => ({
+          address: pool.addresses.swap,
+          abi: AAVE_SWAP_PARTIAL_ABI,
+          methodName: 'balances',
+          params: [i],
+          metaData: { coinAddress: address, decimals, poolId: pool.id },
+        }));
+      }
+    }
   })));
 
   const tokenBalancesPerPool = groupBy(poolTokenBalances, 'metaData.poolId');
