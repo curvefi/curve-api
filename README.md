@@ -2,6 +2,8 @@
 
 This API is used by various services to serve data. It is a public API intended for all those seeking to integrate Curve data onto their own projects.
 
+## [Status / Uptime monitoring](https://statuspage.freshping.io/59335-CurveAPI)
+
 ## [Changelog](https://github.com/curvefi/curve-api/blob/main/CHANGELOG.md)
 
 ## Public REST API Endpoints
