@@ -652,6 +652,20 @@ export default fn(async () => {
         gauge: '0x1B3E14157ED33F60668f2103bCd5Db39a1573E5B',
         type: 'crypto',
       },
+      "spelleth": {
+        swap: '0x98638FAcf9a3865cd033F36548713183f6996122',
+        swap_token: '0x8282BD15dcA2EA2bDf24163E8f2781B30C43A2ef',
+        name: 'spelleth',
+        gauge: '0x08380a4999Be1a958E2abbA07968d703C7A3027C',
+        type: 'crypto',
+      },
+      "teth": {
+        swap: '0x752eBeb79963cf0732E9c0fec72a49FD1DEfAEAC',
+        swap_token: '0xCb08717451aaE9EF950a2524E33B6DCaBA60147B',
+        name: 'teth',
+        gauge: '0x6070fBD4E608ee5391189E7205d70cc4A274c017',
+        type: 'crypto',
+      },
     }
 
     // get pool addresses
