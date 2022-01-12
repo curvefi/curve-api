@@ -14,14 +14,24 @@ const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
 
 export default fn(async (query) => {
-    const version = Number(query.version) === 2 ? 2 : 1;
+    const version = (
+      query.version === 'crypto' ? 'crypto' :
+      Number(query.version) === 2 ? 2 :
+      1
+    );
 
     let registryAddress = await getFactoryRegistry()
     let multicallAddress = await getMultiCall()
   	let registry = new web3.eth.Contract(registryAbi, registryAddress);
   	let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
 
-    let res = await (await fetch(`${BASE_API_DOMAIN}/api/${version === 1 ? 'getFactoryPools' : 'getFactoryV2Pools'}`)).json()
+    const factoryPoolsApiEndpoint = (
+      version === 1 ? 'getFactoryPools' :
+      version === 2 ? 'getFactoryV2Pools' :
+      version === 'crypto' ? 'getFactoryCryptoPools/ethereum' :
+      undefined
+    );
+    let res = await (await fetch(`${BASE_API_DOMAIN}/api/${factoryPoolsApiEndpoint}`)).json()
 
     let poolDetails = [];
     let totalVolume = 0
