@@ -1,13 +1,14 @@
 import axios from 'axios';
 import Web3 from 'web3';
 import BigNumber from 'big-number';
+import WEB3_CONSTANTS from 'constants/Web3';
 import { fn } from '../../utils/api';
 import { getFeeDistributor } from '../../utils/getters';
 import { getThursdayUTCTimestamp } from '../../utils/helpers';
 import distributorAbi from '../../constants/abis/distributor.json';
 import tripoolSwapAbi from '../../constants/abis/tripool_swap.json';
 
-const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
+const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 
 export default fn(async () => {

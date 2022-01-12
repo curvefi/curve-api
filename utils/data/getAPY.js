@@ -5,8 +5,9 @@ import getPoolUsdFigure from 'utils/data/getPoolUsdFigure';
 import pools, { poolIds } from 'constants/pools';
 import { arrayToHashmap } from 'utils/Array';
 import Web3 from 'web3';
+import WEB3_CONSTANTS from 'constants/Web3';
 
-const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
+const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 const initialVolumesValues = arrayToHashmap(pools.map(({ id }) => [id, [-1, -1]]));
 

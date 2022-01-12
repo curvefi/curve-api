@@ -7,9 +7,10 @@ import getAssetsPrices from 'utils/data/assets-prices';
 import getPoolUsdFigure from 'utils/data/getPoolUsdFigure';
 import pools, { poolGauges } from 'constants/pools';
 import Web3 from 'web3';
+import WEB3_CONSTANTS from 'constants/Web3';
 import Multicall from 'constants/abis/multicall.json';
 
-const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
+const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 const MulticallContract = new web3.eth.Contract(Multicall, '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441');
 
 const getCRVAPY = memoize(async (userAddress) => {

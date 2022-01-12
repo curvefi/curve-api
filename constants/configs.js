@@ -8,13 +8,14 @@ import {
   getAvalancheFactoryRegistry,
   getAvalancheMulticall
 } from 'utils/getters';
+import WEB3_CONSTANTS from 'constants/Web3';
 
 const configs = {
   ethereum: {
     nativeCurrencySymbol: 'ETH',
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'ethereum',
-    rpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`,
+    rpcUrl: WEB3_CONSTANTS.RPC_URL,
     getFactoryRegistryAddress: async () => '0xb9fc157394af804a3578134a6585c0dc9cc990d4',
     factoryImplementationAddressMap: new Map([
       ['0x6523Ac15EC152Cb70a334230F6c5d62C5Bd963f1'.toLowerCase(), 'plain2basic'],
