@@ -39,6 +39,7 @@ const configs = {
       ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
     ]),
+    getFactoryCryptoRegistryAddress: async () => '0x8f4eF8c623C33CDB6A57c19aeCb87e161Fa7691f',
   },
   polygon: {
     nativeCurrencySymbol: 'MATIC',
