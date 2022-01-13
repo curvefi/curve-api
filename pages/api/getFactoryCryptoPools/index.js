@@ -99,10 +99,46 @@ export default fn(async ({ blockchainId }) => {
       methodName: 'pool_implementation', // address
       metaData: { poolId: id, type: 'implementationAddress' },
       ...networkSettingsParam,
+    }, {
+      contract: registry,
+      methodName: 'get_token', // address
+      params: [address],
+      metaData: { poolId: id, type: 'lpToken' },
+      ...networkSettingsParam,
     }];
   })));
 
-  const allCoinAddresses = poolData.reduce((accu, { data, metaData: { poolId, type } }) => {
+  const lpTokensWithMetadata = poolData.filter(({ metaData }) => metaData.type === 'lpToken');
+  const lpTokenData = await multiCall(flattenArray(lpTokensWithMetadata.map(({
+    data: address,
+    metaData,
+  }, id) => {
+    const lpTokenContract = new web3.eth.Contract(erc20Abi, address);
+
+    return [{
+      contract: lpTokenContract,
+      methodName: 'name',
+      metaData: { poolId: metaData.poolId, type: 'name' },
+      ...networkSettingsParam,
+    }, {
+      contract: lpTokenContract,
+      methodName: 'symbol',
+      metaData: { poolId: metaData.poolId, type: 'symbol' },
+      ...networkSettingsParam,
+    }, {
+      contract: lpTokenContract,
+      methodName: 'totalSupply',
+      metaData: { poolId: metaData.poolId, type: 'totalSupply' },
+      ...networkSettingsParam,
+    }];
+  })));
+
+  const augmentedPoolData = [
+    ...poolData,
+    ...lpTokenData,
+  ];
+
+  const allCoinAddresses = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
     if (type === 'coinsAddresses') {
       const poolCoins = data.filter((address) => address !== '0x0000000000000000000000000000000000000000');
       return accu.concat(poolCoins.map((address) => ({ poolId, address })));
@@ -120,7 +156,7 @@ export default fn(async ({ blockchainId }) => {
 
     const poolAddress = poolAddresses[poolId];
     const poolContract = new web3.eth.Contract(POOL_BALANCE_ABI, poolAddress);
-    const coinIndex = poolData.find(({ metaData }) => (
+    const coinIndex = augmentedPoolData.find(({ metaData }) => (
       metaData.type === 'coinsAddresses' &&
       metaData.poolId === poolId
     )).data.indexOf(address);
@@ -179,7 +215,7 @@ export default fn(async ({ blockchainId }) => {
   }, {});
 
   const emptyData = poolIds.map((id) => ({ id: `factory-crypto-${id}` }));
-  const mergedPoolData = poolData.reduce((accu, { data, metaData: { poolId, type } }) => {
+  const mergedPoolData = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
     const poolInfo = accu[poolId];
 
     // eslint-disable-next-line no-param-reassign
