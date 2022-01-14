@@ -103,12 +103,12 @@ export default fn(async ({ blockchainId }) => {
       contract: registry,
       methodName: 'get_token', // address
       params: [address],
-      metaData: { poolId: id, type: 'lpToken' },
+      metaData: { poolId: id, type: 'lpTokenAddress' },
       ...networkSettingsParam,
     }];
   })));
 
-  const lpTokensWithMetadata = poolData.filter(({ metaData }) => metaData.type === 'lpToken');
+  const lpTokensWithMetadata = poolData.filter(({ metaData }) => metaData.type === 'lpTokenAddress');
   const lpTokenData = await multiCall(flattenArray(lpTokensWithMetadata.map(({
     data: address,
     metaData,
