@@ -667,6 +667,14 @@ export default fn(async () => {
         gauge: '0x6070fBD4E608ee5391189E7205d70cc4A274c017',
         type: 'crypto',
       },
+      "f-fei": {
+        swap: '0x06cb22615BA53E60D67Bf6C341a0fD5E718E1655',
+        swap_token: '0x06cb22615BA53E60D67Bf6C341a0fD5E718E1655',
+        name: 'f-fei',
+        gauge: '0xdC69D4cB5b86388Fff0b51885677e258883534ae',
+        type: 'stable',
+        factory: true,
+      },
     }
 
     // get pool addresses
