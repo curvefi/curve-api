@@ -1,10 +1,11 @@
 import Web3 from 'web3';
+import WEB3_CONSTANTS from 'constants/Web3';
 import { fn } from '../../utils/api';
 import { getRegistry, getMultiCall } from '../../utils/getters';
 import registryAbi from '../../constants/abis/factory_registry.json';
 import multicallAbi from '../../constants/abis/multicall.json';
 
-const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
+const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 
 export default fn(async () => {

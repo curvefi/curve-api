@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Web3 from 'web3';
+import WEB3_CONSTANTS from 'constants/Web3';
 import { fn } from '../../utils/api';
 import aggregatorInterfaceABI from '../../constants/abis/aggregator.json';
 import registryAbi from '../../constants/abis/registry-v1.1.json';
@@ -7,7 +8,7 @@ import multicallAbi from '../../constants/abis/multicall.json';
 import { getFactoryRegistry, getMultiCall, getRegistry } from '../../utils/getters';
 import erc20Abi from '../../constants/abis/erc20.json';
 
-const web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`);
+const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 const BASE_API_DOMAIN = 'https://api.curve.fi';
 
 export default fn(async () => {
@@ -45,7 +46,7 @@ export default fn(async () => {
     '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0', //matic shouldn't be there
   ]
 
-  
+
 
   for (var i = 0; i < filterList.length; i++) {
     fullList = fullList.filter((value)=>value != filterList[i]);
