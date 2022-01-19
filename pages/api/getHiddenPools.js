@@ -17,6 +17,7 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-46', //non pegged
     'factory-v2-54', //duplicate
     'factory-v2-65', //non pegged
+    'factory-crypto-0', //price borked
   ],
   fantom: [
     'factory-v2-2', // Exact duplicate of another facto pool, with 0 liquidity
