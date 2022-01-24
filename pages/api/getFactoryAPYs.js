@@ -153,7 +153,8 @@ export default fn(async (query) => {
 
           let vPrice = vPriceOldFetch
           let vPriceNew = vPriceFetch
-          let apy = (vPriceNew - vPrice) / vPrice * 100 * 365
+          const rate = (vPriceNew - vPrice) / vPrice;
+          const apy = (((1 + rate) ** 365) - 1) * 100;
           let apyFormatted = `${apy.toFixed(2)}%`
           totalVolume += volume
           let p = {
