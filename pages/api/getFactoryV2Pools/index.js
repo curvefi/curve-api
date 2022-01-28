@@ -8,6 +8,7 @@ import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import getTokensPrices from 'utils/data/tokens-prices';
 import getAssetsPrices from 'utils/data/assets-prices';
 import getFactoryV2GaugeRewards from 'utils/data/getFactoryV2GaugeRewards';
+import getFactoryV2SidechainGaugeRewards from 'utils/data/getFactoryV2SidechainGaugeRewards';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
 import getGauges from 'pages/api/getGauges';
 import { IS_DEV } from 'constants/AppConstants';
@@ -48,7 +49,39 @@ const getEthereumOnlyData = async () => {
     gaugeRewards,
     factoryGaugesPoolAddressesAndAssetPricesMap,
   };
-}
+};
+
+const getSidechainOnlyData = async (blockchainId) => {
+  const [
+    { gauges: gaugesData },
+    gaugeRewards,
+  ] = await Promise.all([
+    getGauges.straightCall(),
+    getFactoryV2SidechainGaugeRewards(blockchainId),
+  ]);
+
+  const gaugesDataArray = Array.from(Object.values(gaugesData));
+  const factoryGaugesPoolAddressesAndCoingeckoIdMap = arrayToHashmap(
+    gaugesDataArray
+      .filter(({ factory }) => factory === true)
+      .map(({ swap, type: coingeckoId }) => [swap, coingeckoId])
+    );
+
+  const gaugesAssetPrices = await getAssetsPrices(Array.from(Object.values(factoryGaugesPoolAddressesAndCoingeckoIdMap)));
+  const factoryGaugesPoolAddressesAndAssetPricesMap = arrayToHashmap(
+    Array.from(Object.entries(factoryGaugesPoolAddressesAndCoingeckoIdMap))
+      .map(([address, coingeckoId], i) => [
+        address.toLowerCase(),
+        gaugesAssetPrices[coingeckoId]
+      ])
+  );
+
+  return {
+    gaugesDataArray,
+    gaugeRewards,
+    factoryGaugesPoolAddressesAndAssetPricesMap,
+  };
+};
 
 export default fn(async ({ blockchainId }) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
@@ -107,6 +140,10 @@ export default fn(async ({ blockchainId }) => {
 
   const ethereumOnlyData = blockchainId === 'ethereum' ?
     await getEthereumOnlyData() :
+    undefined;
+
+  const sidechainOnlyData = blockchainId !== 'ethereum' ?
+    await getSidechainOnlyData(blockchainId) :
     undefined;
 
   const assetTypePricesMapPromise = new Promise(async (resolve) => {
@@ -358,7 +395,15 @@ export default fn(async ({ blockchainId }) => {
     const gaugeAddress = typeof ethereumOnlyData !== 'undefined' ?
       ethereumOnlyData.gaugesDataArray.find(({ swap }) => swap.toLowerCase() === poolInfo.address.toLowerCase())?.gauge?.toLowerCase() :
       undefined;
-    const gaugeRewardsInfo = gaugeAddress ? ethereumOnlyData.gaugeRewards[gaugeAddress] : undefined;
+    const sidechainGaugeAddress = typeof sidechainOnlyData !== 'undefined' ?
+      sidechainOnlyData.gaugesDataArray.find(({ sideSwap }) => sideSwap?.toLowerCase() === poolInfo.address.toLowerCase())?.sideGauge?.toLowerCase() :
+      undefined;
+
+    const gaugeRewardsInfo = (
+      gaugeAddress ? ethereumOnlyData.gaugeRewards[gaugeAddress] :
+      sidechainGaugeAddress ? sidechainOnlyData.gaugeRewards[sidechainGaugeAddress] :
+      undefined
+    );
 
     return {
       ...poolInfo,
@@ -366,8 +411,15 @@ export default fn(async ({ blockchainId }) => {
       assetTypeName,
       coins,
       usdTotal,
-      gaugeAddress,
+      gaugeAddress: gaugeAddress || sidechainGaugeAddress,
       gaugeRewards: gaugeRewardsInfo,
+      sidechainOnlyGaugeInfo: (
+        typeof sidechainOnlyData?.gaugesData !== 'undefined' ? {
+          sideSwap: sidechainOnlyData.gaugesData[`${blockchainId}-${poolInfo.id}`]?.sideSwap,
+          sideGauge: sidechainOnlyData.gaugesData[`${blockchainId}-${poolInfo.id}`]?.sideGauge,
+          sideStreamer: sidechainOnlyData.gaugesData[`${blockchainId}-${poolInfo.id}`]?.sideStreamer,
+        } : undefined
+      ),
     };
   });
 
