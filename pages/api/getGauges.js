@@ -531,6 +531,17 @@ export default fn(async () => {
         type: 'crypto',
         side_chain: true
       },
+      "avalanche-factory-v2-30": {
+        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        name: 'avalanche-factory-v2-30',
+        sideSwap: '0x3a43A5851A3e3E0e25A3c1089670269786be1577', // Swap on the sidechain
+        sideGauge: '0xA4106e1206d313a86051c6B5bc475181a81Dbc0f', // Gauge on the sidechain
+        sideStreamer: '0xa465A135399Fc49bC0B51acD023Cde0aF160A53f', // Streamer on the sidechain
+        type: 'stable',
+        side_chain: true,
+        factory: true,
+      },
       "harmony-3pool": {
         swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
         swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
@@ -681,9 +692,11 @@ export default fn(async () => {
     let calls = [];
 
     Object.keys(gauges).forEach(function(key) {
-        calls.push([gaugeControllerAddress, gaugeController.methods.get_gauge_weight(gauges[key].gauge).encodeABI()]);
-        calls.push([gaugeControllerAddress, gaugeController.methods.gauge_types(gauges[key].gauge).encodeABI()]);
-        calls.push([gaugeControllerAddress, gaugeController.methods.gauge_relative_weight(gauges[key].gauge).encodeABI()]);
+      if (gauges[key].gauge) {
+          calls.push([gaugeControllerAddress, gaugeController.methods.get_gauge_weight(gauges[key].gauge).encodeABI()]);
+          calls.push([gaugeControllerAddress, gaugeController.methods.gauge_types(gauges[key].gauge).encodeABI()]);
+          calls.push([gaugeControllerAddress, gaugeController.methods.gauge_relative_weight(gauges[key].gauge).encodeABI()]);
+        }
     });
 
 
