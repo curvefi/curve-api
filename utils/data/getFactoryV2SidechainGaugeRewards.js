@@ -40,6 +40,8 @@ export default memoize(async (blockchainId) => {
     typeof sideStreamer !== 'undefined'
   ));
 
+  if (sidechainOnlyFactoryGauges.length === 0) return {};
+
   const gaugesData = await multiCall(flattenArray(sidechainOnlyFactoryGauges.map(({
     name,
     sideStreamer,
