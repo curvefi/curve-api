@@ -123,7 +123,7 @@ export default fn(async ({ blockchainId }) => {
   const networkSettingsParam = (
     typeof multicallAddress !== 'undefined' ?
       { networkSettings: { web3, multicallAddress } } :
-      {}
+      undefined
   );
 
   const poolCount = Number(await registry.methods.pool_count().call());
