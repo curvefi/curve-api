@@ -16,7 +16,7 @@ export default memoize(async (factoryGaugesAddresses) => {
   if (typeof factoryGaugesAddresses === 'undefined') {
     const { gauges } = await getGauges.straightCall();
 
-    const factoryGauges = Array.from(Object.values(gauges)).filter(({ factory }) => factory);
+    const factoryGauges = Array.from(Object.values(gauges)).filter(({ factory, side_chain }) => factory && !side_chain);
     factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge); // eslint-disable-line no-param-reassign
   }
 
