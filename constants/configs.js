@@ -69,7 +69,8 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0xE7a24EF0C5e95Ffb0f6684b813A78F2a3AD7D171', '0x19793B454D3AfC7b454F206Ffe95aDE26cA6912c'], // meta usd
       ['0xf8a57c1d3b9629b77b6726a042ca48990A84Fb49', '0xffbACcE0CC7C19d46132f1258FC16CF6871D153c'], // meta btc
-    ])
+    ]),
+    approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
   },
   fantom: {
     nativeCurrencySymbol: 'FTM',
@@ -103,7 +104,8 @@ const configs = {
       ['0x27e611fd27b276acbd5ffd632e5eaebec9761e40', '0x8866414733F22295b7563f9C5299715D2D76CAf4'], // meta usd
       ['0x5B5CFE992AdAC0C9D48E05854B2d91C73a003858', '0x2db0E83599a91b508Ac268a6197b8B14F5e72840'], // meta btc
       ['0x0fa949783947Bf6c1b171DB13AEACBB488845B3f', '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F'], // meta usd2
-    ])
+    ]),
+    approxBlocksPerDay: 95000, // https://ftmscan.com/chart/blocks
   },
   arbitrum: {
     nativeCurrencySymbol: 'ETH',

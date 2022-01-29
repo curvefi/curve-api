@@ -2,6 +2,7 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 import { IS_DEV } from 'constants/AppConstants';
 
+import configs from '../../constants/configs';
 import { fn } from '../../utils/api';
 import { getfantomFactoryRegistry, getfantomMulticall } from '../../utils/getters';
 import registryAbi from '../../constants/abis/factory_registry.json';
@@ -14,6 +15,7 @@ const web3 = new Web3(`https://rpc.ftm.tools/`);
 const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
 
 export default fn(async (query) => {
+    const config = configs.fantom;
     const version = 2
 
     let registryAddress = await getfantomFactoryRegistry()
@@ -30,7 +32,7 @@ export default fn(async (query) => {
       res.data.poolData.map(async (pool, index) => {
 
           let poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
-          let DAY_BLOCKS = 6550
+          let DAY_BLOCKS = config.approxBlocksPerDay;
           let latest = await web3.eth.getBlockNumber()
 
           let vPriceOldFetch;
