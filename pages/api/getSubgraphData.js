@@ -63,6 +63,52 @@ export default fn(async () => {
       poolList[i].rawVolume = rollingRawVolume
 
       totalVolume += parseFloat(rollingDaySummedVolume)
+
+
+
+      const APY_QUERY = `
+     {
+       dailyPoolSnapshots(first: 1000,
+                        orderBy: timestamp,
+                        orderDirection: desc,
+                        where:
+                        {pool: "${poolList[i].address.toLowerCase()}"})
+       {
+         baseApr
+         virtualPrice
+         timestamp
+       }
+     }
+     `;
+
+       const resAPY = await fetch(GRAPH_ENDPOINT, {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({ query: APY_QUERY }),
+       });
+
+       let dataAPY = await resAPY.json();
+       dataAPY = dataAPY.data;
+       const snapshots = dataAPY.dailyPoolSnapshots.map((a) => ({
+         baseApr: +a.baseApr,
+         virtualPrice: +a.virtualPrice,
+         timestamp: a.timestamp,
+       }));
+
+       let latestDailyApy = 0
+       let latestWeeklyApy = 0
+       if (snapshots.length >= 2) {
+         latestDailyApy = ((snapshots[0].baseApr + 1) ** 365 - 1) * 100;
+       }
+       if (snapshots.length > 6) {
+            const latestWeeklyRate =
+            (snapshots[0].virtualPrice - snapshots[6].virtualPrice) /
+            snapshots[0].virtualPrice;
+            latestWeeklyApy = ((latestWeeklyRate + 1) ** 52 - 1) * 100;
+        }
+       poolList[i].latestDailyApy = latestDailyApy
+       poolList[i].latestWeeklyApy = latestWeeklyApy
+
   }
 
   return { poolList, totalVolume }
