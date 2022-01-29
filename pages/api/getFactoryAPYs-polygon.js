@@ -2,6 +2,7 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 import { IS_DEV } from 'constants/AppConstants';
 
+import configs from '../../constants/configs';
 import { fn } from '../../utils/api';
 import { getPolygonFactoryRegistry, getPolygonMulticall } from '../../utils/getters';
 import registryAbi from '../../constants/abis/factory_registry.json';
@@ -14,6 +15,7 @@ const web3 = new Web3(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.AL
 const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
 
 export default fn(async (query) => {
+  const config = configs.polygon;
     const version = 2
 
     let registryAddress = await getPolygonFactoryRegistry()
@@ -25,7 +27,7 @@ export default fn(async (query) => {
     let totalVolume = 0
 
     const latest = await web3.eth.getBlockNumber()
-    const DAY_BLOCKS_24H = 6550
+    const DAY_BLOCKS_24H = config.approxBlocksPerDay;
     let DAY_BLOCKS = 1800
 
     await Promise.all(
