@@ -686,6 +686,22 @@ export default fn(async () => {
         type: 'stable',
         factory: true,
       },
+      "f-fxseth": {
+        swap: '0x941Eb6F616114e4Ecaa85377945EA306002612FE',
+        swap_token: '0x90244F43D548a4f8dFecfAD91a193465B1fad6F7',
+        name: 'f-fxseth',
+        gauge: '0x009aCD89535DAbC270C93F9b39D3232105Fef453',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-badgerwbtc": {
+        swap: '0x50f3752289e1456BfA505afd37B241bca23e685d',
+        swap_token: '0x137469B55D1f15651BA46A89D0588e97dD0B6562',
+        name: 'f-badgerwbtc',
+        gauge: '0x02246583870b36Be0fEf2819E1d3A771d6C07546',
+        type: 'crypto',
+        factory: true,
+      },
     }
 
     // get pool addresses
