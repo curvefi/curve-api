@@ -713,7 +713,7 @@ export default fn(async () => {
       "f-ageuribeur": {
         swap: '0xB37D6c07482Bc11cd28a1f11f1a6ad7b66Dec933',
         swap_token: '0xB37D6c07482Bc11cd28a1f11f1a6ad7b66Dec933',
-        name: 'ageuribeur',
+        name: 'f-ageuribeur',
         gauge: '0x38039dD47636154273b287F74C432Cac83Da97e2',
         type: 'stable',
         factory: true,
