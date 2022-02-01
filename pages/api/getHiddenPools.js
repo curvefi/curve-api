@@ -49,7 +49,6 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-98', // duplicate and empty
     'factory-v2-99', // duplicate and empty
     'factory-v2-106', // duplicate and empty
-    'factory-v2-107', // duplicate and empty
   ],
 };
 
