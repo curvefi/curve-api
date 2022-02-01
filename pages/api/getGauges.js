@@ -702,6 +702,22 @@ export default fn(async () => {
         type: 'crypto',
         factory: true,
       },
+      "f-yfieth": {
+        swap: '0xC26b89A667578ec7b3f11b2F98d6Fd15C07C54ba',
+        swap_token: '0x29059568bb40344487d62f7450e78b8e6c74e0e5',
+        name: 'f-yfieth',
+        gauge: '0x05255C5BD33672b9FEA4129C13274D1E6193312d',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-ageuribeur": {
+        swap: '0xB37D6c07482Bc11cd28a1f11f1a6ad7b66Dec933',
+        swap_token: '0xB37D6c07482Bc11cd28a1f11f1a6ad7b66Dec933',
+        name: 'ageuribeur',
+        gauge: '0x38039dD47636154273b287F74C432Cac83Da97e2',
+        type: 'stable',
+        factory: true,
+      },
     }
 
     // get pool addresses
