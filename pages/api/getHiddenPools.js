@@ -32,7 +32,6 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-5', //empty non pegged pool?
     'factory-v2-6', //empty non pegged pool?
     'factory-v2-25', //wrong implementation
-    'factory-v2-42', //empty/borked
   ],
   polygon: [
     'factory-v2-0', // Test pools not meant to be useful
@@ -51,6 +50,9 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-99', // duplicate and empty
     'factory-v2-106', // duplicate and empty
   ],
+  avalanche: [
+    'factory-v2-42', //empty/borked
+  ]
 };
 
 export default fn(async () => HIDDEN_POOLS_IDS);
