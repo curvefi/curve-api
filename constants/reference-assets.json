@@ -6,5 +6,8 @@
     "LINK": "link",
     "SPELL": "spell",
     "T": "t",
+    "MATIC": "matic",
+    "FTM": "ftm",
+    "AVAX": "avax",
     "SNX": "snx"
 }

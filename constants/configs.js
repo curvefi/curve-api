@@ -15,6 +15,8 @@ const configs = {
     nativeCurrencySymbol: 'ETH',
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'ethereum',
+    nativeAssetId: 'eth', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: WEB3_CONSTANTS.RPC_URL,
     getFactoryRegistryAddress: async () => '0xb9fc157394af804a3578134a6585c0dc9cc990d4',
     factoryImplementationAddressMap: new Map([
@@ -45,6 +47,8 @@ const configs = {
     nativeCurrencySymbol: 'MATIC',
     nativeCurrencyCoingeckoId: 'matic-network',
     platformCoingeckoId: 'polygon-pos',
+    nativeAssetId: 'MATIC', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wmatic',
     rpcUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_POLYGON}`,
     multicallAddress: getPolygonMulticall(),
     getFactoryRegistryAddress: async () => getPolygonFactoryRegistry(),
@@ -76,6 +80,8 @@ const configs = {
     nativeCurrencySymbol: 'FTM',
     nativeCurrencyCoingeckoId: 'fantom',
     platformCoingeckoId: 'fantom',
+    nativeAssetId: 'ftm', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wftm',
     rpcUrl: 'https://rpc.ftm.tools/',
     multicallAddress: getfantomMulticall(),
     getFactoryRegistryAddress: async () => getfantomFactoryRegistry(),
@@ -111,6 +117,8 @@ const configs = {
     nativeCurrencySymbol: 'ETH',
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'ethereum',
+    nativeAssetId: 'eth', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'weth',
     rpcUrl: `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_ARBITRUM}`,
     multicallAddress: getArbitrumMulticall(),
     getFactoryRegistryAddress: async () => getArbitrumFactoryRegistry(),
@@ -142,6 +150,8 @@ const configs = {
     nativeCurrencyCoingeckoId: 'avalanche-2',
     platformCoingeckoId: 'avalanche',
     rpcUrl: `https://api.avax.network/ext/bc/C/rpc`,
+    nativeAssetId: 'avax', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wavax',
     multicallAddress: getAvalancheMulticall(),
     getFactoryRegistryAddress: async () => getAvalancheFactoryRegistry(),
     factoryImplementationAddressMap: new Map([
