@@ -12,6 +12,7 @@ import getMainRegistryPools from 'pages/api/getMainRegistryPools';
 import getGauges from 'pages/api/getGauges';
 import { IS_DEV } from 'constants/AppConstants';
 import configs from 'constants/configs';
+import allCoins from 'constants/coins';
 
 const POOL_BALANCE_ABI = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "uint256" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
 
@@ -46,6 +47,7 @@ export default fn(async ({ blockchainId }) => {
   const {
     nativeCurrencySymbol,
     nativeCurrencyCoingeckoId,
+    nativeAssetErc20WrapperId,
     platformCoingeckoId,
     rpcUrl,
     factoryImplementationAddressMap: implementationAddressMap,
@@ -151,7 +153,8 @@ export default fn(async ({ blockchainId }) => {
     await getTokensPrices(allCoinAddresses.map(({ address }) => address), platformCoingeckoId);
 
   let coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
-    const isNativeEth = address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+    // In crypto facto pools, native eth is represented as weth
+    const isNativeEth = address.toLowerCase() === allCoins[config.nativeAssetErc20WrapperId].address.toLowerCase();
     const coinContract = isNativeEth ? undefined : new web3.eth.Contract(erc20Abi, address);
 
     const poolAddress = poolAddresses[poolId];

@@ -699,4 +699,30 @@ module.exports = {
         decimals: 18,
         address: '0xCdF7028ceAB81fA0C6971208e83fa7872994beE5',
     },
+
+    // Sidechain coins
+    wmatic: {
+        id: 'wmatic',
+        type: REFERENCE_ASSETS.MATIC,
+        symbol: 'WMATIC',
+        decimals: 18,
+        address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+        coingeckoId: 'wmatic',
+    },
+    wftm: {
+        id: 'wftm',
+        type: REFERENCE_ASSETS.FTM,
+        symbol: 'WFTM',
+        decimals: 18,
+        address: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
+        coingeckoId: 'wrapped-fantom',
+    },
+    wavax: {
+        id: 'wavax',
+        type: REFERENCE_ASSETS.AVAX,
+        symbol: 'WAVAX',
+        decimals: 18,
+        address: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
+        coingeckoId: 'wrapped-avax',
+    },
 };
