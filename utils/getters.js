@@ -76,6 +76,10 @@ const getFeeDistributor = async () => {
   return feeDistributor
 }
 
+const getOpMulticall = () => {
+  return '0x2DC0E2aa608532Da689e89e237dF582B783E552C'
+}
+
 
 
 export {
@@ -90,5 +94,6 @@ export {
   getFactoryRegistry,
   getFeeDistributor,
   getMultiCall,
-  getRegistry
+  getRegistry,
+  getOpMulticall
 };
