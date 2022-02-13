@@ -38,10 +38,8 @@ export default fn(async (query) => {
           let vPriceOldFetch;
           try {
             vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
-            //throws an error
           } catch (e) {
             vPriceOldFetch = 1 * (10 ** 18)
-            //DAY_BLOCKS = 1000; we'd usually lower the number of blocks checked here but we don't as the call above always returns an error for some reason
           }
           const testPool = pool.address
           const eventName = 'TokenExchangeUnderlying';
@@ -69,15 +67,11 @@ export default fn(async (query) => {
               toBlock: 'latest'
           })
 
-          // console.log(events, 'events')
           events.map((trade) => {
 
                 let t = trade.returnValues['tokens_bought'] / 10 ** decimals[trade.returnValues['bought_id']]
                 volume += t
 
-            // if (t > 1000000) {
-            //   console.log('$',t, trade.transactionHash)
-            // }
           })
 
 
@@ -88,16 +82,9 @@ export default fn(async (query) => {
                 toBlock: 'latest'
             })
 
-            // console.log(events2, 'events')
-
             events2.map((trade) => {
-
               let t = trade.returnValues[2] / 10 ** decimals[trade.returnValues[1]]
               volume += t
-
-              // if (t > 1000000) {
-              //   console.log('$',t, trade.transactionHash)
-              // }
             })
 
 
