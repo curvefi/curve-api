@@ -212,6 +212,8 @@ const configs = {
     // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
     //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
     // ])
+    approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
+
   },
 };
 export default configs;
