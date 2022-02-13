@@ -50,6 +50,24 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-98', // duplicate and empty
     'factory-v2-99', // duplicate and empty
     'factory-v2-106', // duplicate and empty
+    'factory-v2-113', // duplicate and empty
+    'factory-v2-118', // duplicate and empty
+    'factory-v2-119', // duplicate and empty
+    'factory-v2-120', // duplicate and empty
+    'factory-v2-121', // duplicate and empty
+    'factory-v2-122', // duplicate and empty
+    'factory-v2-123', // duplicate and empty
+    'factory-v2-124', // duplicate and empty
+    'factory-v2-125', // duplicate and empty
+    'factory-v2-126', // duplicate and empty
+    'factory-v2-127', // duplicate and empty
+    'factory-v2-128', // duplicate and empty
+    'factory-v2-129', // duplicate and empty
+    'factory-v2-130', // duplicate and empty
+    'factory-v2-131', // duplicate and empty
+    'factory-v2-132', // duplicate and empty
+    'factory-v2-134', // duplicate and empty
+    'factory-v2-136', // duplicate and empty
   ],
   avalanche: [
     'factory-v2-42', //empty/borked
