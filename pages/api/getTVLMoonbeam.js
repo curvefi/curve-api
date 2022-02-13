@@ -9,7 +9,7 @@ import multicallAbi from '../../constants/abis/multicall.json';
 import erc20Abi from '../../constants/abis/erc20.json';
 import aavePool from '../../constants/abis/pools/aave.json';
 
-const web3 = new Web3(`https://api.harmony.one`);
+const web3 = new Web3(`https://moonbeam.api.onfinality.io/public`);
 
 
 export default fn(async () => {
