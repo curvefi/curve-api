@@ -4,6 +4,8 @@ import gaugeRegistry from 'constants/abis/gauge-registry.json';
 import sideChainGauge from 'constants/abis/sidechain-gauge.json';
 
 import multicallAbi from 'constants/abis/multicall.json';
+import gaugeControllerAbi from 'constants/abis/gauge_controller.json';
+import factorypool3Abi from 'constants/abis/factory_swap.json';
 
 import erc20Abi from 'constants/abis/erc20.json';
 import { multiCall } from 'utils/Calls';
@@ -82,6 +84,10 @@ export default fn(async ({ blockchainId }) => {
 
     calls = []
     const gaugeContract =  new web3Side.eth.Contract(sideChainGauge, gaugeList[0]);
+
+    const gaugeControllerAddress = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB'
+    const gaugeController = new web3.eth.Contract(gaugeControllerAbi, gaugeControllerAddress);
+
     for (var i = 0; i < gaugeList.length; i++) {
       calls.push([gaugeList[i], gaugeContract.methods.lp_token().encodeABI()])
       calls.push([gaugeList[i], gaugeContract.methods.name().encodeABI()])
@@ -102,15 +108,30 @@ export default fn(async ({ blockchainId }) => {
       i += 1
       let working_supply = await web3.eth.abi.decodeParameter('uint256', aggGaugecalls[i])
 
+      let hasCrv = false
+      try {
+        await gaugeController.methods.gauge_types(gaugeList[gaugeN]).call()
+        hasCrv = true
+      } catch (e) {
+
+      }
+
+      let poolContract = new web3Side.eth.Contract(factorypool3Abi, lp_token)
+      let virtual_price = await poolContract.methods.get_virtual_price().call()
+
       let gaugeData = {
         'swap': lp_token,
         'swap_token': lp_token, //might not be okay to assume swap === lp token
         'gauge': gaugeList[gaugeN],
         name,
         symbol,
+        hasCrv,
         gauge_data: {
           working_supply,
           inflation_rate: 0
+        },
+        swap_data: {
+          virtual_price
         }
       }
       gauges.push(gaugeData)
