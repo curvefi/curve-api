@@ -126,6 +126,8 @@ export default fn(async ({ blockchainId }) => {
         name,
         symbol,
         hasCrv,
+        side_chain: true,
+        type: 'stable', //we will have a problem detecting this which is used by cur.vote or the voting app to calculate the $ value in the gauge
         gauge_data: {
           working_supply,
           inflation_rate: 0
