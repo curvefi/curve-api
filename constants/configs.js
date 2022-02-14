@@ -14,6 +14,7 @@ import WEB3_CONSTANTS from 'constants/Web3';
 const configs = {
   ethereum: {
     nativeCurrencySymbol: 'ETH',
+    chainId: 1,
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'ethereum',
     nativeAssetId: 'eth', // Coin id from the blockchain's coins config
@@ -79,6 +80,7 @@ const configs = {
   },
   fantom: {
     nativeCurrencySymbol: 'FTM',
+    chainId: 250,
     nativeCurrencyCoingeckoId: 'fantom',
     platformCoingeckoId: 'fantom',
     nativeAssetId: 'ftm', // Coin id from the blockchain's coins config
