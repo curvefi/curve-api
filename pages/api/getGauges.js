@@ -720,6 +720,11 @@ export default fn(async () => {
       },
     }
 
+    // at this stage we would take the data
+    // from the getFactoGauges and add it to the above object
+    // below would fetch the gauge controller data and complete the object
+    // we need to iterate through getFactoGauges and include the ones where hasCRV is true
+
     // get pool addresses
     let calls = [];
 
