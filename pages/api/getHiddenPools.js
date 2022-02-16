@@ -72,6 +72,7 @@ const HIDDEN_POOLS_IDS = {
   ],
   avalanche: [
     'factory-v2-42', //empty/borked
+    'factory-v2-47', //empty/borked
   ]
 };
 
