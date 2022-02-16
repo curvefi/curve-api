@@ -24,7 +24,7 @@ export default fn(async ( {blockchainId} ) => {
 
 
 
-  const GRAPH_ENDPOINT = "https://api.thegraph.com/subgraphs/name/convex-community/curve-factory-volume"
+  const GRAPH_ENDPOINT = config.graphEndpoint
   const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
   const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
   const poolListData = await (await fetch(`https://api.curve.fi/api/getPoolList/${blockchainId}`)).json()
