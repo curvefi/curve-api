@@ -2,21 +2,32 @@ import axios from 'axios';
 import Web3 from 'web3';
 import BigNumber from 'big-number';
 import WEB3_CONSTANTS from 'constants/Web3';
-import { fn } from '../../utils/api';
-import { getFeeDistributor } from '../../utils/getters';
-import { getThursdayUTCTimestamp } from '../../utils/helpers';
-import distributorAbi from '../../constants/abis/distributor.json';
-import tripoolSwapAbi from '../../constants/abis/tripool_swap.json';
+import { fn } from 'utils/api';
+import { getFeeDistributor } from 'utils/getters';
+import { getThursdayUTCTimestamp } from 'utils/helpers';
+import distributorAbi from 'constants/abis/distributor.json';
+import tripoolSwapAbi from 'constants/abis/tripool_swap.json';
+import configs from 'constants/configs';
 
-const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 
-export default fn(async () => {
+export default fn(async ( {blockchainId} ) => {
+
+  if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
+
+  const config = configs[blockchainId];
+  const web3 = new Web3(config.rpcUrl);
+
+  if (typeof config === 'undefined') {
+    throw new Error(`No factory data for blockchainId "${blockchainId}"`);
+  }
+
+
 
   const GRAPH_ENDPOINT = "https://api.thegraph.com/subgraphs/name/convex-community/curve-factory-volume"
   const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
   const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
-  const poolListData = await (await fetch(`https://api.curve.fi/api/getPoolList`)).json()
+  const poolListData = await (await fetch(`https://api.curve.fi/api/getPoolList/${blockchainId}`)).json()
   let poolList = poolListData.data.poolList
   let totalVolume = 0
 
