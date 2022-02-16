@@ -32,6 +32,7 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-5', //empty non pegged pool?
     'factory-v2-6', //empty non pegged pool?
     'factory-v2-18', //by team request
+    'factory-v2-14', //non pegged pool
     'factory-v2-25', //wrong implementation
   ],
   polygon: [
