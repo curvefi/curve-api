@@ -49,6 +49,7 @@ const configs = {
   },
   polygon: {
     nativeCurrencySymbol: 'MATIC',
+    chainId: 137,
     nativeCurrencyCoingeckoId: 'matic-network',
     platformCoingeckoId: 'polygon-pos',
     nativeAssetId: 'MATIC', // Coin id from the blockchain's coins config
@@ -121,6 +122,7 @@ const configs = {
   },
   arbitrum: {
     nativeCurrencySymbol: 'ETH',
+    chainId: 42161,
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'ethereum',
     nativeAssetId: 'eth', // Coin id from the blockchain's coins config
@@ -153,6 +155,7 @@ const configs = {
   },
   avalanche: {
     nativeCurrencySymbol: 'AVAX',
+    chainId: 43114,
     nativeCurrencyCoingeckoId: 'avalanche-2',
     platformCoingeckoId: 'avalanche',
     rpcUrl: `https://api.avax.network/ext/bc/C/rpc`,
@@ -186,6 +189,7 @@ const configs = {
   },
   optimism: {
     nativeCurrencySymbol: 'ETH',
+    chainId: 10,
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'optimistic-ethereum',
     nativeAssetId: 'eth', // Coin id from the blockchain's coins config
