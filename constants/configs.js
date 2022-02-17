@@ -117,7 +117,7 @@ const configs = {
       ['0x0fa949783947Bf6c1b171DB13AEACBB488845B3f', '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F'], // meta usd2
     ]),
     approxBlocksPerDay: 95000, // https://ftmscan.com/chart/blocks
-    graphEndpoint: "https://thegraph.com/hosted-service/subgraph/convex-community/volume-fantom"
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom"
   },
   arbitrum: {
     nativeCurrencySymbol: 'ETH',
@@ -182,7 +182,7 @@ const configs = {
       ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // meta usd
       ['0xC2b1DF84112619D190193E48148000e3990Bf627', '0x0f9cb53ebe405d49a0bbdbd291a65ff571bc83e1'], // meta btc
     ]),
-    graphEndpoint: "https://thegraph.com/hosted-service/subgraph/convex-community/volume-avalanche"
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche"
   },
   optimism: {
     nativeCurrencySymbol: 'ETH',
