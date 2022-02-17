@@ -13,7 +13,8 @@ import ADDRESS_GETTER_ABI from 'constants/abis/address_getter.json';
 import REGISTRY_ABI from 'constants/abis/registry.json';
 import multicallAbi from 'constants/abis/multicall.json';
 import configs from 'constants/configs';
-import allCoins from 'constants/coins';
+import { IS_DEV } from 'constants/AppConstants';
+const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
 
 
 
@@ -31,19 +32,17 @@ export default fn(async ({blockchainId}) => {
   }
 
 
-
   const multicallAddress = config.multicallAddress
   const multicall_contract = new web3.eth.Contract(multicallAbi, multicallAddress)
 
   const main_registry = await address_getter_contract.methods.get_address(0).call()
   const factory_registry = await address_getter_contract.methods.get_address(3).call()
-
-  const crypto_registry = (blockchainId === 'ethereum') ? await address_getter_contract.methods.get_address(5).call() : null
+  const crypto_registry = await address_getter_contract.methods.get_address(5).call()
   const crypto_factory_registry = (blockchainId === 'ethereum') ? await address_getter_contract.methods.get_address(6).call() : null
 
 
   let registries =
-  [main_registry, crypto_registry, factory_registry, crypto_factory_registry]
+  [main_registry, factory_registry, crypto_registry, crypto_factory_registry]
 
   registries = registries.filter(function(e){return e});
 

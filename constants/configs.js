@@ -20,6 +20,7 @@ const configs = {
     nativeAssetId: 'eth', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: WEB3_CONSTANTS.RPC_URL,
+    multicallAddress: '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441',
     getFactoryRegistryAddress: async () => '0xb9fc157394af804a3578134a6585c0dc9cc990d4',
     factoryImplementationAddressMap: new Map([
       ['0x6523Ac15EC152Cb70a334230F6c5d62C5Bd963f1'.toLowerCase(), 'plain2basic'],
@@ -44,6 +45,7 @@ const configs = {
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
     ]),
     getFactoryCryptoRegistryAddress: async () => '0xF18056Bbd320E96A48e3Fbf8bC061322531aac99',
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/curve-factory-volume"
   },
   polygon: {
     nativeCurrencySymbol: 'MATIC',
@@ -115,6 +117,7 @@ const configs = {
       ['0x0fa949783947Bf6c1b171DB13AEACBB488845B3f', '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F'], // meta usd2
     ]),
     approxBlocksPerDay: 95000, // https://ftmscan.com/chart/blocks
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom"
   },
   arbitrum: {
     nativeCurrencySymbol: 'ETH',
@@ -178,7 +181,8 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // meta usd
       ['0xC2b1DF84112619D190193E48148000e3990Bf627', '0x0f9cb53ebe405d49a0bbdbd291a65ff571bc83e1'], // meta btc
-    ])
+    ]),
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche"
   },
   optimism: {
     nativeCurrencySymbol: 'ETH',

@@ -8,6 +8,9 @@ import { getThursdayUTCTimestamp } from 'utils/helpers';
 import distributorAbi from 'constants/abis/distributor.json';
 import tripoolSwapAbi from 'constants/abis/tripool_swap.json';
 import configs from 'constants/configs';
+import { IS_DEV } from 'constants/AppConstants';
+const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
+
 
 
 
@@ -24,10 +27,10 @@ export default fn(async ( {blockchainId} ) => {
 
 
 
-  const GRAPH_ENDPOINT = "https://api.thegraph.com/subgraphs/name/convex-community/curve-factory-volume"
+  const GRAPH_ENDPOINT = config.graphEndpoint
   const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
   const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
-  const poolListData = await (await fetch(`https://api.curve.fi/api/getPoolList/${blockchainId}`)).json()
+  const poolListData = await (await fetch(`${BASE_API_DOMAIN}/api/getPoolList/${blockchainId}`)).json()
   let poolList = poolListData.data.poolList
   let totalVolume = 0
 
