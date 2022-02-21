@@ -55,6 +55,10 @@ export default fn(async ({ blockchainId }) => {
     multicallAddress,
   } = config;
 
+  if (typeof getFactoryCryptoRegistryAddress === 'undefined') {
+    throw new Error(`No crypto factory data for blockchainId "${blockchainId}"`);
+  }
+
   const registryAddress = await getFactoryCryptoRegistryAddress();
   const web3 = new Web3(rpcUrl);
   const registry = new web3.eth.Contract(factoryCryptoRegistryAbi, registryAddress);
@@ -106,6 +110,11 @@ export default fn(async ({ blockchainId }) => {
       methodName: 'get_token', // address
       params: [address],
       metaData: { poolId: id, type: 'lpTokenAddress' },
+      ...networkSettingsParam,
+    }, {
+      contract: poolContract,
+      methodName: 'price_oracle', // uint256
+      metaData: { poolId: id, type: 'priceOracle' },
       ...networkSettingsParam,
     }];
   })));
@@ -225,7 +234,11 @@ export default fn(async ({ blockchainId }) => {
     accu[poolId] = {
       ...poolInfo,
       address: poolAddresses[poolId],
-      [type]: data,
+      [type]: (
+        type === 'priceOracle' ?
+          (data / 1e18) :
+          data
+      ),
     };
 
     return accu;
@@ -239,11 +252,30 @@ export default fn(async ({ blockchainId }) => {
 
         return {
           ...mergedCoinData[key],
-          usdPrice: mergedCoinData[key]?.usdPrice || 0,
+          usdPrice: mergedCoinData[key]?.usdPrice || null,
         };
       });
 
-    const usdTotal = sum(coins.map(({ usdPrice, poolBalance, decimals }) => (
+    // The current logic is simple, and only allows filling in the blanks when
+    // a pool with 2 coins is missing a single's coin price. Let's improve it later
+    // if other situations where more is necessary arise.
+    const canFixCoinPricesThatNeedIt = coins.length === 2 && coins.filter(({ usdPrice }) => usdPrice === null);
+    const augmentedCoins = (
+      canFixCoinPricesThatNeedIt ? (
+        coins.map((coin, i) => (
+          coin.usdPrice === null ? {
+            ...coin,
+            usdPrice: (
+              i === 0 ?
+                (coins[1].usdPrice / poolInfo.priceOracle) :
+                (coins[0].usdPrice * poolInfo.priceOracle)
+            ),
+          } : coin
+        ))
+      ) : coins
+    );
+
+    const usdTotal = sum(augmentedCoins.map(({ usdPrice, poolBalance, decimals }) => (
       poolBalance / (10 ** decimals) * usdPrice
     )));
 
@@ -254,7 +286,7 @@ export default fn(async ({ blockchainId }) => {
 
     return {
       ...poolInfo,
-      coins,
+      coins: augmentedCoins,
       usdTotal,
       gaugeAddress,
       gaugeRewards: gaugeRewardsInfo,
