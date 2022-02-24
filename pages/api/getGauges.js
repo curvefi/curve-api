@@ -718,6 +718,46 @@ export default fn(async () => {
         type: 'stable',
         factory: true,
       },
+      "f-fei": {
+        swap: '0x06cb22615BA53E60D67Bf6C341a0fD5E718E1655',
+        swap_token: '0x06cb22615BA53E60D67Bf6C341a0fD5E718E1655',
+        name: 'f-fei',
+        gauge: '0xdC69D4cB5b86388Fff0b51885677e258883534ae',
+        type: 'stable',
+        factory: true,
+      },
+      "f-pwrd": {
+        swap: '0xbcb91e689114b9cc865ad7871845c95241df4105',
+        swap_token: '0xbcb91e689114b9cc865ad7871845c95241df4105',
+        name: 'f-pwrd',
+        gauge: '0xb07d00e0eE9b1b2eb9f1B483924155Af7AF0c8Fa',
+        type: 'stable',
+        factory: true,
+      },
+      "f-cadcusdc": {
+        swap: '0xE07BDe9Eb53DEFfa979daE36882014B758111a78',
+        swap_token: '0x1054Ff2ffA34c055a13DCD9E0b4c0cA5b3aecEB9',
+        name: 'f-cadcusdc',
+        gauge: '0xE786Df7076AFeECC3faCD841ED4AD20d0F04CF19',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-sdteth": {
+        swap: '0xfB8814D005C5f32874391e888da6eB2fE7a27902',
+        swap_token: '0x6359b6d3e327c497453d4376561ee276c6933323',
+        name: 'f-sdteth',
+        gauge: '0x60355587a8D4aa67c2E64060Ab36e566B9bCC000',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-dydxeth": {
+        swap: '0x8b0aFa4b63a3581b731dA9D79774a3eaE63B5ABD',
+        swap_token: '0x4acc1bf7d6a591016641325aa6664a1cd178f002',
+        name: 'f-dydxeth',
+        gauge: '0xB81465Ac19B9a57158a79754bDaa91C60fDA91ff',
+        type: 'crypto',
+        factory: true,
+      },
     }
 
     // at this stage we would take the data
