@@ -758,6 +758,14 @@ export default fn(async () => {
         type: 'crypto',
         factory: true,
       },
+      "f-aavepalstkaave": {
+        swap: '0x48536EC5233297C367fd0b6979B75d9270bB6B15',
+        swap_token: '0x6085deF4343a0b5d97820F131a362Dae9fE59841',
+        name: 'f-aavepalstkaave',
+        gauge: '0x82d0aDea8C4CF2fc84A499b568F4C1194d63113d',
+        type: 'crypto',
+        factory: true,
+      },
     }
 
     // at this stage we would take the data
@@ -771,7 +779,7 @@ export default fn(async () => {
     Object.keys(gauges).forEach(function(key) {
       if (gauges[key].gauge) {
           calls.push([gaugeControllerAddress, gaugeController.methods.get_gauge_weight(gauges[key].gauge).encodeABI()]);
-          calls.push([gaugeControllerAddress, gaugeController.methods.gauge_types(gauges[key].gauge).encodeABI()]);
+          // calls.push([gaugeControllerAddress, gaugeController.methods.gauge_types(gauges[key].gauge).encodeABI()]);
           calls.push([gaugeControllerAddress, gaugeController.methods.gauge_relative_weight(gauges[key].gauge).encodeABI()]);
         }
     });
@@ -821,13 +829,13 @@ export default fn(async () => {
     for (var i = 0; i < aggcalls.length; i++) {
       let get_gauge_weight = web3.eth.abi.decodeParameter('uint256', aggcalls[i])
       i += 1
-      let gauge_types = web3.eth.abi.decodeParameter('int128', aggcalls[i])
-      i += 1
+      // let gauge_types = web3.eth.abi.decodeParameter('int128', aggcalls[i])
+      // i += 1
       let gauge_relative_weight = web3.eth.abi.decodeParameter('uint256', aggcalls[i])
 
       let gaugeData = {
         'get_gauge_weight': get_gauge_weight,
-        'gauge_types': gauge_types,
+        // 'gauge_types': gauge_types,
         'gauge_relative_weight': gauge_relative_weight
       }
       allGaugeDetails.push(gaugeData)
