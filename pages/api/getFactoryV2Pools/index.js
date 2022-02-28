@@ -100,6 +100,7 @@ export default fn(async ({ blockchainId }) => {
     getFactoryRegistryAddress,
     multicallAddress,
     BASE_POOL_LP_TO_GAUGE_LP_MAP,
+    DISABLED_POOLS_ADDRESSES,
   } = config;
 
   const assetTypeMap = new Map([
@@ -129,14 +130,22 @@ export default fn(async ({ blockchainId }) => {
   const poolCount = Number(await registry.methods.pool_count().call());
   if (poolCount === 0) return { poolData: [], tvlAll: 0, tvl: 0 };
 
-  const poolIds = Array(poolCount).fill(0).map((_, i) => i);
+  const unfileteredPoolIds = Array(poolCount).fill(0).map((_, i) => i);
 
-  let poolAddresses = await multiCall(poolIds.map((id) => ({
+  const unfilteredPoolAddresses = await multiCall(unfileteredPoolIds.map((id) => ({
     contract: registry,
     methodName: 'pool_list',
     params: [id],
     ...networkSettingsParam,
   })));
+
+  // Filter out broken pools, see reason for each in DISABLED_POOLS_ADDRESSES definition
+  const poolAddresses = unfilteredPoolAddresses.filter((address) => (
+    !DISABLED_POOLS_ADDRESSES.includes(address.toLowerCase())
+  ));
+  const poolIds = unfileteredPoolIds.filter((id) => (
+    !DISABLED_POOLS_ADDRESSES.includes(unfilteredPoolAddresses[id].toLowerCase())
+  ));
 
   const ethereumOnlyData = blockchainId === 'ethereum' ?
     await getEthereumOnlyData() :

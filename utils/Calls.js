@@ -3,6 +3,7 @@
 import Web3 from 'web3';
 import memoize from 'memoizee';
 import WEB3_CONSTANTS from 'constants/Web3';
+import { IS_DEV } from 'constants/AppConstants';
 import multicall_abi from '../constants/abis/multicall.json';
 import { getArrayChunks, flattenArray } from './Array';
 
@@ -19,7 +20,7 @@ const getContractInstance = memoize((address, abi, library) => (
  * Returns an array of data.
  * If `metaData` is passed alongside any call, returns an array of objects of shape { data, metaData } instead.
  */
-const multiCall = async (callsConfig) => {
+const multiCall = async (callsConfig, isDebugging = false) => {
   const defaultCallConfig = {
     // Pass either a contract object (if that contract object is already instantiated and it's easier)
     contract: undefined, // e.g. currentContract
@@ -86,29 +87,56 @@ const multiCall = async (callsConfig) => {
   const chunkedReturnData = [];
   const chunkedCalls = getArrayChunks(calls, 200); // Keep each multicall size reasonable
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const callsChunk of chunkedCalls) {
-    // eslint-disable-next-line no-await-in-loop
-    const { returnData } = await multicall.methods.aggregate(callsChunk).call();
-    chunkedReturnData.push(returnData);
+  let decodedData;
+  try {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const callsChunk of chunkedCalls) {
+      // eslint-disable-next-line no-await-in-loop
+      const { returnData } = await multicall.methods.aggregate(callsChunk).call();
+      chunkedReturnData.push(returnData);
+    }
+
+    const returnData = flattenArray(chunkedReturnData);
+
+    decodedData = returnData.map((hexData, i) => {
+      const { contract, abi, methodName, metaData } = augmentedCallsConfig[i];
+      const contractAbi = contract?._jsonInterface || abi;
+      const outputSignature = contractAbi.find(({ name }) => name === methodName).outputs;
+
+      const data = outputSignature.length > 1 ?
+        networkSettings.web3.eth.abi.decodeParameters(outputSignature.map(({ type, name }) => ({ type, name })), hexData) :
+        networkSettings.web3.eth.abi.decodeParameter(outputSignature[0].type, hexData);
+
+      if (hasMetaData) return { data, metaData };
+      return data;
+    });
+  } catch (err) {
+    if (IS_DEV && !isDebugging) await findThrowingCall(callsConfig);
+    else throw err;
   }
 
-  const returnData = flattenArray(chunkedReturnData);
-
-  const decodedData = returnData.map((hexData, i) => {
-    const { contract, abi, methodName, metaData } = augmentedCallsConfig[i];
-    const contractAbi = contract?._jsonInterface || abi;
-    const outputSignature = contractAbi.find(({ name }) => name === methodName).outputs;
-
-    const data = outputSignature.length > 1 ?
-      networkSettings.web3.eth.abi.decodeParameters(outputSignature.map(({ type, name }) => ({ type, name })), hexData) :
-      networkSettings.web3.eth.abi.decodeParameter(outputSignature[0].type, hexData);
-
-    if (hasMetaData) return { data, metaData };
-    return data;
-  });
-
   return decodedData;
+};
+
+const findThrowingCall = async (callsConfig) => {
+  console.warn('multiCall() threw, running debugger...');
+  let subset = callsConfig;
+
+  while (subset.length > 1) {
+    const midIndex = Math.ceil(subset.length / 2);
+    const slices = [subset.slice(0, midIndex), subset.slice(-midIndex)];
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const slice of slices) {
+      try {
+        await multiCall(slice, true); // eslint-disable-line no-await-in-loop
+      } catch (err) {
+        subset = slice;
+      }
+    }
+  }
+
+  console.log('Found throwing call:', subset);
 };
 
 export {

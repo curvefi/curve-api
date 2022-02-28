@@ -45,7 +45,8 @@ const configs = {
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
     ]),
     getFactoryCryptoRegistryAddress: async () => '0xF18056Bbd320E96A48e3Fbf8bC061322531aac99',
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/curve-factory-volume"
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/curve-factory-volume",
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
   },
   polygon: {
     nativeCurrencySymbol: 'MATIC',
@@ -79,6 +80,11 @@ const configs = {
       ['0xE7a24EF0C5e95Ffb0f6684b813A78F2a3AD7D171', '0x19793B454D3AfC7b454F206Ffe95aDE26cA6912c'], // meta usd
       ['0xf8a57c1d3b9629b77b6726a042ca48990A84Fb49', '0xffbACcE0CC7C19d46132f1258FC16CF6871D153c'], // meta btc
     ]),
+    DISABLED_POOLS_ADDRESSES: [
+      '0x666Dc3b4baBfd063FaF965BD020024AF0dC51B64', // Pool coins contracts were self-destructed, calls reverting
+      '0x88C4D6534165510b2E2CAF0A130d4F70aA4B6d71', // Pool coins contracts were self-destructed, calls reverting
+      '0xE4199bC5C5C1F63dbA47B56B6dB7144C51CF0bF8', // Pool coins contracts were self-destructed, calls reverting
+    ].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
   },
   fantom: {
@@ -117,6 +123,7 @@ const configs = {
       ['0x5B5CFE992AdAC0C9D48E05854B2d91C73a003858', '0x2db0E83599a91b508Ac268a6197b8B14F5e72840'], // meta btc
       ['0x0fa949783947Bf6c1b171DB13AEACBB488845B3f', '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F'], // meta usd2
     ]),
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 95000, // https://ftmscan.com/chart/blocks
     graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom"
   },
@@ -151,7 +158,8 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x7f90122bf0700f9e7e1f688fe926940e8839f353', '0xbF7E49483881C76487b0989CD7d9A8239B20CA41'], // meta usd
       ['0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb', '0xC2b1DF84112619D190193E48148000e3990Bf627'], // meta btc
-    ])
+    ]),
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
   },
   avalanche: {
     nativeCurrencySymbol: 'AVAX',
@@ -185,6 +193,7 @@ const configs = {
       ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // meta usd
       ['0xC2b1DF84112619D190193E48148000e3990Bf627', '0x0f9cb53ebe405d49a0bbdbd291a65ff571bc83e1'], // meta btc
     ]),
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche"
   },
   optimism: {
@@ -222,6 +231,7 @@ const configs = {
     // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
     //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
     // ])
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
 
   },
