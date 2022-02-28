@@ -779,7 +779,7 @@ export default fn(async () => {
     Object.keys(gauges).forEach(function(key) {
       if (gauges[key].gauge) {
           calls.push([gaugeControllerAddress, gaugeController.methods.get_gauge_weight(gauges[key].gauge).encodeABI()]);
-          calls.push([gaugeControllerAddress, gaugeController.methods.gauge_types(gauges[key].gauge).encodeABI()]);
+          // calls.push([gaugeControllerAddress, gaugeController.methods.gauge_types(gauges[key].gauge).encodeABI()]);
           calls.push([gaugeControllerAddress, gaugeController.methods.gauge_relative_weight(gauges[key].gauge).encodeABI()]);
         }
     });
@@ -829,13 +829,13 @@ export default fn(async () => {
     for (var i = 0; i < aggcalls.length; i++) {
       let get_gauge_weight = web3.eth.abi.decodeParameter('uint256', aggcalls[i])
       i += 1
-      let gauge_types = web3.eth.abi.decodeParameter('int128', aggcalls[i])
-      i += 1
+      // let gauge_types = web3.eth.abi.decodeParameter('int128', aggcalls[i])
+      // i += 1
       let gauge_relative_weight = web3.eth.abi.decodeParameter('uint256', aggcalls[i])
 
       let gaugeData = {
         'get_gauge_weight': get_gauge_weight,
-        'gauge_types': gauge_types,
+        // 'gauge_types': gauge_types,
         'gauge_relative_weight': gauge_relative_weight
       }
       allGaugeDetails.push(gaugeData)
