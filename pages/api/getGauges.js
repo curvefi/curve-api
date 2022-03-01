@@ -765,6 +765,7 @@ export default fn(async () => {
         gauge: '0x82d0aDea8C4CF2fc84A499b568F4C1194d63113d',
         type: 'crypto',
         factory: true,
+        hasNoCrv: true, // Hasn't been voted in yet, isn't in gauge controller, doesn't receive CRV
       },
     }
 
