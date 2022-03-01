@@ -43,12 +43,18 @@ export default fn(async (query) => {
           let DAY_BLOCKS = 6550
           let latest = await web3.eth.getBlockNumber()
 
-          let vPriceOldFetch;
+          let vPriceDayOldFetch;
+          let vPriceWeekOldFetch;
           try {
-            vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
+            vPriceDayOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
           } catch (e) {
-            vPriceOldFetch = 1 * (10 ** 18)
+            vPriceDayOldFetch = 1 * (10 ** 18)
             DAY_BLOCKS = 1;
+          }
+          try {
+            vPriceWeekOldFetch = await poolContract.methods.get_virtual_price().call('', latest - (DAY_BLOCKS * 7))
+          } catch (e) {
+            vPriceWeekOldFetch = vPriceDayOldFetch
           }
           const testPool = pool.address
           const eventName = 'TokenExchangeUnderlying';
@@ -151,10 +157,10 @@ export default fn(async (query) => {
             vPriceFetch = 1 * (10 ** 18)
           }
 
-          let vPrice = vPriceOldFetch
-          let vPriceNew = vPriceFetch
-          const rate = (vPriceNew - vPrice) / vPrice;
-          const apy = (((1 + rate) ** 365) - 1) * 100;
+          const rateDaily = (vPriceFetch - vPriceDayOldFetch) / vPriceDayOldFetch;
+          const apy = (((1 + rateDaily) ** 365) - 1) * 100;
+          const rateWeekly = (vPriceFetch - vPriceWeekOldFetch) / vPriceWeekOldFetch;
+          const apyWeekly = (((1 + rateWeekly) ** (365 / 7)) - 1) * 100;
           let apyFormatted = `${apy.toFixed(2)}%`
           totalVolume += volume
           let p = {
@@ -163,6 +169,7 @@ export default fn(async (query) => {
             'poolSymbol' : version === 1 ? pool.token.symbol : pool.symbol,
             apyFormatted,
             apy,
+            apyWeekly,
             'virtualPrice':vPriceFetch,
             volume,
           }
