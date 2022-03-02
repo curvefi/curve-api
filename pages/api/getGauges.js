@@ -767,6 +767,22 @@ export default fn(async () => {
         factory: true,
         hasNoCrv: true, // Hasn't been voted in yet, isn't in gauge controller, doesn't receive CRV
       },
+      "f-cvxfxs": {
+        swap: '0xd658A338613198204DCa1143Ac3F01A722b5d94A',
+        swap_token: '0xF3A43307DcAFa93275993862Aae628fCB50dC768',
+        name: 'f-cvxfxs',
+        gauge: '0xAB1927160EC7414C6Fa71763E2a9f3D107c126dd',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-rocketethwsteth": {
+        swap: '0x447ddd4960d9fdbf6af9a790560d0af76795cb08',
+        swap_token: '0x447ddd4960d9fdbf6af9a790560d0af76795cb08',
+        name: 'f-rocketethwsteth',
+        gauge: '0x8aD7e0e6EDc61bC48ca0DD07f9021c249044eD30',
+        type: 'ethereum',
+        factory: true,
+      },
     }
 
     // at this stage we would take the data
