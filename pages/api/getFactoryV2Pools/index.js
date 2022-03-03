@@ -166,7 +166,8 @@ export default fn(async ({ blockchainId }) => {
     ]);
   });
 
-  const poolData = await multiCall(flattenArray(poolAddresses.map((address, id) => {
+  const poolData = await multiCall(flattenArray(poolAddresses.map((address, i) => {
+    const poolId = poolIds[i];
     const poolContract = new web3.eth.Contract(factoryPoolAbi, address);
 
     // Note: reverting for at least some pools, prob non-meta ones: get_underlying_coins, get_underlying_decimals
@@ -174,46 +175,46 @@ export default fn(async ({ blockchainId }) => {
       contract: registry,
       methodName: 'get_coins', // address[4]
       params: [address],
-      metaData: { poolId: id, type: 'coinsAddresses' },
+      metaData: { poolId, type: 'coinsAddresses' },
       ...networkSettingsParam,
     }, {
       contract: registry,
       methodName: 'get_decimals', // address[4]
       params: [address],
-      metaData: { poolId: id, type: 'decimals' },
+      metaData: { poolId, type: 'decimals' },
       ...networkSettingsParam,
     }, {
       contract: registry,
       methodName: 'get_underlying_decimals', // address[8]
       params: [address],
-      metaData: { poolId: id, type: 'underlyingDecimals' },
+      metaData: { poolId, type: 'underlyingDecimals' },
       ...networkSettingsParam,
     }, {
       contract: registry,
       methodName: 'get_implementation_address', // address
       params: [address],
-      metaData: { poolId: id, type: 'implementationAddress' },
+      metaData: { poolId, type: 'implementationAddress' },
       ...networkSettingsParam,
     }, {
       contract: registry,
       methodName: 'get_pool_asset_type', // uint256
       params: [address],
-      metaData: { poolId: id, type: 'assetType' },
+      metaData: { poolId, type: 'assetType' },
       ...networkSettingsParam,
     }, {
       contract: poolContract,
       methodName: 'name',
-      metaData: { poolId: id, type: 'name' },
+      metaData: { poolId, type: 'name' },
       ...networkSettingsParam,
     }, {
       contract: poolContract,
       methodName: 'symbol',
-      metaData: { poolId: id, type: 'symbol' },
+      metaData: { poolId, type: 'symbol' },
       ...networkSettingsParam,
     }, {
       contract: poolContract,
       methodName: 'totalSupply',
-      metaData: { poolId: id, type: 'totalSupply' },
+      metaData: { poolId, type: 'totalSupply' },
       ...networkSettingsParam,
     }];
   })));
@@ -276,7 +277,7 @@ export default fn(async ({ blockchainId }) => {
     const isNativeEth = address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
     const coinContract = isNativeEth ? undefined : new web3.eth.Contract(erc20Abi, address);
 
-    const poolAddress = poolAddresses[poolId];
+    const poolAddress = poolAddresses[poolIds.indexOf(poolId)];
     const poolContract = new web3.eth.Contract(POOL_BALANCE_ABI, poolAddress);
     const coinIndex = poolData.find(({ metaData }) => (
       metaData.type === 'coinsAddresses' &&
@@ -355,12 +356,13 @@ export default fn(async ({ blockchainId }) => {
 
   const emptyData = poolIds.map((id) => ({ id: `factory-v2-${id}` }));
   const mergedPoolData = tweakedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
-    const poolInfo = accu[poolId];
+    const index = accu.findIndex(({ id }) => id === `factory-v2-${poolId}`);
+    const poolInfo = accu[index];
 
     // eslint-disable-next-line no-param-reassign
-    accu[poolId] = {
+    accu[index] = {
       ...poolInfo,
-      address: poolAddresses[poolId],
+      address: poolAddresses[index],
       [type]: data,
     };
 
