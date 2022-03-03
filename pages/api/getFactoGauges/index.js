@@ -62,6 +62,7 @@ export default fn(async ({ blockchainId }) => {
 
   const gauge_count_address = await gaugeRegContract.methods.get_gauge(config.chainId, 3).call()
 
+  // Killed gauges
   const filterList = [
     '0xE36A20444df2758f7ccD8d5a27f05c60E9996E34',
     '0xE9a93FFB52Dd1D68Ded7CAf5A2c777db5e689B7B'
@@ -112,12 +113,15 @@ export default fn(async ({ blockchainId }) => {
       try {
         await gaugeController.methods.gauge_types(gaugeList[gaugeN]).call()
         hasCrv = true
-      } catch (e) {
-
-      }
+      } catch (e) { }
 
       let poolContract = new web3Side.eth.Contract(factorypool3Abi, lp_token)
-      let virtual_price = await poolContract.methods.get_virtual_price().call()
+      let virtual_price;
+      try {
+        virtual_price = await poolContract.methods.get_virtual_price().call();
+      } catch (err) {
+        virtual_price = 0; // get_virtual_price reverts if pool is empty
+      }
 
       let gaugeData = {
         'swap': lp_token,
