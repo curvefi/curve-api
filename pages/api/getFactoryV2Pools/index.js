@@ -386,7 +386,7 @@ export default fn(async ({ blockchainId }) => {
     );
 
     const assetTypeIndex = Array.from(assetTypeMap.values()).indexOf(assetTypeName);
-    const assetTypePrice = assetTypePricesMap[assetTypeIndex];
+    // const assetTypePrice = assetTypePricesMap[assetTypeIndex];
 
     const coins = poolInfo.coinsAddresses
       .filter((address) => address !== '0x0000000000000000000000000000000000000000')
@@ -395,7 +395,8 @@ export default fn(async ({ blockchainId }) => {
 
         return {
           ...mergedCoinData[key],
-          usdPrice: mergedCoinData[key]?.usdPrice || assetTypePrice || 0,
+          // usdPrice: mergedCoinData[key]?.usdPrice || assetTypePrice || 0,
+          usdPrice: mergedCoinData[key]?.usdPrice || 0,
         };
       });
 
