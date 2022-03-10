@@ -2,6 +2,7 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 import WEB3_CONSTANTS from 'constants/Web3';
 import { IS_DEV } from 'constants/AppConstants';
+import FACTORY_CRYPTO_POOL_ABI from 'constants/abis/factory-crypto-swap.json';
 
 import { fn } from '../../utils/api';
 import { getFactoryRegistry, getMultiCall } from '../../utils/getters';
@@ -36,26 +37,14 @@ export default fn(async (query) => {
     let poolDetails = [];
     let totalVolume = 0
 
+    const latest = await web3.eth.getBlockNumber();
+
     await Promise.all(
       res.data.poolData.map(async (pool, index) => {
 
           let poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
           let DAY_BLOCKS = 6550
-          let latest = await web3.eth.getBlockNumber()
 
-          let vPriceDayOldFetch;
-          let vPriceWeekOldFetch;
-          try {
-            vPriceDayOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
-          } catch (e) {
-            vPriceDayOldFetch = 1 * (10 ** 18)
-            DAY_BLOCKS = 1;
-          }
-          try {
-            vPriceWeekOldFetch = await poolContract.methods.get_virtual_price().call('', latest - (DAY_BLOCKS * 7))
-          } catch (e) {
-            vPriceWeekOldFetch = vPriceDayOldFetch
-          }
           const testPool = pool.address
           const eventName = 'TokenExchangeUnderlying';
           const eventName2 = 'TokenExchange';
@@ -73,6 +62,68 @@ export default fn(async (query) => {
             pool.decimals
           );
           let volume = 0;
+
+          let vPriceFetch = 1 * (10 ** 18)
+          try {
+            vPriceFetch = await poolContract.methods.get_virtual_price().call()
+          } catch (e) {
+            vPriceFetch = 1 * (10 ** 18)
+          }
+
+          let rateDaily;
+          let rateWeekly;
+
+          if (version === 'crypto') {
+            const cryptoPoolContract = new web3.eth.Contract(FACTORY_CRYPTO_POOL_ABI, pool.address)
+
+            try {
+              const [
+                currentXcpProfit,
+                currentXcpProfitA,
+                dayOldXcpProfit,
+                dayOldXcpProfitA,
+                weekOldXcpProfit,
+                weekOldXcpProfitA,
+              ] = await Promise.all([
+                cryptoPoolContract.methods.xcp_profit().call('', latest),
+                cryptoPoolContract.methods.xcp_profit_a().call('', latest),
+                cryptoPoolContract.methods.xcp_profit().call('', latest - DAY_BLOCKS),
+                cryptoPoolContract.methods.xcp_profit_a().call('', latest - DAY_BLOCKS),
+                cryptoPoolContract.methods.xcp_profit().call('', latest - (DAY_BLOCKS * 7)),
+                cryptoPoolContract.methods.xcp_profit_a().call('', latest - (DAY_BLOCKS * 7)),
+              ]);
+
+              const currentProfit = ((currentXcpProfit / 2) + (currentXcpProfitA / 2) + 1e18) / 2;
+              const dayOldProfit = ((dayOldXcpProfit / 2) + (dayOldXcpProfitA / 2) + 1e18) / 2;
+              const weekOldProfit = ((weekOldXcpProfit / 2) + (weekOldXcpProfitA / 2) + 1e18) / 2;
+
+              rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
+              rateWeekly = (currentProfit - weekOldProfit) / weekOldProfit;
+            } catch (err) {
+              rateDaily = 0;
+              rateWeekly = 0;
+            }
+          } else {
+            let vPriceDayOldFetch;
+            let vPriceWeekOldFetch;
+            try {
+              vPriceDayOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
+            } catch (e) {
+              vPriceDayOldFetch = 1 * (10 ** 18)
+              DAY_BLOCKS = 1;
+            }
+            try {
+              vPriceWeekOldFetch = await poolContract.methods.get_virtual_price().call('', latest - (DAY_BLOCKS * 7))
+            } catch (e) {
+              vPriceWeekOldFetch = vPriceDayOldFetch
+            }
+
+            rateDaily = (vPriceFetch - vPriceDayOldFetch) / vPriceDayOldFetch;
+            rateWeekly = (vPriceFetch - vPriceWeekOldFetch) / vPriceWeekOldFetch;
+          }
+
+          const apy = (((1 + rateDaily) ** 365) - 1) * 100;
+          const apyWeekly = (((1 + rateWeekly) ** (365 / 7)) - 1) * 100;
 
           let events = await poolContract.getPastEvents(eventName, {
               filter: {}, // Using an array means OR: e.g. 20 or 23
@@ -148,20 +199,7 @@ export default fn(async (query) => {
             }
           }
 
-
-
-          let vPriceFetch
-          try {
-            vPriceFetch = await poolContract.methods.get_virtual_price().call()
-          } catch (e) {
-            vPriceFetch = 1 * (10 ** 18)
-          }
-
-          const rateDaily = (vPriceFetch - vPriceDayOldFetch) / vPriceDayOldFetch;
-          const apy = (((1 + rateDaily) ** 365) - 1) * 100;
-          const rateWeekly = (vPriceFetch - vPriceWeekOldFetch) / vPriceWeekOldFetch;
-          const apyWeekly = (((1 + rateWeekly) ** (365 / 7)) - 1) * 100;
-          let apyFormatted = `${apy.toFixed(2)}%`
+          const apyFormatted = `${apy.toFixed(2)}%`
           totalVolume += volume
           let p = {
             index,
