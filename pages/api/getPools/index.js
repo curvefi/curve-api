@@ -90,15 +90,15 @@ export default fn(async ({ blockchainId, registryId }) => {
     throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'');
   }
 
-  if (typeof getFactoryRegistryAddress !== 'function') {
+  if (registryId === 'factory' && typeof getFactoryRegistryAddress !== 'function') {
     throw new Error(`No getFactoryRegistryAddress() config method found for blockchainId "${blockchainId}"`);
   }
 
-  if (typeof getCryptoRegistryAddress !== 'function') {
+  if (registryId === 'crypto' && typeof getCryptoRegistryAddress !== 'function') {
     throw new Error(`No getCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
   }
 
-  if (typeof getFactoryCryptoRegistryAddress !== 'function') {
+  if (registryId === 'factory-crypto' && typeof getFactoryCryptoRegistryAddress !== 'function') {
     throw new Error(`No getFactoryCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
   }
 
