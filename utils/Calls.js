@@ -70,17 +70,27 @@ const multiCall = async (callsConfig, isDebugging = false) => {
   }
 
   const hasMetaData = augmentedCallsConfig.some(({ metaData }) => typeof metaData !== 'undefined');
-  const calls = augmentedCallsConfig.map(({
-    contract,
-    address,
-    abi,
-    methodName,
-    params,
-    networkSettings,
-  }) => [
-    contract?._address || address,
-    (contract || getContractInstance(address, abi, networkSettings.web3)).methods[methodName](...params).encodeABI(),
-  ]);
+  const calls = augmentedCallsConfig.map((callConfig) => {
+    const {
+      contract,
+      address,
+      abi,
+      methodName,
+      params,
+      networkSettings,
+    } = callConfig;
+
+    const contractInstance = (contract || getContractInstance(address, abi, networkSettings.web3));
+    if (!contractInstance.methods[methodName]) {
+      console.error('Context for error thrown below (callConfig)', callConfig);
+      throw new Error(`multiCall error: method ${methodName} was not found on provided contract`);
+    }
+
+    return [
+      contract?._address || address,
+      contractInstance.methods[methodName](...params).encodeABI(),
+    ];
+  });
 
   const { networkSettings } = augmentedCallsConfig[0];
   const multicall = getContractInstance(networkSettings.multicallAddress, multicall_abi, networkSettings.web3);
