@@ -5,6 +5,7 @@ import { fn } from 'utils/api';
 import factoryV2RegistryAbi from 'constants/abis/factory-v2-registry.json';
 import factoryPoolAbi from 'constants/abis/factory-v2/Plain2Balances.json';
 import factoryCryptoRegistryAbi from 'constants/abis/factory-crypto-registry.json';
+import cryptoRegistryAbi from 'constants/abis/crypto-registry.json';
 import factoryCryptoPoolAbi from 'constants/abis/factory-crypto/factory-crypto-pool-2.json';
 import erc20Abi from 'constants/abis/erc20.json';
 import { multiCall } from 'utils/Calls';
@@ -19,6 +20,9 @@ import configs from 'constants/configs';
 import allCoins from 'constants/coins';
 
 const POOL_BALANCE_ABI = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "uint256" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
+
+const POOL_PRICE_ORACLE_NO_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[],"outputs":[{"name":"","type":"uint256"}]}];
+const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[{"name":"k","type":"uint256"}],"outputs":[{"name":"","type":"uint256"}]}];
 
 const getEthereumOnlyData = async () => {
   const [
@@ -132,6 +136,7 @@ export default fn(async ({ blockchainId, registryId }) => {
 
   const REGISTRY_ABI = (
     registryId === 'factory-crypto' ? factoryCryptoRegistryAbi :
+    registryId === 'crypto' ? cryptoRegistryAbi :
     factoryV2RegistryAbi
   );
 
@@ -233,10 +238,14 @@ export default fn(async ({ blockchainId, registryId }) => {
         params: [address],
         metaData: { poolId, type: 'lpTokenAddress' },
         ...networkSettingsParam,
-      }, {
-        contract: poolContract,
-        methodName: 'price_oracle', // uint256
-        metaData: { poolId, type: 'priceOracle' },
+      }] : []
+    ),
+    ...(
+      registryId === 'crypto' ? [{
+        contract: registry,
+        methodName: 'get_lp_token', // address
+        params: [address],
+        metaData: { poolId, type: 'lpTokenAddress' },
         ...networkSettingsParam,
       }] : []
     )];
@@ -292,6 +301,13 @@ export default fn(async ({ blockchainId, registryId }) => {
       metaData,
     }) => {
       const lpTokenContract = new web3.eth.Contract(erc20Abi, address);
+      const poolCoinsCount = tweakedPoolData.find(({ metaData: { type, poolId } }) => (
+        type === 'coinsAddresses' &&
+        poolId === metaData.poolId
+      )).data.filter((coinAddress) => coinAddress !== '0x0000000000000000000000000000000000000000').length;
+      const poolHasMultipleOracles = poolCoinsCount > 2;
+      const poolAddress = poolAddresses[poolIds.indexOf(metaData.poolId)];
+      const poolContractForPriceOracleCall = new web3.eth.Contract(poolHasMultipleOracles ? POOL_PRICE_ORACLE_WITH_ARGS_ABI : POOL_PRICE_ORACLE_NO_ARGS_ABI, poolAddress);
 
       return [{
         contract: lpTokenContract,
@@ -307,6 +323,12 @@ export default fn(async ({ blockchainId, registryId }) => {
         contract: lpTokenContract,
         methodName: 'totalSupply',
         metaData: { poolId: metaData.poolId, type: 'totalSupply' },
+        ...networkSettingsParam,
+      }, {
+        contract: poolContractForPriceOracleCall,
+        methodName: 'price_oracle', // uint256
+        params: poolHasMultipleOracles ? [0] : [], // Price oracle for first asset, there are N-1 oracles so we can fetch more if needed
+        metaData: { poolId: metaData.poolId, type: 'priceOracle' },
         ...networkSettingsParam,
       }];
     })))
@@ -464,13 +486,13 @@ export default fn(async ({ blockchainId, registryId }) => {
         };
       });
 
-    // The current logic is simple, and only allows filling in the blanks when
-    // a pool with 2 coins is missing a single coin's price. Let's improve it later
+    // The current logic is simplistic, and only allows filling in the blanks when
+    // a pool is missing a single coin's price at index 0 or 1. Let's improve it later
     // if other situations arise where more is necessary.
     const canFixCoinPricesThatNeedIt = (
-      coins.length === 2 &&
-      coins.some(({ usdPrice }) => usdPrice === null) &&
-      poolInfo.priceOracle
+      coins.filter(({ usdPrice }) => usdPrice === null).length === 1 &&
+      (coins.length === 2 || coins.findIndex(({ usdPrice }) => usdPrice === null) < 2) &&
+      !!poolInfo.priceOracle
     );
 
     const augmentedCoins = (
