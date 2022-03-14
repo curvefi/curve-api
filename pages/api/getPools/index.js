@@ -4,6 +4,8 @@ import Web3 from 'web3';
 import { fn } from 'utils/api';
 import factoryV2RegistryAbi from 'constants/abis/factory-v2-registry.json';
 import factoryPoolAbi from 'constants/abis/factory-v2/Plain2Balances.json';
+import factoryCryptoRegistryAbi from 'constants/abis/factory-crypto-registry.json';
+import factoryCryptoPoolAbi from 'constants/abis/factory-crypto/factory-crypto-pool-2.json';
 import erc20Abi from 'constants/abis/erc20.json';
 import { multiCall } from 'utils/Calls';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
@@ -14,6 +16,7 @@ import getFactoryV2GaugeRewards from 'utils/data/getFactoryV2GaugeRewards';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
 import getGauges from 'pages/api/getGauges';
 import configs from 'constants/configs';
+import allCoins from 'constants/coins';
 
 const POOL_BALANCE_ABI = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "uint256" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
 
@@ -63,6 +66,8 @@ export default fn(async ({ blockchainId, registryId }) => {
   if (typeof registryId === 'undefined') registryId = 'main'; // Default value
   /* eslint-enable no-param-reassign */
 
+  console.log({ blockchainId, registryId });
+
   const config = configs[blockchainId];
   if (typeof config === 'undefined') {
     throw new Error(`No factory data for blockchainId "${blockchainId}"`);
@@ -75,13 +80,14 @@ export default fn(async ({ blockchainId, registryId }) => {
     factoryImplementationAddressMap: implementationAddressMap,
     getFactoryRegistryAddress,
     getCryptoRegistryAddress,
+    getFactoryCryptoRegistryAddress,
     multicallAddress,
     BASE_POOL_LP_TO_GAUGE_LP_MAP,
     DISABLED_POOLS_ADDRESSES,
   } = config;
 
-  if (registryId !== 'factory' && registryId !== 'main' && registryId !== 'crypto') {
-    throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'');
+  if (registryId !== 'factory' && registryId !== 'main' && registryId !== 'crypto' && registryId !== 'factory-crypto') {
+    throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'');
   }
 
   if (typeof getFactoryRegistryAddress !== 'function') {
@@ -90,6 +96,10 @@ export default fn(async ({ blockchainId, registryId }) => {
 
   if (typeof getCryptoRegistryAddress !== 'function') {
     throw new Error(`No getCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+  }
+
+  if (typeof getFactoryCryptoRegistryAddress !== 'function') {
+    throw new Error(`No getFactoryCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
   }
 
   const assetTypeMap = new Map([
@@ -103,6 +113,7 @@ export default fn(async ({ blockchainId, registryId }) => {
     registryId === 'factory' ? await getFactoryRegistryAddress() :
     registryId === 'main' ? await getRegistry({ blockchainId }) :
     registryId === 'crypto' ? await getCryptoRegistryAddress() :
+    registryId === 'factory-crypto' ? await getFactoryCryptoRegistryAddress() :
     undefined
   );
 
@@ -110,11 +121,22 @@ export default fn(async ({ blockchainId, registryId }) => {
     registryId === 'factory' ? `factory-v2-${id}` :
     registryId === 'main' ? `${id}` :
     registryId === 'crypto' ? `crypto-${id}` :
+    registryId === 'factory-crypto' ? `factory-crypto-${id}` :
     undefined
   );
 
+  const POOL_ABI = (
+    registryId === 'factory-crypto' ? factoryCryptoPoolAbi :
+    factoryPoolAbi
+  );
+
+  const REGISTRY_ABI = (
+    registryId === 'factory-crypto' ? factoryCryptoRegistryAbi :
+    factoryV2RegistryAbi
+  );
+
   const web3 = new Web3(rpcUrl);
-  const registry = new web3.eth.Contract(factoryV2RegistryAbi, registryAddress);
+  const registry = new web3.eth.Contract(REGISTRY_ABI, registryAddress);
 
   const networkSettingsParam = (
     typeof multicallAddress !== 'undefined' ?
@@ -148,7 +170,7 @@ export default fn(async ({ blockchainId, registryId }) => {
 
   const poolData = await multiCall(flattenArray(poolAddresses.map((address, i) => {
     const poolId = poolIds[i];
-    const poolContract = new web3.eth.Contract(factoryPoolAbi, address);
+    const poolContract = new web3.eth.Contract(POOL_ABI, address);
 
     // Note: reverting for at least some pools, prob non-meta ones: get_underlying_coins, get_underlying_decimals
     return [{
@@ -203,6 +225,20 @@ export default fn(async ({ blockchainId, registryId }) => {
         metaData: { poolId, type: 'symbol' },
         ...networkSettingsParam,
       }] : [] // Not fetching totalSupply for main pools because not all pool implementations have a lp token
+    ),
+    ...(
+      registryId === 'factory-crypto' ? [{
+        contract: registry,
+        methodName: 'get_token', // address
+        params: [address],
+        metaData: { poolId, type: 'lpTokenAddress' },
+        ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'price_oracle', // uint256
+        metaData: { poolId, type: 'priceOracle' },
+        ...networkSettingsParam,
+      }] : []
     )];
   })));
 
@@ -248,7 +284,40 @@ export default fn(async ({ blockchainId, registryId }) => {
       poolData
   );
 
-  const allCoinAddresses = tweakedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
+  const lpTokensWithMetadata = tweakedPoolData.filter(({ metaData }) => metaData.type === 'lpTokenAddress');
+  const lpTokenData = (
+    lpTokensWithMetadata.length === 0 ? [] :
+    await multiCall(flattenArray(lpTokensWithMetadata.map(({
+      data: address,
+      metaData,
+    }) => {
+      const lpTokenContract = new web3.eth.Contract(erc20Abi, address);
+
+      return [{
+        contract: lpTokenContract,
+        methodName: 'name',
+        metaData: { poolId: metaData.poolId, type: 'name' },
+        ...networkSettingsParam,
+      }, {
+        contract: lpTokenContract,
+        methodName: 'symbol',
+        metaData: { poolId: metaData.poolId, type: 'symbol' },
+        ...networkSettingsParam,
+      }, {
+        contract: lpTokenContract,
+        methodName: 'totalSupply',
+        metaData: { poolId: metaData.poolId, type: 'totalSupply' },
+        ...networkSettingsParam,
+      }];
+    })))
+  );
+
+  const augmentedPoolData = [
+    ...tweakedPoolData,
+    ...lpTokenData,
+  ];
+
+  const allCoinAddresses = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
     if (type === 'coinsAddresses') {
       const poolCoins = data.filter((address) => address !== '0x0000000000000000000000000000000000000000');
       return accu.concat(poolCoins.map((address) => ({ poolId, address })));
@@ -261,7 +330,12 @@ export default fn(async ({ blockchainId, registryId }) => {
     await getTokensPrices(allCoinAddresses.map(({ address }) => address), platformCoingeckoId);
 
   const coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
-    const isNativeEth = address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+    // In crypto facto pools, native eth is represented as weth
+    const isNativeEth = (
+      registryId === 'factory-crypto' ?
+        address.toLowerCase() === allCoins[config.nativeAssetErc20WrapperId].address.toLowerCase() :
+        address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+    );
     const coinContract = isNativeEth ? undefined : new web3.eth.Contract(erc20Abi, address);
 
     const poolAddress = poolAddresses[poolIds.indexOf(poolId)];
@@ -317,7 +391,7 @@ export default fn(async ({ blockchainId, registryId }) => {
     const coinInfo = accu[key];
     const coinPrice = (
       coinAddressesAndPricesMap[coinAddress.toLowerCase()] ||
-      ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()] ||
+      (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) ||
       0
     );
 
@@ -342,7 +416,7 @@ export default fn(async ({ blockchainId, registryId }) => {
   }, {});
 
   const emptyData = poolIds.map((id) => ({ id: getIdForPool(id) }));
-  const mergedPoolData = tweakedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
+  const mergedPoolData = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
     const index = accu.findIndex(({ id }) => id === getIdForPool(poolId));
     const poolInfo = accu[index];
 
@@ -350,7 +424,11 @@ export default fn(async ({ blockchainId, registryId }) => {
     accu[index] = {
       ...poolInfo,
       address: poolAddresses[index],
-      [type]: data,
+      [type]: (
+        type === 'priceOracle' ?
+          (data / 1e18) :
+          data
+      ),
     };
 
     return accu;
@@ -382,11 +460,35 @@ export default fn(async ({ blockchainId, registryId }) => {
 
         return {
           ...mergedCoinData[key],
-          usdPrice: mergedCoinData[key]?.usdPrice || 0,
+          usdPrice: mergedCoinData[key]?.usdPrice || null,
         };
       });
 
-    const usdTotal = sum(coins.map(({ usdPrice, poolBalance, decimals }) => (
+    // The current logic is simple, and only allows filling in the blanks when
+    // a pool with 2 coins is missing a single coin's price. Let's improve it later
+    // if other situations arise where more is necessary.
+    const canFixCoinPricesThatNeedIt = (
+      coins.length === 2 &&
+      coins.some(({ usdPrice }) => usdPrice === null) &&
+      poolInfo.priceOracle
+    );
+
+    const augmentedCoins = (
+      canFixCoinPricesThatNeedIt ? (
+        coins.map((coin, i) => (
+          coin.usdPrice === null ? {
+            ...coin,
+            usdPrice: (
+              i === 0 ?
+                (coins[1].usdPrice / poolInfo.priceOracle) :
+                (coins[0].usdPrice * poolInfo.priceOracle)
+            ),
+          } : coin
+        ))
+      ) : coins
+    );
+
+    const usdTotal = sum(augmentedCoins.map(({ usdPrice, poolBalance, decimals }) => (
       poolBalance / (10 ** decimals) * usdPrice
     )));
 
@@ -399,7 +501,7 @@ export default fn(async ({ blockchainId, registryId }) => {
       ...poolInfo,
       implementation,
       assetTypeName,
-      coins,
+      coins: augmentedCoins,
       usdTotal,
       gaugeAddress,
       gaugeRewards: gaugeRewardsInfo,

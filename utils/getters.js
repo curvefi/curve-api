@@ -19,7 +19,7 @@ const feeDistributor = '0xA464e6DCda8AC41e03616F95f4BC98a13b8922Dc'
 
 
 
-const getRegistry = memoize(async ({ blockchainId }) => {
+const getRegistry = memoize(async ({ blockchainId } = {}) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // eslint-disable-line no-param-reassign
 
   const web3 = new Web3(configs[blockchainId].rpcUrl);
