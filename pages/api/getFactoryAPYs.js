@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import BigNumber from 'big-number';
 import WEB3_CONSTANTS from 'constants/Web3';
-import { IS_DEV } from 'constants/AppConstants';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 import FACTORY_CRYPTO_POOL_ABI from 'constants/abis/factory-crypto-swap.json';
 
 import { fn } from '../../utils/api';
@@ -12,7 +12,6 @@ import erc20Abi from '../../constants/abis/erc20.json';
 import factorypool3Abi from '../../constants/abis/factory_swap.json';
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
-const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
 
 export default fn(async (query) => {
     const version = (
