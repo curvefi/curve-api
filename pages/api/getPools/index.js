@@ -17,6 +17,7 @@ import factoryCryptoRegistryAbi from 'constants/abis/factory-crypto-registry.jso
 import cryptoRegistryAbi from 'constants/abis/crypto-registry.json';
 import factoryCryptoPoolAbi from 'constants/abis/factory-crypto/factory-crypto-pool-2.json';
 import erc20Abi from 'constants/abis/erc20.json';
+import erc20AbiMKR from 'constants/abis/erc20_mkr.json';
 import { multiCall } from 'utils/Calls';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseReduce } from 'utils/Async';
@@ -388,7 +389,16 @@ export default fn(async ({ blockchainId, registryId }) => {
         address.toLowerCase() === allCoins[config.nativeAssetErc20WrapperId].address.toLowerCase() :
         address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
     );
-    const coinContract = isNativeEth ? undefined : new web3.eth.Contract(erc20Abi, address);
+
+    const hasByte32Symbol = (
+      blockchainId === 'ethereum' &&
+      address.toLowerCase() === '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2'
+    );
+    const coinContract = (
+      isNativeEth ? undefined :
+      hasByte32Symbol ? new web3.eth.Contract(erc20AbiMKR, address) :
+      new web3.eth.Contract(erc20Abi, address)
+    );
 
     const poolAddress = poolAddresses[poolIds.indexOf(poolId)];
     const poolContract = new web3.eth.Contract(POOL_BALANCE_ABI, poolAddress);
