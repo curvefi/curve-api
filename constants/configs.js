@@ -197,7 +197,7 @@ const configs = {
     platformCoingeckoId: 'optimistic-ethereum',
     nativeAssetId: 'eth', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: `https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_OPTIMISM}`,
+    rpcUrl: 'https://mainnet.optimism.io',
     multicallAddress: '0x2DC0E2aa608532Da689e89e237dF582B783E552C',
     getFactoryRegistryAddress: async () => '0x2db0E83599a91b508Ac268a6197b8B14F5e72840',
     getCryptoRegistryAddress: async () => '0x7DA64233Fefb352f8F501B357c018158ED8aA455',
@@ -228,7 +228,43 @@ const configs = {
     // ])
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
-
+  },
+  xdai: {
+    nativeCurrencySymbol: 'xDAI',
+    chainId: 100,
+    nativeCurrencyCoingeckoId: 'xdai',
+    platformCoingeckoId: 'xdai',
+    nativeAssetId: 'xdai', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wxdai', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://rpc.xdaichain.com/curve',
+    multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 16900,
+  },
+  harmony: {
+    nativeCurrencySymbol: 'ONE',
+    chainId: 1666600000,
+    nativeCurrencyCoingeckoId: 'harmony',
+    platformCoingeckoId: 'harmony-shard-0',
+    nativeAssetId: 'one', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wone', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://rpc.s0.t.hmny.io',
+    multicallAddress: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 43200,
+    getCryptoRegistryAddress: async () => '', // Has one crypto pool but no crypto registry
+  },
+  moonbeam: {
+    nativeCurrencySymbol: 'GLMR',
+    chainId: 1284,
+    nativeCurrencyCoingeckoId: 'moonbeam',
+    platformCoingeckoId: 'moonbeam',
+    nativeAssetId: 'moonbeam', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wGLMR', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://moonbeam.api.onfinality.io/public',
+    multicallAddress: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
   },
 };
 export default configs;
