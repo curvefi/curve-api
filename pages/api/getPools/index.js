@@ -1,5 +1,14 @@
 /* eslint-disable object-curly-newline */
 
+/**
+ * Fetches all sorts of pool information. Works for all pools, in all registries, on all chains.
+ *
+ * Note:
+ * - Doesn't work for Harmony: its 3pool isn't in the main registry, and Harmony is lacking a
+ *   crypto registry
+ * - Doesn't work for Moonbeam: it's lacking a main registry
+ */
+
 import Web3 from 'web3';
 import { fn } from 'utils/api';
 import factoryV2RegistryAbi from 'constants/abis/factory-v2-registry.json';
@@ -10,6 +19,7 @@ import factoryCryptoPoolAbi from 'constants/abis/factory-crypto/factory-crypto-p
 import erc20Abi from 'constants/abis/erc20.json';
 import { multiCall } from 'utils/Calls';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
+import { sequentialPromiseReduce } from 'utils/Async';
 import { getRegistry } from 'utils/getters';
 import getTokensPrices from 'utils/data/tokens-prices';
 import getAssetsPrices from 'utils/data/assets-prices';
@@ -18,11 +28,14 @@ import getMainRegistryPools from 'pages/api/getMainRegistryPools';
 import getGauges from 'pages/api/getGauges';
 import configs from 'constants/configs';
 import allCoins from 'constants/coins';
+import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
+import { deriveMissingCoinPrices } from 'pages/api/getPools/_utils';
 
+/* eslint-disable */
 const POOL_BALANCE_ABI = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "uint256" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
-
 const POOL_PRICE_ORACLE_NO_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[{"name":"k","type":"uint256"}],"outputs":[{"name":"","type":"uint256"}]}];
+/* eslint-enable */
 
 const getEthereumOnlyData = async () => {
   const [
@@ -351,6 +364,23 @@ export default fn(async ({ blockchainId, registryId }) => {
   const coinAddressesAndPricesMap =
     await getTokensPrices(allCoinAddresses.map(({ address }) => address), platformCoingeckoId);
 
+  const coinsFallbackPrices = (
+    COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
+      await getAssetsPrices(Array.from(Object.values(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))) :
+      {}
+  );
+  const coinAddressesAndPricesMapFallback = (
+    COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
+      arrayToHashmap(
+        Array.from(Object.entries(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))
+          .map(([address, coingeckoId]) => [
+            address.toLowerCase(),
+            coinsFallbackPrices[coingeckoId],
+          ])
+      ) :
+      {}
+  );
+
   const coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
     // In crypto facto pools, native eth is represented as weth
     const isNativeEth = (
@@ -407,6 +437,7 @@ export default fn(async ({ blockchainId, registryId }) => {
     const coinInfo = accu[key];
     const coinPrice = (
       coinAddressesAndPricesMap[coinAddress.toLowerCase()] ||
+      coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) ||
       0
     );
@@ -450,7 +481,7 @@ export default fn(async ({ blockchainId, registryId }) => {
     return accu;
   }, emptyData);
 
-  const augmentedData = mergedPoolData.map((poolInfo) => {
+  const augmentedData = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
     const implementation = (
       registryId === 'factory' ?
         implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) :
@@ -480,29 +511,13 @@ export default fn(async ({ blockchainId, registryId }) => {
         };
       });
 
-    // The current logic is simplistic, and only allows filling in the blanks when
-    // a pool is missing a single coin's price at index 0 or 1. Let's improve it later
-    // if other situations arise where more is necessary.
-    const canFixCoinPricesThatNeedIt = (
-      coins.filter(({ usdPrice }) => usdPrice === null).length === 1 &&
-      (coins.length === 2 || coins.findIndex(({ usdPrice }) => usdPrice === null) < 2) &&
-      !!poolInfo.priceOracle
-    );
-
-    const augmentedCoins = (
-      canFixCoinPricesThatNeedIt ? (
-        coins.map((coin, i) => (
-          coin.usdPrice === null ? {
-            ...coin,
-            usdPrice: (
-              i === 0 ?
-                (coins[1].usdPrice / poolInfo.priceOracle) :
-                (coins[0].usdPrice * poolInfo.priceOracle)
-            ),
-          } : coin
-        ))
-      ) : coins
-    );
+    const augmentedCoins = await deriveMissingCoinPrices({
+      blockchainId,
+      registryId,
+      coins,
+      poolInfo,
+      otherPools: wipMergedPoolData,
+    });
 
     const usdTotal = sum(augmentedCoins.map(({ usdPrice, poolBalance, decimals }) => (
       poolBalance / (10 ** decimals) * usdPrice
