@@ -22,4 +22,22 @@ const sequentialPromiseFlatMap = async (array, asyncFn, chunkSize) => (
   flattenArray(await sequentialPromiseMap(array, asyncFn, chunkSize))
 );
 
-export { sequentialPromiseMap, sequentialPromiseFlatMap };
+const sequentialPromiseReduce = async (array, asyncFn) => {
+  const results = [];
+  let i = 0;
+
+  while (i < array.length) {
+    const res = await asyncFn(array[i], i, results); // eslint-disable-line no-await-in-loop
+    results.push(res);
+
+    i += 1;
+  }
+
+  return results;
+};
+
+export {
+  sequentialPromiseMap,
+  sequentialPromiseFlatMap,
+  sequentialPromiseReduce,
+};

@@ -8,8 +8,7 @@ import { getThursdayUTCTimestamp } from 'utils/helpers';
 import distributorAbi from 'constants/abis/distributor.json';
 import tripoolSwapAbi from 'constants/abis/tripool_swap.json';
 import configs from 'constants/configs';
-import { IS_DEV } from 'constants/AppConstants';
-const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 
 
