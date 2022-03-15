@@ -3,6 +3,8 @@ import { fn } from 'utils/api';
 import factoryCryptoRegistryAbi from 'constants/abis/factory-crypto-registry.json';
 import factoryPoolAbi from 'constants/abis/factory-crypto/factory-crypto-pool-2.json';
 import erc20Abi from 'constants/abis/erc20.json';
+import erc20AbiMKR from 'constants/abis/erc20_mkr.json';
+
 import { multiCall } from 'utils/Calls';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import getTokensPrices from 'utils/data/tokens-prices';
@@ -164,7 +166,9 @@ export default fn(async ({ blockchainId }) => {
   let coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
     // In crypto facto pools, native eth is represented as weth
     const isNativeEth = address.toLowerCase() === allCoins[config.nativeAssetErc20WrapperId].address.toLowerCase();
-    const coinContract = isNativeEth ? undefined : new web3.eth.Contract(erc20Abi, address);
+    const coinContract = isNativeEth ? undefined :
+    address.toLowerCase() === '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2' ? new web3.eth.Contract(erc20AbiMKR, address) :
+    new web3.eth.Contract(erc20Abi, address);
 
     const poolAddress = poolAddresses[poolId];
     const poolContract = new web3.eth.Contract(POOL_BALANCE_ABI, poolAddress);
