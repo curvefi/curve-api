@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import BigNumber from 'big-number';
-import { IS_DEV } from 'constants/AppConstants';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 import configs from '../../constants/configs';
 import { fn } from '../../utils/api';
@@ -11,8 +11,6 @@ import erc20Abi from '../../constants/abis/erc20.json';
 import factorypool3Abi from '../../constants/abis/factory_swap.json';
 
 const web3 = new Web3(`https://rpc.ftm.tools/`);
-
-const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
 
 export default fn(async (query) => {
     const config = configs.fantom;

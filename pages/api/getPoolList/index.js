@@ -13,8 +13,7 @@ import ADDRESS_GETTER_ABI from 'constants/abis/address_getter.json';
 import REGISTRY_ABI from 'constants/abis/registry.json';
 import multicallAbi from 'constants/abis/multicall.json';
 import configs from 'constants/configs';
-import { IS_DEV } from 'constants/AppConstants';
-const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 
 

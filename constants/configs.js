@@ -1,14 +1,3 @@
-import {
-  getPolygonFactoryRegistry,
-  getPolygonMulticall,
-  getfantomFactoryRegistry,
-  getfantomMulticall,
-  getArbitrumFactoryRegistry,
-  getArbitrumMulticall,
-  getAvalancheFactoryRegistry,
-  getAvalancheMulticall,
-  getOpMulticall
-} from 'utils/getters';
 import WEB3_CONSTANTS from 'constants/Web3';
 
 const configs = {
@@ -22,6 +11,7 @@ const configs = {
     rpcUrl: WEB3_CONSTANTS.RPC_URL,
     multicallAddress: '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441',
     getFactoryRegistryAddress: async () => '0xb9fc157394af804a3578134a6585c0dc9cc990d4',
+    getCryptoRegistryAddress: async () => '0x8F942C20D02bEfc377D41445793068908E2250D0',
     factoryImplementationAddressMap: new Map([
       ['0x6523Ac15EC152Cb70a334230F6c5d62C5Bd963f1'.toLowerCase(), 'plain2basic'],
       ['0x24D937143d3F5cF04c72bA112735151A8CAE2262'.toLowerCase(), 'plain2balances'],
@@ -56,8 +46,9 @@ const configs = {
     nativeAssetId: 'MATIC', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wmatic',
     rpcUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_POLYGON}`,
-    multicallAddress: getPolygonMulticall(),
-    getFactoryRegistryAddress: async () => getPolygonFactoryRegistry(),
+    multicallAddress: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
+    getFactoryRegistryAddress: async () => '0x722272d36ef0da72ff51c5a65db7b870e2e8d4ee',
+    getCryptoRegistryAddress: async () => '0x47bB542B9dE58b970bA50c9dae444DDB4c16751a',
     factoryImplementationAddressMap: new Map([
       ['0x571FF5b7b346F706aa48d696a9a4a288e9Bb4091'.toLowerCase(), 'plain2basic'],
       ['0x8925D9d9B4569D737a48499DeF3f67BaA5a144b9'.toLowerCase(), 'plain2balances'],
@@ -95,8 +86,9 @@ const configs = {
     nativeAssetId: 'ftm', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wftm',
     rpcUrl: 'https://rpc.ftm.tools/',
-    multicallAddress: getfantomMulticall(),
-    getFactoryRegistryAddress: async () => getfantomFactoryRegistry(),
+    multicallAddress: '0xb828c456600857abd4ed6c32facc607bd0464f4f',
+    getFactoryRegistryAddress: async () => '0x686d67265703d1f124c45e33d47d794c566889ba',
+    getCryptoRegistryAddress: async () => '0x4fb93D7d320E8A263F22f62C2059dFC2A8bCbC4c',
     factoryImplementationAddressMap: new Map([
       ['0x61E10659fe3aa93d036d099405224E4Ac24996d0'.toLowerCase(), 'plain2basic'],
       ['0xd9Acb0BAeeD77C99305017821167674Cc7e82f7a'.toLowerCase(), 'plain2balances'],
@@ -135,8 +127,9 @@ const configs = {
     nativeAssetId: 'eth', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'weth',
     rpcUrl: `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_ARBITRUM}`,
-    multicallAddress: getArbitrumMulticall(),
-    getFactoryRegistryAddress: async () => getArbitrumFactoryRegistry(),
+    multicallAddress: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
+    getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
+    getCryptoRegistryAddress: async () => '0x0E9fBb167DF83EdE3240D6a5fa5d40c6C6851e15',
     factoryImplementationAddressMap: new Map([
       ['0x54e8A25d0Ac0E4945b697C80b8372445FEA17A62'.toLowerCase(), 'plain2basic'],
       ['0xD68970e266cE1A015953897C7055a5E0bC657Af8'.toLowerCase(), 'plain2balances'],
@@ -169,8 +162,9 @@ const configs = {
     rpcUrl: `https://api.avax.network/ext/bc/C/rpc`,
     nativeAssetId: 'avax', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wavax',
-    multicallAddress: getAvalancheMulticall(),
-    getFactoryRegistryAddress: async () => getAvalancheFactoryRegistry(),
+    multicallAddress: '0xa00FB557AA68d2e98A830642DBbFA534E8512E5f',
+    getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
+    getCryptoRegistryAddress: async () => '0x90f421832199e93d01b64DaF378b183809EB0988',
     factoryImplementationAddressMap: new Map([
       ['0x697434ca761d4f86b553784b69f4f37f5edf54df'.toLowerCase(), 'plain2basic'],
       ['0xbdff0c27dd073c119ebcb1299a68a6a92ae607f0'.toLowerCase(), 'plain2balances'],
@@ -203,9 +197,10 @@ const configs = {
     platformCoingeckoId: 'optimistic-ethereum',
     nativeAssetId: 'eth', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: `https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_OPTIMISM}`,
-    multicallAddress: getOpMulticall(),
+    rpcUrl: 'https://mainnet.optimism.io',
+    multicallAddress: '0x2DC0E2aa608532Da689e89e237dF582B783E552C',
     getFactoryRegistryAddress: async () => '0x2db0E83599a91b508Ac268a6197b8B14F5e72840',
+    getCryptoRegistryAddress: async () => '0x7DA64233Fefb352f8F501B357c018158ED8aA455',
     factoryImplementationAddressMap: new Map([
       ['0xC2b1DF84112619D190193E48148000e3990Bf627'.toLowerCase(), 'plain2basic'],
       ['0x16a7DA911A4DD1d83F3fF066fE28F3C792C50d90'.toLowerCase(), 'plain2balances'],
@@ -233,7 +228,43 @@ const configs = {
     // ])
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
-
+  },
+  xdai: {
+    nativeCurrencySymbol: 'xDAI',
+    chainId: 100,
+    nativeCurrencyCoingeckoId: 'xdai',
+    platformCoingeckoId: 'xdai',
+    nativeAssetId: 'xdai', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wxdai', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://rpc.xdaichain.com/curve',
+    multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 16900,
+  },
+  harmony: {
+    nativeCurrencySymbol: 'ONE',
+    chainId: 1666600000,
+    nativeCurrencyCoingeckoId: 'harmony',
+    platformCoingeckoId: 'harmony-shard-0',
+    nativeAssetId: 'one', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wone', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://rpc.s0.t.hmny.io',
+    multicallAddress: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 43200,
+    getCryptoRegistryAddress: async () => '', // Has one crypto pool but no crypto registry
+  },
+  moonbeam: {
+    nativeCurrencySymbol: 'GLMR',
+    chainId: 1284,
+    nativeCurrencyCoingeckoId: 'moonbeam',
+    platformCoingeckoId: 'moonbeam',
+    nativeAssetId: 'moonbeam', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wGLMR', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://moonbeam.api.onfinality.io/public',
+    multicallAddress: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
   },
 };
 export default configs;

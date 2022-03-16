@@ -1,10 +1,9 @@
 import Web3 from 'web3';
 import BigNumber from 'big-number';
-import { IS_DEV } from 'constants/AppConstants';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 import configs from '../../constants/configs';
 import { fn } from '../../utils/api';
-import { getOpMulticall } from '../../utils/getters';
 import registryAbi from '../../constants/abis/factory_registry.json';
 import multicallAbi from '../../constants/abis/multicall.json';
 import erc20Abi from '../../constants/abis/erc20.json';
@@ -12,14 +11,12 @@ import factorypool3Abi from '../../constants/abis/factory_swap.json';
 
 const web3 = new Web3(`https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_OPTIMISM}`);
 
-const BASE_API_DOMAIN = IS_DEV ? 'http://localhost:3000' : 'https://api.curve.fi';
-
 export default fn(async (query) => {
   const config = configs.optimism;
     const version = 2
 
     let registryAddress = '0x2db0E83599a91b508Ac268a6197b8B14F5e72840'
-    let multicallAddress = getOpMulticall()
+    let multicallAddress = config.multicallAddress;
   	let registry = new web3.eth.Contract(registryAbi, registryAddress);
   	let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
     let res = await (await fetch(`${BASE_API_DOMAIN}/api/getFactoryV2Pools/optimism`)).json()
