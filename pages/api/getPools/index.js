@@ -85,8 +85,6 @@ export default fn(async ({ blockchainId, registryId }) => {
   if (typeof registryId === 'undefined') registryId = 'main'; // Default value
   /* eslint-enable no-param-reassign */
 
-  console.log({ blockchainId, registryId });
-
   const config = configs[blockchainId];
   if (typeof config === 'undefined') {
     throw new Error(`No factory data for blockchainId "${blockchainId}"`);
