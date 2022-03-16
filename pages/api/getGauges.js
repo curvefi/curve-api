@@ -772,6 +772,14 @@ export default fn(async () => {
         type: 'ethereum',
         factory: true,
       },
+      "f-btrflyeth": {
+        swap: '0xF43b15Ab692fDe1F9c24a9FCE700AdCC809D5391',
+        swap_token: '0xE160364FD8407FFc8b163e278300c6C5D18Ff61d',
+        name: 'f-btrflyeth',
+        gauge: '0x5AC6886Edd18ED0AD01C0B0910660637c551FBd6',
+        type: 'ethereum',
+        factory: true,
+      },
     }
 
     // at this stage we would take the data
