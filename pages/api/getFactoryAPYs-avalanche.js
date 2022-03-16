@@ -2,6 +2,7 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
+import configs from '../../constants/configs';
 import { fn } from '../../utils/api';
 import { getAvalancheFactoryRegistry, getAvalancheMulticall } from '../../utils/getters';
 import registryAbi from '../../constants/abis/factory_registry.json';
@@ -12,6 +13,7 @@ import factorypool3Abi from '../../constants/abis/factory_swap.json';
 const web3 = new Web3(`https://api.avax.network/ext/bc/C/rpc`);
 
 export default fn(async (query) => {
+  const config = configs.avalanche;
     const version = 2
 
     let registryAddress = await getAvalancheFactoryRegistry()
@@ -25,7 +27,8 @@ export default fn(async (query) => {
     let totalVolume = 0
 
     const latest = await web3.eth.getBlockNumber()
-    let DAY_BLOCKS = 43000
+    const DAY_BLOCKS_24H = config.approxBlocksPerDay;
+    let DAY_BLOCKS = 2048
 
     await Promise.all(
       res.data.poolData.map(async (pool, index) => {
@@ -60,7 +63,7 @@ export default fn(async (query) => {
           let events = await poolContract.getPastEvents(eventName, {
               filter: {}, // Using an array means OR: e.g. 20 or 23
               fromBlock: latest - DAY_BLOCKS,
-              toBlock: 'latest'
+              toBlock: latest
           })
 
           // console.log(events, 'events')
@@ -79,7 +82,7 @@ export default fn(async (query) => {
             let events2 = await poolContract.getPastEvents(eventName2, {
                 filter: {}, // Using an array means OR: e.g. 20 or 23
                 fromBlock: latest - DAY_BLOCKS,
-                toBlock: 'latest'
+                toBlock: latest
             })
 
             // console.log(events2, 'events')
@@ -97,7 +100,9 @@ export default fn(async (query) => {
 
           }
 
-
+          // Since we don't fetch blocks for the entirety of the past 24 hours,
+          // we multiply the split volume accordingly
+          const correctedVolume = volume * (DAY_BLOCKS_24H / DAY_BLOCKS);
 
           let vPriceFetch
           try {
@@ -110,7 +115,7 @@ export default fn(async (query) => {
           let vPriceNew = vPriceFetch
           let apy = (vPriceNew - vPrice) / vPrice * 100 * 365
           let apyFormatted = `${apy.toFixed(2)}%`
-          totalVolume += volume
+          totalVolume += correctedVolume
           let p = {
             index,
             'poolAddress' : pool.address,
@@ -118,7 +123,7 @@ export default fn(async (query) => {
             apyFormatted,
             apy,
             'virtualPrice':vPriceFetch,
-            volume,
+            volume: correctedVolume,
           }
           poolDetails.push(p)
       })
