@@ -28,7 +28,7 @@ const getRegistry = memoize(async ({ blockchainId } = {}) => {
 }, {
   promise: true,
   maxAge: 10 * 60 * 1000, // 10 min
-  normalizer: ([{ blockchainId }]) => blockchainId,
+  normalizer: ([{ blockchainId } = {}]) => blockchainId,
 });
 
 const getMultiCall = async () => {
