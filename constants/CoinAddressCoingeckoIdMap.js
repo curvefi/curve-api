@@ -27,6 +27,7 @@ export default {
     '0xdbf31df14b66535af65aac99c32e9ea844e14501': 'renbtc',
     '0x82af49447d8a07e3bd95bd0d56f35241523fbab1': 'weth',
     '0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a': 'magic-internet-money',
+    '0xd22a58f79e9481d1a88e00c343885a588b34b68b': 'stasis-eurs',
   },
   avalanche: {
     '0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a': 'dai',
