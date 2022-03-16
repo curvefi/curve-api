@@ -1,7 +1,7 @@
 ## Table of Contents
 
+  - [getPools](#getpools)
   - [getETHprice](#getethprice)
-  - [getFactoryPools](#getfactorypools)
   - [getFactoryTVL](#getfactorytvl)
   - [getRegistryAddress](#getfactoryaddress)
   - [getTVL](#getTVL)
@@ -13,6 +13,44 @@
 **Base is always: https://api.curve.fi/**
 
 Last generation time of an endpoint can be found in the `generatedTimeMs` property.
+
+### getPools
+
+Retrieves all pools for any registry on any chain where Curve is deployed.
+
+```
+GET /api/getPools/<blockchainId>/<registryId>
+```
+
+**Parameters:**
+
+- `blockchainId`: blockchain id where Curve pools are deployed
+- `registryId`: registry id where Curve pools are deployed (`'main'|'crypto'|'factory'|'factory-crypto'`)
+
+**View**:
+
+*This is the list of all deployed registries on all chains, as of March 16, 2022*
+
+- https://api.curve.fi/api/getPools/ethereum/main
+- https://api.curve.fi/api/getPools/ethereum/crypto
+- https://api.curve.fi/api/getPools/ethereum/factory
+- https://api.curve.fi/api/getPools/ethereum/factory-crypto
+- https://api.curve.fi/api/getPools/polygon/main
+- https://api.curve.fi/api/getPools/polygon/crypto
+- https://api.curve.fi/api/getPools/polygon/factory
+- https://api.curve.fi/api/getPools/fantom/main
+- https://api.curve.fi/api/getPools/fantom/crypto
+- https://api.curve.fi/api/getPools/fantom/factory
+- https://api.curve.fi/api/getPools/arbitrum/main
+- https://api.curve.fi/api/getPools/arbitrum/crypto
+- https://api.curve.fi/api/getPools/arbitrum/factory
+- https://api.curve.fi/api/getPools/avalanche/main
+- https://api.curve.fi/api/getPools/avalanche/crypto
+- https://api.curve.fi/api/getPools/avalanche/factory
+- https://api.curve.fi/api/getPools/optimism/main
+- https://api.curve.fi/api/getPools/optimism/crypto
+- https://api.curve.fi/api/getPools/optimism/factory
+- https://api.curve.fi/api/getPools/xdai/main
 
 ### getETHprice
 ```
@@ -34,42 +72,6 @@ NONE
    "price": 1826.11, //price of Ethereum in USD
    "generatedTimeMs": 1615380294701 //when the response was generated
 }
-```
-
-### getFactoryPools
-```
-GET /api/getFactoryPools
-```
-Returns all factory pools with balances and token details
-
-**Parameters:**
-NONE
-
-**View**:
-[getFactoryPools](https://api.curve.fi/api/getFactoryPools)
-
-**Response :**
-
-```
-{
-  "address": "0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c", //pool address
-  "type": "USD", //asset type
-  "balance": "274913010.55", //total balance
-  "token": {
-    "address": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9", //address of token 1
-    "symbol": "alUSD",
-    "decimals": 18,
-    "rawBalance": "135704363696911375358522013",
-    "balance": "135704363.70" //balance of token 1
-  },
-  "lpToken": {
-    "address": "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490", //address of token 2 (LP token)
-    "symbol": "3Crv",
-    "decimals": 18,
-    "rawBalance": "139208646857596652823648677",
-    "balance": "139208646.86" //balance of token 2
-  }
-},
 ```
 
 ### getFactoryTVL
