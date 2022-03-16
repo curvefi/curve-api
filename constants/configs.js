@@ -188,7 +188,8 @@ const configs = {
       ['0xC2b1DF84112619D190193E48148000e3990Bf627', '0x0f9cb53ebe405d49a0bbdbd291a65ff571bc83e1'], // meta btc
     ]),
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche"
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche",
+    approxBlocksPerDay: 43000,
   },
   optimism: {
     nativeCurrencySymbol: 'ETH',
