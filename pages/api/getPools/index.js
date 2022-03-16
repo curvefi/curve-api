@@ -24,6 +24,7 @@ import { sequentialPromiseReduce } from 'utils/Async';
 import { getRegistry } from 'utils/getters';
 import getTokensPrices from 'utils/data/tokens-prices';
 import getAssetsPrices from 'utils/data/assets-prices';
+import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getFactoryV2GaugeRewards from 'utils/data/getFactoryV2GaugeRewards';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
 import getGauges from 'pages/api/getGauges';
@@ -382,6 +383,12 @@ export default fn(async ({ blockchainId, registryId }) => {
       {}
   );
 
+  const ycTokensAddressesAndPricesMapFallback = (
+    blockchainId === 'ethereum' ?
+      await getYcTokenPrices(networkSettingsParam) :
+      {}
+  );
+
   const coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
     // In crypto facto pools, native eth is represented as weth
     const isNativeEth = (
@@ -448,6 +455,7 @@ export default fn(async ({ blockchainId, registryId }) => {
     const coinPrice = (
       coinAddressesAndPricesMap[coinAddress.toLowerCase()] ||
       coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
+      ycTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) ||
       0
     );
