@@ -11,6 +11,15 @@
  */
 
 export default {
+  ethereum: {
+    '0xc2cb1040220768554cf699b0d863a3cd4324ce32': 'dai', // yDAI
+    '0x26ea744e5b887e5205727f55dfbe8685e3b21951': 'usd-coin', // yUSDC
+    '0xe6354ed5bc4b393a5aad09f21c46e101e692d447': 'tether', // yUSDT
+    '0x04bc0ab673d88ae9dbc9da2380cb6b79c4bca9ae': 'binance-usd', // yBUSD
+    '0x16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'dai', // ycDAI
+    '0xd6ad7a6750a7593e092a9b218d66c0a814a3436e': 'usd-coin', // ycUSDC
+    '0x83f798e925bcd4017eb265844fddabb448f1707d': 'tether', // ycUSDT
+  },
   arbitrum: {
     '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8': 'usd-coin',
     '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9': 'tether',
