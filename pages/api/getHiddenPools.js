@@ -69,6 +69,7 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-132', // duplicate and empty
     'factory-v2-134', // duplicate and empty
     'factory-v2-136', // duplicate and empty
+    'atricrypto2', // killed
   ],
   avalanche: [
     'factory-v2-42', //empty/borked
