@@ -2,6 +2,18 @@
 
 import { flattenArray, getArrayChunks } from 'utils/Array';
 
+const sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration));
+
+const sleepUntil = async (conditionFn, checkInterval = 200) => {
+  if (typeof conditionFn !== 'function') {
+    throw new Error('sleepUntil expects a function as first argument');
+  }
+
+  while (!conditionFn()) {
+    await sleep(checkInterval);
+  }
+};
+
 const sequentialPromiseMap = async (array, asyncFn, chunkSize) => {
   const results = [];
   let i = 0;
@@ -40,4 +52,5 @@ export {
   sequentialPromiseMap,
   sequentialPromiseFlatMap,
   sequentialPromiseReduce,
+  sleepUntil,
 };
