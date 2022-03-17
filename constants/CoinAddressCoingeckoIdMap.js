@@ -20,7 +20,18 @@ export default {
     '0xd6ad7a6750a7593e092a9b218d66c0a814a3436e': 'usd-coin', // ycUSDC
     '0x83f798e925bcd4017eb265844fddabb448f1707d': 'tether', // ycUSDT
   },
+  polygon: {
+    '0xdab529f40e671a1d4bf91361c21bf9f0c9712ab7': 'binance-usd',
+    '0x7bdf330f423ea880ff95fc41a280fd5ecfd3d09f': 'tether-eurt',
+    '0x5a35d30c8b23e571e4f7efc25f353c91fd12f8e8': 'popcorn',
+    '0xb34d4803a9bafd5bd54d0d6db49248cf82934c1a': 'interest-bearing-bitcoin',
+    '0x3066818837c5e6ed6601bd5a91b0762877a6b731': 'uma',
+    '0x769434dca303597c8fc4997bf3dab233e961eda2': 'xsgd',
+    '0xc67238827da94b15f6ba10f3d35f690809919f75': 'ampleforth',
+    '0x553d3d295e0f695b9228246232edf400ed3560b5': 'pax-gold',
+  },
   arbitrum: {
+    '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1': 'dai',
     '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8': 'usd-coin',
     '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9': 'tether',
     '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f': 'wrapped-bitcoin',
@@ -28,6 +39,8 @@ export default {
     '0x82af49447d8a07e3bd95bd0d56f35241523fbab1': 'weth',
     '0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a': 'magic-internet-money',
     '0xd22a58f79e9481d1a88e00c343885a588b34b68b': 'stasis-eurs',
+    '0x17fc002b466eec40dae837fc4be5c67993ddbd6f': 'frax',
+    '0x115d8bf0a53e751f8a472f88d587944ec1c8ca6d': 'ptokens-btc',
   },
   avalanche: {
     '0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a': 'dai',
@@ -36,6 +49,7 @@ export default {
     '0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d': 'wrapped-bitcoin',
     '0xdbf31df14b66535af65aac99c32e9ea844e14501': 'renbtc',
     '0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21': 'weth',
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'avalanche-2',
   },
   fantom: {
     '0x04c762a5df2fa02fe868f25359e0c259fb811cfe': 'dai', // iDAI
