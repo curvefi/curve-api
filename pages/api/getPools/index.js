@@ -10,6 +10,8 @@
  */
 
 import Web3 from 'web3';
+import BN from 'bignumber.js';
+import groupBy from 'lodash.groupby';
 import { fn } from 'utils/api';
 import factoryV2RegistryAbi from 'constants/abis/factory-v2-registry.json';
 import factoryPoolAbi from 'constants/abis/factory-v2/Plain2Balances.json';
@@ -38,6 +40,7 @@ const POOL_BALANCE_ABI = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "
 const POOL_PRICE_ORACLE_NO_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[{"name":"k","type":"uint256"}],"outputs":[{"name":"","type":"uint256"}]}];
 /* eslint-enable */
+/* eslint-disable object-curly-newline */
 
 const getEthereumOnlyData = async () => {
   const [
@@ -74,6 +77,8 @@ const getEthereumOnlyData = async () => {
   };
 };
 
+const isDefinedCoin = (address) => address !== '0x0000000000000000000000000000000000000000';
+
 /**
  * Params:
  * - blockchainId: 'ethereum' (default) | any side chain
@@ -98,7 +103,7 @@ export default fn(async ({ blockchainId, registryId }) => {
     getFactoryRegistryAddress,
     getCryptoRegistryAddress,
     getFactoryCryptoRegistryAddress,
-    multicallAddress,
+    multicall2Address,
     BASE_POOL_LP_TO_GAUGE_LP_MAP,
     DISABLED_POOLS_ADDRESSES,
   } = config;
@@ -157,8 +162,8 @@ export default fn(async ({ blockchainId, registryId }) => {
   const registry = new web3.eth.Contract(REGISTRY_ABI, registryAddress);
 
   const networkSettingsParam = (
-    typeof multicallAddress !== 'undefined' ?
-      { networkSettings: { web3, multicallAddress } } :
+    typeof multicall2Address !== 'undefined' ?
+      { networkSettings: { web3, multicall2Address } } :
       undefined
   );
 
@@ -354,7 +359,7 @@ export default fn(async ({ blockchainId, registryId }) => {
 
   const allCoinAddresses = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
     if (type === 'coinsAddresses') {
-      const poolCoins = data.filter((address) => address !== '0x0000000000000000000000000000000000000000');
+      const poolCoins = data.filter(isDefinedCoin);
       return accu.concat(poolCoins.map((address) => ({ poolId, address })));
     }
 
@@ -497,6 +502,56 @@ export default fn(async ({ blockchainId, registryId }) => {
     return accu;
   }, emptyData);
 
+  // Fetch get_dy() between all coins in all pools in order to derive prices within a pool where necessary.
+  // This is only for "factory" pools; not "main", not "crypto", not "factory-crypto", which all have other
+  // methods of deriving internal prices.
+  const rawInternalPoolsPrices = (
+    registryId !== 'factory' ? [] :
+    await multiCall(flattenArray(mergedPoolData.map(({
+      id,
+      address,
+      coinsAddresses: unfilteredCoinsAddresses,
+      decimals,
+      totalSupply,
+    }) => {
+      const SMALL_AMOUNT_UNIT = BN(1);
+      if (Number(totalSupply) < SMALL_AMOUNT_UNIT.times(1e18).times(10)) return []; // Ignore empty pools
+
+      const coinsAddresses = unfilteredCoinsAddresses.filter(isDefinedCoin);
+      const poolContract = new web3.eth.Contract(POOL_ABI, address);
+
+      return flattenArray(coinsAddresses.map((_, i) => {
+        const iDecimals = Number(decimals[i]);
+        const smallAmount = SMALL_AMOUNT_UNIT.times(BN(10).pow(iDecimals)).toFixed();
+
+        return coinsAddresses.map((__, j) => {
+          if (j === i) return null;
+
+          return {
+            contract: poolContract,
+            methodName: 'get_dy',
+            params: [i, j, smallAmount],
+            metaData: {
+              poolId: id,
+              i,
+              j,
+              jDivideBy: SMALL_AMOUNT_UNIT.times(BN(10).pow(Number(decimals[j]))),
+            },
+            ...networkSettingsParam,
+          };
+        }).filter((call) => call !== null);
+      }));
+    })))
+  );
+
+  const internalPoolsPrices = groupBy(rawInternalPoolsPrices.map(({
+    data,
+    metaData: { poolId, i, j, jDivideBy },
+  }) => {
+    const rate = data / jDivideBy;
+    return { rate, poolId, i, j };
+  }), 'poolId');
+
   const augmentedData = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
     const implementation = (
       registryId === 'factory' ?
@@ -517,7 +572,7 @@ export default fn(async ({ blockchainId, registryId }) => {
     );
 
     const coins = poolInfo.coinsAddresses
-      .filter((address) => address !== '0x0000000000000000000000000000000000000000')
+      .filter(isDefinedCoin)
       .map((coinAddress) => {
         const key = `${poolInfo.id}-${coinAddress}`;
 
@@ -533,6 +588,7 @@ export default fn(async ({ blockchainId, registryId }) => {
       coins,
       poolInfo,
       otherPools: wipMergedPoolData,
+      internalPoolPrices: internalPoolsPrices[poolInfo.id] || [],
     });
 
     const usdTotal = sum(augmentedCoins.map(({ usdPrice, poolBalance, decimals }) => (

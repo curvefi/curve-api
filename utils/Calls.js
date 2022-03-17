@@ -2,12 +2,17 @@
 
 import Web3 from 'web3';
 import memoize from 'memoizee';
+import configs from 'constants/configs';
 import WEB3_CONSTANTS from 'constants/Web3';
 import { IS_DEV } from 'constants/AppConstants';
-import multicall_abi from '../constants/abis/multicall.json';
+import MULTICALL2_ABI from '../constants/abis/multicall2.json';
 import { getArrayChunks, flattenArray } from './Array';
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
+
+const FALLBACK_DECODED_PARAMETERS_VALUES = {
+  uint256: '0',
+};
 
 // Contract instances cache store
 const getContractInstance = memoize((address, abi, library) => (
@@ -34,7 +39,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
     metaData: undefined,
     networkSettings: {
       web3,
-      multicallAddress: '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441',
+      multicall2Address: configs.ethereum.multicall2Address,
     },
   };
 
@@ -93,7 +98,8 @@ const multiCall = async (callsConfig, isDebugging = false) => {
   });
 
   const { networkSettings } = augmentedCallsConfig[0];
-  const multicall = getContractInstance(networkSettings.multicallAddress, multicall_abi, networkSettings.web3);
+
+  const multicall = getContractInstance(networkSettings.multicall2Address, MULTICALL2_ABI, networkSettings.web3);
   const chunkedReturnData = [];
   const chunkedCalls = getArrayChunks(calls, 200); // Keep each multicall size reasonable
 
@@ -102,7 +108,8 @@ const multiCall = async (callsConfig, isDebugging = false) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const callsChunk of chunkedCalls) {
       // eslint-disable-next-line no-await-in-loop
-      const { returnData } = await multicall.methods.aggregate(callsChunk).call();
+      const aggregateReturnData = await multicall.methods.tryAggregate(false, callsChunk).call();
+      const returnData = aggregateReturnData.map(({ returnData }) => returnData);
       chunkedReturnData.push(returnData);
     }
 
@@ -113,14 +120,37 @@ const multiCall = async (callsConfig, isDebugging = false) => {
       const contractAbi = contract?._jsonInterface || abi;
       const outputSignature = contractAbi.find(({ name }) => name === methodName).outputs;
 
-      const data = outputSignature.length > 1 ?
-        networkSettings.web3.eth.abi.decodeParameters(outputSignature.map(({ type, name }) => ({ type, name })), hexData) :
-        networkSettings.web3.eth.abi.decodeParameter(outputSignature[0].type, hexData);
+      let data;
+      if (outputSignature.length > 1) {
+        try {
+          data = networkSettings.web3.eth.abi.decodeParameters(outputSignature.map(({ type, name }) => ({ type, name })), hexData);
+        } catch (err) {
+          console.error(`Failed decodeParameters with outputSignature ${JSON.stringify(outputSignature.map(({ type, name }) => ({ type, name })))}`);
+
+          throw err;
+        }
+      } else {
+        try {
+          data = networkSettings.web3.eth.abi.decodeParameter(outputSignature[0].type, hexData);
+        } catch (err) {
+          const failedDecodedType = outputSignature[0].type;
+
+          // Use fallback value if one exists (ideally we have fallback values for all types,
+          // add more when necessary as we encounter other failures)
+          if (typeof FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType] !== 'undefined') {
+            data = FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType];
+          } else {
+            console.error(`Failed decodeParameter with outputSignature ${JSON.stringify(failedDecodedType)}`);
+            throw err;
+          }
+        }
+      }
 
       if (hasMetaData) return { data, metaData };
       return data;
     });
   } catch (err) {
+    console.error(err)
     if (IS_DEV && !isDebugging) await findThrowingCall(callsConfig);
     else throw err;
   }

@@ -21,7 +21,7 @@ export default memoize(async (blockchainId) => {
 
   const multicallNetworkSettings = {
     web3: new Web3(config.rpcUrl),
-    multicallAddress: config.multicallAddress,
+    multicall2Address: config.multicall2Address,
   };
 
   const { gauges } = await getGauges.straightCall();

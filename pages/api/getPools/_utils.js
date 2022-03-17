@@ -23,10 +23,12 @@ const deriveMissingCoinPricesSinglePass = async ({
   coins,
   poolInfo,
   otherPools,
+  internalPoolPrices,
 }) => {
   /**
    * Method 1: A coin's price is unknown, another one is known. Use the known price,
-   * alongside the price oracle, to derive the other coin's price.
+   * alongside the price oracle, to derive the other coin's price. Alternatively, use
+   * 1 as the price oracle value in the case of stable pools in the main registry.
    *
    * Note: The current logic is simplistic, and only allows filling in the blanks when
    * a pool is missing a single coin's price at index 0 or 1. Let's improve it later
@@ -100,7 +102,45 @@ const deriveMissingCoinPricesSinglePass = async ({
   }
 
   /**
-   * Method 3: Same as method 2, with values from main registry pools instead of
+   * Method 3: At least one coin price is known, and the rates between all coins in
+   * the pool are known, allowing us to derive all other coins prices.
+   */
+  const canUseInternalPriceOracle = (
+    internalPoolPrices.length > 0 &&
+    coins.filter(({ usdPrice }) => usdPrice !== null).length >= 1
+  );
+  if (canUseInternalPriceOracle) {
+    if (IS_DEV) console.log('Missing coin price: using method 3 to derive price');
+    const coinWithKnownPrice = coins.find(({ usdPrice }) => usdPrice !== null);
+    const coinWithKnownPriceIndex = coins.indexOf(coinWithKnownPrice);
+
+    return (
+      coins.map((coin, coinIndex) => {
+        if (coin.usdPrice !== null) return coin;
+
+        const internalPoolPriceData = internalPoolPrices.find(({ i, j }) => (
+          i === coinIndex && j === coinWithKnownPriceIndex
+        ));
+        if (!internalPoolPriceData) { // Should never happen
+          throw new Error(`internalPoolPriceData not found for indices (${coinWithKnownPriceIndex}, ${coinIndex}) in pool ${poolInfo.id}`);
+        }
+
+        const usdPrice = (
+          internalPoolPriceData.i === coinWithKnownPriceIndex ?
+            (coinWithKnownPrice.usdPrice / internalPoolPriceData.rate) :
+            (coinWithKnownPrice.usdPrice * internalPoolPriceData.rate)
+        );
+
+        return {
+          ...coin,
+          usdPrice,
+        };
+      })
+    );
+  }
+
+  /**
+   * Method 4: Same as method 3, with values from main registry pools instead of
    * values from other pools in the same registry.
    */
   const canFetchMoreDataFromMainRegistry = registryId !== 'main';
@@ -117,7 +157,7 @@ const deriveMissingCoinPricesSinglePass = async ({
     ));
 
     if (canUseSameCoinPriceInMainPool) {
-      if (IS_DEV) console.log('Missing coin price: using method 3 to derive price');
+      if (IS_DEV) console.log('Missing coin price: using method 4 to derive price');
 
       return (
         coins.map((coin) => (
@@ -139,6 +179,7 @@ const deriveMissingCoinPrices = async ({
   coins,
   poolInfo,
   otherPools,
+  internalPoolPrices,
 }) => {
   let iteration = 0;
   let augmentedCoins = coins;
@@ -156,6 +197,7 @@ const deriveMissingCoinPrices = async ({
       coins: augmentedCoins,
       poolInfo,
       otherPools,
+      internalPoolPrices,
     });
   }
 
