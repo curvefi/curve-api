@@ -50,11 +50,14 @@ export default {
     '0xdbf31df14b66535af65aac99c32e9ea844e14501': 'renbtc',
     '0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21': 'weth',
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'avalanche-2',
+    '0x6807ed4369d9399847f306d7d835538915fa749d': 'dai', // bDAI
+    '0xc53a6eda2c847ce9f10b5c8d51bc2a9ed2fe3d44': 'avalanche-2', // u.AVAX
   },
   fantom: {
     '0x04c762a5df2fa02fe868f25359e0c259fb811cfe': 'dai', // iDAI
     '0x328a7b4d538a2b3942653a9983fda3c12c571141': 'usd-coin', // iUSDC
     '0x70fac71debfd67394d1278d98a29dea79dc6e57a': 'tether', // iUSDT
+    '0xc931f61b1534eb21d8c11b24f3f5ab2471d4ab50': 'binance-usd', // iUSDT
   },
   optimism: {
     '0x1337bedc9d22ecbe766df105c9623922a27963ec': 'usd-coin', // 3crv approximation

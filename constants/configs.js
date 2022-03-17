@@ -10,6 +10,7 @@ const configs = {
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: WEB3_CONSTANTS.RPC_URL,
     multicallAddress: '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441',
+    multicall2Address: '0x5ba1e12693dc8f9c48aad8770482f4739beed696',
     getFactoryRegistryAddress: async () => '0xb9fc157394af804a3578134a6585c0dc9cc990d4',
     getCryptoRegistryAddress: async () => '0x8F942C20D02bEfc377D41445793068908E2250D0',
     factoryImplementationAddressMap: new Map([
@@ -47,6 +48,7 @@ const configs = {
     nativeAssetErc20WrapperId: 'wmatic',
     rpcUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_POLYGON}`,
     multicallAddress: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
+    multicall2Address: '0x275617327c958bD06b5D6b871E7f491D76113dd8',
     getFactoryRegistryAddress: async () => '0x722272d36ef0da72ff51c5a65db7b870e2e8d4ee',
     getCryptoRegistryAddress: async () => '0x47bB542B9dE58b970bA50c9dae444DDB4c16751a',
     factoryImplementationAddressMap: new Map([
@@ -75,6 +77,12 @@ const configs = {
       '0x666Dc3b4baBfd063FaF965BD020024AF0dC51B64', // Pool coins contracts were self-destructed, calls reverting
       '0x88C4D6534165510b2E2CAF0A130d4F70aA4B6d71', // Pool coins contracts were self-destructed, calls reverting
       '0xE4199bC5C5C1F63dbA47B56B6dB7144C51CF0bF8', // Pool coins contracts were self-destructed, calls reverting
+      '0xdaedd59fa2c5c63d46a3bae5ed115247df9eb6ec', // Broken pool with failing get_dy and scammy tokens
+      '0x3ce39825ab258693cedb8daf1db441627d011371', // Broken pool
+      '0x632F9Be4Bf42e0dBb461CFcC0CF788538a49ED6D', // Broken pool
+      '0x1197Ae7F43695Be80127365b494E8BF850f4752A', // Broken pool
+      '0x40caB7C05fc1686e198C8d6d6aA4aaCF77BE8590', // Broken pool
+      '0x64FFf0e27c223097c824f9d9278eFD5B55c3430e', // Broken pool
     ].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
   },
@@ -87,6 +95,7 @@ const configs = {
     nativeAssetErc20WrapperId: 'wftm',
     rpcUrl: 'https://rpc.ftm.tools/',
     multicallAddress: '0xb828c456600857abd4ed6c32facc607bd0464f4f',
+    multicall2Address: '0xD98e3dBE5950Ca8Ce5a4b59630a5652110403E5c',
     getFactoryRegistryAddress: async () => '0x686d67265703d1f124c45e33d47d794c566889ba',
     getCryptoRegistryAddress: async () => '0x4fb93D7d320E8A263F22f62C2059dFC2A8bCbC4c',
     factoryImplementationAddressMap: new Map([
@@ -128,6 +137,7 @@ const configs = {
     nativeAssetErc20WrapperId: 'weth',
     rpcUrl: `https://arb-mainnet.g.alchemy.com/v2/D5O-iVrTJhd_coUFfsPFrcX5RFaJ0LIa`,
     multicallAddress: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
+    multicall2Address: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
     getCryptoRegistryAddress: async () => '0x0E9fBb167DF83EdE3240D6a5fa5d40c6C6851e15',
     factoryImplementationAddressMap: new Map([
@@ -163,6 +173,7 @@ const configs = {
     nativeAssetId: 'avax', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wavax',
     multicallAddress: '0xa00FB557AA68d2e98A830642DBbFA534E8512E5f',
+    multicall2Address: '0x29b6603D17B9D8f021EcB8845B6FD06E1Adf89DE',
     getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
     getCryptoRegistryAddress: async () => '0x90f421832199e93d01b64DaF378b183809EB0988',
     factoryImplementationAddressMap: new Map([
@@ -200,6 +211,7 @@ const configs = {
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://mainnet.optimism.io',
     multicallAddress: '0x2DC0E2aa608532Da689e89e237dF582B783E552C',
+    multicall2Address: '0x2DC0E2aa608532Da689e89e237dF582B783E552C',
     getFactoryRegistryAddress: async () => '0x2db0E83599a91b508Ac268a6197b8B14F5e72840',
     getCryptoRegistryAddress: async () => '0x7DA64233Fefb352f8F501B357c018158ED8aA455',
     factoryImplementationAddressMap: new Map([
@@ -239,6 +251,7 @@ const configs = {
     nativeAssetErc20WrapperId: 'wxdai', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://rpc.xdaichain.com/curve',
     multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
+    multicall2Address: '0xFAa296891cA6CECAF2D86eF5F7590316d0A17dA0',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 16900,
   },
@@ -251,6 +264,7 @@ const configs = {
     nativeAssetErc20WrapperId: 'wone', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://rpc.s0.t.hmny.io',
     multicallAddress: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
+    multicall2Address: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 43200,
     getCryptoRegistryAddress: async () => '', // Has one crypto pool but no crypto registry
@@ -264,6 +278,7 @@ const configs = {
     nativeAssetErc20WrapperId: 'wGLMR', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://moonbeam.api.onfinality.io/public',
     multicallAddress: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
+    multicall2Address: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
   },
