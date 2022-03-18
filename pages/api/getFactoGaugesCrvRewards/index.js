@@ -43,15 +43,18 @@ export default fn(async ({ blockchainId }) => {
     swap,
     name,
     gauge_data: {
-      gauge_relative_weight: weight,
-      inflation_rate: rate,
+      inflation_rate: rate, // This already takes gauge_relative_weight into account in side facto gauges
+      totalSupply,
     },
   }) => {
     const lcAddress = swap.toLowerCase();
     const pool = poolData.find(({ address }) => address.toLowerCase() === lcAddress);
     if (!pool) throw new Error(`Can't find pool data for swap address "${swap}"`);
 
-    const apy = (rate / 1e18) * (weight / 1e18) * (86400 * 365) / pool.usdTotal * 0.4 * crvPrice * 100;
+    const lpTokenUsdValue = pool.usdTotal / (pool.totalSupply / 1e18);
+    const gaugeUsdValue = totalSupply / 1e18 * lpTokenUsdValue;
+
+    const apy = (rate / 1e18) * (86400 * 365) / gaugeUsdValue * 0.4 * crvPrice * 100;
 
     return {
       address: lcAddress,
