@@ -122,6 +122,7 @@ export default fn(async ({ blockchainId }) => {
       calls.push([gaugeList[i], gaugeContract.methods.name().encodeABI()])
       calls.push([gaugeList[i], gaugeContract.methods.symbol().encodeABI()])
       calls.push([gaugeList[i], gaugeContract.methods.working_supply().encodeABI()])
+      calls.push([gaugeList[i], gaugeContract.methods.totalSupply().encodeABI()])
       calls.push([gaugeList[i], gaugeContract.methods.inflation_rate(startOfWeekTs).encodeABI()])
     }
     aggGaugecalls = await multicall.methods.aggregate(calls).call();
@@ -137,6 +138,8 @@ export default fn(async ({ blockchainId }) => {
       let symbol = await web3.eth.abi.decodeParameter('string', aggGaugecalls[i])
       i += 1
       let working_supply = await web3.eth.abi.decodeParameter('uint256', aggGaugecalls[i])
+      i += 1
+      let totalSupply = await web3.eth.abi.decodeParameter('uint256', aggGaugecalls[i])
       i += 1
       let inflation_rate = await web3.eth.abi.decodeParameter('uint256', aggGaugecalls[i])
 
@@ -167,6 +170,7 @@ export default fn(async ({ blockchainId }) => {
         type: 'stable', //we will have a problem detecting this which is used by cur.vote or the voting app to calculate the $ value in the gauge
         gauge_data: {
           working_supply,
+          totalSupply,
           gauge_relative_weight,
           inflation_rate: Number(inflation_rate) || pendingEmissions[gaugeList[gaugeN]],
         },
