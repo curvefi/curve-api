@@ -1,7 +1,9 @@
 import Web3 from 'web3';
+import groupBy from 'lodash.groupby';
 import { fn } from 'utils/api';
 import gaugeRegistry from 'constants/abis/gauge-registry.json';
 import sideChainGauge from 'constants/abis/sidechain-gauge.json';
+import sideChainRootGauge from 'constants/abis/sidechain-root-gauge.json';
 
 import multicallAbi from 'constants/abis/multicall.json';
 import gaugeControllerAbi from 'constants/abis/gauge_controller.json';
@@ -83,8 +85,34 @@ export default fn(async ({ blockchainId }) => {
     }
   }
 
+  const weekSeconds = 86400 * 7;
+  const nowTs = +Date.now() / 1000;
+  const startOfWeekTs = Math.trunc(nowTs / weekSeconds) * weekSeconds;
+  const endOfWeekTs = startOfWeekTs + weekSeconds;
+
+  /**
+   * Root gauges with emissions meant for their side gauge, but not passed on to it yet
+   * (will be passed to side gauge as soon as someone interacts with it). We thus
+   * use those pending emissions as the basis to calculate apys for this side gauge.
+   */
+  const pendingEmissionsRaw = await multiCall(gaugeList.map((gaugeAddress) => ({
+    address: gaugeAddress,
+    abi: sideChainRootGauge,
+    methodName: 'total_emissions',
+    metaData: { gaugeAddress },
+    networkSettings: { web3, multicall2Address: configs.ethereum.multicall2Address },
+  })));
+  const pendingEmissions = arrayToHashmap(pendingEmissionsRaw.map(({ data, metaData }) => {
+    const inflationRate = data / (endOfWeekTs - nowTs);
+
+    return [
+      metaData.gaugeAddress,
+      inflationRate,
+    ];
+  }));
+
     calls = []
-    const gaugeContract =  new web3Side.eth.Contract(sideChainGauge, gaugeList[0]);
+    const gaugeContract = new web3Side.eth.Contract(sideChainGauge, gaugeList[0]);
 
     const gaugeControllerAddress = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB'
     const gaugeController = new web3.eth.Contract(gaugeControllerAbi, gaugeControllerAddress);
@@ -94,6 +122,7 @@ export default fn(async ({ blockchainId }) => {
       calls.push([gaugeList[i], gaugeContract.methods.name().encodeABI()])
       calls.push([gaugeList[i], gaugeContract.methods.symbol().encodeABI()])
       calls.push([gaugeList[i], gaugeContract.methods.working_supply().encodeABI()])
+      calls.push([gaugeList[i], gaugeContract.methods.inflation_rate(startOfWeekTs).encodeABI()])
     }
     aggGaugecalls = await multicall.methods.aggregate(calls).call();
     aggGaugecalls = aggGaugecalls[1]
@@ -108,10 +137,14 @@ export default fn(async ({ blockchainId }) => {
       let symbol = await web3.eth.abi.decodeParameter('string', aggGaugecalls[i])
       i += 1
       let working_supply = await web3.eth.abi.decodeParameter('uint256', aggGaugecalls[i])
+      i += 1
+      let inflation_rate = await web3.eth.abi.decodeParameter('uint256', aggGaugecalls[i])
 
       let hasCrv = false
+      let gauge_relative_weight;
       try {
         await gaugeController.methods.gauge_types(gaugeList[gaugeN]).call()
+        gauge_relative_weight = await gaugeController.methods.gauge_relative_weight(gaugeList[gaugeN]).call()
         hasCrv = true
       } catch (e) { }
 
@@ -134,7 +167,8 @@ export default fn(async ({ blockchainId }) => {
         type: 'stable', //we will have a problem detecting this which is used by cur.vote or the voting app to calculate the $ value in the gauge
         gauge_data: {
           working_supply,
-          inflation_rate: 0
+          gauge_relative_weight,
+          inflation_rate: Number(inflation_rate) || pendingEmissions[gaugeList[gaugeN]],
         },
         swap_data: {
           virtual_price

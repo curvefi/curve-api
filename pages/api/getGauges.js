@@ -286,24 +286,24 @@ export default fn(async () => {
         type: 'stable',
       },
       "polygon-a3CRV": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x445FE580eF8d70FF569aB36e80c647af338db351',
+        swap_token: '0xE7a24EF0C5e95Ffb0f6684b813A78F2a3AD7D171',
         name: 'polygon-a3CRV',
         gauge: '0xC48f4653dd6a9509De44c92beb0604BEA3AEe714',
         type: 'stable',
         side_chain: true
       },
       "fantom-2pool": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x27e611fd27b276acbd5ffd632e5eaebec9761e40',
+        swap_token: '0x27e611fd27b276acbd5ffd632e5eaebec9761e40',
         name: 'fantom-2pool',
         gauge: '0xb9C05B8EE41FDCbd9956114B3aF15834FDEDCb54',
         type: 'stable',
         side_chain: true
       },
       "fantom-geist": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x0fa949783947Bf6c1b171DB13AEACBB488845B3f',
+        swap_token: '0x0fa949783947Bf6c1b171DB13AEACBB488845B3f',
         name: 'fantom-geist',
         gauge: '0xfE1A3dD8b169fB5BF0D5dbFe813d956F39fF6310',
         type: 'stable',
@@ -318,32 +318,33 @@ export default fn(async () => {
         is_killed: true
       },
       "polygon-ren": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0xC2d95EEF97Ec6C17551d45e77B590dc1F9117C67',
+        swap_token: '0xf8a57c1d3b9629b77b6726a042ca48990A84Fb49',
         name: 'polygon-ren',
         gauge: '0x488E6ef919C2bB9de535C634a80afb0114DA8F62',
         type: 'bitcoin',
         side_chain: true
       },
       "fantom-ren": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
+        swap_token: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
         name: 'fantom-ren',
         gauge: '0xfDb129ea4b6f557b07BcDCedE54F665b7b6Bc281',
         type: 'bitcoin',
         side_chain: true
       },
       "polygon-atricrypto": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x92577943c7aC4accb35288aB2CC84D75feC330aF',
+        swap_token: '0xbece5d20A8a104c54183CC316C8286E3F00ffC71',
         name: 'polygon-atricrypto',
         gauge: '0x060e386eCfBacf42Aa72171Af9EFe17b3993fC4F',
         type: 'crypto',
-        side_chain: true
+        side_chain: true,
+        is_killed: true
       },
       "xdai-3pool": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x7f90122BF0700F9E7e1F688fe926940E8839F353',
+        swap_token: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
         name: 'xdai-3pool',
         gauge: '0x6C09F6727113543Fd061a721da512B7eFCDD0267',
         type: 'stable',
@@ -443,32 +444,32 @@ export default fn(async () => {
         factory: true,
       },
       "arbitrum-tricrypto": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x960ea3e3C7FB317332d990873d354E18d7645590',
+        swap_token: '0x8e0B8c8BB9db49a46697F3a5Bb8A308e744821D2',
         name: 'arbitrum-tricrypto',
         gauge: '0x9044E12fB1732f88ed0c93cfa5E9bB9bD2990cE5',
         type: 'crypto',
         side_chain: true
       },
       "arbitrum-2pool": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x7f90122bf0700f9e7e1f688fe926940e8839f353',
+        swap_token: '0x7f90122bf0700f9e7e1f688fe926940e8839f353',
         name: 'arbitrum-2pool',
         gauge: '0xFf17560d746F85674FE7629cE986E949602EF948',
         type: 'stable',
         side_chain: true
       },
       "arbitrum-ren": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
+        swap_token: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
         name: 'arbitrum-ren',
         gauge: '0x9F86c5142369B1Ffd4223E5A2F2005FC66807894',
         type: 'bitcoin',
         side_chain: true
       },
       "fantom-tricrypto": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF',
+        swap_token: '0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF',
         name: 'fantom-tricrypto',
         gauge: '0x260e4fBb13DD91e187AE992c3435D0cf97172316',
         type: 'crypto',
@@ -508,32 +509,32 @@ export default fn(async () => {
         factory: true,
       },
       "avalanche-a3CRV": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x7f90122BF0700F9E7e1F688fe926940E8839F353',
+        swap_token: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
         name: 'avalanche-a3CRV',
         gauge: '0xB504b6EB06760019801a91B451d3f7BD9f027fC9',
         type: 'stable',
         side_chain: true
       },
       "avalanche-ren": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x16a7DA911A4DD1d83F3fF066fE28F3C792C50d90',
+        swap_token: '0xC2b1DF84112619D190193E48148000e3990Bf627',
         name: 'avalanche-ren',
         gauge: '0x75D05190f35567e79012c2F0a02330D3Ed8a1F74',
         type: 'bitcoin',
         side_chain: true
       },
       "avalanche-atricrypto": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0xB755B949C126C04e0348DD881a5cF55d424742B2',
+        swap_token: '0x1daB6560494B04473A0BE3E7D83CF3Fdf3a51828',
         name: 'avalanche-atricrypto',
         gauge: '0xa05E565cA0a103FcD999c7A7b8de7Bd15D5f6505',
         type: 'crypto',
         side_chain: true
       },
       "harmony-3pool": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023',
+        swap_token: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023',
         name: 'harmony-3pool',
         gauge: '0xf2Cde8c47C20aCbffC598217Ad5FE6DB9E00b163',
         type: 'stable',
@@ -795,6 +796,7 @@ export default fn(async () => {
           calls.push([gaugeControllerAddress, gaugeController.methods.get_gauge_weight(gauges[key].gauge).encodeABI()]);
           // calls.push([gaugeControllerAddress, gaugeController.methods.gauge_types(gauges[key].gauge).encodeABI()]);
           calls.push([gaugeControllerAddress, gaugeController.methods.gauge_relative_weight(gauges[key].gauge).encodeABI()]);
+          calls.push([gauges[key].gauge, exampleGauge.methods.inflation_rate().encodeABI()]);
         }
     });
 
@@ -846,11 +848,14 @@ export default fn(async () => {
       // let gauge_types = web3.eth.abi.decodeParameter('int128', aggcalls[i])
       // i += 1
       let gauge_relative_weight = web3.eth.abi.decodeParameter('uint256', aggcalls[i])
+      i += 1
+      let inflation_rate = web3.eth.abi.decodeParameter('uint256', aggcalls[i])
 
       let gaugeData = {
         'get_gauge_weight': get_gauge_weight,
         // 'gauge_types': gauge_types,
-        'gauge_relative_weight': gauge_relative_weight
+        'gauge_relative_weight': gauge_relative_weight,
+        inflation_rate,
       }
       allGaugeDetails.push(gaugeData)
     }
