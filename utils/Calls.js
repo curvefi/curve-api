@@ -26,6 +26,8 @@ const getContractInstance = memoize((address, abi, library) => (
  * If `metaData` is passed alongside any call, returns an array of objects of shape { data, metaData } instead.
  */
 const multiCall = async (callsConfig, isDebugging = false) => {
+  if (callsConfig.length === 0) return [];
+
   const defaultCallConfig = {
     // Pass either a contract object (if that contract object is already instantiated and it's easier)
     contract: undefined, // e.g. currentContract
