@@ -87,8 +87,8 @@ export default fn(async ({ blockchainId }) => {
 
   const weekSeconds = 86400 * 7;
   const nowTs = +Date.now() / 1000;
-  const startOfWeekTs = Math.trunc(nowTs / weekSeconds) * weekSeconds;
-  const endOfWeekTs = startOfWeekTs + weekSeconds;
+  const startOfWeekTs = Math.trunc(nowTs / weekSeconds);
+  const endOfWeekTs = (startOfWeekTs + 1) * weekSeconds;
 
   /**
    * Root gauges with emissions meant for their side gauge, but not passed on to it yet
