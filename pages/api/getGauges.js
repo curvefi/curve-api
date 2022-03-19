@@ -1,7 +1,8 @@
-import axios from 'axios';
 import Web3 from 'web3';
 import WEB3_CONSTANTS from 'constants/Web3';
-import { fn } from '../../utils/api';
+import getFactoGauges from 'pages/api/getFactoGauges';
+import { fn } from 'utils/api';
+import { arrayToHashmap, flattenArray } from 'utils/Array';
 import aggregatorInterfaceABI from '../../constants/abis/aggregator.json';
 import multicallAbi from '../../constants/abis/multicall.json';
 import gaugeControllerAbi from '../../constants/abis/gauge_controller.json';
@@ -9,6 +10,15 @@ import exampleGaugeAbi from '../../constants/abis/example_gauge.json';
 import swapAbi from '../../constants/abis/tripool_swap.json';
 
 import { getFactoryRegistry, getMultiCall } from '../../utils/getters';
+
+const CHAINS_WITH_FACTORY_GAUGES = [
+  'fantom',
+  'polygon',
+  'arbitrum',
+  'avalanche',
+  'optimism',
+  'xdai',
+];
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
@@ -783,11 +793,6 @@ export default fn(async () => {
       },
     }
 
-    // at this stage we would take the data
-    // from the getFactoGauges and add it to the above object
-    // below would fetch the gauge controller data and complete the object
-    // we need to iterate through getFactoGauges and include the ones where hasCRV is true
-
     // get pool addresses
     let calls = [];
 
@@ -879,8 +884,53 @@ export default fn(async () => {
       }
     })
 
+  // Add all sidechain factory gauges
+  const factoGauges = await Promise.all(CHAINS_WITH_FACTORY_GAUGES.map((blockchainId) => (
+    getFactoGauges.straightCall({ blockchainId })
+  )));
 
+  gauges = {
+    ...gauges,
+    ...arrayToHashmap(flattenArray(factoGauges.map(({ gauges: blochainFactoGauges }, i) => {
+      const blockchainId = CHAINS_WITH_FACTORY_GAUGES[i];
 
+      return (
+        blochainFactoGauges.filter(({ hasCrv }) => hasCrv).map(({
+          gauge,
+          gauge_data: {
+            gauge_relative_weight,
+            get_gauge_weight,
+            inflation_rate,
+            totalSupply,
+            working_supply,
+          },
+          swap,
+          swap_token,
+          type,
+          symbol,
+        }) => [
+          `${blockchainId}-f-${symbol.replace('-f-gauge', '')}`, {
+            swap,
+            swap_token,
+            name: `${blockchainId}-f-${symbol.replace('-f-gauge', '')}`,
+            gauge,
+            type,
+            side_chain: true,
+            factory: true,
+            gauge_data: {
+              inflation_rate,
+              working_supply,
+            },
+            gauge_controller: {
+              gauge_relative_weight,
+              get_gauge_weight,
+              inflation_rate,
+            },
+          },
+        ])
+      );
+    })))
+  };
 
 
   return { gauges };

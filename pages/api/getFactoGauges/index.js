@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-import groupBy from 'lodash.groupby';
 import { fn } from 'utils/api';
 import gaugeRegistry from 'constants/abis/gauge-registry.json';
 import sideChainGauge from 'constants/abis/sidechain-gauge.json';
@@ -9,19 +8,11 @@ import multicallAbi from 'constants/abis/multicall.json';
 import gaugeControllerAbi from 'constants/abis/gauge_controller.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
 
-import erc20Abi from 'constants/abis/erc20.json';
 import { multiCall } from 'utils/Calls';
-import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
-import getTokensPrices from 'utils/data/tokens-prices';
-import getAssetsPrices from 'utils/data/assets-prices';
-import getFactoryV2GaugeRewards from 'utils/data/getFactoryV2GaugeRewards';
+import { arrayToHashmap } from 'utils/Array';
 import { getMultiCall } from 'utils/getters';
 
-import getMainRegistryPools from 'pages/api/getMainRegistryPools';
-import getGauges from 'pages/api/getGauges';
-import { IS_DEV } from 'constants/AppConstants';
 import configs from 'constants/configs';
-import allCoins from 'constants/coins';
 
 
 export default fn(async ({ blockchainId }) => {
@@ -39,13 +30,6 @@ export default fn(async ({ blockchainId }) => {
 
 
   const {
-    nativeCurrencySymbol,
-    nativeCurrencyCoingeckoId,
-    nativeAssetErc20WrapperId,
-    platformCoingeckoId,
-    rpcUrl,
-    factoryImplementationAddressMap: implementationAddressMap,
-    getFactoryCryptoRegistryAddress,
     multicallAddress,
   } = config;
 
@@ -145,9 +129,11 @@ export default fn(async ({ blockchainId }) => {
 
       let hasCrv = false
       let gauge_relative_weight;
+      let get_gauge_weight;
       try {
         await gaugeController.methods.gauge_types(gaugeList[gaugeN]).call()
         gauge_relative_weight = await gaugeController.methods.gauge_relative_weight(gaugeList[gaugeN]).call()
+        get_gauge_weight = await gaugeController.methods.get_gauge_weight(gaugeList[gaugeN]).call()
         hasCrv = true
       } catch (e) { }
 
@@ -172,6 +158,7 @@ export default fn(async ({ blockchainId }) => {
           working_supply,
           totalSupply,
           gauge_relative_weight,
+          get_gauge_weight,
           inflation_rate: Number(inflation_rate) || pendingEmissions[gaugeList[gaugeN]],
         },
         swap_data: {
