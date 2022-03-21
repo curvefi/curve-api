@@ -100,7 +100,9 @@ export default fn(async () => {
     }
 
     let price_feed = await (await fetch('https://api.coingecko.com/api/v3/simple/price?ids=tether,ethereum,bitcoin,tether-eurt,stasis-eurs,curve-dao-token,convex-finance,tether-gold,spell-token,threshold-network-token&vs_currencies=usd')).json()
-
+  
+    let tvl = 0
+    
     for (const [key, pool] of Object.entries(cryptoPools)) {
       let poolContract = new web3.eth.Contract(cryptoPoolAbi, pool.address);
       for (var i = 0; i < pool.coins; i++) {
@@ -108,6 +110,8 @@ export default fn(async () => {
          let balance = await poolContract.methods.balances(i).call();
          cryptoPools[key].tvl += balance / 10 ** pool.decimals[i] * price_feed[pool.keys[i]].usd
       }
+      
+      tvl += cryptoPools[key].tvl
 
       let tokenContract = new web3.eth.Contract(erc20Abi, pool.token);
 
@@ -116,7 +120,7 @@ export default fn(async () => {
 
     }
 
-    return { cryptoPools };
+    return { cryptoPools, tvl };
 
 }, {
   maxAge: 15 * 60, // 15 min
