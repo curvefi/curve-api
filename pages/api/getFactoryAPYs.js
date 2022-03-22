@@ -28,7 +28,7 @@ export default fn(async (query) => {
     const factoryPoolsApiEndpoint = (
       version === 1 ? 'getFactoryPools' :
       version === 2 ? 'getFactoryV2Pools' :
-      version === 'crypto' ? 'getFactoryCryptoPools/ethereum' :
+      version === 'crypto' ? 'getPools/ethereum/factory-crypto' :
       undefined
     );
     let res = await (await fetch(`${BASE_API_DOMAIN}/api/${factoryPoolsApiEndpoint}`)).json()
@@ -81,26 +81,39 @@ export default fn(async (query) => {
                 currentXcpProfitA,
                 dayOldXcpProfit,
                 dayOldXcpProfitA,
-                weekOldXcpProfit,
-                weekOldXcpProfitA,
               ] = await Promise.all([
                 cryptoPoolContract.methods.xcp_profit().call('', latest),
                 cryptoPoolContract.methods.xcp_profit_a().call('', latest),
                 cryptoPoolContract.methods.xcp_profit().call('', latest - DAY_BLOCKS),
                 cryptoPoolContract.methods.xcp_profit_a().call('', latest - DAY_BLOCKS),
+              ]);
+
+              const currentProfit = ((currentXcpProfit / 2) + (currentXcpProfitA / 2) + 1e18) / 2;
+              const dayOldProfit = ((dayOldXcpProfit / 2) + (dayOldXcpProfitA / 2) + 1e18) / 2;
+
+              rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
+            } catch (err) {
+              rateDaily = 0;
+            }
+            try {
+              const [
+                currentXcpProfit,
+                currentXcpProfitA,
+                weekOldXcpProfit,
+                weekOldXcpProfitA,
+              ] = await Promise.all([
+                cryptoPoolContract.methods.xcp_profit().call('', latest),
+                cryptoPoolContract.methods.xcp_profit_a().call('', latest),
                 cryptoPoolContract.methods.xcp_profit().call('', latest - (DAY_BLOCKS * 7)),
                 cryptoPoolContract.methods.xcp_profit_a().call('', latest - (DAY_BLOCKS * 7)),
               ]);
 
               const currentProfit = ((currentXcpProfit / 2) + (currentXcpProfitA / 2) + 1e18) / 2;
-              const dayOldProfit = ((dayOldXcpProfit / 2) + (dayOldXcpProfitA / 2) + 1e18) / 2;
               const weekOldProfit = ((weekOldXcpProfit / 2) + (weekOldXcpProfitA / 2) + 1e18) / 2;
 
-              rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
               rateWeekly = (currentProfit - weekOldProfit) / weekOldProfit;
             } catch (err) {
-              rateDaily = 0;
-              rateWeekly = 0;
+              rateWeekly = rateDaily * 7;
             }
           } else {
             let vPriceDayOldFetch;
