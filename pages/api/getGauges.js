@@ -484,7 +484,7 @@ export default fn(async () => {
       },
       "fantom-tricrypto": {
         swap: '0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF',
-        swap_token: '0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF',
+        swap_token: '0x58e57cA18B7A47112b877E31929798Cd3D703b0f',
         name: 'fantom-tricrypto',
         gauge: '0x260e4fBb13DD91e187AE992c3435D0cf97172316',
         type: 'crypto',
