@@ -1,3 +1,8 @@
+/**
+ * Sidechain factory gauges are automatically retrieved.
+ * Ethereum stable/facto gauges are still hardcoded, need to automate them.
+ */
+
 import Web3 from 'web3';
 import WEB3_CONSTANTS from 'constants/Web3';
 import getFactoGauges from 'pages/api/getFactoGauges';
@@ -789,6 +794,14 @@ export default fn(async () => {
         name: 'f-btrflyeth',
         gauge: '0x5AC6886Edd18ED0AD01C0B0910660637c551FBd6',
         type: 'ethereum',
+        factory: true,
+      },
+      "f-pbtc": {
+        swap: '0xc9467e453620f16b57a34a770c6bcebece002587',
+        swap_token: '0xc9467e453620f16b57a34a770c6bcebece002587',
+        name: 'f-pbtc',
+        gauge: '0xB5efA93d5D23642f970aF41a1ea9A26f19CbD2Eb',
+        type: 'bitcoin',
         factory: true,
       },
     }
