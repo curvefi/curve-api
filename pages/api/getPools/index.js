@@ -620,12 +620,6 @@ export default fn(async ({ blockchainId, registryId }) => {
 
             return {
               ...rewardInfo,
-              check: {
-                gaugeTotalSupply,
-                poolTotalSupply,
-                gaugeUsdTotal,
-                ratioStaked: (gaugeTotalSupply / poolTotalSupply),
-              },
               apy: (
                 apyData.isRewardStillActive ?
                   apyData.rate * 86400 * 365 * apyData.tokenPrice / gaugeUsdTotal * 100 :
