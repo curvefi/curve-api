@@ -318,7 +318,7 @@ export default fn(async () => {
       },
       "fantom-geist": {
         swap: '0x0fa949783947Bf6c1b171DB13AEACBB488845B3f',
-        swap_token: '0x0fa949783947Bf6c1b171DB13AEACBB488845B3f',
+        swap_token: '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F',
         name: 'fantom-geist',
         gauge: '0xfE1A3dD8b169fB5BF0D5dbFe813d956F39fF6310',
         type: 'stable',
