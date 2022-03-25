@@ -342,7 +342,7 @@ export default fn(async () => {
       },
       "fantom-ren": {
         swap: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
-        swap_token: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
+        swap_token: '0x5B5CFE992AdAC0C9D48E05854B2d91C73a003858',
         name: 'fantom-ren',
         gauge: '0xfDb129ea4b6f557b07BcDCedE54F665b7b6Bc281',
         type: 'bitcoin',
