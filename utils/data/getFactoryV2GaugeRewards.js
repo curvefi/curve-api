@@ -102,11 +102,12 @@ export default memoize(async (factoryGaugesAddresses) => {
       name: tokenName,
       symbol: tokenSymbol,
       decimals: tokenDecimals,
-      apy: (
-        isRewardStillActive ?
-          rate * 86400 * 365 * tokenPrice / totalSupply * 100 :
-          0
-      ),
+      apyData: {
+        isRewardStillActive,
+        tokenPrice,
+        rate,
+        totalSupply,
+      },
     };
   });
 
