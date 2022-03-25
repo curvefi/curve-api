@@ -804,6 +804,15 @@ export default fn(async () => {
         type: 'bitcoin',
         factory: true,
       },
+      "vyperlang-fundraising": {
+        swap: '',
+        swap_token: '',
+        name: 'vyperlang-fundraising',
+        gauge: '0xB5efA93d5D23642f970aF41a1ea9A26f19CbD2Eb',
+        type: '',
+        factory: false,
+      },
+
     }
 
     // get pool addresses
