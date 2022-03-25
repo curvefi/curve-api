@@ -607,7 +607,27 @@ export default fn(async ({ blockchainId, registryId }) => {
       coins: augmentedCoins,
       usdTotal,
       gaugeAddress,
-      gaugeRewards: gaugeRewardsInfo,
+      gaugeRewards: (
+        typeof gaugeRewardsInfo === 'undefined' ?
+          undefined :
+          gaugeRewardsInfo.map(({
+            apyData,
+            ...rewardInfo
+          }) => {
+            const gaugeTotalSupply = apyData.totalSupply;
+            const poolTotalSupply = poolInfo.totalSupply / 1e18;
+            const gaugeUsdTotal = gaugeTotalSupply / poolTotalSupply * usdTotal;
+
+            return {
+              ...rewardInfo,
+              apy: (
+                apyData.isRewardStillActive ?
+                  apyData.rate * 86400 * 365 * apyData.tokenPrice / gaugeUsdTotal * 100 :
+                  0
+              ),
+            };
+          })
+      ),
     };
   });
 

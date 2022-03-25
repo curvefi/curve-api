@@ -53,8 +53,12 @@ const V0_GAUGES_ADDRESSES = [
 ];
 
 const FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES = [
-  '0xd8b712d29381748dB89c36BCa0138d7c75866ddF', // mim
+  '0xd8b712d29381748db89c36bca0138d7c75866ddf', // mim
 ];
+
+const FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES_REF_ASSET_PRICE = {
+  '0xd8b712d29381748db89c36bca0138d7c75866ddf': 1,
+};
 
 // eslint-disable-next-line
 const GAUGES_PARTIAL_ABI = [{"name":"reward_contract","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2051},{"name":"totalSupply","outputs":[{"type":"uint256","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":1691},{"stateMutability":"view","type":"function","name":"reward_tokens","inputs":[{"name":"arg0","type":"uint256"}],"outputs":[{"name":"","type":"address"}],"gas":3787},{"name":"rewarded_token","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2201}];
@@ -83,7 +87,7 @@ export default fn(async () => {
     address: gauge,
     version: (
       V0_GAUGES_ADDRESSES.includes(gauge) ? null :
-      FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES.includes(gauge) ? 'factory' :
+      FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES.includes(gauge.toLowerCase()) ? 'factory' :
       name === 'ankreth' ? 'v-rewarddata' : // Uses the rewardData implementation
       i < 18 ? 'v1' :
       'v2'
@@ -322,7 +326,17 @@ export default fn(async () => {
 
   const [customLogicRewardsInfo, mainPoolsFactoryPoolsRewardsInfo] = await Promise.all([
     getAavePoolRewardsInfo(gaugesRewardData, CUSTOM_LOGIC_REWARD_CONTRACTS),
-    getFactoryV2GaugeRewards(FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES),
+    getFactoryV2GaugeRewards(FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES).then((gaugesRewards) => Array.from(Object.values(gaugesRewards)).map((gaugeRewards) => gaugeRewards.map(({
+      apyData,
+      ...rewardInfo
+    }) => ({
+      ...rewardInfo,
+      apy: (
+        apyData.isRewardStillActive ?
+          apyData.rate * 86400 * 365 * apyData.tokenPrice / (apyData.totalSupply * FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES_REF_ASSET_PRICE[rewardInfo.gaugeAddress]) * 100 :
+          0
+      ),
+    })))),
   ]);
 
   const mergedRewardsInfo = [
