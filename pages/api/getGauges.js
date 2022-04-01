@@ -804,6 +804,22 @@ export default fn(async () => {
         type: 'bitcoin',
         factory: true,
       },
+      "f-silofrax": {
+        swap: '0x9a22CDB1CA1cdd2371cD5BB5199564C4E89465eb',
+        swap_token: '0x2302aabe69e6e7a1b0aa23aac68fccb8a4d2b460',
+        name: 'f-silofrax',
+        gauge: '0x784342E983E9283A7108F20FcA21995534b3fE65',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-stgusdc": {
+        swap: '0x3211C6cBeF1429da3D0d58494938299C92Ad5860',
+        swap_token: '0xdf55670e27bE5cDE7228dD0A6849181891c9ebA1',
+        name: 'f-stgusdc',
+        gauge: '0x95d16646311fDe101Eb9F897fE06AC881B7Db802',
+        type: 'crypto',
+        factory: true,
+      },
     }
 
     // get pool addresses
