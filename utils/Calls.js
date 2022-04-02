@@ -4,6 +4,7 @@ import Web3 from 'web3';
 import memoize from 'memoizee';
 import configs from 'constants/configs';
 import WEB3_CONSTANTS from 'constants/Web3';
+import { ZERO_ADDRESS } from 'utils/Web3/web3';
 import { IS_DEV } from 'constants/AppConstants';
 import MULTICALL2_ABI from '../constants/abis/multicall2.json';
 import { getArrayChunks, flattenArray } from './Array';
@@ -12,6 +13,7 @@ const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 const FALLBACK_DECODED_PARAMETERS_VALUES = {
   uint256: '0',
+  address: ZERO_ADDRESS,
 };
 
 // Contract instances cache store

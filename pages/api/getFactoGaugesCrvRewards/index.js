@@ -40,19 +40,18 @@ export default fn(async ({ blockchainId }) => {
   }
 
   const { 'curve-dao-token': crvPrice } = await getAssetsPrices(['curve-dao-token']);
-
   const sideChainGaugesApys = sideChainGauges.map(({
-    swap_token: swapToken,
+    swap,
     name,
     gauge_data: {
       inflation_rate: rate, // This already takes gauge_relative_weight into account in side facto gauges
       totalSupply,
     },
   }) => {
-    const lcAddress = swapToken.toLowerCase();
+    const lcAddress = swap.toLowerCase();
     // Not all pools have an lpTokenAddress
-    const pool = poolData.find(({ address, lpTokenAddress }) => (
-      (lpTokenAddress || address).toLowerCase() === lcAddress
+    const pool = poolData.find(({ address }) => (
+      address.toLowerCase() === lcAddress
     ));
     if (!pool) throw new Error(`Can't find pool data for swap address "${lcAddress}"`);
 
