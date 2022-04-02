@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import { ZERO_ADDRESS } from 'utils/Web3/web3';
 import { fn } from 'utils/api';
 import gaugeRegistry from 'constants/abis/gauge-registry.json';
 import sideChainGauge from 'constants/abis/sidechain-gauge.json';
@@ -7,6 +8,7 @@ import sideChainRootGauge from 'constants/abis/sidechain-root-gauge.json';
 import multicallAbi from 'constants/abis/multicall.json';
 import gaugeControllerAbi from 'constants/abis/gauge_controller.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
+import GaugeAbi from 'utils/data/abis/json/liquiditygauge_v2.json';
 
 import { multiCall } from 'utils/Calls';
 import { arrayToHashmap } from 'utils/Array';
@@ -146,8 +148,7 @@ export default fn(async ({ blockchainId }) => {
       }
 
       let gaugeData = {
-        'swap': lp_token,
-        'swap_token': lp_token, //might not be okay to assume swap === lp token
+        'swap_token': lp_token,
         'gauge': gaugeList[gaugeN],
         name,
         symbol,
@@ -169,9 +170,31 @@ export default fn(async ({ blockchainId }) => {
       gaugeN++
     }
 
+  // swap field
+  const lpMinterAddresses = await multiCall(gauges.map(({ swap_token }) => ({
+    address: swap_token,
+    abi: GaugeAbi,
+    methodName: 'minter',
+    networkSettings: {
+      web3: web3Side,
+      multicall2Address: config.multicall2Address,
+    }
+  })));
+
+  const gaugesWithSwapAddresses = gauges.map((gauge, gaugeIndex) => {
+    // Some pools have a separate lp token, some have the swap and token contracts merged
+    const lpMinterAddress = lpMinterAddresses[gaugeIndex];
+    const swapAddress = lpMinterAddress !== ZERO_ADDRESS ? lpMinterAddress : gauge.swap_token;
+
+    return {
+      ...gauge,
+      swap: swapAddress,
+    };
+  });
+
 
   return {
-    gauges
+    gauges: gaugesWithSwapAddresses,
   };
 }, {
   maxAge: 60,
