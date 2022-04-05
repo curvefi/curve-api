@@ -255,6 +255,7 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 16900,
     getFactoryRegistryAddress: async () => '0xD19Baeadc667Cf2015e395f2B08668Ef120f41F5',
+    getCryptoRegistryAddress: async () => '0xF274A1D3a794E210d6AF9d77eb966f01FD9a646f',
     factoryImplementationAddressMap: new Map([
       ['0x04e39EF8332e979Cf8e4f8891E64934FF65F231b'.toLowerCase(), 'plain2basic'],
       ['0xC9438d8928486bD9621D326002F4672bF684187A'.toLowerCase(), 'plain2balances'],
