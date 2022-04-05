@@ -254,6 +254,32 @@ const configs = {
     multicall2Address: '0xFAa296891cA6CECAF2D86eF5F7590316d0A17dA0',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 16900,
+    getFactoryRegistryAddress: async () => '0xD19Baeadc667Cf2015e395f2B08668Ef120f41F5',
+    factoryImplementationAddressMap: new Map([
+      ['0x04e39EF8332e979Cf8e4f8891E64934FF65F231b'.toLowerCase(), 'plain2basic'],
+      ['0xC9438d8928486bD9621D326002F4672bF684187A'.toLowerCase(), 'plain2balances'],
+      ['0x2b70A5B878665FfDB4A06Ba40a264d6c70f68F4B'.toLowerCase(), 'plain2eth'],
+      ['0x2D036f0Ff6F440dB623e0D9D3B5Daa509e5500C3'.toLowerCase(), 'plain2optimized'],
+      ['0xec9cEBE650E181079576C1b6d0d2e092B1EdfF13'.toLowerCase(), 'plain3basic'],
+      ['0xe8269B33E47761f552E1a3070119560d5fa8bBD6'.toLowerCase(), 'plain3balances'],
+      ['0x114C4042B11a2b16F58Fe1BFe847589a122F678a'.toLowerCase(), 'plain3eth'],
+      ['0x4244eB811D6e0Ef302326675207A95113dB4E1F8'.toLowerCase(), 'plain3optimized'],
+      ['0x66B5792ED50a2a7405Ea75C4B6B1913eF4E46661'.toLowerCase(), 'plain4basic'],
+      ['0xcB4eB43E31C830e22baF764c64F11F32C280496c'.toLowerCase(), 'plain4balances'],
+      ['0xc1C49622b63B961ce1D352ecb7D8261Ab5556695'.toLowerCase(), 'plain4eth'],
+      ['0x0E2615ce69Cd3Dc3Ff6f66a975bEa0655F3bA7b9'.toLowerCase(), 'plain4optimized'],
+      ['0x4A5bF7Ab9A8202692051c19B102d3eDD62aaBAE6'.toLowerCase(), 'metausd'],
+      ['0x0B4dc7A945695D11FD83e40B2DfC2B896A02395F'.toLowerCase(), 'metausdbalances'],
+      // ['0xC6A8466d128Fbfd34AdA64a9FFFce325D57C9a52'.toLowerCase(), 'metabtc'],
+      // ['0xc4C78b08fA0c3d0a312605634461A88184Ecd630'.toLowerCase(), 'metabtcbalances'],
+      // ['0xECAaecd9d2193900b424774133B1f51ae0F29d9E'.toLowerCase(), 'metabtc-ren'],
+      // ['0x40fd58d44cfe63e8517c9bb3ac98676838ea56a8'.toLowerCase(), 'metabtcbalances-ren'],
+      // ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
+      // ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
+    ]),
+    // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
+    //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
+    // ])
   },
   harmony: {
     nativeCurrencySymbol: 'ONE',
