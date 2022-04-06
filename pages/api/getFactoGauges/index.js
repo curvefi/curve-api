@@ -53,7 +53,8 @@ export default fn(async ({ blockchainId }) => {
   // Killed gauges
   const filterList = [
     '0xE36A20444df2758f7ccD8d5a27f05c60E9996E34',
-    '0xE9a93FFB52Dd1D68Ded7CAf5A2c777db5e689B7B'
+    '0xE9a93FFB52Dd1D68Ded7CAf5A2c777db5e689B7B',
+    '0x82049b520cAc8b05E703bb35d1691B5005A92848', // temporarily ignore 3crv xdai gauge to figure out why swap and swap_token aren't ok when querying the gauge contract
   ]
 
   let calls = []
