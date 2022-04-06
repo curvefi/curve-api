@@ -36,7 +36,7 @@ export default fn(async ({ blockchainId }) => {
   ));
 
   if (sideChainGauges.length === 0) {
-    throw new Error(`No side gauges data for blockchainId "${blockchainId}"`);
+    return { sideChainGaugesApys: [] };
   }
 
   const { 'curve-dao-token': crvPrice } = await getAssetsPrices(['curve-dao-token']);
