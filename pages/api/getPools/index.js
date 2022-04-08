@@ -417,7 +417,7 @@ export default fn(async ({ blockchainId, registryId }) => {
     const coinIndex = poolData.find(({ metaData }) => (
       metaData.type === 'coinsAddresses' &&
       metaData.poolId === poolId
-    )).data.indexOf(address);
+    )).data.findIndex((coinAddress) => coinAddress.toLowerCase() === address.toLowerCase());
 
     return [...(isNativeEth ? [{
       contract: poolContractUint256,
