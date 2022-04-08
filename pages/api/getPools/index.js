@@ -36,7 +36,8 @@ import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
 import { deriveMissingCoinPrices } from 'pages/api/getPools/_utils';
 
 /* eslint-disable */
-const POOL_BALANCE_ABI = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "uint256" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
+const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "uint256" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
+const POOL_BALANCE_ABI_INT128 = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "int128" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
 const POOL_PRICE_ORACLE_NO_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[{"name":"k","type":"uint256"}],"outputs":[{"name":"","type":"uint256"}]}];
 /* eslint-enable */
@@ -411,14 +412,15 @@ export default fn(async ({ blockchainId, registryId }) => {
     );
 
     const poolAddress = poolAddresses[poolIds.indexOf(poolId)];
-    const poolContract = new web3.eth.Contract(POOL_BALANCE_ABI, poolAddress);
+    const poolContractUint256 = new web3.eth.Contract(POOL_BALANCE_ABI_UINT256, poolAddress);
+    const poolContractInt128 = new web3.eth.Contract(POOL_BALANCE_ABI_INT128, poolAddress);
     const coinIndex = poolData.find(({ metaData }) => (
       metaData.type === 'coinsAddresses' &&
       metaData.poolId === poolId
     )).data.indexOf(address);
 
     return [...(isNativeEth ? [{
-      contract: poolContract,
+      contract: poolContractUint256,
       methodName: 'balances',
       params: [coinIndex],
       metaData: { poolId, poolAddress, coinAddress: address, isNativeEth, type: 'poolBalance' },
@@ -434,10 +436,16 @@ export default fn(async ({ blockchainId, registryId }) => {
       metaData: { poolId, poolAddress, coinAddress: address, isNativeEth, type: 'symbol' },
       ...networkSettingsParam,
     }, {
-      contract: coinContract,
-      methodName: 'balanceOf',
-      params: [poolAddress],
-      metaData: { poolId, poolAddress, coinAddress: address, isNativeEth, type: 'poolBalance' },
+      contract: poolContractUint256,
+      methodName: 'balances',
+      params: [coinIndex],
+      metaData: { poolId, poolAddress, coinAddress: address, isNativeEth, type: 'poolBalanceUint256' },
+      ...networkSettingsParam,
+    }, {
+      contract: poolContractInt128,
+      methodName: 'balances',
+      params: [coinIndex],
+      metaData: { poolId, poolAddress, coinAddress: address, isNativeEth, type: 'poolBalanceInt128' },
       ...networkSettingsParam,
     }]), ...(
       (typeof BASE_POOL_LP_TO_GAUGE_LP_MAP !== 'undefined' && BASE_POOL_LP_TO_GAUGE_LP_MAP.has(address)) ?
@@ -473,8 +481,13 @@ export default fn(async ({ blockchainId, registryId }) => {
       ...coinInfo,
       address: coinAddress,
       usdPrice: coinPrice,
-      ...(type === 'poolStakedBalance' ?
-        { poolBalance: Number(coinInfo.poolBalance) + Number(data) } :
+      ...(
+        // Most pool contracts expect a coin index as uint256, which we retrieve in poolBalanceUint256
+        type === 'poolBalanceUint256' ? { poolBalance: data } :
+        // Some pool contracts expect a coin index as int128, which we retrieve in poolBalanceInt128,
+        // and use as fallback value for poolBalance
+        type === 'poolBalanceInt128' ? { poolBalance: BN.max(coinInfo.poolBalance, data).toFixed() } :
+        type === 'poolStakedBalance' ? { poolBalance: BN(coinInfo.poolBalance).plus(data).toFixed() } :
         { [type]: data }
       ),
       ...(isNativeEth ? hardcodedInfoForNativeEth : {}),
