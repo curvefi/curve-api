@@ -36,7 +36,7 @@ const configs = {
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
     ]),
     getFactoryCryptoRegistryAddress: async () => '0xF18056Bbd320E96A48e3Fbf8bC061322531aac99',
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/curve-factory-volume",
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet",
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
   },
   polygon: {

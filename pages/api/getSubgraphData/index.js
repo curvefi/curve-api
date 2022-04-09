@@ -81,13 +81,15 @@ export default fn(async ( {blockchainId} ) => {
 
       const APY_QUERY = `
      {
-       dailyPoolSnapshots(first: 1000,
+       dailyPoolSnapshots(first: 7,
                         orderBy: timestamp,
                         orderDirection: desc,
                         where:
                         {pool: "${poolList[i].address.toLowerCase()}"})
        {
          baseApr
+         xcpProfit
+         xcpProfitA
          virtualPrice
          timestamp
        }
@@ -105,22 +107,43 @@ export default fn(async ( {blockchainId} ) => {
        const snapshots = dataAPY.dailyPoolSnapshots.map((a) => ({
          baseApr: +a.baseApr,
          virtualPrice: +a.virtualPrice,
+         xcpProfit: +a.xcpProfit,
+         xcpProfitA: +a.xcpProfitA,
          timestamp: a.timestamp,
        }));
 
        let latestDailyApy = 0
        let latestWeeklyApy = 0
        if (snapshots.length >= 2) {
-         latestDailyApy = ((snapshots[0].baseApr + 1) ** 365 - 1) * 100;
+         const isCryptoPool = snapshots[0].xcpProfit > 0;
+
+         if (isCryptoPool) {
+           const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
+           const dayOldProfit = ((snapshots[1].xcpProfit / 2) + (snapshots[1].xcpProfitA / 2) + 1e18) / 2;
+           const rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
+           latestDailyApy = ((rateDaily + 1) ** 365 - 1) * 100;
+         } else {
+           latestDailyApy = ((snapshots[0].baseApr + 1) ** 365 - 1) * 100;
+         }
        }
        if (snapshots.length > 6) {
+         const isCryptoPool = snapshots[0].xcpProfit > 0;
+
+         if (isCryptoPool) {
+            const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
+            const weekOldProfit = ((snapshots[6].xcpProfit / 2) + (snapshots[6].xcpProfitA / 2) + 1e18) / 2;
+            const rateWeekly = (currentProfit - weekOldProfit) / weekOldProfit;
+            latestWeeklyApy = ((rateWeekly + 1) ** 52 - 1) * 100;
+          } else {
             const latestWeeklyRate =
             (snapshots[0].virtualPrice - snapshots[6].virtualPrice) /
             snapshots[0].virtualPrice;
             latestWeeklyApy = ((latestWeeklyRate + 1) ** 52 - 1) * 100;
+          }
         }
-       poolList[i].latestDailyApy = latestDailyApy
-       poolList[i].latestWeeklyApy = latestWeeklyApy
+       poolList[i].latestDailyApy = latestDailyApy;
+       poolList[i].latestWeeklyApy = latestWeeklyApy;
+       poolList[i].virtualPrice = snapshots[0] ? snapshots[0].virtualPrice : undefined;
 
   }
 
