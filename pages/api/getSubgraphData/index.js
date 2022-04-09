@@ -132,7 +132,6 @@ export default fn(async ( {blockchainId} ) => {
        dataAPY = dataAPY.data;
 
        if (GRAPH_ENDPOINT_FALLBACK && dataAPY.dailyPoolSnapshots.length === 0) {
-         console.log(('using fallback2'));
          const resAPY = await fetch(GRAPH_ENDPOINT_FALLBACK, {
            method: "POST",
            headers: { "Content-Type": "application/json" },
