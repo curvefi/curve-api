@@ -9,6 +9,7 @@ import distributorAbi from 'constants/abis/distributor.json';
 import tripoolSwapAbi from 'constants/abis/tripool_swap.json';
 import configs from 'constants/configs';
 import { BASE_API_DOMAIN } from 'constants/AppConstants';
+import { runConcurrentlyAtMost } from 'utils/Async';
 
 
 
@@ -26,16 +27,15 @@ export default fn(async ( {blockchainId} ) => {
 
 
 
-  const GRAPH_ENDPOINT = config.graphEndpoint
+  const GRAPH_ENDPOINT = config.graphEndpoint;
+  const GRAPH_ENDPOINT_FALLBACK = config.fallbackGraphEndpoint;
   const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
   const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
   const poolListData = await (await fetch(`${BASE_API_DOMAIN}/api/getPoolList/${blockchainId}`)).json()
   let poolList = poolListData.data.poolList
   let totalVolume = 0
 
-  for (var i = 0; i < poolList.length; i++) {
-
-
+  await runConcurrentlyAtMost(poolList.map((_, i) => async () => {
       let POOL_QUERY = `
       {
         hourlySwapVolumeSnapshots(
@@ -61,9 +61,19 @@ export default fn(async ( {blockchainId} ) => {
           body: JSON.stringify({ query: POOL_QUERY })
       })
 
-      const data = await res.json()
+      let data = await res.json()
       let rollingDaySummedVolume = 0
       let rollingRawVolume = 0
+
+      if (GRAPH_ENDPOINT_FALLBACK && data.data.hourlySwapVolumeSnapshots.length === 0) {
+        const res = await fetch(GRAPH_ENDPOINT_FALLBACK, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: POOL_QUERY })
+        })
+        data = await res.json()
+      }
+
       for (let i = 0; i < data.data.hourlySwapVolumeSnapshots.length; i ++) {
           const hourlyVolUSD = parseFloat(data.data.hourlySwapVolumeSnapshots[i].volumeUSD)
           rollingDaySummedVolume =  rollingDaySummedVolume + hourlyVolUSD
@@ -96,6 +106,22 @@ export default fn(async ( {blockchainId} ) => {
      }
      `;
 
+      // Without xcp fields
+      const APY_QUERY_OLD = `
+     {
+       dailyPoolSnapshots(first: 7,
+                        orderBy: timestamp,
+                        orderDirection: desc,
+                        where:
+                        {pool: "${poolList[i].address.toLowerCase()}"})
+       {
+         baseApr
+         virtualPrice
+         timestamp
+       }
+     }
+     `;
+
        const resAPY = await fetch(GRAPH_ENDPOINT, {
          method: "POST",
          headers: { "Content-Type": "application/json" },
@@ -104,11 +130,24 @@ export default fn(async ( {blockchainId} ) => {
 
        let dataAPY = await resAPY.json();
        dataAPY = dataAPY.data;
+
+       if (GRAPH_ENDPOINT_FALLBACK && dataAPY.dailyPoolSnapshots.length === 0) {
+         console.log(('using fallback2'));
+         const resAPY = await fetch(GRAPH_ENDPOINT_FALLBACK, {
+           method: "POST",
+           headers: { "Content-Type": "application/json" },
+           body: JSON.stringify({ query: APY_QUERY_OLD }),
+         });
+
+         dataAPY = await resAPY.json();
+         dataAPY = dataAPY.data;
+       }
+
        const snapshots = dataAPY.dailyPoolSnapshots.map((a) => ({
          baseApr: +a.baseApr,
          virtualPrice: +a.virtualPrice,
-         xcpProfit: +a.xcpProfit,
-         xcpProfitA: +a.xcpProfitA,
+         xcpProfit: a.xcpProfit ? +a.xcpProfit : undefined,
+         xcpProfitA: a.xcpProfitA ? +a.xcpProfitA : undefined,
          timestamp: a.timestamp,
        }));
 
@@ -117,7 +156,7 @@ export default fn(async ( {blockchainId} ) => {
        if (snapshots.length >= 2) {
          const isCryptoPool = snapshots[0].xcpProfit > 0;
 
-         if (isCryptoPool) {
+         if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined') {
            const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
            const dayOldProfit = ((snapshots[1].xcpProfit / 2) + (snapshots[1].xcpProfitA / 2) + 1e18) / 2;
            const rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
@@ -129,7 +168,7 @@ export default fn(async ( {blockchainId} ) => {
        if (snapshots.length > 6) {
          const isCryptoPool = snapshots[0].xcpProfit > 0;
 
-         if (isCryptoPool) {
+         if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined') {
             const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
             const weekOldProfit = ((snapshots[6].xcpProfit / 2) + (snapshots[6].xcpProfitA / 2) + 1e18) / 2;
             const rateWeekly = (currentProfit - weekOldProfit) / weekOldProfit;
@@ -145,7 +184,7 @@ export default fn(async ( {blockchainId} ) => {
        poolList[i].latestWeeklyApy = latestWeeklyApy;
        poolList[i].virtualPrice = snapshots[0] ? snapshots[0].virtualPrice : undefined;
 
-  }
+  }), 2);
 
   return { poolList, totalVolume }
 }, {
