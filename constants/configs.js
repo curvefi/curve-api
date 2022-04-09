@@ -37,6 +37,7 @@ const configs = {
     ]),
     getFactoryCryptoRegistryAddress: async () => '0xF18056Bbd320E96A48e3Fbf8bC061322531aac99',
     graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet",
+    fallbackGraphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/curve-factory-volume",
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
   },
   polygon: {

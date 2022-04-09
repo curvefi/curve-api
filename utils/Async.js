@@ -48,9 +48,38 @@ const sequentialPromiseReduce = async (array, asyncFn) => {
   return results;
 };
 
+const runConcurrentlyAtMost = async (asyncFns, atMost) => {
+  const runningPromises = new Set();
+  const values = [];
+
+  for (const asyncFn of asyncFns) {
+    while (runningPromises.size >= atMost) {
+      await Promise.race(runningPromises);
+      await sleep(0); // Politely let Promise.race yield to the rest of its code first
+    }
+
+    const promise = asyncFn()
+      .then((value) => {
+        values.push(value);
+        runningPromises.delete(promise);
+      });
+
+    runningPromises.add(promise);
+  }
+
+  // runningPromises is a dynamic iterable, so make sure Promise.all only resolves
+  // once all dynamically-added promises have
+  while (runningPromises.size) {
+    await Promise.all(runningPromises); // Wait for all requests to finish
+  }
+
+  return values;
+};
+
 export {
   sequentialPromiseMap,
   sequentialPromiseFlatMap,
   sequentialPromiseReduce,
   sleepUntil,
+  runConcurrentlyAtMost,
 };
