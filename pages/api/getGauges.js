@@ -828,6 +828,14 @@ export default fn(async () => {
         type: 'stable',
         factory: true,
       },
+      "f-lfteth": {
+        swap: '0xfE4A08f22FE65759Ba91dB2E2CADa09B4415B0d7',
+        swap_token: '0x401322B9FDdba8c0a8D40fbCECE1D1752C12316B',
+        name: 'f-lfteth',
+        gauge: '0x46521Db0D31A62A2CBF8D1A7Cdc6bBBBC441A1fc',
+        type: 'crypto',
+        factory: true,
+      },
     }
 
     // get pool addresses
