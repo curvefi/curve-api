@@ -820,6 +820,14 @@ export default fn(async () => {
         type: 'crypto',
         factory: true,
       },
+      "f-bean": {
+        swap: '0x3a70dfa7d2262988064a2d051dd47521e43c9bdd',
+        swap_token: '0x3a70dfa7d2262988064a2d051dd47521e43c9bdd',
+        name: 'f-bean',
+        gauge: '0x6F98dA2D5098604239C07875C6B7Fd583BC520b9',
+        type: 'stable',
+        factory: true,
+      },
     }
 
     // get pool addresses
