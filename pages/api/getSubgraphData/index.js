@@ -150,10 +150,6 @@ export default fn(async ( {blockchainId} ) => {
          timestamp: a.timestamp,
        }));
 
-       if (i === 48) console.log({
-         snapshots
-       })
-
        let latestDailyApy = 0
        let latestWeeklyApy = 0
        if (snapshots.length >= 2) {
