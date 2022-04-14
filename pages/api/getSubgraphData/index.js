@@ -150,29 +150,33 @@ export default fn(async ( {blockchainId} ) => {
          timestamp: a.timestamp,
        }));
 
+       if (i === 48) console.log({
+         snapshots
+       })
+
        let latestDailyApy = 0
        let latestWeeklyApy = 0
        if (snapshots.length >= 2) {
          const isCryptoPool = snapshots[0].xcpProfit > 0;
 
-         if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined') {
+         if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined' && snapshots[1].xcpProfit !== 0) {
            const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
            const dayOldProfit = ((snapshots[1].xcpProfit / 2) + (snapshots[1].xcpProfitA / 2) + 1e18) / 2;
            const rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
            latestDailyApy = ((rateDaily + 1) ** 365 - 1) * 100;
-         } else {
+         } else if (snapshots[1].virtualPrice !== 0) {
            latestDailyApy = ((snapshots[0].baseApr + 1) ** 365 - 1) * 100;
          }
        }
        if (snapshots.length > 6) {
          const isCryptoPool = snapshots[0].xcpProfit > 0;
 
-         if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined') {
+         if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined' && snapshots[6].xcpProfit !== 0) {
             const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
             const weekOldProfit = ((snapshots[6].xcpProfit / 2) + (snapshots[6].xcpProfitA / 2) + 1e18) / 2;
             const rateWeekly = (currentProfit - weekOldProfit) / weekOldProfit;
             latestWeeklyApy = ((rateWeekly + 1) ** 52 - 1) * 100;
-          } else {
+          } else if (snapshots[6].virtualPrice !== 0) {
             const latestWeeklyRate =
             (snapshots[0].virtualPrice - snapshots[6].virtualPrice) /
             snapshots[0].virtualPrice;
