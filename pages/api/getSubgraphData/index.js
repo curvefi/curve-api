@@ -179,8 +179,8 @@ export default fn(async ( {blockchainId} ) => {
             latestWeeklyApy = ((latestWeeklyRate + 1) ** 52 - 1) * 100;
           }
         }
-       poolList[i].latestDailyApy = latestDailyApy;
-       poolList[i].latestWeeklyApy = latestWeeklyApy;
+       poolList[i].latestDailyApy = Math.min(latestDailyApy, 1e6);
+       poolList[i].latestWeeklyApy = Math.min(latestWeeklyApy, 1e6);
        poolList[i].virtualPrice = snapshots[0] ? snapshots[0].virtualPrice : undefined;
 
   }), 2);
