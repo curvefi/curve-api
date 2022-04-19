@@ -55,10 +55,10 @@ export default fn(async () => {
         }
       }
 
-      let res = await (await fetch(`https://api.curve.fi/api/getFactoryV2Pools/optimism`)).json()
-      tvl += res.data.tvlAll
+      const factoDetails = await (await fetch(`https://api.curve.fi/api/getFactoryV2Pools/optimism`)).json()
+      tvl += factoDetails.data.tvlAll
       const factory = {
-        'tvl': res.data.tvlAll
+        'tvl': factoDetails.data.tvlAll
       }
 
       return { tvl, pools, factory };
