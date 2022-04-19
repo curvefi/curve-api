@@ -55,7 +55,13 @@ export default fn(async () => {
         }
       }
 
-    return { tvl, pools };
+      let res = await (await fetch(`https://api.curve.fi/api/getFactoryV2Pools/optimism`)).json()
+      tvl += res.data.tvlAll
+      const factory = {
+        'tvl': res.data.tvlAll
+      }
+
+      return { tvl, pools, factory };
 
 
 }, {
