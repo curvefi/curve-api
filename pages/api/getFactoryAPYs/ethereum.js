@@ -141,7 +141,8 @@ export default fn(async ({ version }) => {
           apy: poolStats.latestDailyApy,
           apyWeekly: poolStats.latestWeeklyApy,
           virtualPrice: poolStats.virtualPrice,
-          volume: version === 2 ? poolStats.rawVolume : poolStats.volumeUSD, // Crypto pools historically have usd volume there, keeping this inconsistency to avoid breakage
+          volume: version === 2 ? poolStats.rawVolume : poolStats.volumeUSD, // Facto pools historically have usd volume there, keeping this inconsistency to avoid breakage
+          ...(version === 2 ? { usdVolume: poolStats.volumeUSD } : {}), // Attach usd volume for facto pools
         });
       });
 

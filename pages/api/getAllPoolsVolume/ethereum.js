@@ -45,9 +45,9 @@ export default fn(async () => {
       await getPoolUsdFigure(nativeAssetVolume, getMainPoolFromId(poolId)),
     ])),
     ...mainCryptoPoolsStats.volume,
-    ...arrayToHashmap(dedupedFactoV2PoolData.map(({ poolSymbol, poolAddress, volume }) => [
+    ...arrayToHashmap(dedupedFactoV2PoolData.map(({ poolSymbol, poolAddress, volume, usdVolume }) => [
       `${poolSymbol}-${poolAddress}`,
-      volume,
+      (usdVolume || volume),
     ])),
   };
 
