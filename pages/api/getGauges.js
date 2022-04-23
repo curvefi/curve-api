@@ -836,6 +836,14 @@ export default fn(async () => {
         type: 'crypto',
         factory: true,
       },
+      "f-seth2steth": {
+        swap: '0xE95E4c2dAC312F31Dc605533D5A4d0aF42579308',
+        swap_token: '0xE95E4c2dAC312F31Dc605533D5A4d0aF42579308',
+        name: 'f-seth2steth',
+        gauge: '0xeCb860e54E33FEA8fAb5B076734e2591D1A9ebA4',
+        type: 'stable',
+        factory: true,
+      },
     }
 
     // get pool addresses
