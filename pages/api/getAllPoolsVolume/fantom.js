@@ -1,7 +1,7 @@
 import { fn } from 'utils/api';
 
 export default fn(async () => {
-  const { data: { totalVolume, cryptoShare } } = await (await fetch('https://api.curve.fi/api/getSubgraphData/ethereum')).json();
+  const { data: { totalVolume, cryptoShare } } = await (await fetch('https://api.curve.fi/api/getSubgraphData/fantom')).json();
 
   return {
     totalVolume,
