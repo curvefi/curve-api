@@ -34,6 +34,7 @@ export default fn(async ( {blockchainId} ) => {
   const poolListData = await (await fetch(`${BASE_API_DOMAIN}/api/getPoolList/${blockchainId}`)).json()
   let poolList = poolListData.data.poolList
   let totalVolume = 0
+  let cryptoVolume = 0
 
   await runConcurrentlyAtMost(poolList.map((_, i) => async () => {
       let POOL_QUERY = `
@@ -86,7 +87,7 @@ export default fn(async ( {blockchainId} ) => {
       poolList[i].rawVolume = rollingRawVolume
 
       totalVolume += parseFloat(rollingDaySummedVolume)
-
+      cryptoVolume += (poolList[i].type.includes('crypto')) ? parseFloat(rollingDaySummedVolume) : 0
 
 
       const APY_QUERY = `
@@ -185,7 +186,10 @@ export default fn(async ( {blockchainId} ) => {
 
   }), 2);
 
-  return { poolList, totalVolume }
+
+  const cryptoShare = (cryptoVolume / totalVolume) * 100
+
+  return { poolList, totalVolume, cryptoVolume, cryptoShare }
 }, {
   maxAge: 5 * 60, // 15 min
 });
