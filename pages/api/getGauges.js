@@ -844,6 +844,30 @@ export default fn(async () => {
         type: 'stable',
         factory: true,
       },
+      "f-jpegeth": {
+        swap: '0x7E050cf658777cc1Da4a4508E79d71859044B60E',
+        swap_token: '0x34ed182d0812d119c92907852d2b429f095a9b07',
+        name: 'f-jpegeth',
+        gauge: '0xFA49B2a5D9E77f6748bf05801aa22356D514137b',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-fpifrax": {
+        swap: '0xf861483fa7E511fbc37487D91B6FAa803aF5d37c',
+        swap_token: '0x4704ab1fb693ce163f7c9d3a31b3ff4eaf797714',
+        name: 'f-fpifrax',
+        gauge: '0xdB7cbbb1d5D5124F86E92001C9dFDC068C05801D',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-ibaudusdc": {
+        swap: '0x5b692073F141C31384faE55856CfB6CBfFE91E60',
+        swap_token: '0x54c8ecf46a81496eeb0608bd3353388b5d7a2a33',
+        name: 'f-ibaudusdc',
+        gauge: '0x1779AEB087C5BdBe48749ab03575f5f25D1DEeaF',
+        type: 'crypto',
+        factory: true,
+      },
     }
 
     // get pool addresses
