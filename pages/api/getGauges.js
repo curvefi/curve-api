@@ -306,7 +306,8 @@ export default fn(async () => {
         name: 'polygon-a3CRV',
         gauge: '0xC48f4653dd6a9509De44c92beb0604BEA3AEe714',
         type: 'stable',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "fantom-2pool": {
         swap: '0x27e611fd27b276acbd5ffd632e5eaebec9761e40',
@@ -314,7 +315,8 @@ export default fn(async () => {
         name: 'fantom-2pool',
         gauge: '0xb9C05B8EE41FDCbd9956114B3aF15834FDEDCb54',
         type: 'stable',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "fantom-geist": {
         swap: '0x0fa949783947Bf6c1b171DB13AEACBB488845B3f',
@@ -322,7 +324,8 @@ export default fn(async () => {
         name: 'fantom-geist',
         gauge: '0xfE1A3dD8b169fB5BF0D5dbFe813d956F39fF6310',
         type: 'stable',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "tricrypto": {
         swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
@@ -338,7 +341,8 @@ export default fn(async () => {
         name: 'polygon-ren',
         gauge: '0x488E6ef919C2bB9de535C634a80afb0114DA8F62',
         type: 'bitcoin',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "fantom-ren": {
         swap: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
@@ -346,7 +350,8 @@ export default fn(async () => {
         name: 'fantom-ren',
         gauge: '0xfDb129ea4b6f557b07BcDCedE54F665b7b6Bc281',
         type: 'bitcoin',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "polygon-atricrypto": {
         swap: '0x92577943c7aC4accb35288aB2CC84D75feC330aF',
@@ -363,7 +368,8 @@ export default fn(async () => {
         name: 'xdai-3pool',
         gauge: '0x6C09F6727113543Fd061a721da512B7eFCDD0267',
         type: 'stable',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "tricrypto2": {
         swap: '0xD51a44d3FaE010294C616388b506AcdA1bfAAE46',
@@ -464,7 +470,8 @@ export default fn(async () => {
         name: 'arbitrum-tricrypto',
         gauge: '0x9044E12fB1732f88ed0c93cfa5E9bB9bD2990cE5',
         type: 'crypto',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "arbitrum-2pool": {
         swap: '0x7f90122bf0700f9e7e1f688fe926940e8839f353',
@@ -472,7 +479,8 @@ export default fn(async () => {
         name: 'arbitrum-2pool',
         gauge: '0xFf17560d746F85674FE7629cE986E949602EF948',
         type: 'stable',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "arbitrum-ren": {
         swap: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
@@ -480,7 +488,8 @@ export default fn(async () => {
         name: 'arbitrum-ren',
         gauge: '0x9F86c5142369B1Ffd4223E5A2F2005FC66807894',
         type: 'bitcoin',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "fantom-tricrypto": {
         swap: '0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF',
@@ -488,7 +497,8 @@ export default fn(async () => {
         name: 'fantom-tricrypto',
         gauge: '0x260e4fBb13DD91e187AE992c3435D0cf97172316',
         type: 'crypto',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "f-aleth": {
         swap: '0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e',
@@ -529,7 +539,8 @@ export default fn(async () => {
         name: 'avalanche-a3CRV',
         gauge: '0xB504b6EB06760019801a91B451d3f7BD9f027fC9',
         type: 'stable',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "avalanche-ren": {
         swap: '0x16a7DA911A4DD1d83F3fF066fE28F3C792C50d90',
@@ -537,7 +548,8 @@ export default fn(async () => {
         name: 'avalanche-ren',
         gauge: '0x75D05190f35567e79012c2F0a02330D3Ed8a1F74',
         type: 'bitcoin',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "avalanche-atricrypto": {
         swap: '0xB755B949C126C04e0348DD881a5cF55d424742B2',
@@ -545,7 +557,8 @@ export default fn(async () => {
         name: 'avalanche-atricrypto',
         gauge: '0xa05E565cA0a103FcD999c7A7b8de7Bd15D5f6505',
         type: 'crypto',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "harmony-3pool": {
         swap: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023',
@@ -607,7 +620,8 @@ export default fn(async () => {
         name: 'arbitrum-eursusd',
         gauge: '0x56eda719d82aE45cBB87B7030D3FB485685Bea45',
         type: 'crypto',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "polygon-eurtusd": {
         swap: '0xB446BF7b8D6D4276d0c75eC0e3ee8dD7Fe15783A',
@@ -615,7 +629,8 @@ export default fn(async () => {
         name: 'polygon-eurtusd',
         gauge: '0xAF78381216a8eCC7Ad5957f3cD12a431500E0B0D',
         type: 'crypto',
-        side_chain: true
+        side_chain: true,
+        is_killed: true,
       },
       "f-dola": {
         swap: '0xaa5a67c256e27a5d80712c51971408db3370927d',
