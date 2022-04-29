@@ -883,7 +883,58 @@ export default fn(async () => {
         type: 'crypto',
         factory: true,
       },
+      "f-ibchfusdc": {
+        swap: '0x6Df0D77F0496CE44e72D695943950D8641fcA5Cf',
+        swap_token: '0x08ceA8E5B4551722dEB97113C139Dd83C26c5398',
+        name: 'f-ibchfusdc',
+        gauge: '0x36C66bC294fEf4e94B3e40A1801d0AB0085Fe96e',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-ibeurusdc": {
+        swap: '0x1570af3dF649Fc74872c5B8F280A162a3bdD4EB6',
+        swap_token: '0x8682Fbf0CbF312C891532BA9F1A91e44f81ad7DF',
+        name: 'f-ibeurusdc',
+        gauge: '0xE1D520B1263D6Be5678568BD699c84F7f9086023',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-ibgbpusdc": {
+        swap: '0xAcCe4Fe9Ce2A6FE9af83e7CF321a3fF7675e0AB6',
+        swap_token: '0x22CF19EB64226e0E1A79c69b345b31466fD273A7',
+        name: 'f-ibgbpusdc',
+        gauge: '0x1Ba86c33509013c937344f6e231DA2E63ea45197',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-ibjpyusdc": {
+        swap: '0xEB0265938c1190Ab4E3E1f6583bC956dF47C0F93',
+        swap_token: '0x127091ede112aed7bae281747771b3150bb047bb',
+        name: 'f-ibjpyusdc',
+        gauge: '0x3A748A2F4765BDFB119Cb7143b884Db7594a68c3',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-ibkrwusdc": {
+        swap: '0xef04f337fCB2ea220B6e8dB5eDbE2D774837581c',
+        swap_token: '0x80CAcCdBD3f07BbdB558DB4a9e146D099933D677',
+        name: 'f-ibkrwusdc',
+        gauge: '0xb6d7C2bda5a907832d4556AE5f7bA800FF084C2a',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-kp3reth": {
+        swap: '0x21410232B484136404911780bC32756D5d1a9Fa9',
+        swap_token: '0x4647B6D835f3B393C7A955df51EEfcf0db961606',
+        name: 'f-kp3reth',
+        gauge: '0x6d3328F0333f6FB0B2FaC87cF5a0FFa7e77beB60',
+        type: 'crypto',
+        factory: true,
+      },
     }
+
+
+
 
     // get pool addresses
     let calls = [];
