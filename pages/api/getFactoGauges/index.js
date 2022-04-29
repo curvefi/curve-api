@@ -99,12 +99,12 @@ export default fn(async ({ blockchainId }) => {
   }));
 
     calls = []
-    const gaugeContract = new web3Side.eth.Contract(sideChainGauge, gaugeList[0]);
 
     const gaugeControllerAddress = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB'
     const gaugeController = new web3.eth.Contract(gaugeControllerAbi, gaugeControllerAddress);
 
     for (var i = 0; i < gaugeList.length; i++) {
+      const gaugeContract = new web3Side.eth.Contract(sideChainGauge, gaugeList[i]);
       calls.push([gaugeList[i], gaugeContract.methods.lp_token().encodeABI()])
       calls.push([gaugeList[i], gaugeContract.methods.name().encodeABI()])
       calls.push([gaugeList[i], gaugeContract.methods.symbol().encodeABI()])
@@ -161,7 +161,7 @@ export default fn(async ({ blockchainId }) => {
           totalSupply,
           gauge_relative_weight,
           get_gauge_weight,
-          inflation_rate: Number(inflation_rate) || pendingEmissions[gaugeList[gaugeN]],
+          inflation_rate: Number(inflation_rate) || (get_gauge_weight > 0 ? pendingEmissions[gaugeList[gaugeN]] : 0),
         },
         swap_data: {
           virtual_price
