@@ -931,6 +931,22 @@ export default fn(async () => {
         type: 'crypto',
         factory: true,
       },
+      "f-pusd": {
+        swap: '0x8ee017541375f6bcd802ba119bddc94dad6911a1',
+        swap_token: '0x8ee017541375f6bcd802ba119bddc94dad6911a1',
+        name: 'f-pusd',
+        gauge: '0x89664D561E79Ca22Fd2eA4076b3e5deF0b219C15',
+        type: 'stable',
+        factory: true,
+      },
+      "f-ohmeth": {
+        swap: '0x6ec38b3228251a0C5D491Faf66858e2E23d7728B',
+        swap_token: '0x3660BD168494d61ffDac21E403d0F6356cF90fD7',
+        name: 'f-ohmeth',
+        gauge: '0x8dF6FdAe05C9405853dd4cF2809D5dc2b5E77b0C',
+        type: 'crypto',
+        factory: true,
+      },
     }
 
 
