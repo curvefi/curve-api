@@ -44,6 +44,9 @@ const sum = (arr) => (
   ), 0)
 );
 
+// arrayOfIncrements(3) -> [0, 1, 2]
+const arrayOfIncrements = (count) => [...Array(Number(count)).keys()];
+
 module.exports = {
   uniq,
   uniqBy,
@@ -55,4 +58,5 @@ module.exports = {
   sumByBN,
   sumBN,
   sum,
+  arrayOfIncrements,
 };

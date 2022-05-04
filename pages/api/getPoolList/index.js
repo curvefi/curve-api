@@ -43,8 +43,7 @@ export default fn(async ({blockchainId}) => {
   let registries =
   [main_registry, factory_registry, crypto_registry, crypto_factory_registry]
 
-  registries = registries.filter(function(e){return e});
-
+  registries = registries.filter((address) => !!address && address !== '0x0000000000000000000000000000000000000000');
 
 
   let poolList = []
