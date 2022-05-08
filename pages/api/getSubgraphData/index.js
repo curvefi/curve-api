@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Web3 from 'web3';
-import BigNumber from 'big-number';
+import BN from 'bignumber.js';
 import WEB3_CONSTANTS from 'constants/Web3';
 import { fn } from 'utils/api';
 import { getFeeDistributor } from 'utils/getters';
@@ -185,6 +185,30 @@ export default fn(async ( {blockchainId} ) => {
        poolList[i].virtualPrice = snapshots[0] ? snapshots[0].virtualPrice : undefined;
 
   }), 2);
+
+  // When a crypto pool uses a base pool lp as one of its underlying assets, apy calculations
+  // using xcp_profit need to add up 1/3rd of the underlying pool's base volume
+  if (config.CRYPTO_POOLS_WITH_BASE_POOLS) {
+    poolList = poolList.map((pool) => {
+      if (config.CRYPTO_POOLS_WITH_BASE_POOLS.has(pool.address)) {
+        const { latestDailyApy, latestWeeklyApy } = pool;
+        const underlyingPoolAddress = config.CRYPTO_POOLS_WITH_BASE_POOLS.get(pool.address);
+        const underlyingPool = poolList.find(({ address }) => address.toLowerCase() === underlyingPoolAddress.toLowerCase());
+        if (!underlyingPool) {
+          console.error(`Couldn't find underlying pool for crypto pool ${pool.address}, hence couldn't add up its base apy`);
+          return pool;
+        }
+
+        return {
+          ...pool,
+          latestDailyApy: BN(latestDailyApy).plus(BN(underlyingPool.latestDailyApy).div(3)).toFixed(),
+          latestWeeklyApy: BN(latestWeeklyApy).plus(BN(underlyingPool.latestWeeklyApy).div(3)).toFixed(),
+        }
+      }
+
+      return pool;
+    })
+  }
 
 
   const cryptoShare = (cryptoVolume / totalVolume) * 100

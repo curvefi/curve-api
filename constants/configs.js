@@ -1,4 +1,5 @@
 import WEB3_CONSTANTS from 'constants/Web3';
+import { CaseInsensitiveMap } from 'utils/Array';
 
 const configs = {
   ethereum: {
@@ -200,6 +201,12 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // meta usd
       ['0xC2b1DF84112619D190193E48148000e3990Bf627', '0x0f9cb53ebe405d49a0bbdbd291a65ff571bc83e1'], // meta btc
+    ]),
+    // When a crypto pool uses a base pool lp as one of its underlying assets, apy calculations
+    // using xcp_profit need to add up 1/3rd of the underlying pool's base volume, so this map
+    // keeps track of crypto-pool-swap<>underlying-swap
+    CRYPTO_POOLS_WITH_BASE_POOLS: new CaseInsensitiveMap([
+      ['0xB755B949C126C04e0348DD881a5cF55d424742B2', '0x7f90122BF0700F9E7e1F688fe926940E8839F353'], // atricrypto<>aave
     ]),
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche",

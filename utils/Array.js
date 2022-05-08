@@ -47,6 +47,31 @@ const sum = (arr) => (
 // arrayOfIncrements(3) -> [0, 1, 2]
 const arrayOfIncrements = (count) => [...Array(Number(count)).keys()];
 
+class CaseInsensitiveMap extends Map {
+  set(key, value) {
+    if (typeof key === 'string') {
+      key = key.toLowerCase();
+    }
+    return super.set(key, value);
+  }
+
+  get(key) {
+    if (typeof key === 'string') {
+      key = key.toLowerCase();
+    }
+
+    return super.get(key);
+  }
+
+  has(key) {
+    if (typeof key === 'string') {
+      key = key.toLowerCase();
+    }
+
+    return super.has(key);
+  }
+}
+
 module.exports = {
   uniq,
   uniqBy,
@@ -59,4 +84,5 @@ module.exports = {
   sumBN,
   sum,
   arrayOfIncrements,
+  CaseInsensitiveMap,
 };
