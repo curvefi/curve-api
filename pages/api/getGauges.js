@@ -947,6 +947,38 @@ export default fn(async () => {
         type: 'crypto',
         factory: true,
       },
+      "f-paleth": {
+        swap: '0x75A6787C7EE60424358B449B539A8b774c9B4862',
+        swap_token: '0xbe4f3ad6c9458b901c81b734cb22d9eae9ad8b50',
+        name: 'f-paleth',
+        gauge: '0x4fb13b55D6535584841dbBdb14EDC0258F7aC414',
+        type: 'crypto',
+        factory: true,
+      },
+      "f-sdfxsfxs": {
+        swap: '0x8c524635d52bd7b1bd55e062303177a7d916c046',
+        swap_token: '0x8c524635d52bd7b1bd55e062303177a7d916c046',
+        name: 'f-sdfxsfxs',
+        gauge: '0xa9A9BC60fc80478059A83f516D5215185eeC2fc0',
+        type: 'stable',
+        factory: true,
+      },
+      "f-sdagag": {
+        swap: '0x48ff31bbbd8ab553ebe7cbd84e1ea3dba8f54957',
+        swap_token: '0x48ff31bbbd8ab553ebe7cbd84e1ea3dba8f54957',
+        name: 'f-sdagag',
+        gauge: '0x03fFC218C7A9306D21193565CbDc4378952faA8c',
+        type: 'stable',
+        factory: true,
+      },
+      "f-sdcrvcrv": {
+        swap: '0xf7b55c3732ad8b2c2da7c24f30a69f55c54fb717',
+        swap_token: '0xf7b55c3732ad8b2c2da7c24f30a69f55c54fb717',
+        name: 'f-sdcrvcrv',
+        gauge: '0x663FC22e92f26C377Ddf3C859b560C4732ee639a',
+        type: 'stable',
+        factory: true,
+      },
     }
 
 
