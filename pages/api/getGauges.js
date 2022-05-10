@@ -947,14 +947,14 @@ export default fn(async () => {
         type: 'crypto',
         factory: true,
       },
-      "f-paleth": {
-        swap: '0x75A6787C7EE60424358B449B539A8b774c9B4862',
-        swap_token: '0xbe4f3ad6c9458b901c81b734cb22d9eae9ad8b50',
-        name: 'f-paleth',
-        gauge: '0x4fb13b55D6535584841dbBdb14EDC0258F7aC414',
-        type: 'crypto',
-        factory: true,
-      },
+      // "f-paleth": {
+      //   swap: '0x75A6787C7EE60424358B449B539A8b774c9B4862',
+      //   swap_token: '0xbe4f3ad6c9458b901c81b734cb22d9eae9ad8b50',
+      //   name: 'f-paleth',
+      //   gauge: '0x4fb13b55D6535584841dbBdb14EDC0258F7aC414',
+      //   type: 'crypto',
+      //   factory: true,
+      // },
       "f-sdfxsfxs": {
         swap: '0x8c524635d52bd7b1bd55e062303177a7d916c046',
         swap_token: '0x8c524635d52bd7b1bd55e062303177a7d916c046',
