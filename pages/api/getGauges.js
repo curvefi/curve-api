@@ -1003,6 +1003,15 @@ export default fn(async () => {
         type: 'stable',
         factory: true,
       },
+      "f-stethconcentrated": {
+        swap: '0x828b154032950C8ff7CF8085D841723Db2696056',
+        swap_token: '0x828b154032950C8ff7CF8085D841723Db2696056',
+        name: 'f-stethconcentrated',
+        gauge: '0xf668e6d326945d499e5b35e7cd2e82acfbcfe6f0',
+        type: 'stable',
+        factory: true,
+        hasNoCrv: true, // Hasn't been voted in yet, isn't in gauge controller, doesn't receive CRV
+      },
     }
 
 
