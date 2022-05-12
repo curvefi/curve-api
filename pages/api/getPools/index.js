@@ -21,6 +21,7 @@ import factoryCryptoPoolAbi from 'constants/abis/factory-crypto/factory-crypto-p
 import erc20Abi from 'constants/abis/erc20.json';
 import erc20AbiMKR from 'constants/abis/erc20_mkr.json';
 import { multiCall } from 'utils/Calls';
+import { ZERO_ADDRESS } from 'utils/Web3';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseReduce } from 'utils/Async';
 import { getRegistry } from 'utils/getters';
@@ -40,6 +41,7 @@ const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [ { "name": "arg0", "
 const POOL_BALANCE_ABI_INT128 = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "int128" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
 const POOL_PRICE_ORACLE_NO_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[{"name":"k","type":"uint256"}],"outputs":[{"name":"","type":"uint256"}]}];
+const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}, {"stateMutability":"view","type":"function","name":"lp_token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}];
 /* eslint-enable */
 /* eslint-disable object-curly-newline */
 
@@ -192,9 +194,12 @@ export default fn(async ({ blockchainId, registryId }) => {
     await getEthereumOnlyData() :
     undefined;
 
-  const poolData = await multiCall(flattenArray(poolAddresses.map((address, i) => {
+  const poolDataWithTries = await multiCall(flattenArray(poolAddresses.map((address, i) => {
     const poolId = poolIds[i];
-    const poolContract = new web3.eth.Contract(POOL_ABI, address);
+    const poolContract = new web3.eth.Contract([
+      ...POOL_ABI,
+      ...POOL_TOKEN_METHOD_ABI,
+    ], address);
 
     // Note: reverting for at least some pools, prob non-meta ones: get_underlying_coins, get_underlying_decimals
     return [{
@@ -224,6 +229,11 @@ export default fn(async ({ blockchainId, registryId }) => {
         params: [address],
         metaData: { poolId, type: 'assetType' },
         ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'totalSupply',
+        metaData: { poolId, type: 'totalSupply' },
+        ...networkSettingsParam,
       }] : []
     ),
     ...(
@@ -232,11 +242,6 @@ export default fn(async ({ blockchainId, registryId }) => {
         methodName: 'get_implementation_address', // address
         params: [address],
         metaData: { poolId, type: 'implementationAddress' },
-        ...networkSettingsParam,
-      }, {
-        contract: poolContract,
-        methodName: 'totalSupply',
-        metaData: { poolId, type: 'totalSupply' },
         ...networkSettingsParam,
       }, {
         contract: poolContract,
@@ -249,6 +254,21 @@ export default fn(async ({ blockchainId, registryId }) => {
         metaData: { poolId, type: 'symbol' },
         ...networkSettingsParam,
       }] : [] // Not fetching totalSupply for main pools because not all pool implementations have a lp token
+    ),
+    ...(
+      // Different abis exist for these older pools, try to retrieve lpTokenAddress
+      // from different methods
+      registryId === 'main' ? [{
+        contract: poolContract,
+        methodName: 'token', // address
+        metaData: { poolId, type: 'lpTokenAddress_try_1' },
+        ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'lp_token', // address
+        metaData: { poolId, type: 'lpTokenAddress_try_2' },
+        ...networkSettingsParam,
+      }] : []
     ),
     ...(
       registryId === 'factory-crypto' ? [{
@@ -269,6 +289,27 @@ export default fn(async ({ blockchainId, registryId }) => {
       }] : []
     )];
   })));
+
+  const poolData = poolDataWithTries.map(({ data, metaData }) => {
+    const isLpTokenAddressTry = metaData.type?.startsWith('lpTokenAddress_try_');
+    if (isLpTokenAddressTry) {
+      // If address isn't null, use this as the definitive lpTokenAddress value
+      if (data !== ZERO_ADDRESS) {
+        return {
+          data,
+          metaData: {
+            ...metaData,
+            type: 'lpTokenAddress',
+          },
+        };
+      }
+
+      // If address is null, drop it
+      return null;
+    }
+
+    return { data, metaData };
+  }).filter((o) => o !== null);
 
   const tweakedPoolData = (
     (registryId === 'factory' && typeof BASE_POOL_LP_TO_GAUGE_LP_MAP !== 'undefined') ?
@@ -312,7 +353,11 @@ export default fn(async ({ blockchainId, registryId }) => {
       poolData
   );
 
-  const lpTokensWithMetadata = tweakedPoolData.filter(({ metaData }) => metaData.type === 'lpTokenAddress');
+  const lpTokensWithMetadata = tweakedPoolData.filter(({ data, metaData }) => (
+    metaData.type === 'lpTokenAddress' &&
+    data !== ZERO_ADDRESS
+  ));
+  console.log({ lpTokensWithMetadata });
   const lpTokenData = (
     lpTokensWithMetadata.length === 0 ? [] :
     await multiCall(flattenArray(lpTokensWithMetadata.map(({
