@@ -38,13 +38,6 @@ export default fn(async ({ blockchainId }) => {
   const gaugeCount = await gaugeRegContract.methods.get_gauge_count(config.chainId).call();
   const multicall = new web3Side.eth.Contract(multicallAbi, multicallAddress);
 
-  // Killed gauges
-  const filterList = [
-    '0xE36A20444df2758f7ccD8d5a27f05c60E9996E34',
-    '0xE9a93FFB52Dd1D68Ded7CAf5A2c777db5e689B7B',
-    '0x82049b520cAc8b05E703bb35d1691B5005A92848', // Ignore misconfigured 3crv xdai gauge
-  ];
-
   const unfilteredGaugeList = await multiCall(arrayOfIncrements(gaugeCount).map((gaugeIndex) => ({
     address: gaugeRegistryAddress,
     abi: gaugeRegistry,
@@ -52,7 +45,17 @@ export default fn(async ({ blockchainId }) => {
     params: [config.chainId, gaugeIndex],
   })));
 
-  const gaugeList = unfilteredGaugeList.filter((address) => !filterList.includes(address));
+  const gaugesKilledInfo = await multiCall(unfilteredGaugeList.map((gaugeAddress) => ({
+    address: gaugeAddress,
+    abi: sideChainGauge,
+    methodName: 'is_killed',
+    networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
+  })));
+
+  const gaugeList = unfilteredGaugeList.filter((address, index) => {
+    const isKilled = gaugesKilledInfo[index];
+    return !isKilled;
+  });
 
   const weekSeconds = 86400 * 7;
   const nowTs = +Date.now() / 1000;
