@@ -4,24 +4,20 @@ import { fn } from 'utils/api';
 import gaugeRegistry from 'constants/abis/gauge-registry.json';
 import sideChainGauge from 'constants/abis/sidechain-gauge.json';
 import sideChainRootGauge from 'constants/abis/sidechain-root-gauge.json';
-
 import multicallAbi from 'constants/abis/multicall.json';
 import gaugeControllerAbi from 'constants/abis/gauge_controller.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
 import GaugeAbi from 'utils/data/abis/json/liquiditygauge_v2.json';
-
 import { multiCall } from 'utils/Calls';
-import { arrayToHashmap } from 'utils/Array';
-import { getMultiCall } from 'utils/getters';
+import { arrayToHashmap, arrayOfIncrements } from 'utils/Array';
 
 import configs from 'constants/configs';
-
 
 export default fn(async ({ blockchainId }) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
 
   const config = configs[blockchainId];
-  const configEth = configs['ethereum'];
+  const configEth = configs.ethereum;
 
   if (typeof config === 'undefined') {
     throw new Error(`No factory data for blockchainId "${blockchainId}"`);
@@ -30,47 +26,33 @@ export default fn(async ({ blockchainId }) => {
     throw new Error(`Missing chain id in config for "${blockchainId}"`);
   }
 
-
   const {
     multicallAddress,
   } = config;
 
-  const multicallAddressEth = await getMultiCall()
-
   const web3 = new Web3(configEth.rpcUrl);
   const web3Side = new Web3(config.rpcUrl);
 
-  const gaugeRegistryAddress = '0xabc000d88f23bb45525e447528dbf656a9d55bf5'
-  const gaugeRegContract =  new web3.eth.Contract(gaugeRegistry, gaugeRegistryAddress);
-
-  const gauge_count = await gaugeRegContract.methods.get_gauge_count(config.chainId).call()
-
-  const multicallEthereum = new web3.eth.Contract(multicallAbi, multicallAddressEth)
-  const multicall = new web3Side.eth.Contract(multicallAbi, multicallAddress)
-
-  const gauge_count_address = await gaugeRegContract.methods.get_gauge(config.chainId, 3).call()
+  const gaugeRegistryAddress = '0xabc000d88f23bb45525e447528dbf656a9d55bf5';
+  const gaugeRegContract = new web3.eth.Contract(gaugeRegistry, gaugeRegistryAddress);
+  const gaugeCount = await gaugeRegContract.methods.get_gauge_count(config.chainId).call();
+  const multicall = new web3Side.eth.Contract(multicallAbi, multicallAddress);
 
   // Killed gauges
   const filterList = [
     '0xE36A20444df2758f7ccD8d5a27f05c60E9996E34',
     '0xE9a93FFB52Dd1D68Ded7CAf5A2c777db5e689B7B',
-    '0x82049b520cAc8b05E703bb35d1691B5005A92848', // temporarily ignore 3crv xdai gauge to figure out why swap and swap_token aren't ok when querying the gauge contract
-  ]
+    '0x82049b520cAc8b05E703bb35d1691B5005A92848', // Ignore misconfigured 3crv xdai gauge
+  ];
 
-  let calls = []
-  for (var i = 0; i < gauge_count; i++) {
-    calls.push([gaugeRegistryAddress, gaugeRegContract.methods.get_gauge(config.chainId, i).encodeABI()])
-  }
-  let aggGaugecalls = await multicallEthereum.methods.aggregate(calls).call();
-  aggGaugecalls = aggGaugecalls[1]
+  const unfilteredGaugeList = await multiCall(arrayOfIncrements(gaugeCount).map((gaugeIndex) => ({
+    address: gaugeRegistryAddress,
+    abi: gaugeRegistry,
+    methodName: 'get_gauge',
+    params: [config.chainId, gaugeIndex],
+  })));
 
-  let gaugeList = []
-  for (var i = 0; i < aggGaugecalls.length; i++) {
-    let gauge = await web3.eth.abi.decodeParameter('address', aggGaugecalls[i])
-    if (!filterList.includes(gauge)) {
-      gaugeList.push(gauge)
-    }
-  }
+  const gaugeList = unfilteredGaugeList.filter((address) => !filterList.includes(address));
 
   const weekSeconds = 86400 * 7;
   const nowTs = +Date.now() / 1000;
@@ -98,7 +80,7 @@ export default fn(async ({ blockchainId }) => {
     ];
   }));
 
-    calls = []
+    const calls = []
 
     const gaugeControllerAddress = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB'
     const gaugeController = new web3.eth.Contract(gaugeControllerAbi, gaugeControllerAddress);
@@ -112,7 +94,7 @@ export default fn(async ({ blockchainId }) => {
       calls.push([gaugeList[i], gaugeContract.methods.totalSupply().encodeABI()])
       calls.push([gaugeList[i], gaugeContract.methods.inflation_rate(startOfWeekTs).encodeABI()])
     }
-    aggGaugecalls = await multicall.methods.aggregate(calls).call();
+    let aggGaugecalls = await multicall.methods.aggregate(calls).call();
     aggGaugecalls = aggGaugecalls[1]
 
     let gauges = []
