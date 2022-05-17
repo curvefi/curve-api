@@ -12,6 +12,7 @@ const getMainRegistryPools = memoize(async (blockchainId) => (
 ), {
   promise: true,
   maxAge: 60 * 60 * 1000, // 1h
+  length: 1,
 });
 
 /**

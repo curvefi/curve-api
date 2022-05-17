@@ -8,6 +8,7 @@ import WEB3_CONSTANTS from 'constants/Web3';
 import getFactoGauges from 'pages/api/getFactoGauges';
 import { fn } from 'utils/api';
 import { arrayToHashmap, flattenArray } from 'utils/Array';
+import { sequentialPromiseMap } from 'utils/Async';
 import aggregatorInterfaceABI from '../../constants/abis/aggregator.json';
 import multicallAbi from '../../constants/abis/multicall.json';
 import gaugeControllerAbi from '../../constants/abis/gauge_controller.json';
@@ -27,7 +28,8 @@ const CHAINS_WITH_FACTORY_GAUGES = [
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
-export default fn(async () => {
+export default fn(async ({ blockchainId } = {}) => {
+  if (typeof blockchainId === 'undefined') blockchainId = undefined; // Default value (return gauges for all chains)
 
   const multicallAddress = await getMultiCall();
   const multicall = new web3.eth.Contract(multicallAbi, multicallAddress);
@@ -1109,14 +1111,23 @@ export default fn(async () => {
     })
 
   // Add all sidechain factory gauges
-  const factoGauges = await Promise.all(CHAINS_WITH_FACTORY_GAUGES.map((blockchainId) => (
-    getFactoGauges.straightCall({ blockchainId })
-  )));
+  const chainsToQuery = (
+    typeof blockchainId === 'undefined' ?
+      CHAINS_WITH_FACTORY_GAUGES :
+      CHAINS_WITH_FACTORY_GAUGES.filter((id) => id === blockchainId)
+  );
+  console.log({ chainsToQuery })
+  if (chainsToQuery.length > 1) console.trace();
+  const factoGauges = await sequentialPromiseMap(chainsToQuery, (blockchainIds) => (
+    Promise.all(blockchainIds.map((blockchainId) => (
+      getFactoGauges.straightCall({ blockchainId })
+    )))
+  ), 4);
 
   gauges = {
     ...gauges,
     ...arrayToHashmap(flattenArray(factoGauges.map(({ gauges: blochainFactoGauges }, i) => {
-      const blockchainId = CHAINS_WITH_FACTORY_GAUGES[i];
+      const blockchainId = chainsToQuery[i];
 
       return (
         blochainFactoGauges.filter(({ hasCrv }) => hasCrv).map(({

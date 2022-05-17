@@ -1,4 +1,4 @@
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, no-lonely-if */
 
 import Web3 from 'web3';
 import memoize from 'memoizee';
@@ -12,7 +12,8 @@ import { getArrayChunks, flattenArray } from './Array';
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 const FALLBACK_DECODED_PARAMETERS_VALUES = {
-  uint256: '0',
+  uint256: 0,
+  int128: 0,
   address: ZERO_ADDRESS,
   bool: false,
 };
@@ -46,11 +47,18 @@ const multiCall = async (callsConfig, isDebugging = false) => {
       web3,
       multicall2Address: configs.ethereum.multicall2Address,
     },
+    superSettings: {
+      returnSuccessState: false, // If true, will return true if call succeeds, false if it reverts
+    },
   };
 
   const augmentedCallsConfig = callsConfig.map((config) => ({
     ...defaultCallConfig,
     ...config,
+    superSettings: {
+      ...defaultCallConfig.superSettings,
+      ...config.superSettings,
+    },
   }));
 
   // Validate configs
@@ -74,6 +82,14 @@ const multiCall = async (callsConfig, isDebugging = false) => {
       throw new Error('multiCall error: config parameter `methodName` expects a contract method name');
     }
 
+    if (typeof config.networkSettings.web3 === 'undefined') {
+      throw new Error('multiCall error: config parameter `networkSettings.web3` is required');
+    }
+
+    if (typeof config.networkSettings.multicall2Address === 'undefined') {
+      throw new Error('multiCall error: config parameter `networkSettings.multicall2Address` is required');
+    }
+
     if (usesContractField && !config.contract._address) {
       throw new Error('multiCall error: couldn’t find any `_address` property on config parameter `contract`; either the contract object passed in incorrect, or we need to make multiCall accept an optional address param to pass it manually ourselves when it’s not implicitly set on `contract`');
     }
@@ -88,6 +104,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
       methodName,
       params,
       networkSettings,
+      superSettings,
     } = callConfig;
 
     const contractInstance = (contract || getContractInstance(address, abi, networkSettings.web3));
@@ -114,39 +131,43 @@ const multiCall = async (callsConfig, isDebugging = false) => {
     for (const callsChunk of chunkedCalls) {
       // eslint-disable-next-line no-await-in-loop
       const aggregateReturnData = await multicall.methods.tryAggregate(false, callsChunk).call();
-      const returnData = aggregateReturnData.map(({ returnData }) => returnData);
+      const returnData = aggregateReturnData.map(({ success, returnData: hexData }) => ({ success, hexData }));
       chunkedReturnData.push(returnData);
     }
 
     const returnData = flattenArray(chunkedReturnData);
 
-    decodedData = returnData.map((hexData, i) => {
-      const { contract, abi, methodName, metaData } = augmentedCallsConfig[i];
+    decodedData = returnData.map(({ success, hexData }, i) => {
+      const { contract, abi, methodName, metaData, superSettings } = augmentedCallsConfig[i];
       const contractAbi = contract?._jsonInterface || abi;
       const outputSignature = contractAbi.find(({ name }) => name === methodName).outputs;
 
       let data;
-      if (outputSignature.length > 1) {
-        try {
-          data = networkSettings.web3.eth.abi.decodeParameters(outputSignature.map(({ type, name }) => ({ type, name })), hexData);
-        } catch (err) {
-          console.error(`Failed decodeParameters with outputSignature ${JSON.stringify(outputSignature.map(({ type, name }) => ({ type, name })))}`);
-
-          throw err;
-        }
+      if (superSettings.returnSuccessState) {
+        data = success;
       } else {
-        try {
-          data = networkSettings.web3.eth.abi.decodeParameter(outputSignature[0].type, hexData);
-        } catch (err) {
-          const failedDecodedType = outputSignature[0].type;
+        if (outputSignature.length > 1) {
+          try {
+            data = networkSettings.web3.eth.abi.decodeParameters(outputSignature.map(({ type, name }) => ({ type, name })), hexData);
+          } catch (err) {
+            console.error(`Failed decodeParameters with outputSignature ${JSON.stringify(outputSignature.map(({ type, name }) => ({ type, name })))}`);
 
-          // Use fallback value if one exists (ideally we have fallback values for all types,
-          // add more when necessary as we encounter other failures)
-          if (typeof FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType] !== 'undefined') {
-            data = FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType];
-          } else {
-            console.error(`Failed decodeParameter with outputSignature ${JSON.stringify(failedDecodedType)}`);
             throw err;
+          }
+        } else {
+          try {
+            data = networkSettings.web3.eth.abi.decodeParameter(outputSignature[0].type, hexData);
+          } catch (err) {
+            const failedDecodedType = outputSignature[0].type;
+
+            // Use fallback value if one exists (ideally we have fallback values for all types,
+            // add more when necessary as we encounter other failures)
+            if (typeof FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType] !== 'undefined') {
+              data = FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType];
+            } else {
+              console.error(`Failed decodeParameter with outputSignature ${JSON.stringify(failedDecodedType)}`);
+              throw err;
+            }
           }
         }
       }

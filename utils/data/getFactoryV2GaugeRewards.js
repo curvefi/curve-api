@@ -12,9 +12,10 @@ import ERC20_ABI from 'constants/abis/erc20.json';
 // eslint-disable-next-line
 const FACTORY_GAUGES_ABI = [{"stateMutability":"view","type":"function","name":"reward_count","inputs":[],"outputs":[{"name":"","type":"uint256"}],"gas":3498},{"stateMutability":"view","type":"function","name":"reward_tokens","inputs":[{"name":"arg0","type":"uint256"}],"outputs":[{"name":"","type":"address"}],"gas":3573},{"stateMutability":"view","type":"function","name":"reward_data","inputs":[{"name":"arg0","type":"address"}],"outputs":[{"name":"token","type":"address"},{"name":"distributor","type":"address"},{"name":"period_finish","type":"uint256"},{"name":"rate","type":"uint256"},{"name":"last_update","type":"uint256"},{"name":"integral","type":"uint256"}],"gas":15003},{"stateMutability":"view","type":"function","name":"totalSupply","inputs":[],"outputs":[{"name":"","type":"uint256"}],"gas":3108}];
 
-export default memoize(async (factoryGaugesAddresses) => {
+export default memoize(async ({ factoryGaugesAddresses, blockchainId } = {}) => {
+  if (typeof blockchainId === 'undefined') blockchainId = undefined; // Default value
   if (typeof factoryGaugesAddresses === 'undefined') {
-    const { gauges } = await getGauges.straightCall();
+    const { gauges } = await getGauges.straightCall({ blockchainId });
 
     const factoryGauges = Array.from(Object.values(gauges)).filter(({ factory, side_chain }) => factory && !side_chain);
     factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge); // eslint-disable-line no-param-reassign
@@ -116,4 +117,5 @@ export default memoize(async (factoryGaugesAddresses) => {
   promise: true,
   maxAge: 2 * 60 * 1000, // 2 min
   primitive: true,
+  normalizer: ([query]) => JSON.stringify(query),
 });

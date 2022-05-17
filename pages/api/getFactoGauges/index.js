@@ -1,20 +1,25 @@
 import Web3 from 'web3';
-import { ZERO_ADDRESS } from 'utils/Web3/web3';
 import { fn } from 'utils/api';
 import gaugeRegistry from 'constants/abis/gauge-registry.json';
+import GAUGE_FACTORY_ABI from 'constants/abis/gauge-factory-sidechain.json';
 import sideChainGauge from 'constants/abis/sidechain-gauge.json';
 import sideChainRootGauge from 'constants/abis/sidechain-root-gauge.json';
-import multicallAbi from 'constants/abis/multicall.json';
 import gaugeControllerAbi from 'constants/abis/gauge_controller.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
-import GaugeAbi from 'utils/data/abis/json/liquiditygauge_v2.json';
 import { multiCall } from 'utils/Calls';
-import { arrayToHashmap, arrayOfIncrements } from 'utils/Array';
-
+import { arrayToHashmap, arrayOfIncrements, flattenArray } from 'utils/Array';
+import getPools from 'pages/api/getPools';
 import configs from 'constants/configs';
 
 export default fn(async ({ blockchainId }) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
+
+  // For now all ethereum gauges (including facto gauges) are hardcoded in getGauges
+  if (blockchainId === 'ethereum') {
+    return {
+      gauges: [],
+    };
+  }
 
   const config = configs[blockchainId];
   const configEth = configs.ethereum;
@@ -26,17 +31,12 @@ export default fn(async ({ blockchainId }) => {
     throw new Error(`Missing chain id in config for "${blockchainId}"`);
   }
 
-  const {
-    multicallAddress,
-  } = config;
-
   const web3 = new Web3(configEth.rpcUrl);
   const web3Side = new Web3(config.rpcUrl);
 
   const gaugeRegistryAddress = '0xabc000d88f23bb45525e447528dbf656a9d55bf5';
   const gaugeRegContract = new web3.eth.Contract(gaugeRegistry, gaugeRegistryAddress);
   const gaugeCount = await gaugeRegContract.methods.get_gauge_count(config.chainId).call();
-  const multicall = new web3Side.eth.Contract(multicallAbi, multicallAddress);
 
   const unfilteredGaugeList = await multiCall(arrayOfIncrements(gaugeCount).map((gaugeIndex) => ({
     address: gaugeRegistryAddress,
@@ -83,104 +83,216 @@ export default fn(async ({ blockchainId }) => {
     ];
   }));
 
-    const calls = []
+  const gaugesDataFromSidechain = await multiCall(flattenArray(gaugeList.map((gaugeAddress) => {
+    const baseConfigData = {
+      address: gaugeAddress,
+      abi: sideChainGauge,
+      networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
+    };
 
-    const gaugeControllerAddress = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB'
-    const gaugeController = new web3.eth.Contract(gaugeControllerAbi, gaugeControllerAddress);
-
-    for (var i = 0; i < gaugeList.length; i++) {
-      const gaugeContract = new web3Side.eth.Contract(sideChainGauge, gaugeList[i]);
-      calls.push([gaugeList[i], gaugeContract.methods.lp_token().encodeABI()])
-      calls.push([gaugeList[i], gaugeContract.methods.name().encodeABI()])
-      calls.push([gaugeList[i], gaugeContract.methods.symbol().encodeABI()])
-      calls.push([gaugeList[i], gaugeContract.methods.working_supply().encodeABI()])
-      calls.push([gaugeList[i], gaugeContract.methods.totalSupply().encodeABI()])
-      calls.push([gaugeList[i], gaugeContract.methods.inflation_rate(startOfWeekTs).encodeABI()])
-    }
-    let aggGaugecalls = await multicall.methods.aggregate(calls).call();
-    aggGaugecalls = aggGaugecalls[1]
-
-    let gauges = []
-    let gaugeN = 0
-    for (var i = 0; i < aggGaugecalls.length; i++) {
-      let lp_token = await web3.eth.abi.decodeParameter('address', aggGaugecalls[i])
-      i += 1
-      let name = await web3.eth.abi.decodeParameter('string', aggGaugecalls[i])
-      i += 1
-      let symbol = await web3.eth.abi.decodeParameter('string', aggGaugecalls[i])
-      i += 1
-      let working_supply = await web3.eth.abi.decodeParameter('uint256', aggGaugecalls[i])
-      i += 1
-      let totalSupply = await web3.eth.abi.decodeParameter('uint256', aggGaugecalls[i])
-      i += 1
-      let inflation_rate = await web3.eth.abi.decodeParameter('uint256', aggGaugecalls[i])
-
-      let hasCrv = false
-      let gauge_relative_weight;
-      let get_gauge_weight;
-      try {
-        await gaugeController.methods.gauge_types(gaugeList[gaugeN]).call()
-        gauge_relative_weight = await gaugeController.methods.gauge_relative_weight(gaugeList[gaugeN]).call()
-        get_gauge_weight = await gaugeController.methods.get_gauge_weight(gaugeList[gaugeN]).call()
-        hasCrv = true
-      } catch (e) { }
-
-      let poolContract = new web3Side.eth.Contract(factorypool3Abi, lp_token)
-      let virtual_price;
-      try {
-        virtual_price = await poolContract.methods.get_virtual_price().call();
-      } catch (err) {
-        virtual_price = 0; // get_virtual_price reverts if pool is empty
-      }
-
-      let gaugeData = {
-        'swap_token': lp_token,
-        'gauge': gaugeList[gaugeN],
-        name,
-        symbol,
-        hasCrv,
-        side_chain: true,
-        type: 'stable', //we will have a problem detecting this which is used by cur.vote or the voting app to calculate the $ value in the gauge
-        gauge_data: {
-          working_supply,
-          totalSupply,
-          gauge_relative_weight,
-          get_gauge_weight,
-          inflation_rate: Number(inflation_rate) || (get_gauge_weight > 0 ? pendingEmissions[gaugeList[gaugeN]] : 0),
-        },
-        swap_data: {
-          virtual_price
-        }
-      }
-      gauges.push(gaugeData)
-      gaugeN++
-    }
-
-  // swap field
-  const lpMinterAddresses = await multiCall(gauges.map(({ swap_token }) => ({
-    address: swap_token,
-    abi: GaugeAbi,
-    methodName: 'minter',
-    networkSettings: {
-      web3: web3Side,
-      multicall2Address: config.multicall2Address,
-    }
+    return [{
+      ...baseConfigData,
+      methodName: 'lp_token',
+      metaData: { gaugeAddress, type: 'lpTokenAddress' },
+    }, {
+      ...baseConfigData,
+      methodName: 'name',
+      metaData: { gaugeAddress, type: 'name' },
+    }, {
+      ...baseConfigData,
+      methodName: 'symbol',
+      metaData: { gaugeAddress, type: 'symbol' },
+    }, {
+      ...baseConfigData,
+      methodName: 'working_supply',
+      metaData: { gaugeAddress, type: 'workingSupply' },
+    }, {
+      ...baseConfigData,
+      methodName: 'totalSupply',
+      metaData: { gaugeAddress, type: 'totalSupply' },
+    }, {
+      ...baseConfigData,
+      methodName: 'inflation_rate',
+      params: [startOfWeekTs],
+      metaData: { gaugeAddress, type: 'inflationRate' },
+    }, {
+      address: gaugeRegistryAddress,
+      abi: GAUGE_FACTORY_ABI,
+      methodName: 'is_mirrored',
+      params: [gaugeAddress],
+      metaData: { gaugeAddress, type: 'isMirrored' },
+    }, {
+      address: gaugeRegistryAddress,
+      abi: GAUGE_FACTORY_ABI,
+      methodName: 'last_request',
+      params: [gaugeAddress],
+      metaData: { gaugeAddress, type: 'lastRequest' },
+    }];
   })));
 
-  const gaugesWithSwapAddresses = gauges.map((gauge, gaugeIndex) => {
-    // Some pools have a separate lp token, some have the swap and token contracts merged
-    const lpMinterAddress = lpMinterAddresses[gaugeIndex];
-    const swapAddress = lpMinterAddress !== ZERO_ADDRESS ? lpMinterAddress : gauge.swap_token;
+  const gaugeControllerAddress = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB';
+  const gaugesDataFromMainnet = await multiCall(flattenArray(gaugeList.map((gaugeAddress) => {
+    const baseConfigData = {
+      address: gaugeControllerAddress,
+      abi: gaugeControllerAbi,
+    };
+
+    return [{
+      ...baseConfigData,
+      methodName: 'gauge_types',
+      params: [gaugeAddress],
+      metaData: { gaugeAddress, type: 'hasCrv' },
+      superSettings: { returnSuccessState: true },
+    }, {
+      ...baseConfigData,
+      methodName: 'gauge_relative_weight',
+      params: [gaugeAddress],
+      metaData: { gaugeAddress, type: 'gaugeRelativeWeight' },
+    }, {
+      ...baseConfigData,
+      methodName: 'get_gauge_weight',
+      params: [gaugeAddress],
+      metaData: { gaugeAddress, type: 'getGaugeWeight' },
+    }];
+  })));
+
+  const gaugesData = gaugeList.map((gaugeAddress) => {
+    const gaugeDataFromSidechain = gaugesDataFromSidechain.filter(({ metaData }) => metaData.gaugeAddress === gaugeAddress);
+    const gaugeDataFromMainnet = gaugesDataFromMainnet.filter(({ metaData }) => metaData.gaugeAddress === gaugeAddress);
 
     return {
-      ...gauge,
-      swap: swapAddress,
+      address: gaugeAddress,
+      ...arrayToHashmap(gaugeDataFromSidechain.map(({ data, metaData: { type } }) => [
+        type,
+        data,
+      ])),
+      ...arrayToHashmap(gaugeDataFromMainnet.map(({ data, metaData: { type } }) => [
+        type,
+        data,
+      ])),
     };
   });
 
+  const hasCryptoPools = !!config.getCryptoRegistryAddress;
+  const hasFactoPools = !!config.getFactoryRegistryAddress;
+  const hasFactoCryptoPools = !!config.getFactoryCryptoRegistryAddress;
+  const [
+    stablePools,
+    cryptoPools,
+    factoPools,
+    factoCryptoPools,
+  ] = await Promise.all([(
+    (await getPools.straightCall({ blockchainId, registryId: 'main', preventQueryingFactoData: true })).poolData
+  ), (
+    hasCryptoPools ?
+      (await getPools.straightCall({ blockchainId, registryId: 'crypto', preventQueryingFactoData: true })).poolData :
+      []
+  ), (
+    hasFactoPools ?
+      (await getPools.straightCall({ blockchainId, registryId: 'factory', preventQueryingFactoData: true })).poolData :
+      []
+  ), (
+    hasFactoCryptoPools ?
+      (await getPools.straightCall({ blockchainId, registryId: 'factory-crypto', preventQueryingFactoData: true })).poolData :
+      []
+  )]);
+
+  const gaugesDataWithPoolAddressAndType = gaugesData.map((gaugeData) => {
+    const poolInMainRegistry = stablePools.find(({ lpTokenAddress, address }) => (
+      lpTokenAddress === gaugeData.lpTokenAddress ||
+      address === gaugeData.lpTokenAddress
+    ));
+    const poolInCryptoRegistry = cryptoPools.find(({ lpTokenAddress, address }) => (
+      lpTokenAddress === gaugeData.lpTokenAddress ||
+      address === gaugeData.lpTokenAddress
+    ));
+    const poolInCryptoFactoRegistry = factoCryptoPools.find(({ lpTokenAddress, address }) => (
+      lpTokenAddress === gaugeData.lpTokenAddress ||
+      address === gaugeData.lpTokenAddress
+    ));
+    const poolInStableFactoRegistry = factoPools.find(({ lpTokenAddress, address }) => (
+      lpTokenAddress === gaugeData.lpTokenAddress ||
+      address === gaugeData.lpTokenAddress
+    ));
+
+    if (
+      typeof poolInMainRegistry === 'undefined' &&
+      typeof poolInCryptoRegistry === 'undefined' &&
+      typeof poolInCryptoFactoRegistry === 'undefined' &&
+      typeof poolInStableFactoRegistry === 'undefined'
+    ) {
+      return null;
+    }
+
+    return {
+      ...gaugeData,
+      poolAddress: (poolInMainRegistry || poolInCryptoRegistry || poolInCryptoFactoRegistry || poolInStableFactoRegistry).address,
+      type: ((poolInCryptoFactoRegistry || poolInCryptoRegistry) ? 'crypto' : 'stable'),
+    };
+  }).filter((o) => o !== null);
+
+  const poolsVirtualPrices = await multiCall(gaugesDataWithPoolAddressAndType.map(({ poolAddress }) => ({
+    address: poolAddress,
+    abi: factorypool3Abi,
+    methodName: 'get_virtual_price',
+    networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
+  })));
+
+  const gaugesDataWithPoolVprice = gaugesDataWithPoolAddressAndType.map((gaugeData, index) => ({
+    ...gaugeData,
+    poolVirtualPrice: poolsVirtualPrices[index],
+  }));
+
+  // Map to the historical data structure for compatibility purposes
+  const formattedGaugesData = gaugesDataWithPoolVprice.map(({
+    address,
+    lpTokenAddress,
+    name,
+    symbol,
+    workingSupply,
+    totalSupply,
+    inflationRate,
+    hasCrv,
+    gaugeRelativeWeight,
+    getGaugeWeight,
+    poolAddress,
+    type,
+    poolVirtualPrice,
+    isMirrored,
+    lastRequest,
+  }) => {
+    const effectiveInflationRate = Number(inflationRate) || (getGaugeWeight > 0 ? pendingEmissions[address] : 0);
+
+    return {
+      swap_token: lpTokenAddress,
+      gauge: address,
+      name,
+      symbol,
+      hasCrv,
+      side_chain: true,
+      type,
+      gauge_data: {
+        working_supply: workingSupply,
+        totalSupply,
+        gauge_relative_weight: gaugeRelativeWeight,
+        get_gauge_weight: getGaugeWeight,
+        inflation_rate: effectiveInflationRate,
+      },
+      swap_data: {
+        virtual_price: poolVirtualPrice,
+      },
+      swap: poolAddress,
+      rewardsNeedNudging: (
+        hasCrv &&
+        effectiveInflationRate > 0 &&
+        isMirrored &&
+        Math.trunc(lastRequest / weekSeconds) !== startOfWeekTs
+      ),
+    };
+  });
 
   return {
-    gauges: gaugesWithSwapAddresses,
+    gauges: formattedGaugesData,
   };
 }, {
   maxAge: 60,

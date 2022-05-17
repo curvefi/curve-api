@@ -326,7 +326,7 @@ export default fn(async () => {
 
   const [customLogicRewardsInfo, mainPoolsFactoryPoolsRewardsInfo] = await Promise.all([
     getAavePoolRewardsInfo(gaugesRewardData, CUSTOM_LOGIC_REWARD_CONTRACTS),
-    getFactoryV2GaugeRewards(FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES).then((gaugesRewards) => Array.from(Object.values(gaugesRewards)).map((gaugeRewards) => gaugeRewards.map(({
+    getFactoryV2GaugeRewards({ factoryGaugesAddresses: FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES }).then((gaugesRewards) => Array.from(Object.values(gaugesRewards)).map((gaugeRewards) => gaugeRewards.map(({
       apyData,
       ...rewardInfo
     }) => ({
