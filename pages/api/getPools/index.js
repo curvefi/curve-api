@@ -28,9 +28,7 @@ import { getRegistry } from 'utils/getters';
 import getTokensPrices from 'utils/data/tokens-prices';
 import getAssetsPrices from 'utils/data/assets-prices';
 import getYcTokenPrices from 'utils/data/getYcTokenPrices';
-import getFactoryV2GaugeRewards from 'utils/data/getFactoryV2GaugeRewards';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
-import getGauges from 'pages/api/getGauges';
 import configs from 'constants/configs';
 import allCoins from 'constants/coins';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
@@ -45,16 +43,24 @@ const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name
 /* eslint-enable */
 /* eslint-disable object-curly-newline */
 
-const getEthereumOnlyData = async () => {
-  const [
-    { poolList: mainRegistryPoolList },
-    { gauges: gaugesData },
-    gaugeRewards,
-  ] = await Promise.all([
-    getMainRegistryPools.straightCall(),
-    getGauges.straightCall(),
-    getFactoryV2GaugeRewards(),
-  ]);
+const getEthereumOnlyData = async ({ preventQueryingFactoData }) => {
+  let gaugesData = {};
+  let gaugeRewards = {};
+
+  if (!preventQueryingFactoData) {
+    const getFactoryV2GaugeRewards = (await import('utils/data/getFactoryV2GaugeRewards')).default;
+    const getGauges = (await import('pages/api/getGauges')).default;
+
+    [
+      { gauges: gaugesData },
+      gaugeRewards,
+    ] = await Promise.all([
+      getGauges.straightCall({ blockchainId: 'ethereum' }),
+      getFactoryV2GaugeRewards(undefined, 'ethereum'),
+    ]);
+  }
+
+  const { poolList: mainRegistryPoolList } = await getMainRegistryPools.straightCall();
 
   const gaugesDataArray = Array.from(Object.values(gaugesData));
   const factoryGaugesPoolAddressesAndCoingeckoIdMap = arrayToHashmap(
@@ -85,12 +91,18 @@ const isDefinedCoin = (address) => address !== '0x000000000000000000000000000000
 /**
  * Params:
  * - blockchainId: 'ethereum' (default) | any side chain
- * - registryId: 'factory' | 'main' | 'crypto' (note: we might we able to add 'factory-crypto' easily)
+ * - registryId: 'factory' | 'main' | 'crypto' | 'factory-crypto'
  */
-export default fn(async ({ blockchainId, registryId }) => {
+export default fn(async ({ blockchainId, registryId, preventQueryingFactoData }) => {
   /* eslint-disable no-param-reassign */
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
   if (typeof registryId === 'undefined') registryId = 'main'; // Default value
+  /**
+   * Set to true to prevent circular dependencies when calling getPools() in an area of the code that getPools()
+   * itself calls, e.g. getFactoGauges sets this setting to true because it's interested in the pool list, and
+   * the pool list only.
+   */
+  if (typeof preventQueryingFactoData === 'undefined') preventQueryingFactoData = false; // Default value
   /* eslint-enable no-param-reassign */
 
   const config = configs[blockchainId];
@@ -191,7 +203,7 @@ export default fn(async ({ blockchainId, registryId }) => {
   ));
 
   const ethereumOnlyData = blockchainId === 'ethereum' ?
-    await getEthereumOnlyData() :
+    await getEthereumOnlyData({ preventQueryingFactoData }) :
     undefined;
 
   const poolDataWithTries = await multiCall(flattenArray(poolAddresses.map((address, i) => {
@@ -357,7 +369,7 @@ export default fn(async ({ blockchainId, registryId }) => {
     metaData.type === 'lpTokenAddress' &&
     data !== ZERO_ADDRESS
   ));
-  console.log({ lpTokensWithMetadata });
+
   const lpTokenData = (
     lpTokensWithMetadata.length === 0 ? [] :
     await multiCall(flattenArray(lpTokensWithMetadata.map(({
