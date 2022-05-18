@@ -87,7 +87,7 @@ const configs = {
       '0x64FFf0e27c223097c824f9d9278eFD5B55c3430e', // Broken pool
     ].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-matic",
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-matic-staging",
   },
   fantom: {
     nativeCurrencySymbol: 'FTM',
@@ -166,7 +166,7 @@ const configs = {
       ['0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb', '0xC2b1DF84112619D190193E48148000e3990Bf627'], // meta btc
     ]),
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum",
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum-staging",
   },
   avalanche: {
     nativeCurrencySymbol: 'AVAX',
@@ -251,7 +251,7 @@ const configs = {
     // ])
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism"
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism-staging"
   },
   xdai: {
     nativeCurrencySymbol: 'xDAI',
@@ -289,7 +289,7 @@ const configs = {
       // ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
       // ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
     ]),
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-xdai",
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-xdai-staging",
 
     // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
     //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
