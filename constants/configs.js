@@ -53,6 +53,7 @@ const configs = {
     multicall2Address: '0x275617327c958bD06b5D6b871E7f491D76113dd8',
     getFactoryRegistryAddress: async () => '0x722272d36ef0da72ff51c5a65db7b870e2e8d4ee',
     getCryptoRegistryAddress: async () => '0x47bB542B9dE58b970bA50c9dae444DDB4c16751a',
+    getFactoryCryptoRegistryAddress: async () => '0xE5De15A9C9bBedb4F5EC13B131E61245f2983A69',
     factoryImplementationAddressMap: new Map([
       ['0x571FF5b7b346F706aa48d696a9a4a288e9Bb4091'.toLowerCase(), 'plain2basic'],
       ['0x8925D9d9B4569D737a48499DeF3f67BaA5a144b9'.toLowerCase(), 'plain2balances'],
@@ -101,6 +102,7 @@ const configs = {
     multicall2Address: '0xD98e3dBE5950Ca8Ce5a4b59630a5652110403E5c',
     getFactoryRegistryAddress: async () => '0x686d67265703d1f124c45e33d47d794c566889ba',
     getCryptoRegistryAddress: async () => '0x4fb93D7d320E8A263F22f62C2059dFC2A8bCbC4c',
+    getFactoryCryptoRegistryAddress: async () => '0xE5De15A9C9bBedb4F5EC13B131E61245f2983A69',
     factoryImplementationAddressMap: new Map([
       ['0x61E10659fe3aa93d036d099405224E4Ac24996d0'.toLowerCase(), 'plain2basic'],
       ['0xd9Acb0BAeeD77C99305017821167674Cc7e82f7a'.toLowerCase(), 'plain2balances'],
