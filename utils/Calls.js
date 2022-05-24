@@ -148,7 +148,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
       } else {
         if (outputSignature.length > 1) {
           try {
-            data = networkSettings.web3.eth.abi.decodeParameters(outputSignature.map(({ type, name }) => ({ type, name })), hexData);
+            data = networkSettings.web3.eth.abi.decodeParameters(outputSignature, hexData);
           } catch (err) {
             console.error(`Failed decodeParameters with outputSignature ${JSON.stringify(outputSignature.map(({ type, name }) => ({ type, name })))}`);
 
@@ -156,7 +156,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
           }
         } else {
           try {
-            data = networkSettings.web3.eth.abi.decodeParameter(outputSignature[0].type, hexData);
+            data = networkSettings.web3.eth.abi.decodeParameter(outputSignature[0], hexData);
           } catch (err) {
             const failedDecodedType = outputSignature[0].type;
 

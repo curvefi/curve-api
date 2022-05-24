@@ -1126,11 +1126,11 @@ export default fn(async ({ blockchainId } = {}) => {
 
   gauges = {
     ...gauges,
-    ...arrayToHashmap(flattenArray(factoGauges.map(({ gauges: blochainFactoGauges }, i) => {
+    ...arrayToHashmap(flattenArray(factoGauges.map(({ gauges: blockchainFactoGauges }, i) => {
       const blockchainId = chainsToQuery[i];
 
       return (
-        blochainFactoGauges.filter(({ hasCrv }) => hasCrv).map(({
+        blockchainFactoGauges.filter(({ hasCrv }) => hasCrv).map(({
           gauge,
           gauge_data: {
             gauge_relative_weight,
