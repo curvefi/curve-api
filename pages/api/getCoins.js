@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Web3 from 'web3';
+import configs from 'constants/configs';
 import WEB3_CONSTANTS from 'constants/Web3';
 import { fn } from '../../utils/api';
 import aggregatorInterfaceABI from '../../constants/abis/aggregator.json';
@@ -12,7 +13,7 @@ const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 const BASE_API_DOMAIN = 'https://api.curve.fi';
 
 export default fn(async () => {
-  const registryAddress = await getFactoryRegistry()
+  const registryAddress = await configs.ethereum.getFactoryRegistryAddress();
   const registryFactory = new web3.eth.Contract(registryAbi, registryAddress);
   const registryMainAddress = await getRegistry();
   const registryMain = new web3.eth.Contract(registryAbi, registryMainAddress);
