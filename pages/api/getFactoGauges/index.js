@@ -10,6 +10,7 @@ import { multiCall } from 'utils/Calls';
 import { arrayToHashmap, arrayOfIncrements, flattenArray } from 'utils/Array';
 import getPools from 'pages/api/getPools';
 import configs from 'constants/configs';
+import getFactoryV2SidechainGaugeRewards from 'utils/data/getFactoryV2SidechainGaugeRewards';
 
 export default fn(async ({ blockchainId }) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
@@ -291,8 +292,14 @@ export default fn(async ({ blockchainId }) => {
     };
   });
 
+  const sideGaugesRewards = await getFactoryV2SidechainGaugeRewards({ blockchainId, gauges: formattedGaugesData });
+
   return {
-    gauges: formattedGaugesData,
+    gauges: formattedGaugesData.map(({ gauge, ...rest }) => ({
+      gauge,
+      ...rest,
+      extraRewards: (sideGaugesRewards[gauge.toLowerCase()] || []),
+    })),
   };
 }, {
   maxAge: 60,
