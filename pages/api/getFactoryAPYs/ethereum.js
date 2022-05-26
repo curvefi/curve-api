@@ -6,7 +6,7 @@ import { BASE_API_DOMAIN, IS_DEV } from 'constants/AppConstants';
 import FACTORY_CRYPTO_POOL_ABI from 'constants/abis/factory-crypto-swap.json';
 
 import { fn } from 'utils/api';
-import { getMultiCall } from 'utils/getters';
+import { getMultiCall, getFactoryRegistry } from 'utils/getters';
 import registryAbi from 'constants/abis/factory_registry.json';
 import multicallAbi from 'constants/abis/multicall.json';
 import erc20Abi from 'constants/abis/erc20.json';
@@ -23,7 +23,7 @@ export default fn(async ({ version }) => {
       1
     );
 
-    let registryAddress = await configs.ethereum.getFactoryRegistryAddress();
+    let registryAddress = await getFactoryRegistry();
     let multicallAddress = await getMultiCall()
   	let registry = new web3.eth.Contract(registryAbi, registryAddress);
   	let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
