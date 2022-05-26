@@ -3,7 +3,7 @@ import WEB3_CONSTANTS from 'constants/Web3';
 import configs from 'constants/configs';
 
 import { fn } from '../../utils/api';
-import { getMultiCall } from '../../utils/getters';
+import { getMultiCall, getFactoryRegistry } from '../../utils/getters';
 import registryAbi from '../../constants/abis/factory_registry.json';
 import multicallAbi from '../../constants/abis/multicall.json';
 import erc20Abi from '../../constants/abis/erc20.json';
@@ -15,7 +15,7 @@ export default fn(async () => {
   const lpTokenbBTC = '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3';
   const LP_TOKEN_DECIMALS = 18;
 
-  const registryAddress = await configs.ethereum.getFactoryRegistryAddress();
+  const registryAddress = await getFactoryRegistry();
   const multicallAddress = await getMultiCall();
   const registry = new web3.eth.Contract(registryAbi, registryAddress);
   const poolCount = await registry.methods.pool_count().call();
