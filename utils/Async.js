@@ -81,5 +81,6 @@ export {
   sequentialPromiseFlatMap,
   sequentialPromiseReduce,
   sleepUntil,
+  sleep,
   runConcurrentlyAtMost,
 };

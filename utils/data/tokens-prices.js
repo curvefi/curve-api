@@ -1,4 +1,5 @@
 import memoize from 'memoizee';
+import { backOff } from 'exponential-backoff';
 import Request from 'utils/Request';
 import { arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseMap } from 'utils/Async';
@@ -16,8 +17,12 @@ const getTokensPrices = memoize(async (addresses, platform = 'ethereum') => {
   if (attachRkp3rPrice) addresses = addresses.concat(KP3R_ADDRESS_ON_ETHEREUM);
 
   const pricesChunks = await sequentialPromiseMap(addresses, (addressesChunk) => (
-    Request.get(`https://api.coingecko.com/api/v3/simple/token_price/${platform}?contract_addresses=${addressesChunk.join(',')}&vs_currencies=usd
-  `)
+    backOff(() => Request.get(`https://api.coingecko.com/api/v3/simple/token_price/${platform}?contract_addresses=${addressesChunk.join(',')}&vs_currencies=usd`), {
+      retry: (e, attemptNumber) => {
+        console.log(`coingecko retrying!`, { attemptNumber, addressesChunk });
+        return true;
+      },
+    })
       .then((response) => response.json())
       .then((prices) => arrayToHashmap(Array.from(Object.entries(prices)).map(([address, { usd: usdPrice }]) => [
         address.toLowerCase(),

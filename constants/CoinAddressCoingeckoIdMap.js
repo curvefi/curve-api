@@ -19,6 +19,7 @@ export default {
     '0x16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'dai', // ycDAI
     '0xd6ad7a6750a7593e092a9b218d66c0a814a3436e': 'usd-coin', // ycUSDC
     '0x83f798e925bcd4017eb265844fddabb448f1707d': 'tether', // ycUSDT
+    '0x8cb24ed2e4f7e2065f4eb2be5f6b0064b1919850': 'south-african-tether', // ZARP
   },
   polygon: {
     '0xdab529f40e671a1d4bf91361c21bf9f0c9712ab7': 'binance-usd',
