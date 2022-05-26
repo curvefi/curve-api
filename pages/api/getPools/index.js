@@ -51,13 +51,13 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData }) => {
     const getFactoryV2GaugeRewards = (await import('utils/data/getFactoryV2GaugeRewards')).default;
     const getGauges = (await import('pages/api/getGauges')).default;
 
-    [
+    ([
       { gauges: gaugesData },
       gaugeRewards,
     ] = await Promise.all([
       getGauges.straightCall({ blockchainId: 'ethereum' }),
-      getFactoryV2GaugeRewards(undefined, 'ethereum'),
-    ]);
+      getFactoryV2GaugeRewards({ blockchainId: 'ethereum' }),
+    ]));
   }
 
   const { poolList: mainRegistryPoolList } = await getMainRegistryPools.straightCall();
@@ -65,7 +65,11 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData }) => {
   const gaugesDataArray = Array.from(Object.values(gaugesData));
   const factoryGaugesPoolAddressesAndCoingeckoIdMap = arrayToHashmap(
     gaugesDataArray
-      .filter(({ factory }) => factory === true)
+      .filter(({ factory, type }) => (
+        factory === true &&
+        type !== 'stable' && // Harcoded type in the gauge endpoint that is *not* a coingecko id
+        type !== 'crypto' // Harcoded type in the gauge endpoint that is *not* a coingecko id
+      ))
       .map(({ swap, type: coingeckoId }) => [swap, coingeckoId])
   );
 
@@ -520,12 +524,13 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
   const mergedCoinData = coinData.reduce((accu, { data, metaData: { poolId, poolAddress, coinAddress, type, isNativeEth } }) => {
     const key = `${getIdForPool(poolId)}-${coinAddress}`;
     const coinInfo = accu[key];
+
     const coinPrice = (
       coinAddressesAndPricesMap[coinAddress.toLowerCase()] ||
       coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       ycTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) ||
-      0
+      null
     );
 
     const hardcodedInfoForNativeEth = {
