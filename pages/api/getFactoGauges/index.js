@@ -38,6 +38,11 @@ export default fn(async ({ blockchainId }) => {
   const gaugeRegistryAddress = '0xabc000d88f23bb45525e447528dbf656a9d55bf5';
   const gaugeRegContract = new web3.eth.Contract(gaugeRegistry, gaugeRegistryAddress);
   const gaugeCount = await gaugeRegContract.methods.get_gauge_count(config.chainId).call();
+  if (Number(gaugeCount) === 0) {
+    return {
+      gauges: [],
+    };
+  }
 
   const unfilteredGaugeList = await multiCall(arrayOfIncrements(gaugeCount).map((gaugeIndex) => ({
     address: gaugeRegistryAddress,
