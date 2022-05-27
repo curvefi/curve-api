@@ -268,6 +268,12 @@ export default fn(async ({ blockchainId }) => {
     lastRequest,
   }) => {
     const effectiveInflationRate = Number(inflationRate) || (getGaugeWeight > 0 ? pendingEmissions[address] : 0);
+    const rewardsNeedNudging = (
+      hasCrv &&
+      effectiveInflationRate > 0 &&
+      isMirrored &&
+      Math.trunc(lastRequest / weekSeconds) !== startOfWeekTs
+    );
 
     return {
       swap_token: lpTokenAddress,
@@ -288,11 +294,11 @@ export default fn(async ({ blockchainId }) => {
         virtual_price: poolVirtualPrice,
       },
       swap: poolAddress,
-      rewardsNeedNudging: (
-        hasCrv &&
+      rewardsNeedNudging,
+      areCrvRewardsStuckInBridge: (
         effectiveInflationRate > 0 &&
-        isMirrored &&
-        Math.trunc(lastRequest / weekSeconds) !== startOfWeekTs
+        Number(inflationRate) === 0 &&
+        !rewardsNeedNudging
       ),
     };
   });
