@@ -47,6 +47,7 @@ export default fn(async ({ blockchainId }) => {
       inflation_rate: rate, // This already takes gauge_relative_weight into account in side facto gauges
       totalSupply,
     },
+    areCrvRewardsStuckInBridge,
   }) => {
     const lcAddress = swap.toLowerCase();
     // Not all pools have an lpTokenAddress
@@ -58,12 +59,16 @@ export default fn(async ({ blockchainId }) => {
     const lpTokenUsdValue = pool.usdTotal / (pool.totalSupply / 1e18);
     const gaugeUsdValue = totalSupply / 1e18 * lpTokenUsdValue;
 
-    const apy = (rate / 1e18) * (86400 * 365) / gaugeUsdValue * 0.4 * crvPrice * 100;
+    const apy = (
+      areCrvRewardsStuckInBridge ? 0 :
+      ((rate / 1e18) * (86400 * 365) / gaugeUsdValue * 0.4 * crvPrice * 100)
+    );
 
     return {
       address: lcAddress,
       name,
       apy,
+      areCrvRewardsStuckInBridge,
     };
   });
 
