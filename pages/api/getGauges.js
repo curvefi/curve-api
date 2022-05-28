@@ -196,6 +196,7 @@ export default fn(async ({ blockchainId } = {}) => {
         name: 'ust',
         gauge: '0x3B7020743Bc2A4ca9EaF9D0722d42E20d6935855',
         type: 'stable',
+        is_killed: true,
       },
       eurs: {
         swap: '0x0Ce6a5fF5217e38315f87032CF90686C96627CAA',
@@ -534,6 +535,7 @@ export default fn(async ({ blockchainId } = {}) => {
         gauge: '0xB518f5e3242393d4eC792BD3f44946A3b98d0E48',
         type: 'stable',
         factory: true,
+        is_killed: true,
       },
       "avalanche-a3CRV": {
         swap: '0x7f90122BF0700F9E7e1F688fe926940E8839F353',
@@ -593,6 +595,7 @@ export default fn(async ({ blockchainId } = {}) => {
         gauge: '0xb0f5d00e5916c8b8981e99191A1458704B587b2b',
         type: 'stable',
         factory: true,
+        is_killed: true,
       },
       "f-ibbtc": {
         swap: '0xfbdca68601f835b27790d98bbb8ec7f05fdeaa9b',
