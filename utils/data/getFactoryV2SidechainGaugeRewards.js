@@ -137,5 +137,5 @@ export default memoize(async ({ blockchainId, gauges }) => {
 }, {
   promise: true,
   maxAge: 2 * 60 * 1000, // 2 min
-  primitive: true,
+  normalizer: ([{ blockchainId, gauges }]) => `${blockchainId}-${gauges.length}`,
 });
