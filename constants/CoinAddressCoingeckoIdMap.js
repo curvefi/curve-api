@@ -69,4 +69,7 @@ export default {
   xdai: {
     '0x4ecaba5870353805a9f068101a40e0f32ed605c6': 'tether',
   },
+  moonbeam: {
+    '0x9fda7ceec4c18008096c2fe2b85f05dc300f94d0': 'lido-dao',
+  },
 };
