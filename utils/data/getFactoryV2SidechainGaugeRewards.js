@@ -30,17 +30,18 @@ export default memoize(async ({ blockchainId, gauges }) => {
   const gaugesData = await multiCall(flattenArray(sidechainOnlyFactoryGauges.map(({
     name,
     gauge,
+    lpTokenPrice,
   }) => [{
     address: gauge,
     abi: SIDECHAIN_FACTO_GAUGE_ABI,
     methodName: 'reward_count',
-    metaData: { name, gauge, type: 'rewardCount' },
+    metaData: { name, gauge, lpTokenPrice, type: 'rewardCount' },
     networkSettings: multicallNetworkSettings,
   }, {
     address: gauge,
     abi: ERC20_ABI,
     methodName: 'totalSupply',
-    metaData: { name, gauge, type: 'totalSupply' },
+    metaData: { name, gauge, lpTokenPrice, type: 'totalSupply' },
     networkSettings: multicallNetworkSettings,
   }])));
 
@@ -49,14 +50,14 @@ export default memoize(async ({ blockchainId, gauges }) => {
 
   const rewardTokens = await multiCall(flattenArray(gaugesRewardCount.map(({
     data: rewardCount,
-    metaData: { name, gauge },
+    metaData: { name, gauge, lpTokenPrice },
   }) => (
     [...Array(Number(rewardCount)).keys()].map((rewardIndex) => ({
       address: gauge,
       abi: SIDECHAIN_FACTO_GAUGE_ABI,
       methodName: 'reward_tokens',
       params: [rewardIndex],
-      metaData: { name, gauge },
+      metaData: { name, gauge, lpTokenPrice },
       networkSettings: multicallNetworkSettings,
     }))
   ))));
@@ -84,31 +85,31 @@ export default memoize(async ({ blockchainId, gauges }) => {
 
   const rewardAndTokenData = await multiCall(flattenArray(rewardTokens.map(({
     data: rewardTokenAddress,
-    metaData: { name, gauge },
+    metaData: { name, gauge, lpTokenPrice },
   }) => [{
     address: gauge,
     abi: SIDECHAIN_FACTO_GAUGE_ABI,
     methodName: 'reward_data',
     params: [rewardTokenAddress],
-    metaData: { name, gauge, rewardTokenAddress, type: 'rewardData' },
+    metaData: { name, gauge, lpTokenPrice, rewardTokenAddress, type: 'rewardData' },
     networkSettings: multicallNetworkSettings,
   }, {
     address: rewardTokenAddress,
     abi: ERC20_ABI,
     methodName: 'name',
-    metaData: { name, gauge, rewardTokenAddress, type: 'name' },
+    metaData: { name, gauge, lpTokenPrice, rewardTokenAddress, type: 'name' },
     networkSettings: multicallNetworkSettings,
   }, {
     address: rewardTokenAddress,
     abi: ERC20_ABI,
     methodName: 'symbol',
-    metaData: { name, gauge, rewardTokenAddress, type: 'symbol' },
+    metaData: { name, gauge, lpTokenPrice, rewardTokenAddress, type: 'symbol' },
     networkSettings: multicallNetworkSettings,
   }, {
     address: rewardTokenAddress,
     abi: ERC20_ABI,
     methodName: 'decimals',
-    metaData: { name, gauge, rewardTokenAddress, type: 'decimals' },
+    metaData: { name, gauge, lpTokenPrice, rewardTokenAddress, type: 'decimals' },
     networkSettings: multicallNetworkSettings,
   }])));
 
@@ -123,7 +124,7 @@ export default memoize(async ({ blockchainId, gauges }) => {
       rate,
       2: rateFallback,
     },
-    metaData: { name, gauge, rewardTokenAddress },
+    metaData: { name, gauge, lpTokenPrice, rewardTokenAddress },
   }) => {
     const effectiveRate = typeof rate !== 'undefined' ? rate : rateFallback;
     const effectivePeriodFinish = Number(typeof periodFinish !== 'undefined' ? periodFinish : periodFinishFallback);
@@ -148,7 +149,7 @@ export default memoize(async ({ blockchainId, gauges }) => {
       decimals: tokenDecimals,
       apy: (
         isRewardStillActive ?
-          (effectiveRate) / 1e18 * 86400 * 365 * tokenPrice / totalSupply * 100 :
+          (effectiveRate) / 1e18 * 86400 * 365 * tokenPrice / totalSupply / lpTokenPrice * 100 :
           0
       ),
       metaData: {
