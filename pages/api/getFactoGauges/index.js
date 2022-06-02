@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import { fn } from 'utils/api';
-import gaugeRegistry from 'constants/abis/gauge-registry.json';
+import GAUGE_REGISTRY_ABI from 'constants/abis/gauge-registry.json';
+import GAUGE_REGISTRY_SIDECHAIN_ABI from 'constants/abis/gauge-registry-sidechain.json';
 import GAUGE_FACTORY_ABI from 'constants/abis/gauge-factory-sidechain.json';
 import sideChainGauge from 'constants/abis/sidechain-gauge.json';
 import sideChainRootGauge from 'constants/abis/sidechain-root-gauge.json';
@@ -36,20 +37,38 @@ export default fn(async ({ blockchainId }) => {
   const web3Side = new Web3(config.rpcUrl);
 
   const gaugeRegistryAddress = '0xabc000d88f23bb45525e447528dbf656a9d55bf5';
-  const gaugeRegContract = new web3.eth.Contract(gaugeRegistry, gaugeRegistryAddress);
-  const gaugeCount = await gaugeRegContract.methods.get_gauge_count(config.chainId).call();
-  if (Number(gaugeCount) === 0) {
+  const gaugeRegistry = new web3.eth.Contract(GAUGE_REGISTRY_ABI, gaugeRegistryAddress);
+  const gaugeRegistrySidechain = new web3Side.eth.Contract(GAUGE_REGISTRY_SIDECHAIN_ABI, gaugeRegistryAddress);
+
+  const [mirroredGaugeCount, unmirroredGaugeCount] = await Promise.all([
+    gaugeRegistry.methods.get_gauge_count(config.chainId).call(),
+    gaugeRegistrySidechain.methods.get_gauge_count().call(),
+  ]);
+  if (Number(mirroredGaugeCount) === 0 && Number(unmirroredGaugeCount) === 0) {
     return {
       gauges: [],
     };
   }
 
-  const unfilteredGaugeList = await multiCall(arrayOfIncrements(gaugeCount).map((gaugeIndex) => ({
+  const unfilteredMirroredGaugeList = await multiCall(arrayOfIncrements(mirroredGaugeCount).map((gaugeIndex) => ({
     address: gaugeRegistryAddress,
-    abi: gaugeRegistry,
+    abi: GAUGE_REGISTRY_ABI,
     methodName: 'get_gauge',
     params: [config.chainId, gaugeIndex],
   })));
+
+  const unfilteredUnmirroredGaugeList = await multiCall(arrayOfIncrements(unmirroredGaugeCount).map((gaugeIndex) => ({
+    address: gaugeRegistryAddress,
+    abi: GAUGE_REGISTRY_SIDECHAIN_ABI,
+    methodName: 'get_gauge',
+    params: [gaugeIndex],
+    networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
+  })));
+
+  const unfilteredGaugeList = [
+    ...unfilteredMirroredGaugeList,
+    ...unfilteredUnmirroredGaugeList,
+  ];
 
   const gaugesKilledInfo = await multiCall(unfilteredGaugeList.map((gaugeAddress) => ({
     address: gaugeAddress,
