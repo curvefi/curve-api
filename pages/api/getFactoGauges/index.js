@@ -252,6 +252,10 @@ export default fn(async ({ blockchainId }) => {
     return {
       ...gaugeData,
       poolAddress: (poolInMainRegistry || poolInCryptoRegistry || poolInCryptoFactoRegistry || poolInStableFactoRegistry).address,
+      lpTokenPrice: (
+        (poolInMainRegistry || poolInCryptoRegistry || poolInCryptoFactoRegistry || poolInStableFactoRegistry).usdTotal /
+        ((poolInMainRegistry || poolInCryptoRegistry || poolInCryptoFactoRegistry || poolInStableFactoRegistry).totalSupply / 1e18)
+      ),
       type: ((poolInCryptoFactoRegistry || poolInCryptoRegistry) ? 'crypto' : 'stable'),
     };
   }).filter((o) => o !== null);
@@ -285,6 +289,7 @@ export default fn(async ({ blockchainId }) => {
     poolVirtualPrice,
     isMirrored,
     lastRequest,
+    lpTokenPrice,
   }) => {
     const effectiveInflationRate = Number(inflationRate) || (getGaugeWeight > 0 ? pendingEmissions[address] : 0);
     const rewardsNeedNudging = (
@@ -312,6 +317,7 @@ export default fn(async ({ blockchainId }) => {
       swap_data: {
         virtual_price: poolVirtualPrice,
       },
+      lpTokenPrice,
       swap: poolAddress,
       rewardsNeedNudging,
       areCrvRewardsStuckInBridge: (
