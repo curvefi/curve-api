@@ -71,5 +71,7 @@ export default {
   },
   moonbeam: {
     '0x9fda7ceec4c18008096c2fe2b85f05dc300f94d0': 'lido-dao',
+    '0xffffffff1fcacbd218edc0eba20fc2308c778080': 'polkadot',
+    '0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108': 'polkadot',
   },
 };
