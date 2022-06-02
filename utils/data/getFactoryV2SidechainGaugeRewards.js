@@ -3,12 +3,14 @@ import partition from 'lodash.partition';
 import groupBy from 'lodash.groupby';
 import memoize from 'memoizee';
 import { multiCall } from 'utils/Calls';
-import { flattenArray, uniq } from 'utils/Array';
+import { flattenArray, uniq, arrayToHashmap } from 'utils/Array';
 import { getNowTimestamp } from 'utils/Date';
 import getTokensPrices from 'utils/data/tokens-prices';
+import getAssetsPrices from 'utils/data/assets-prices';
 import configs from 'constants/configs';
 import ERC20_ABI from 'constants/abis/erc20.json';
 import SIDECHAIN_FACTO_GAUGE_ABI from 'constants/abis/sidechain-gauge.json';
+import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
 
 export default memoize(async ({ blockchainId, gauges }) => {
   const config = configs[blockchainId];
@@ -59,9 +61,26 @@ export default memoize(async ({ blockchainId, gauges }) => {
     }))
   ))));
 
-  const tokenPricesPromise = getTokensPrices(uniq(rewardTokens.map(({ data: rewardTokenAddress }) => (
+  const coinAddressesAndPricesMap = await getTokensPrices(uniq(rewardTokens.map(({ data: rewardTokenAddress }) => (
     rewardTokenAddress
   ))), config.platformCoingeckoId);
+
+  const coinsFallbackPrices = (
+    COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
+      await getAssetsPrices(Array.from(Object.values(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))) :
+      {}
+  );
+  const coinAddressesAndPricesMapFallback = (
+    COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
+      arrayToHashmap(
+        Array.from(Object.entries(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))
+          .map(([address, coingeckoId]) => [
+            address.toLowerCase(),
+            coinsFallbackPrices[coingeckoId],
+          ])
+      ) :
+      {}
+  );
 
   const rewardAndTokenData = await multiCall(flattenArray(rewardTokens.map(({
     data: rewardTokenAddress,
@@ -96,8 +115,6 @@ export default memoize(async ({ blockchainId, gauges }) => {
   const [rewardData, tokenData] =
     partition(rewardAndTokenData, ({ metaData: { type } }) => type === 'rewardData');
 
-  const tokenPrices = await tokenPricesPromise; // Awaiting only here so there's as much work done in parallel as possible
-
   const nowTimestamp = getNowTimestamp();
   const rewardsInfo = rewardData.map(({
     data: {
@@ -115,8 +132,12 @@ export default memoize(async ({ blockchainId, gauges }) => {
     const tokenName = tokenData.find(({ metaData }) => metaData.name === name && metaData.type === 'name').data;
     const tokenSymbol = tokenData.find(({ metaData }) => metaData.name === name && metaData.type === 'symbol').data;
     const tokenDecimals = tokenData.find(({ metaData }) => metaData.name === name && metaData.type === 'decimals').data;
-    const lcTokenPriceIndex = rewardTokenAddress.toLowerCase();
-    const tokenPrice = tokenPrices[lcTokenPriceIndex];
+
+    const tokenPrice = (
+      coinAddressesAndPricesMap[rewardTokenAddress.toLowerCase()] ||
+      coinAddressesAndPricesMapFallback[rewardTokenAddress.toLowerCase()] ||
+      null
+    );
 
     return {
       gaugeAddress: gauge.toLowerCase(),
@@ -130,6 +151,10 @@ export default memoize(async ({ blockchainId, gauges }) => {
           (effectiveRate) / 1e18 * 86400 * 365 * tokenPrice / totalSupply * 100 :
           0
       ),
+      metaData: {
+        rate: effectiveRate,
+        periodFinish: effectivePeriodFinish,
+      },
     };
   });
 
