@@ -157,6 +157,7 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     registryId === 'factory-crypto' ? await getFactoryCryptoRegistryAddress() :
     undefined
   );
+  if (registryAddress === ZERO_ADDRESS) return { poolData: [], tvlAll: 0 };
 
   const getIdForPool = (id) => (
     registryId === 'factory' ? `factory-v2-${id}` :
