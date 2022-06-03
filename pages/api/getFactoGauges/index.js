@@ -1,4 +1,5 @@
 import Web3 from 'web3';
+import uniq from 'lodash.uniq';
 import { fn } from 'utils/api';
 import GAUGE_REGISTRY_ABI from 'constants/abis/gauge-registry.json';
 import GAUGE_REGISTRY_SIDECHAIN_ABI from 'constants/abis/gauge-registry-sidechain.json';
@@ -65,10 +66,10 @@ export default fn(async ({ blockchainId }) => {
     networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
   })));
 
-  const unfilteredGaugeList = [
+  const unfilteredGaugeList = uniq([
     ...unfilteredMirroredGaugeList,
     ...unfilteredUnmirroredGaugeList,
-  ];
+  ]);
 
   const gaugesKilledInfo = await multiCall(unfilteredGaugeList.map((gaugeAddress) => ({
     address: gaugeAddress,
