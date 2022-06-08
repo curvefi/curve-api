@@ -71,6 +71,7 @@ const configs = {
       ['0x39fE1824f98CD828050D7c51dA443E84121c7cf1'.toLowerCase(), 'metausdbalances'],
       ['0xC05EB760A135d3D0c839f1141423002681157a17'.toLowerCase(), 'metabtc'],
       ['0xD8336532f6ED7b94282fAF724fe41d6145E07Cfc'.toLowerCase(), 'metabtcbalances'],
+      ['0x5bcA7dDF1bcccB2eE8e46c56bfc9d3CDC77262bC'.toLowerCase(), 'metacrypto'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0xE7a24EF0C5e95Ffb0f6684b813A78F2a3AD7D171', '0x19793B454D3AfC7b454F206Ffe95aDE26cA6912c'], // meta usd
