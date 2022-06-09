@@ -1,19 +1,27 @@
-import memoize from 'memoizee';
-import { flattenArray, arrayToHashmap } from 'utils/Array';
-import Request from 'utils/Request';
-import { IS_DEV, BASE_API_DOMAIN } from 'constants/AppConstants';
+import memoize from "memoizee";
+import { flattenArray, arrayToHashmap } from "utils/Array";
+import Request from "utils/Request";
+import { IS_DEV, BASE_API_DOMAIN } from "constants/AppConstants";
 
 // Can be increased if needed, "3" is currently the max we've needed based on situations
 // where coins were missing prices that we've encountered so far.
 const MAX_PASSES = 3;
 
-const getMainRegistryPools = memoize(async (blockchainId) => (
-  (await (await Request.get(`${BASE_API_DOMAIN}/api/getPools/${blockchainId}/main`)).json()).data.poolData
-), {
-  promise: true,
-  maxAge: 60 * 60 * 1000, // 1h
-  length: 1,
-});
+const getMainRegistryPools = memoize(
+  async (blockchainId) =>
+    (
+      await (
+        await Request.get(
+          `${BASE_API_DOMAIN}/api/getPools/${blockchainId}/main`
+        )
+      ).json()
+    ).data.poolData,
+  {
+    promise: true,
+    maxAge: 60 * 60 * 1000, // 1h
+    length: 1,
+  }
+);
 
 /**
  * Tries to derive missing coin prices from other available data using different methods.
@@ -35,14 +43,15 @@ const deriveMissingCoinPricesSinglePass = async ({
    * a pool is missing a single coin's price at index 0 or 1. Let's improve it later
    * if more is necessary.
    */
-  const canUsePriceOracle = (
+  const canUsePriceOracle =
     coins.filter(({ usdPrice }) => usdPrice === null).length === 1 &&
-    (coins.length === 2 || coins.findIndex(({ usdPrice }) => usdPrice === null) < 2) &&
-    (!!poolInfo.priceOracle || registryId === 'main')
-  );
+    (coins.length === 2 ||
+      coins.findIndex(({ usdPrice }) => usdPrice === null) < 2) &&
+    (!!poolInfo.priceOracle || registryId === "main");
 
   if (canUsePriceOracle) {
-    if (IS_DEV) {}
+    if (IS_DEV) {
+    }
 
     /**
      * Main pools are stable and without too-risky coins, so we can approximate 1:1;
@@ -50,19 +59,18 @@ const deriveMissingCoinPricesSinglePass = async ({
      * reverts in extreme but not so rare occasions, so the little added precision
      * doesn't seem worth the brittleness.
      */
-    const priceOracle = registryId === 'main' ? 1 : poolInfo.priceOracle;
+    const priceOracle = registryId === "main" ? 1 : poolInfo.priceOracle;
 
-    return (
-      coins.map((coin, i) => (
-        coin.usdPrice === null ? {
-          ...coin,
-          usdPrice: (
-            i === 0 ?
-              (coins[1].usdPrice / priceOracle) :
-              (coins[0].usdPrice * priceOracle)
-          ),
-        } : coin
-      ))
+    return coins.map((coin, i) =>
+      coin.usdPrice === null
+        ? {
+            ...coin,
+            usdPrice:
+              i === 0
+                ? coins[1].usdPrice / priceOracle
+                : coins[0].usdPrice * priceOracle,
+          }
+        : coin
     );
   }
 
@@ -78,27 +86,35 @@ const deriveMissingCoinPricesSinglePass = async ({
    * coins[obscureUsd, usdc] and obscureUsd's usdPrice is null, use the other instance
    * of obscureUsd to fill in its usdPrice in the currently iterated-on pool)
    */
-  const otherPoolsCoinsAddressesAndPricesMap = arrayToHashmap(flattenArray(otherPools.map((pool) => (
-    pool.coins ?
-      pool.coins.filter(({ usdPrice }) => usdPrice !== null) :
-      [] // Pools at higher indices do not have a coins prop yet
-  ).map(({ address, usdPrice }) => [address, usdPrice]))));
+  const otherPoolsCoinsAddressesAndPricesMap = arrayToHashmap(
+    flattenArray(
+      otherPools.map((pool) =>
+        (pool.coins
+          ? pool.coins.filter(({ usdPrice }) => usdPrice !== null)
+          : []
+        ) // Pools at higher indices do not have a coins prop yet
+          .map(({ address, usdPrice }) => [address, usdPrice])
+      )
+    )
+  );
 
-  const canUseSameCoinPriceInOtherPool = coins.some(({ address, usdPrice }) => (
-    usdPrice === null &&
-    otherPoolsCoinsAddressesAndPricesMap[address]
-  ));
+  const canUseSameCoinPriceInOtherPool = coins.some(
+    ({ address, usdPrice }) =>
+      usdPrice === null && otherPoolsCoinsAddressesAndPricesMap[address]
+  );
 
   if (canUseSameCoinPriceInOtherPool) {
-    if (IS_DEV) {}
+    if (IS_DEV) {
+    }
 
-    return (
-      coins.map((coin) => (
-        coin.usdPrice === null ? {
-          ...coin,
-          usdPrice: (otherPoolsCoinsAddressesAndPricesMap[coin.address] || null),
-        } : coin
-      ))
+    return coins.map((coin) =>
+      coin.usdPrice === null
+        ? {
+            ...coin,
+            usdPrice:
+              otherPoolsCoinsAddressesAndPricesMap[coin.address] || null,
+          }
+        : coin
     );
   }
 
@@ -106,67 +122,77 @@ const deriveMissingCoinPricesSinglePass = async ({
    * Method 3: At least one coin price is known, and the rates between all coins in
    * the pool are known, allowing us to derive all other coins prices.
    */
-  const canUseInternalPriceOracle = (
+  const canUseInternalPriceOracle =
     internalPoolPrices.length > 0 &&
-    coins.filter(({ usdPrice }) => usdPrice !== null).length >= 1
-  );
+    coins.filter(({ usdPrice }) => usdPrice !== null).length >= 1;
   if (canUseInternalPriceOracle) {
-    if (IS_DEV) {}
+    if (IS_DEV) {
+    }
     const coinWithKnownPrice = coins.find(({ usdPrice }) => usdPrice !== null);
     const coinWithKnownPriceIndex = coins.indexOf(coinWithKnownPrice);
 
-    return (
-      coins.map((coin, coinIndex) => {
-        if (coin.usdPrice !== null) return coin;
+    return coins.map((coin, coinIndex) => {
+      if (coin.usdPrice !== null) return coin;
 
-        const internalPoolPriceData = internalPoolPrices.find(({ i, j }) => (
-          i === coinIndex && j === coinWithKnownPriceIndex
-        ));
-        if (!internalPoolPriceData) { // Should never happen
-          throw new Error(`internalPoolPriceData not found for indices (${coinWithKnownPriceIndex}, ${coinIndex}) in pool ${poolInfo.id}`);
-        }
-
-        const usdPrice = (
-          internalPoolPriceData.i === coinWithKnownPriceIndex ?
-            (coinWithKnownPrice.usdPrice / internalPoolPriceData.rate) :
-            (coinWithKnownPrice.usdPrice * internalPoolPriceData.rate)
+      const internalPoolPriceData = internalPoolPrices.find(
+        ({ i, j }) => i === coinIndex && j === coinWithKnownPriceIndex
+      );
+      if (!internalPoolPriceData) {
+        // Should never happen
+        throw new Error(
+          `internalPoolPriceData not found for indices (${coinWithKnownPriceIndex}, ${coinIndex}) in pool ${poolInfo.id}`
         );
+      }
 
-        return {
-          ...coin,
-          usdPrice,
-        };
-      })
-    );
+      const usdPrice =
+        internalPoolPriceData.i === coinWithKnownPriceIndex
+          ? coinWithKnownPrice.usdPrice / internalPoolPriceData.rate
+          : coinWithKnownPrice.usdPrice * internalPoolPriceData.rate;
+
+      return {
+        ...coin,
+        usdPrice,
+      };
+    });
   }
 
   /**
    * Method 4: Same as method 3, with values from main registry pools instead of
    * values from other pools in the same registry.
    */
-  const canFetchMoreDataFromMainRegistry = registryId !== 'main';
+  const canFetchMoreDataFromMainRegistry = registryId !== "main";
   if (canFetchMoreDataFromMainRegistry) {
     const mainRegistryPools = await getMainRegistryPools(blockchainId);
 
-    const mainPoolsCoinsAddressesAndPricesMap = arrayToHashmap(flattenArray(mainRegistryPools.map((pool) => (
-      pool.coins.filter(({ usdPrice }) => usdPrice !== null)
-    ).map(({ address, usdPrice }) => [address.toLowerCase(), usdPrice]))));
+    const mainPoolsCoinsAddressesAndPricesMap = arrayToHashmap(
+      flattenArray(
+        mainRegistryPools.map((pool) =>
+          pool.coins
+            .filter(({ usdPrice }) => usdPrice !== null)
+            .map(({ address, usdPrice }) => [address.toLowerCase(), usdPrice])
+        )
+      )
+    );
 
-    const canUseSameCoinPriceInMainPool = coins.some(({ address, usdPrice }) => (
-      usdPrice === null &&
-      mainPoolsCoinsAddressesAndPricesMap[address]
-    ));
+    const canUseSameCoinPriceInMainPool = coins.some(
+      ({ address, usdPrice }) =>
+        usdPrice === null && mainPoolsCoinsAddressesAndPricesMap[address]
+    );
 
     if (canUseSameCoinPriceInMainPool) {
-      if (IS_DEV) {}
+      if (IS_DEV) {
+      }
 
-      return (
-        coins.map((coin) => (
-          coin.usdPrice === null ? {
-            ...coin,
-            usdPrice: (mainPoolsCoinsAddressesAndPricesMap[coin.address.toLowerCase()] || null),
-          } : coin
-        ))
+      return coins.map((coin) =>
+        coin.usdPrice === null
+          ? {
+              ...coin,
+              usdPrice:
+                mainPoolsCoinsAddressesAndPricesMap[
+                  coin.address.toLowerCase()
+                ] || null,
+            }
+          : coin
       );
     }
   }
@@ -205,6 +231,4 @@ const deriveMissingCoinPrices = async ({
   return augmentedCoins;
 };
 
-export {
-  deriveMissingCoinPrices,
-};
+export { deriveMissingCoinPrices };

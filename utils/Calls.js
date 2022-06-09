@@ -1,13 +1,13 @@
 /* eslint-disable camelcase, no-lonely-if */
 
-import Web3 from 'web3';
-import memoize from 'memoizee';
-import configs from 'constants/configs';
-import WEB3_CONSTANTS from 'constants/Web3';
-import { ZERO_ADDRESS } from 'utils/Web3/web3';
-import { IS_DEV } from 'constants/AppConstants';
-import MULTICALL2_ABI from '../constants/abis/multicall2.json';
-import { getArrayChunks, flattenArray } from './Array';
+import Web3 from "web3";
+import memoize from "memoizee";
+import configs from "constants/configs";
+import WEB3_CONSTANTS from "constants/Web3";
+import { ZERO_ADDRESS } from "utils/Web3/web3";
+import { IS_DEV } from "constants/AppConstants";
+import MULTICALL2_ABI from "../constants/abis/multicall2.json";
+import { getArrayChunks, flattenArray } from "./Array";
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
@@ -19,9 +19,9 @@ const FALLBACK_DECODED_PARAMETERS_VALUES = {
 };
 
 // Contract instances cache store
-const getContractInstance = memoize((address, abi, library) => (
-  new library.eth.Contract(abi, address)
-));
+const getContractInstance = memoize(
+  (address, abi, library) => new library.eth.Contract(abi, address)
+);
 
 /**
  * @param {Array<{contract: Object, methodName: String, params: Array}>} callsConfig
@@ -64,38 +64,54 @@ const multiCall = async (callsConfig, isDebugging = false) => {
   // Validate configs
   // eslint-disable-next-line no-restricted-syntax
   for (const config of augmentedCallsConfig) {
-    const usesContractField = typeof config.contract !== 'undefined';
+    const usesContractField = typeof config.contract !== "undefined";
 
-    if (usesContractField && typeof config.contract !== 'object') {
-      throw new Error('multiCall error: config parameter `contract` expects a contract object');
+    if (usesContractField && typeof config.contract !== "object") {
+      throw new Error(
+        "multiCall error: config parameter `contract` expects a contract object"
+      );
     }
 
-    if (!usesContractField && typeof config.address !== 'string') {
-      throw new Error('multiCall error: config parameter `address` expects a contract address');
+    if (!usesContractField && typeof config.address !== "string") {
+      throw new Error(
+        "multiCall error: config parameter `address` expects a contract address"
+      );
     }
 
     if (!usesContractField && !Array.isArray(config.abi)) {
-      throw new Error('multiCall error: config parameter `abi` expects an array');
+      throw new Error(
+        "multiCall error: config parameter `abi` expects an array"
+      );
     }
 
-    if (typeof config.methodName !== 'string') {
-      throw new Error('multiCall error: config parameter `methodName` expects a contract method name');
+    if (typeof config.methodName !== "string") {
+      throw new Error(
+        "multiCall error: config parameter `methodName` expects a contract method name"
+      );
     }
 
-    if (typeof config.networkSettings.web3 === 'undefined') {
-      throw new Error('multiCall error: config parameter `networkSettings.web3` is required');
+    if (typeof config.networkSettings.web3 === "undefined") {
+      throw new Error(
+        "multiCall error: config parameter `networkSettings.web3` is required"
+      );
     }
 
-    if (typeof config.networkSettings.multicall2Address === 'undefined') {
-      throw new Error('multiCall error: config parameter `networkSettings.multicall2Address` is required');
+    if (typeof config.networkSettings.multicall2Address === "undefined") {
+      throw new Error(
+        "multiCall error: config parameter `networkSettings.multicall2Address` is required"
+      );
     }
 
     if (usesContractField && !config.contract._address) {
-      throw new Error('multiCall error: couldn’t find any `_address` property on config parameter `contract`; either the contract object passed in incorrect, or we need to make multiCall accept an optional address param to pass it manually ourselves when it’s not implicitly set on `contract`');
+      throw new Error(
+        "multiCall error: couldn’t find any `_address` property on config parameter `contract`; either the contract object passed in incorrect, or we need to make multiCall accept an optional address param to pass it manually ourselves when it’s not implicitly set on `contract`"
+      );
     }
   }
 
-  const hasMetaData = augmentedCallsConfig.some(({ metaData }) => typeof metaData !== 'undefined');
+  const hasMetaData = augmentedCallsConfig.some(
+    ({ metaData }) => typeof metaData !== "undefined"
+  );
   const calls = augmentedCallsConfig.map((callConfig) => {
     const {
       contract,
@@ -107,10 +123,12 @@ const multiCall = async (callsConfig, isDebugging = false) => {
       superSettings,
     } = callConfig;
 
-    const contractInstance = (contract || getContractInstance(address, abi, networkSettings.web3));
+    const contractInstance =
+      contract || getContractInstance(address, abi, networkSettings.web3);
     if (!contractInstance.methods[methodName]) {
-      
-      throw new Error(`multiCall error: method ${methodName} was not found on provided contract`);
+      throw new Error(
+        `multiCall error: method ${methodName} was not found on provided contract`
+      );
     }
 
     return [
@@ -121,7 +139,11 @@ const multiCall = async (callsConfig, isDebugging = false) => {
 
   const { networkSettings } = augmentedCallsConfig[0];
 
-  const multicall = getContractInstance(networkSettings.multicall2Address, MULTICALL2_ABI, networkSettings.web3);
+  const multicall = getContractInstance(
+    networkSettings.multicall2Address,
+    MULTICALL2_ABI,
+    networkSettings.web3
+  );
   const chunkedReturnData = [];
   const chunkedCalls = getArrayChunks(calls, 200); // Keep each multicall size reasonable
 
@@ -130,17 +152,24 @@ const multiCall = async (callsConfig, isDebugging = false) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const callsChunk of chunkedCalls) {
       // eslint-disable-next-line no-await-in-loop
-      const aggregateReturnData = await multicall.methods.tryAggregate(false, callsChunk).call();
-      const returnData = aggregateReturnData.map(({ success, returnData: hexData }) => ({ success, hexData }));
+      const aggregateReturnData = await multicall.methods
+        .tryAggregate(false, callsChunk)
+        .call();
+      const returnData = aggregateReturnData.map(
+        ({ success, returnData: hexData }) => ({ success, hexData })
+      );
       chunkedReturnData.push(returnData);
     }
 
     const returnData = flattenArray(chunkedReturnData);
 
     decodedData = returnData.map(({ success, hexData }, i) => {
-      const { contract, abi, methodName, metaData, superSettings } = augmentedCallsConfig[i];
+      const { contract, abi, methodName, metaData, superSettings } =
+        augmentedCallsConfig[i];
       const contractAbi = contract?._jsonInterface || abi;
-      const outputSignature = contractAbi.find(({ name }) => name === methodName).outputs;
+      const outputSignature = contractAbi.find(
+        ({ name }) => name === methodName
+      ).outputs;
 
       let data;
       if (superSettings.returnSuccessState) {
@@ -148,24 +177,41 @@ const multiCall = async (callsConfig, isDebugging = false) => {
       } else {
         if (outputSignature.length > 1) {
           try {
-            data = networkSettings.web3.eth.abi.decodeParameters(outputSignature, hexData);
+            data = networkSettings.web3.eth.abi.decodeParameters(
+              outputSignature,
+              hexData
+            );
           } catch (err) {
-            console.error(`Failed decodeParameters with outputSignature ${JSON.stringify(outputSignature.map(({ type, name }) => ({ type, name })))}`);
+            console.error(
+              `Failed decodeParameters with outputSignature ${JSON.stringify(
+                outputSignature.map(({ type, name }) => ({ type, name }))
+              )}`
+            );
 
             throw err;
           }
         } else {
           try {
-            data = networkSettings.web3.eth.abi.decodeParameter(outputSignature[0], hexData);
+            data = networkSettings.web3.eth.abi.decodeParameter(
+              outputSignature[0],
+              hexData
+            );
           } catch (err) {
             const failedDecodedType = outputSignature[0].type;
 
             // Use fallback value if one exists (ideally we have fallback values for all types,
             // add more when necessary as we encounter other failures)
-            if (typeof FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType] !== 'undefined') {
+            if (
+              typeof FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType] !==
+              "undefined"
+            ) {
               data = FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType];
             } else {
-              console.error(`Failed decodeParameter with outputSignature ${JSON.stringify(failedDecodedType)}`);
+              console.error(
+                `Failed decodeParameter with outputSignature ${JSON.stringify(
+                  failedDecodedType
+                )}`
+              );
               throw err;
             }
           }
@@ -176,7 +222,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
       return data;
     });
   } catch (err) {
-    console.error(err)
+    console.error(err);
     if (IS_DEV && !isDebugging) await findThrowingCall(callsConfig);
     else throw err;
   }
@@ -185,7 +231,6 @@ const multiCall = async (callsConfig, isDebugging = false) => {
 };
 
 const findThrowingCall = async (callsConfig) => {
-  
   let subset = callsConfig;
 
   while (subset.length > 1) {
@@ -201,10 +246,6 @@ const findThrowingCall = async (callsConfig) => {
       }
     }
   }
-
-  
 };
 
-export {
-  multiCall,
-};
+export { multiCall };
