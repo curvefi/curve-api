@@ -19,7 +19,7 @@ const getTokensPrices = memoize(async (addresses, platform = 'ethereum') => {
   const pricesChunks = await sequentialPromiseMap(addresses, (addressesChunk) => (
     backOff(() => Request.get(`https://api.coingecko.com/api/v3/simple/token_price/${platform}?contract_addresses=${addressesChunk.join(',')}&vs_currencies=usd`), {
       retry: (e, attemptNumber) => {
-        console.log(`coingecko retrying!`, { attemptNumber, addressesChunk });
+        
         return true;
       },
     })

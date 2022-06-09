@@ -109,7 +109,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
 
     const contractInstance = (contract || getContractInstance(address, abi, networkSettings.web3));
     if (!contractInstance.methods[methodName]) {
-      console.error('Context for error thrown below (callConfig)', callConfig);
+      
       throw new Error(`multiCall error: method ${methodName} was not found on provided contract`);
     }
 
@@ -185,7 +185,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
 };
 
 const findThrowingCall = async (callsConfig) => {
-  console.warn('multiCall() threw, running debugger...');
+  
   let subset = callsConfig;
 
   while (subset.length > 1) {
@@ -202,7 +202,7 @@ const findThrowingCall = async (callsConfig) => {
     }
   }
 
-  console.log('Found throwing call:', subset);
+  
 };
 
 export {
