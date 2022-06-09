@@ -635,9 +635,14 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
 
   const augmentedData = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
     const implementation = (
-      (registryId === 'factory' || registryId === 'factory-crypto') ?
-        (implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) || '') :
-        ''
+      (registryId === 'factory-crypto') ? (
+        // Meta crypto facto pools (on sidechains only) do not work with a special implementation:
+        // rather, they simply use the meta pool's lp token as one of their tokens, and expose a
+        // zap to ease interactions with underlyings.
+        poolInfo.coinsAddresses.some((address) => address.toLowerCase() === config.factoryCryptoMetaBasePoolLpTokenAddress?.toLowerCase()) ? 'metacrypto' : ''
+      ) : (registryId === 'factory') ? (
+        (implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) || '')
+      ) : ''
     );
 
     const isUsdMetaPool = implementation.startsWith('metausd') || implementation.startsWith('v1metausd');
