@@ -1017,6 +1017,14 @@ export default fn(async ({ blockchainId } = {}) => {
         factory: true,
         hasNoCrv: true, // Hasn't been voted in yet, isn't in gauge controller, doesn't receive CRV
       },
+      "f-tokeeth": {
+        swap: '0xe0e970a99bc4F53804D8145beBBc7eBc9422Ba7F',
+        swap_token: '0x7ea4ad8c803653498bf6ac1d2debc04dce8fd2ad',
+        name: 'f-tokeeth',
+        gauge: '0xa0C08C0Aede65a0306F7dD042D2560dA174c91fC',
+        type: 'crypto',
+        factory: true,
+      },
     }
 
 
