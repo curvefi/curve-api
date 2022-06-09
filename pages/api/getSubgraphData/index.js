@@ -195,7 +195,7 @@ export default fn(async ( {blockchainId} ) => {
         const underlyingPoolAddress = config.CRYPTO_POOLS_WITH_BASE_POOLS.get(pool.address);
         const underlyingPool = poolList.find(({ address }) => address.toLowerCase() === underlyingPoolAddress.toLowerCase());
         if (!underlyingPool) {
-          console.error(`Couldn't find underlying pool for crypto pool ${pool.address}, hence couldn't add up its base apy`);
+          
           return pool;
         }
 

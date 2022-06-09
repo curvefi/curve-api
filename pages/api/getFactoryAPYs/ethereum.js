@@ -131,7 +131,7 @@ export default fn(async ({ version }) => {
             const errorMessage = `Couldn't find pool address ${pool.address} in subgraph stats data`;
 
             if (IS_DEV) throw new Error(errorMessage);
-            else console.error(errorMessage);
+            else {}
         }
 
         poolDetails.push({

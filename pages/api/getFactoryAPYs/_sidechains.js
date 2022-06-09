@@ -16,7 +16,7 @@ export default async ({ blockchainId }) => {
       if (!poolStats) {
           const errorMessage = `Couldn't find pool address ${pool.address} in subgraph stats data`;
 
-          console.error(errorMessage);
+          
           return;
       }
 

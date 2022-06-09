@@ -51,7 +51,7 @@ export default fn(async (query) => {
       const eventName2 = 'TokenExchange';
 
 
-      console.log(latest - DAY_BLOCKS, latest, 'blocks')
+      
       const isMetaPool = (
       pool.implementation?.startsWith('v1metausd') ||
       pool.implementation?.startsWith('metausd') ||

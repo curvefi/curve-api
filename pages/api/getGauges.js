@@ -1119,8 +1119,8 @@ export default fn(async ({ blockchainId } = {}) => {
       CHAINS_WITH_FACTORY_GAUGES :
       CHAINS_WITH_FACTORY_GAUGES.filter((id) => id === blockchainId)
   );
-  console.log({ chainsToQuery })
-  if (chainsToQuery.length > 1) console.trace();
+  
+  if (chainsToQuery.length > 1) {}
   const factoGauges = await sequentialPromiseMap(chainsToQuery, (blockchainIds) => (
     Promise.all(blockchainIds.map((blockchainId) => (
       getFactoGauges.straightCall({ blockchainId })

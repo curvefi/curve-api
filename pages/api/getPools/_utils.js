@@ -42,7 +42,7 @@ const deriveMissingCoinPricesSinglePass = async ({
   );
 
   if (canUsePriceOracle) {
-    if (IS_DEV) console.log('Missing coin price: using method 1 to derive price');
+    if (IS_DEV) {}
 
     /**
      * Main pools are stable and without too-risky coins, so we can approximate 1:1;
@@ -90,7 +90,7 @@ const deriveMissingCoinPricesSinglePass = async ({
   ));
 
   if (canUseSameCoinPriceInOtherPool) {
-    if (IS_DEV) console.log('Missing coin price: using method 2 to derive price');
+    if (IS_DEV) {}
 
     return (
       coins.map((coin) => (
@@ -111,7 +111,7 @@ const deriveMissingCoinPricesSinglePass = async ({
     coins.filter(({ usdPrice }) => usdPrice !== null).length >= 1
   );
   if (canUseInternalPriceOracle) {
-    if (IS_DEV) console.log('Missing coin price: using method 3 to derive price');
+    if (IS_DEV) {}
     const coinWithKnownPrice = coins.find(({ usdPrice }) => usdPrice !== null);
     const coinWithKnownPriceIndex = coins.indexOf(coinWithKnownPrice);
 
@@ -158,7 +158,7 @@ const deriveMissingCoinPricesSinglePass = async ({
     ));
 
     if (canUseSameCoinPriceInMainPool) {
-      if (IS_DEV) console.log('Missing coin price: using method 4 to derive price');
+      if (IS_DEV) {}
 
       return (
         coins.map((coin) => (
