@@ -636,7 +636,7 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
   const augmentedData = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
     const implementation = (
       (registryId === 'factory' || registryId === 'factory-crypto') ?
-        implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) :
+        (implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) || '') :
         ''
     );
 
