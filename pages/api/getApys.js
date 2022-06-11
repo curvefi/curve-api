@@ -1,3 +1,7 @@
+/**
+ * Note: this endpoint is deprecated, its data is stale and incomplete
+ */
+
 import getAPY from 'utils/data/getAPY';
 import getCRVAPY from 'utils/data/getCRVAPY';
 import getMainPoolsGaugeRewards from 'pages/api/getMainPoolsGaugeRewards';

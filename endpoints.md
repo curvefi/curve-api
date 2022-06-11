@@ -216,6 +216,9 @@ NONE
 ```
 
 ### getApys
+
+*Note: deprecated on June 11, 2022; data is old and incomplete, please use other endpoints*
+
 ```
 GET /api/getApys
 GET /api/getApys?address=0xADDRESS
