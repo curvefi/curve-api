@@ -3,13 +3,14 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 
 import { fn } from '../../utils/api';
+import configs from '../../constants/configs';
 import { getFactoryRegistry, getMultiCall } from '../../utils/getters';
 import registryAbi from '../../constants/abis/factory_registry.json';
 import multicallAbi from '../../constants/abis/multicall.json';
 import erc20Abi from '../../constants/abis/erc20.json';
 import aavePool from '../../constants/abis/pools/aave.json';
 
-const web3 = new Web3(`https://rpc.xdaichain.com/curve`);
+const web3 = new Web3(configs.xdai.rpcUrl);
 
 
 export default fn(async () => {

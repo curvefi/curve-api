@@ -9,7 +9,7 @@ import multicallAbi from '../../constants/abis/multicall.json';
 import erc20Abi from '../../constants/abis/erc20.json';
 import factorypool3Abi from '../../constants/abis/factory_swap.json';
 
-const web3 = new Web3(`https://rpc.xdaichain.com/curve`);
+const web3 = new Web3(configs.xdai.rpcUrl);
 
 export default fn(async (query) => {
   const config = configs.optimism;
