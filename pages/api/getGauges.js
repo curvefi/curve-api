@@ -1025,6 +1025,14 @@ export default fn(async ({ blockchainId } = {}) => {
         type: 'crypto',
         factory: true,
       },
+      "2pool-frax": {
+        swap: '0xDcEF968d416a41Cdac0ED8702fAC8128A64241A2',
+        swap_token: '0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC',
+        name: '2pool-frax',
+        gauge: '0xCFc25170633581Bf896CB6CDeE170e3E3Aa59503',
+        type: 'stable',
+        factory: false,
+      },
     }
 
 
