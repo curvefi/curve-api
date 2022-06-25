@@ -204,7 +204,7 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     !DISABLED_POOLS_ADDRESSES.includes(address.toLowerCase())
   ));
   const poolIds = unfileteredPoolIds.filter((id) => (
-    !DISABLED_POOLS_ADDRESSES.includes(unfilteredPoolAddresses[id].toLowerCase())
+    !DISABLED_POOLS_ADDRESSES.includes(unfilteredPoolAddresses[id]?.toLowerCase())
   ));
 
   const ethereumOnlyData = blockchainId === 'ethereum' ?
@@ -515,7 +515,13 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
       metaData: { poolId, poolAddress, coinAddress: address, isNativeEth, type: 'poolBalanceInt128' },
       ...networkSettingsParam,
     }]), ...(
-      (typeof BASE_POOL_LP_TO_GAUGE_LP_MAP !== 'undefined' && BASE_POOL_LP_TO_GAUGE_LP_MAP.has(address)) ?
+      /**
+       * On Ethereum factory, meta pools keep the base pool's lp in balance due to gas considerations;
+       * we have to take into account any amount staked. On sidechain factories, meta pools have
+       * their whole base pool balance as gauge lp, so we don't look at staked amount else it'd lead
+       * to double-counting.
+       */
+      (blockchainId === 'ethereum' && typeof BASE_POOL_LP_TO_GAUGE_LP_MAP !== 'undefined' && BASE_POOL_LP_TO_GAUGE_LP_MAP.has(address)) ?
         [{
           contract: new web3.eth.Contract(erc20Abi, BASE_POOL_LP_TO_GAUGE_LP_MAP.get(address)),
           methodName: 'balanceOf',
