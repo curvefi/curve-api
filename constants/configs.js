@@ -33,6 +33,8 @@ const configs = {
       ['0xc4C78b08fA0c3d0a312605634461A88184Ecd630'.toLowerCase(), 'metabtcbalances'],
       ['0xECAaecd9d2193900b424774133B1f51ae0F29d9E'.toLowerCase(), 'metabtc-ren'],
       ['0x40fd58d44cfe63e8517c9bb3ac98676838ea56a8'.toLowerCase(), 'metabtcbalances-ren'],
+      ['0x33bB0e62d5e8C688E645Dd46DFb48Cd613250067'.toLowerCase(), 'metausd-fraxusdc'],
+      ['0x2EB24483Ef551dA247ab87Cf18e1Cc980073032D'.toLowerCase(), 'metausdbalances-fraxusdc'],
       ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
     ]),
