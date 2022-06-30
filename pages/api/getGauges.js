@@ -1033,6 +1033,14 @@ export default fn(async ({ blockchainId } = {}) => {
         type: 'stable',
         factory: false,
       },
+      "euroc": {
+        swap: '0xE84f5b1582BA325fDf9cE6B0c1F087ccfC924e54',
+        swap_token: '0x70fc957eb90E37Af82ACDbd12675699797745F68',
+        name: 'euroc',
+        gauge: '0x4329c8F09725c0e3b6884C1daB1771bcE17934F9',
+        type: 'crypto',
+        factory: false,
+      },
     }
 
 
