@@ -1040,6 +1040,7 @@ export default fn(async ({ blockchainId } = {}) => {
         gauge: '0x4329c8F09725c0e3b6884C1daB1771bcE17934F9',
         type: 'crypto',
         factory: false,
+        hasNoCrv: true, // Hasn't been voted in yet, isn't in gauge controller, doesn't receive CRV
       },
     }
 
