@@ -92,7 +92,7 @@ const configs = {
       '0x64FFf0e27c223097c824f9d9278eFD5B55c3430e', // Broken pool
     ].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-matic",
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-matic-staging",
   },
   fantom: {
     nativeCurrencySymbol: 'FTM',
@@ -257,7 +257,7 @@ const configs = {
     // ])
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism"
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism-staging"
   },
   xdai: {
     nativeCurrencySymbol: 'xDAI',
