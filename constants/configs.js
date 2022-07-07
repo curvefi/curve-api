@@ -257,7 +257,7 @@ const configs = {
     // ])
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism-staging"
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism"
   },
   xdai: {
     nativeCurrencySymbol: 'xDAI',
