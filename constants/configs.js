@@ -92,7 +92,7 @@ const configs = {
       '0x64FFf0e27c223097c824f9d9278eFD5B55c3430e', // Broken pool
     ].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
-    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-matic",
+    graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-matic-staging",
   },
   fantom: {
     nativeCurrencySymbol: 'FTM',
