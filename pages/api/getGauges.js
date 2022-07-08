@@ -1042,6 +1042,15 @@ export default fn(async ({ blockchainId } = {}) => {
         factory: false,
         hasNoCrv: true, // Hasn't been voted in yet, isn't in gauge controller, doesn't receive CRV
       },
+      "f-frethweth": {
+        swap: '0x6E77889Ff348A16547cABa3Ce011cB120Ed73bFc',
+        swap_token: '0x517E47a2e8c38E5A96708ED866A39CcbAA105640',
+        name: 'f-frethweth',
+        gauge: '0x25530f3c929d3f4137a766de3d37700d2fc00ff8',
+        type: 'crypto',
+        factory: true,
+        hasNoCrv: true, // Hasn't been voted in yet, isn't in gauge controller, doesn't receive CRV
+      },
     }
 
 
