@@ -73,9 +73,8 @@ export default fn(async ({ blockchainId }) => {
 
   const gaugesKilledInfo = await multiCall(unfilteredGaugeList.map((gaugeAddress) => ({
     address: gaugeAddress,
-    abi: sideChainGauge,
+    abi: sideChainRootGauge,
     methodName: 'is_killed',
-    networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
   })));
 
   const gaugeList = unfilteredGaugeList.filter((address, index) => {
