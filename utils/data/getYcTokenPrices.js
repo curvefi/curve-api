@@ -6,14 +6,25 @@ import YC_TOKEN_ABI from 'constants/abis/yc-token.json';
 import getTokensPrices from 'utils/data/tokens-prices';
 
 // Add more if we're missing prices from more
-const YC_TOKENS = [
-  '0x8e595470ed749b85c6f7669de83eae304c2ec68f', // cyDAI
-  '0x76eb2fe28b36b3ee97f3adae0c69606eedb2a37c', // cyUSDC
-  '0x48759f220ed983db51fa7a8c0d2aab8f3ce4166a', // cyUSDT
-];
+const YC_TOKENS = {
+  ethereum: [
+    '0x8e595470ed749b85c6f7669de83eae304c2ec68f', // cyDAI
+    '0x76eb2fe28b36b3ee97f3adae0c69606eedb2a37c', // cyUSDC
+    '0x48759f220ed983db51fa7a8c0d2aab8f3ce4166a', // cyUSDT
+  ],
+  fantom: [
+    '0x04c762a5df2fa02fe868f25359e0c259fb811cfe', // iDAI
+    '0x328a7b4d538a2b3942653a9983fda3c12c571141', // iUSDC
+    '0x70fac71debfd67394d1278d98a29dea79dc6e57a', // iUSDT
+  ],
+};
 
-const getYcTokenPrices = memoize(async (networkSettingsParam) => {
-  const ycTokensDataPart1 = await multiCall(flattenArray(YC_TOKENS.map((address) => [{
+const getYcTokenPrices = memoize(async (
+  networkSettingsParam,
+  blockchainId,
+  coinAddressesAndPricesMapFallback,
+) => {
+  const ycTokensDataPart1 = await multiCall(flattenArray(YC_TOKENS[blockchainId].map((address) => [{
     address,
     abi: YC_TOKEN_ABI,
     methodName: 'totalSupply',
@@ -75,7 +86,10 @@ const getYcTokenPrices = memoize(async (networkSettingsParam) => {
     data,
   ]) => {
     const underlyingBalance = data.underlyingBalance / (10 ** data.underlyingDecimals);
-    const underlyingPrice = underlyingPrices[data.underlyingAddress.toLowerCase()];
+    const underlyingPrice = (
+      underlyingPrices[data.underlyingAddress.toLowerCase()] ||
+      coinAddressesAndPricesMapFallback[data.underlyingAddress.toLowerCase()]
+    );
     const totalSupply = data.totalSupply / (10 ** data.decimals);
     const price = underlyingBalance * underlyingPrice / totalSupply;
 
