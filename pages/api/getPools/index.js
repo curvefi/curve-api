@@ -455,8 +455,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
   );
 
   const ycTokensAddressesAndPricesMapFallback = (
-    blockchainId === 'ethereum' ?
-      await getYcTokenPrices(networkSettingsParam) :
+    (blockchainId === 'ethereum' || blockchainId === 'fantom') ?
+      await getYcTokenPrices(networkSettingsParam, blockchainId, coinAddressesAndPricesMapFallback) :
       {}
   );
 

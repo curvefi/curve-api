@@ -58,9 +58,9 @@ export default {
     '0xc53a6eda2c847ce9f10b5c8d51bc2a9ed2fe3d44': 'avalanche-2', // u.AVAX
   },
   fantom: {
-    '0x04c762a5df2fa02fe868f25359e0c259fb811cfe': 'dai', // iDAI
-    '0x328a7b4d538a2b3942653a9983fda3c12c571141': 'usd-coin', // iUSDC
-    '0x70fac71debfd67394d1278d98a29dea79dc6e57a': 'tether', // iUSDT
+    '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e': 'dai', // DAI
+    '0x04068da6c83afcfa0e13ba15a6696662335d5b75': 'usd-coin', // USDC
+    '0x049d68029688eabf473097a2fc38ef61633a3c7a': 'tether', // fUSDT
     '0xc931f61b1534eb21d8c11b24f3f5ab2471d4ab50': 'binance-usd', // iUSDT
   },
   optimism: {
