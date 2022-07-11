@@ -211,6 +211,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     await getEthereumOnlyData({ preventQueryingFactoData }) :
     undefined;
 
+  const { poolList: mainRegistryPools } = await getMainRegistryPools.straightCall({ blockchainId });
+
   const poolDataWithTries = await multiCall(flattenArray(poolAddresses.map((address, i) => {
     const poolId = poolIds[i];
     const poolContract = new web3.eth.Contract([
@@ -565,6 +567,9 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
         { [type]: data }
       ),
       ...(isNativeEth ? hardcodedInfoForNativeEth : {}),
+      isBasePoolLpToken: mainRegistryPools.some((address) => (
+        address.toLowerCase() === coinAddress.toLowerCase()
+      )), // Known limitation: won’t match if a base pool’s lp token address is != from its swap address
     };
 
     return accu;
@@ -687,6 +692,10 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
       poolBalance / (10 ** decimals) * usdPrice
     )));
 
+    const usdTotalExcludingBasePool = sum(augmentedCoins.filter(({ isBasePoolLpToken }) => !isBasePoolLpToken).map(({ usdPrice, poolBalance, decimals }) => (
+      poolBalance / (10 ** decimals) * usdPrice
+    )));
+
     const gaugeAddress = typeof ethereumOnlyData !== 'undefined' ?
       ethereumOnlyData.gaugesDataArray.find(({ swap }) => swap.toLowerCase() === poolInfo.address.toLowerCase())?.gauge?.toLowerCase() :
       undefined;
@@ -698,6 +707,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
       assetTypeName,
       coins: augmentedCoins,
       usdTotal,
+      isMetaPool: augmentedCoins.some(({ isBasePoolLpToken }) => isBasePoolLpToken),
+      usdTotalExcludingBasePool,
       gaugeAddress,
       gaugeRewards: (
         typeof gaugeRewardsInfo === 'undefined' ?
@@ -727,15 +738,15 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
   // registry, in order to avoid double-counting tvl.
   return {
     poolData: augmentedData,
-    tvlAll: sum(augmentedData.map(({ usdTotal }) => usdTotal)),
+    tvlAll: sum(augmentedData.map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)),
     ...(typeof ethereumOnlyData !== 'undefined' ? {
       tvl: sum(
         registryId === 'factory' ? (
           augmentedData
             .filter(({ address }) => !ethereumOnlyData.mainRegistryPoolList.includes(address.toLowerCase()))
-            .map(({ usdTotal }) => usdTotal)
+            .map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)
         ) : (
-          augmentedData.map(({ usdTotal }) => usdTotal)
+          augmentedData.map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)
         )
       ),
     } : {}),
