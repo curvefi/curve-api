@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import configs from 'constants/configs';
+import { ZERO_ADDRESS } from 'utils/Web3';
 import { fn } from '../../utils/api';
 import { getRegistry, getMultiCall } from '../../utils/getters';
 import registryAbi from '../../constants/abis/factory_registry.json';
@@ -13,6 +14,8 @@ export default fn(async ({ blockchainId } = {}) => {
   const web3 = new Web3(rpcUrl);
 
   const registryAddress = await getRegistry({ blockchainId });
+  if (registryAddress === ZERO_ADDRESS) return { poolList: [] };
+
   const registry = new web3.eth.Contract(registryAbi, registryAddress);
   const poolCount = await registry.methods.pool_count().call();
   const multicall = new web3.eth.Contract(multicallAbi, multicall2Address);
