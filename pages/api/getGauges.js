@@ -1167,7 +1167,7 @@ export default fn(async ({ blockchainId } = {}) => {
       const blockchainId = chainsToQuery[i];
 
       return (
-        blockchainFactoGauges.filter(({ hasCrv }) => hasCrv).map(({
+        blockchainFactoGauges.map(({
           gauge,
           gauge_data: {
             gauge_relative_weight,
@@ -1180,6 +1180,7 @@ export default fn(async ({ blockchainId } = {}) => {
           swap_token,
           type,
           symbol,
+          hasCrv,
         }) => [
           `${blockchainId}-f-${symbol.replace('-f-gauge', '')}`, {
             swap,
@@ -1198,6 +1199,7 @@ export default fn(async ({ blockchainId } = {}) => {
               get_gauge_weight,
               inflation_rate,
             },
+            hasNoCrv: !hasCrv,
           },
         ])
       );
