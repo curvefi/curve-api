@@ -24,9 +24,10 @@ export default fn(async ({ blockchainId } = {}) => {
     poolsAndLpTokens: mainRegistryPools.map((address, i) => ({
       address,
       lpTokenAddress: (
-        lpTokenAddresses[i] === ZERO_ADDRESS ?
-          address :
-          lpTokenAddresses[i]
+        // Hardcode the ethereum 3crv token because its pool doesn't have an lp_token method
+        (blockchainId === 'ethereum' && address.toLowerCase() === '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7') ? '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490' :
+        lpTokenAddresses[i] === ZERO_ADDRESS ? address :
+        lpTokenAddresses[i]
       ),
     })),
   });
