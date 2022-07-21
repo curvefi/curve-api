@@ -29,6 +29,7 @@ import getTokensPrices from 'utils/data/tokens-prices';
 import getAssetsPrices from 'utils/data/assets-prices';
 import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
+import getMainRegistryPoolsAndLpTokensFn from 'pages/api/getMainRegistryPoolsAndLpTokens';
 import configs from 'constants/configs';
 import allCoins from 'constants/coins';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
@@ -211,7 +212,7 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     await getEthereumOnlyData({ preventQueryingFactoData }) :
     undefined;
 
-  const { poolList: mainRegistryPools } = await getMainRegistryPools.straightCall({ blockchainId });
+  const { poolsAndLpTokens: mainRegistryPoolsAndLpTokens } = await getMainRegistryPoolsAndLpTokensFn.straightCall({ blockchainId });
 
   const poolDataWithTries = await multiCall(flattenArray(poolAddresses.map((address, i) => {
     const poolId = poolIds[i];
@@ -567,9 +568,9 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
         { [type]: data }
       ),
       ...(isNativeEth ? hardcodedInfoForNativeEth : {}),
-      isBasePoolLpToken: mainRegistryPools.some((address) => (
-        address.toLowerCase() === coinAddress.toLowerCase()
-      )), // Known limitation: won’t match if a base pool’s lp token address is != from its swap address
+      isBasePoolLpToken: mainRegistryPoolsAndLpTokens.some(({ lpTokenAddress }) => (
+        lpTokenAddress.toLowerCase() === coinAddress.toLowerCase()
+      )),
     };
 
     return accu;
