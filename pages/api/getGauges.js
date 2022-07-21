@@ -847,6 +847,7 @@ export default fn(async ({ blockchainId } = {}) => {
         gauge: '0x6F98dA2D5098604239C07875C6B7Fd583BC520b9',
         type: 'stable',
         factory: true,
+        is_killed: true,
       },
       "f-lfteth": {
         swap: '0xfE4A08f22FE65759Ba91dB2E2CADa09B4415B0d7',
