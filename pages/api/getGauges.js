@@ -331,8 +331,8 @@ export default fn(async ({ blockchainId } = {}) => {
         is_killed: true,
       },
       "tricrypto": {
-        swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
-        swap_token: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+        swap: '0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5',
+        swap_token: '0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF',
         name: 'tricrypto',
         gauge: '0x6955a55416a06839309018A8B0cB72c4DDC11f15',
         type: 'crypto',
