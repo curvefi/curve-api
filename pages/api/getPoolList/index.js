@@ -37,7 +37,7 @@ export default fn(async ({blockchainId}) => {
   const main_registry = await address_getter_contract.methods.get_address(0).call()
   const factory_registry = await address_getter_contract.methods.get_address(3).call()
   const crypto_registry = await address_getter_contract.methods.get_address(5).call()
-  const crypto_factory_registry = (blockchainId === 'ethereum') ? await address_getter_contract.methods.get_address(6).call() : null
+  const crypto_factory_registry = config.getFactoryCryptoRegistryAddress ? await config.getFactoryCryptoRegistryAddress() : null
 
 
   let registries =
