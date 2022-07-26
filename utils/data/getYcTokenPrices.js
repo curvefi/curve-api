@@ -34,7 +34,19 @@ const getYcTokenPrices = memoize(async (
     address,
     abi: YC_TOKEN_ABI,
     methodName: 'getCash',
-    metaData: { type: 'underlyingBalance', address },
+    metaData: { type: 'getCash', address },
+    ...networkSettingsParam,
+  }, {
+    address,
+    abi: YC_TOKEN_ABI,
+    methodName: 'totalBorrows',
+    metaData: { type: 'totalBorrows', address },
+    ...networkSettingsParam,
+  }, {
+    address,
+    abi: YC_TOKEN_ABI,
+    methodName: 'totalReserves',
+    metaData: { type: 'totalReserves', address },
     ...networkSettingsParam,
   }, {
     address,
@@ -85,7 +97,7 @@ const getYcTokenPrices = memoize(async (
     address,
     data,
   ]) => {
-    const underlyingBalance = data.underlyingBalance / (10 ** data.underlyingDecimals);
+    const underlyingBalance = (data.getCash + data.totalBorrows - data.totalReserves);
     const underlyingPrice = (
       underlyingPrices[data.underlyingAddress.toLowerCase()] ||
       coinAddressesAndPricesMapFallback[data.underlyingAddress.toLowerCase()]
