@@ -3,7 +3,10 @@
     "node": true
   },
   "extends": "airbnb",
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
+  "plugins": [
+    "@babel"
+  ],
   "rules": {
     "func-names": 0,
     "no-nested-ternary": 0,

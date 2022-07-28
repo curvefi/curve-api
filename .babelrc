@@ -1,0 +1,14 @@
+{
+  "presets": [
+    ["next/babel", {
+      "preset-env": {
+        "targets": {
+          "browsers": ["last 2 versions", "> 0.5%", "not ie <= 10", "Firefox ESR", "not dead"]
+        },
+        "useBuiltIns": "usage",
+        "corejs": 2
+      }
+    }]
+  ],
+  "sourceType": "unambiguous"
+}
