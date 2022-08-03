@@ -459,7 +459,6 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
 
         const basePoolLpTokens = Array.from(BASE_POOL_LP_TO_GAUGE_LP_MAP.keys());
         const keepToken = (
-          blockchainId !== 'avalanche' || // Limit this behavior to avax for now
           !isPairedWithKnownBaseLpToken ||
           basePoolLpTokens.some((lpAddress) => lpAddress.toLowerCase() === address.toLowerCase()) // Is base lp token
         );
