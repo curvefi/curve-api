@@ -20,4 +20,5 @@ Endpoints list and example response can be found by **[clicking here](https://gi
 
 ## Dev
 
+
 Run: `vercel dev`
