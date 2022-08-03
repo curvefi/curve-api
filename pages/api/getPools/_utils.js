@@ -5,7 +5,7 @@ import { IS_DEV, BASE_API_DOMAIN } from 'constants/AppConstants';
 
 // Can be increased if needed, "3" is currently the max we've needed based on situations
 // where coins were missing prices that we've encountered so far.
-const MAX_PASSES = 3;
+const MAX_PASSES = 4;
 
 const getMainRegistryPools = memoize(async (blockchainId) => (
   (await (await Request.get(`${BASE_API_DOMAIN}/api/getPools/${blockchainId}/main`)).json()).data.poolData

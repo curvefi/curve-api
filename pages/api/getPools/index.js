@@ -438,7 +438,6 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     return accu;
   }, []);
 
-  const basePoolLpTokens = Array.from(BASE_POOL_LP_TO_GAUGE_LP_MAP.keys());
   const tokensToFetchCoingeckoPricesFor = (
     (registryId === 'factory' && typeof BASE_POOL_LP_TO_GAUGE_LP_MAP !== 'undefined') ?
       allCoinAddresses.filter(({ address, poolId }) => {
@@ -458,8 +457,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
          */
         const isPairedWithKnownBaseLpToken = implementation.startsWith('meta');
 
+        const basePoolLpTokens = Array.from(BASE_POOL_LP_TO_GAUGE_LP_MAP.keys());
         const keepToken = (
-          blockchainId !== 'avalanche' || // Limit this behavior to avax for now
           !isPairedWithKnownBaseLpToken ||
           basePoolLpTokens.some((lpAddress) => lpAddress.toLowerCase() === address.toLowerCase()) // Is base lp token
         );
