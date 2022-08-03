@@ -438,8 +438,39 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     return accu;
   }, []);
 
+  const basePoolLpTokens = Array.from(BASE_POOL_LP_TO_GAUGE_LP_MAP.keys());
+  const tokensToFetchCoingeckoPricesFor = (
+    (registryId === 'factory' && typeof BASE_POOL_LP_TO_GAUGE_LP_MAP !== 'undefined') ?
+      allCoinAddresses.filter(({ address, poolId }) => {
+        const { data: poolImplementationAddress } = poolData.find(({ metaData }) => (
+          metaData.poolId === poolId &&
+          metaData.type === 'implementationAddress'
+        ));
+
+        const implementation = implementationAddressMap.get(poolImplementationAddress.toLowerCase());
+
+        /**
+         * If that token is part of a meta pool, then it's paired with a base lp
+         * token that we do know the price of, so we can derive this token's price
+         * directly from the pool's own oracle. We prefer using our internal prices
+         * as much as possible, hence we don't fetch external prices for tokens we
+         * don't absolutely need to.
+         */
+        const isPairedWithKnownBaseLpToken = implementation.startsWith('meta');
+
+        const keepToken = (
+          blockchainId !== 'avalanche' || // Limit this behavior to avax for now
+          !isPairedWithKnownBaseLpToken ||
+          basePoolLpTokens.some((lpAddress) => lpAddress.toLowerCase() === address.toLowerCase()) // Is base lp token
+        );
+
+        return keepToken;
+      }) :
+      allCoinAddresses
+  );
+
   const coinAddressesAndPricesMap =
-    await getTokensPrices(allCoinAddresses.map(({ address }) => address), platformCoingeckoId);
+    await getTokensPrices(tokensToFetchCoingeckoPricesFor.map(({ address }) => address), platformCoingeckoId);
 
   const coinsFallbackPrices = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
