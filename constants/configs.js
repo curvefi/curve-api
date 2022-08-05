@@ -164,6 +164,8 @@ const configs = {
       ['0x06e3C4da96fd076b97b7ca3Ae23527314b6140dF'.toLowerCase(), 'plain4optimized'],
       ['0x09672362833d8f703D5395ef3252D4Bfa51c15ca'.toLowerCase(), 'metausd'],
       ['0xBE175115BF33E12348ff77CcfEE4726866A0Fbd5'.toLowerCase(), 'metausdbalances'],
+      ['0x8DEb66a4A40E370355bEe35f12E55Fe9c755d686'.toLowerCase(), 'metausd-factory-v2-41'],
+      ['0x3edE9b145F82e9e46C03f8A8F67B77aEE847b632'.toLowerCase(), 'metausdbalances-factory-v2-41'],
       ['0x094d12e5b541784701FD8d65F11fc0598FBC6332'.toLowerCase(), 'metabtc'],
       ['0xF1f85a74AD6c64315F85af52d3d46bF715236ADc'.toLowerCase(), 'metabtcbalances'],
     ]),
@@ -245,12 +247,8 @@ const configs = {
       ['0x8474DdbE98F5aA3179B3B3F5942D724aFcdec9f6'.toLowerCase(), 'plain4optimized'],
       ['0x78CF256256C8089d68Cde634Cf7cDEFb39286470'.toLowerCase(), 'metausd'],
       ['0xADf698e4d8Df08b3E2c79682891636eF00F6e205'.toLowerCase(), 'metausdbalances'],
-      // ['0xC6A8466d128Fbfd34AdA64a9FFFce325D57C9a52'.toLowerCase(), 'metabtc'],
-      // ['0xc4C78b08fA0c3d0a312605634461A88184Ecd630'.toLowerCase(), 'metabtcbalances'],
-      // ['0xECAaecd9d2193900b424774133B1f51ae0F29d9E'.toLowerCase(), 'metabtc-ren'],
-      // ['0x40fd58d44cfe63e8517c9bb3ac98676838ea56a8'.toLowerCase(), 'metabtcbalances-ren'],
-      // ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
-      // ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
+      ['0xe8269B33E47761f552E1a3070119560d5fa8bBD6'.toLowerCase(), 'metausd-factory-v2-16'],
+      ['0x114C4042B11a2b16F58Fe1BFe847589a122F678a'.toLowerCase(), 'metausdbalances-factory-v2-16'],
     ]),
     // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
     //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
