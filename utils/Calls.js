@@ -49,6 +49,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
     },
     superSettings: {
       returnSuccessState: false, // If true, will return true if call succeeds, false if it reverts
+      fallbackValue: undefined, // Custom fallback value for very specific cases; should rarely be used
     },
   };
 
@@ -160,9 +161,12 @@ const multiCall = async (callsConfig, isDebugging = false) => {
           } catch (err) {
             const failedDecodedType = outputSignature[0].type;
 
+            // Allow passing a custom fallback value for very specific cases; should rarely be used
+            if (typeof superSettings.fallbackValue !== 'undefined') {
+              data = superSettings.fallbackValue;
             // Use fallback value if one exists (ideally we have fallback values for all types,
             // add more when necessary as we encounter other failures)
-            if (typeof FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType] !== 'undefined') {
+            } else if (typeof FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType] !== 'undefined') {
               data = FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType];
             } else {
               console.error(`Failed decodeParameter with outputSignature ${JSON.stringify(failedDecodedType)}`);

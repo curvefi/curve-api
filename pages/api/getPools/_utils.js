@@ -25,7 +25,10 @@ const deriveMissingCoinPricesSinglePass = async ({
   poolInfo,
   otherPools,
   internalPoolPrices,
+  mainRegistryLpTokensPricesMap,
+  otherRegistryTokensPricesMap,
 }) => {
+  // console.log('pool id', poolInfo.id);
   /**
    * Method 1: A coin's price is unknown, another one is known. Use the known price,
    * alongside the price oracle, to derive the other coin's price. Alternatively, use
@@ -38,11 +41,11 @@ const deriveMissingCoinPricesSinglePass = async ({
   const canUsePriceOracle = (
     coins.filter(({ usdPrice }) => usdPrice === null).length === 1 &&
     (coins.length === 2 || coins.findIndex(({ usdPrice }) => usdPrice === null) < 2) &&
-    (!!poolInfo.priceOracle || registryId === 'main')
+    (!!poolInfo.priceOracle)
   );
 
   if (canUsePriceOracle) {
-    if (IS_DEV) console.log('Missing coin price: using method 1 to derive price');
+    if (IS_DEV) console.log('Missing coin price: using method 1 to derive price', poolInfo.id);
 
     /**
      * Main pools are stable and without too-risky coins, so we can approximate 1:1;
@@ -90,7 +93,7 @@ const deriveMissingCoinPricesSinglePass = async ({
   ));
 
   if (canUseSameCoinPriceInOtherPool) {
-    if (IS_DEV) console.log('Missing coin price: using method 2 to derive price');
+    if (IS_DEV) console.log('Missing coin price: using method 2 to derive price', poolInfo.id);
 
     return (
       coins.map((coin) => (
@@ -110,8 +113,13 @@ const deriveMissingCoinPricesSinglePass = async ({
     internalPoolPrices.length > 0 &&
     coins.filter(({ usdPrice }) => usdPrice !== null).length >= 1
   );
+  if (canUseInternalPriceOracle || poolInfo.id === 'factory-v2-105') {
+    console.log('factory-v2-105');
+    console.log('internalPoolPrices', internalPoolPrices);
+    console.log('canUseInternalPriceOracle', canUseInternalPriceOracle);
+  }
   if (canUseInternalPriceOracle) {
-    if (IS_DEV) console.log('Missing coin price: using method 3 to derive price');
+    if (IS_DEV) console.log('Missing coin price: using method 3 to derive price', poolInfo.id);
     const coinWithKnownPrice = coins.find(({ usdPrice }) => usdPrice !== null);
     const coinWithKnownPriceIndex = coins.indexOf(coinWithKnownPrice);
 
@@ -141,7 +149,31 @@ const deriveMissingCoinPricesSinglePass = async ({
   }
 
   /**
-   * Method 4: Same as method 3, with values from main registry pools instead of
+   * Method 4: Same as method 3, with values from other registries' pools instead of
+   * values from other pools in the same registry.
+   */
+  const canUseOtherPoolBaseLpTokenPrice = coins.some(({ address, usdPrice }) => (
+    usdPrice === null &&
+    otherRegistryTokensPricesMap[address.toLowerCase()]
+  ));
+
+  if (canUseOtherPoolBaseLpTokenPrice) {
+    if (IS_DEV) console.log('Missing coin price: using method 4 to derive price', poolInfo.id);
+
+    return (
+      coins.map((coin) => (
+        coin.usdPrice === null ? {
+          ...coin,
+          usdPrice: (otherRegistryTokensPricesMap[coin.address.toLowerCase()] || null),
+        } : coin
+      ))
+    );
+  }
+
+  /**
+   * *This method probably never kicks in anymore because superseded by the above,
+   * leaving it here just in case for now*
+   * Method 4.old: Same as method 3, with values from main registry pools instead of
    * values from other pools in the same registry.
    */
   const canFetchMoreDataFromMainRegistry = registryId !== 'main';
@@ -158,7 +190,7 @@ const deriveMissingCoinPricesSinglePass = async ({
     ));
 
     if (canUseSameCoinPriceInMainPool) {
-      if (IS_DEV) console.log('Missing coin price: using method 4 to derive price');
+      if (IS_DEV) console.log('Missing coin price: using method 4.b to derive price', poolInfo.id);
 
       return (
         coins.map((coin) => (
@@ -171,6 +203,27 @@ const deriveMissingCoinPricesSinglePass = async ({
     }
   }
 
+  /**
+   * Method 5: Same as method 4, with base pools lp token prices instead coins prices.
+   */
+  const canUseMainPoolBaseLpTokenPrice = coins.some(({ address, usdPrice }) => (
+    usdPrice === null &&
+    mainRegistryLpTokensPricesMap[address.toLowerCase()]
+  ));
+
+  if (canUseMainPoolBaseLpTokenPrice) {
+    if (IS_DEV) console.log('Missing coin price: using method 5 to derive price', poolInfo.id);
+
+    return (
+      coins.map((coin) => (
+        coin.usdPrice === null ? {
+          ...coin,
+          usdPrice: (mainRegistryLpTokensPricesMap[coin.address.toLowerCase()] || null),
+        } : coin
+      ))
+    );
+  }
+
   return coins;
 };
 
@@ -181,6 +234,8 @@ const deriveMissingCoinPrices = async ({
   poolInfo,
   otherPools,
   internalPoolPrices,
+  mainRegistryLpTokensPricesMap,
+  otherRegistryTokensPricesMap,
 }) => {
   let iteration = 0;
   let augmentedCoins = coins;
@@ -199,6 +254,8 @@ const deriveMissingCoinPrices = async ({
       poolInfo,
       otherPools,
       internalPoolPrices,
+      mainRegistryLpTokensPricesMap,
+      otherRegistryTokensPricesMap,
     });
   }
 

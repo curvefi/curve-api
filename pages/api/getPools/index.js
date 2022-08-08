@@ -23,7 +23,7 @@ import erc20AbiMKR from 'constants/abis/erc20_mkr.json';
 import { multiCall } from 'utils/Calls';
 import { ZERO_ADDRESS } from 'utils/Web3';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
-import { sequentialPromiseReduce } from 'utils/Async';
+import { sequentialPromiseReduce, sequentialPromiseFlatMap } from 'utils/Async';
 import { getRegistry } from 'utils/getters';
 import getTokensPrices from 'utils/data/tokens-prices';
 import getAssetsPrices from 'utils/data/assets-prices';
@@ -99,7 +99,7 @@ const isDefinedCoin = (address) => address !== '0x000000000000000000000000000000
  * - blockchainId: 'ethereum' (default) | any side chain
  * - registryId: 'factory' | 'main' | 'crypto' | 'factory-crypto'
  */
-export default fn(async ({ blockchainId, registryId, preventQueryingFactoData }) => {
+const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) => {
   /* eslint-disable no-param-reassign */
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
   if (typeof registryId === 'undefined') registryId = 'main'; // Default value
@@ -110,6 +110,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
    */
   if (typeof preventQueryingFactoData === 'undefined') preventQueryingFactoData = false; // Default value
   /* eslint-enable no-param-reassign */
+
+  console.log('RUNNING getPools FOR', registryId);
 
   const config = configs[blockchainId];
   if (typeof config === 'undefined') {
@@ -134,15 +136,18 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
   }
 
   if (registryId === 'factory' && typeof getFactoryRegistryAddress !== 'function') {
-    throw new Error(`No getFactoryRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    console.error(`No getFactoryRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    return { poolData: [] };
   }
 
   if (registryId === 'crypto' && typeof getCryptoRegistryAddress !== 'function') {
-    throw new Error(`No getCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    console.error(`No getCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    return { poolData: [] };
   }
 
   if (registryId === 'factory-crypto' && typeof getFactoryCryptoRegistryAddress !== 'function') {
-    throw new Error(`No getFactoryCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    console.error(`No getFactoryCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    return { poolData: [] };
   }
 
   const assetTypeMap = new Map([
@@ -213,7 +218,80 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     await getEthereumOnlyData({ preventQueryingFactoData }) :
     undefined;
 
+  /**
+   * We use pools from other registries as a fallback data source for the current registry.
+   * Registries depend on each other in the following one-way fashion to prevent circular dependencies:
+   * main <- crypto <- factory-crypto <- factory.
+   * So main does not depend on other registries, crypto only depends on main, factory-crypto
+   * depends on the two previous, and factory on all three others.
+   * With this order of precedence, any asset can be priced automatically by simply having
+   * a crypto factory pool against any popular asset (like eth/usdc/etc) which makes sense in most
+   * cases anyway. E.g. cvxCRV is automatically priced because there's a CRV/ETH pool to price CRV
+   * against ETH, and a CRV/cvxCRV pool to price cvxCRV against CRV.
+   */
+  const REGISTRIES_DEPENDENCIES = {
+    main: [],
+    crypto: ['main'],
+    'factory-crypto': ['main', 'crypto'],
+    factory: ['main', 'crypto', 'factory-crypto'],
+  };
   const { poolsAndLpTokens: mainRegistryPoolsAndLpTokens } = await getMainRegistryPoolsAndLpTokensFn.straightCall({ blockchainId });
+  const otherRegistryPoolsData = await sequentialPromiseFlatMap(REGISTRIES_DEPENDENCIES[registryId], async (id) => (
+    // eslint-disable-next-line no-use-before-define
+    (await getPoolsFn.straightCall({ blockchainId, registryId: id, preventQueryingFactoData: true })).poolData.map((poolData) => ({
+      ...poolData,
+      registryId: id,
+    }))
+  ));
+  // console.log('otherRegistryPoolsData', otherRegistryPoolsData)
+  const mainRegistryLpTokensPricesMap = arrayToHashmap(otherRegistryPoolsData.map((pool) => {
+    const {
+      address,
+      totalSupply,
+      usdTotal,
+      registryId: poolRegistryId,
+    } = pool;
+
+    const matchingPool = (
+      poolRegistryId === 'main' ? mainRegistryPoolsAndLpTokens.find(({ address: addressB }) => (
+        addressB.toLowerCase() === address.toLowerCase()
+      )) :
+      poolRegistryId === 'crypto' ? pool :
+      null
+    );
+
+    if (!matchingPool) return null;
+
+    return [
+      matchingPool.lpTokenAddress.toLowerCase(),
+      (usdTotal / (totalSupply / 1e18)),
+    ];
+  }).filter((o) => o !== null));
+  const otherRegistryTokensPricesMap = arrayToHashmap(Array.from(otherRegistryPoolsData.reduce((accu, {
+    coins,
+    usdTotal,
+  }) => {
+    coins.forEach(({ address, usdPrice }) => {
+      if (usdPrice !== null && !Number.isNaN(usdPrice)) {
+        const lcAddress = address.toLowerCase();
+        const tokenUsdPrices = accu.get(lcAddress) || [];
+
+        accu.set(lcAddress, [
+          ...tokenUsdPrices,
+          { usdPrice, poolUsdTotal: usdTotal },
+        ]);
+      }
+    });
+
+    return accu;
+  }, new Map()).entries()).map(([lcAddress, tokenUsdPrices]) => [
+    lcAddress,
+    tokenUsdPrices.sort(({ poolUsdTotal: poolUsdTotalA }, { poolUsdTotal: poolUsdTotalB }) => (
+      poolUsdTotalA > poolUsdTotalB ? -1 :
+      poolUsdTotalB > poolUsdTotalA ? 1 : 0
+    ))[0].usdPrice,
+  ]));
+  // console.log('otherRegistryTokensPricesMap', otherRegistryTokensPricesMap)
 
   const poolDataWithTries = await multiCall(flattenArray(poolAddresses.map((address, i) => {
     const poolId = poolIds[i];
@@ -288,6 +366,10 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
         contract: poolContract,
         methodName: 'lp_token', // address
         metaData: { poolId, type: 'lpTokenAddress_try_2' },
+        superSettings: {
+          fallbackValue: (
+            mainRegistryPoolsAndLpTokens.some(({ address: mainRegAddress, lpTokenAddress }) => (mainRegAddress.toLowerCase() === address.toLowerCase() && lpTokenAddress.toLowerCase() !== mainRegAddress.toLowerCase())) ? mainRegistryPoolsAndLpTokens.find(({ address: mainRegAddress }) => mainRegAddress.toLowerCase() === address.toLowerCase()).lpTokenAddress : undefined),
+        },
         ...networkSettingsParam,
       }] : []
     ),
@@ -316,7 +398,7 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     )];
   })));
 
-  const poolData = poolDataWithTries.map(({ data, metaData }) => {
+  const poolDataWithoutMainRegistryLpTokenFallbacks = poolDataWithTries.map(({ data, metaData }) => {
     const isLpTokenAddressTry = metaData.type?.startsWith('lpTokenAddress_try_');
     if (isLpTokenAddressTry) {
       // If address isn't null, use this as the definitive lpTokenAddress value
@@ -336,6 +418,33 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
 
     return { data, metaData };
   }).filter((o) => o !== null);
+
+  /**
+   * Some main pools, especially on Ethereum where ABIs diverge quite a bit in the early
+   * days of Curve, some pools that have an lp token do not have it exposed in any public
+   * method on their pool contract; mainRegistryPoolsAndLpTokens contains the proper mapping
+   * for those, so we inject the right lp token addresses here in our data parsing so that
+   * lp token related data such as totalSupply can be fetched below.
+   */
+  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
+  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
+  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
+  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
+  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
+  const poolData = (
+    // registryId === 'main' ? poolDataWithoutMainRegistryLpTokenFallbacks.map(({ data, metaData }) => {
+    false ? poolDataWithoutMainRegistryLpTokenFallbacks.map(({ data, metaData }) => {
+      if (metaData.type !== 'lpTokenAddress') return { data, metaData };
+      if (data !== ZERO_ADDRESS) return { data, metaData };
+
+      console.log('main pool missing an lp token address:', metaData.poolId, mainRegistryPoolsAndLpTokens[metaData.poolId].lpTokenAddress)
+
+      return {
+        data: mainRegistryPoolsAndLpTokens[metaData.poolId].lpTokenAddress,
+        metaData,
+      };
+    }) : poolDataWithoutMainRegistryLpTokenFallbacks
+  );
 
   const tweakedPoolData = (
     (registryId === 'factory' && typeof BASE_POOL_LP_TO_GAUGE_LP_MAP !== 'undefined') ?
@@ -383,6 +492,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     metaData.type === 'lpTokenAddress' &&
     data !== ZERO_ADDRESS
   ));
+
+  // console.log({ lpTokensWithMetadata });
 
   const lpTokenData = (
     lpTokensWithMetadata.length === 0 ? [] :
@@ -438,39 +549,6 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     return accu;
   }, []);
 
-  const tokensToFetchCoingeckoPricesFor = (
-    (registryId === 'factory' && typeof BASE_POOL_LP_TO_GAUGE_LP_MAP !== 'undefined') ?
-      allCoinAddresses.filter(({ address, poolId }) => {
-        const { data: poolImplementationAddress } = poolData.find(({ metaData }) => (
-          metaData.poolId === poolId &&
-          metaData.type === 'implementationAddress'
-        ));
-
-        const implementation = implementationAddressMap.get(poolImplementationAddress.toLowerCase());
-
-        /**
-         * If that token is part of a meta pool, then it's paired with a base lp
-         * token that we do know the price of, so we can derive this token's price
-         * directly from the pool's own oracle. We prefer using our internal prices
-         * as much as possible, hence we don't fetch external prices for tokens we
-         * don't absolutely need to.
-         */
-        const isPairedWithKnownBaseLpToken = implementation.startsWith('meta');
-
-        const basePoolLpTokens = Array.from(BASE_POOL_LP_TO_GAUGE_LP_MAP.keys());
-        const keepToken = (
-          !isPairedWithKnownBaseLpToken ||
-          basePoolLpTokens.some((lpAddress) => lpAddress.toLowerCase() === address.toLowerCase()) // Is base lp token
-        );
-
-        return keepToken;
-      }) :
-      allCoinAddresses
-  );
-
-  const coinAddressesAndPricesMap =
-    await getTokensPrices(tokensToFetchCoingeckoPricesFor.map(({ address }) => address), platformCoingeckoId);
-
   const coinsFallbackPrices = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
       await getAssetsPrices(Array.from(Object.values(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))) :
@@ -487,6 +565,7 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
       ) :
       {}
   );
+  // console.log('coinAddressesAndPricesMapFallback', coinAddressesAndPricesMapFallback);
 
   const ycTokensAddressesAndPricesMapFallback = (
     (blockchainId === 'ethereum' || blockchainId === 'fantom') ?
@@ -573,18 +652,33 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     )];
   })));
 
+  // console.log('otherRegistryTokensPricesMap', otherRegistryTokensPricesMap);
+
   const mergedCoinData = coinData.reduce((accu, { data, metaData: { poolId, poolAddress, coinAddress, type, isNativeEth } }) => {
     const key = `${getIdForPool(poolId)}-${coinAddress}`;
     const coinInfo = accu[key];
 
     const coinPrice = (
-      coinAddressesAndPricesMap[coinAddress.toLowerCase()] ||
+      otherRegistryTokensPricesMap[coinAddress.toLowerCase()] ||
+      mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()] ||
       coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       ycTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       templeTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) ||
       null
     );
+
+    // console.log('mainRegistryLpTokensPricesMap', mainRegistryLpTokensPricesMap);
+
+    // if (coinAddress.toLowerCase() === '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0') {
+    //   console.log({
+    //     coinAddress,
+    //     'coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()]': coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()],
+    //     'otherRegistryTokensPricesMap[coinAddress.toLowerCase()]': otherRegistryTokensPricesMap[coinAddress.toLowerCase()],
+    //     'mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()]': mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()],
+    //     coinPrice,
+    //   })
+    // }
 
     const hardcodedInfoForNativeEth = {
       decimals: 18,
@@ -637,7 +731,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
   // This is only for "factory" pools; not "main", not "crypto", not "factory-crypto", which all have other
   // methods of deriving internal prices.
   const rawInternalPoolsPrices = (
-    registryId !== 'factory' ? [] :
+    false ? [] : // TESTING ENABLING THIS FOR EVERYTHING BECAUSE WE NEED IT
+    // registryId !== 'factory' ? [] :
     await multiCall(flattenArray(mergedPoolData.map(({
       id,
       address,
@@ -645,6 +740,7 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
       decimals,
       totalSupply,
     }) => {
+      console.log('decimals', decimals);
       const SMALL_AMOUNT_UNIT = BN(1);
       if (Number(totalSupply) < SMALL_AMOUNT_UNIT.times(1e18).times(10)) return []; // Ignore empty pools
 
@@ -675,6 +771,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     })))
   );
 
+  // console.log('rawInternalPoolsPrices', rawInternalPoolsPrices);
+
   const internalPoolsPrices = groupBy(rawInternalPoolsPrices.map(({
     data,
     metaData: { poolId, i, j, jDivideBy },
@@ -682,6 +780,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
     const rate = data / jDivideBy;
     return { rate, poolId, i, j };
   }), 'poolId');
+
+  // console.log('internalPoolsPrices', JSON.stringify(internalPoolsPrices));
 
   const augmentedData = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
     const implementation = (
@@ -725,6 +825,8 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
       poolInfo,
       otherPools: wipMergedPoolData,
       internalPoolPrices: internalPoolsPrices[poolInfo.id] || [],
+      mainRegistryLpTokensPricesMap,
+      otherRegistryTokensPricesMap,
     });
 
     const usdTotal = sum(augmentedCoins.map(({ usdPrice, poolBalance, decimals }) => (
@@ -740,7 +842,7 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
       undefined;
     const gaugeRewardsInfo = gaugeAddress ? ethereumOnlyData.gaugeRewards[gaugeAddress] : undefined;
 
-    return {
+    const augmentedPool = {
       ...poolInfo,
       implementation,
       assetTypeName,
@@ -771,6 +873,21 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
           })
       ),
     };
+
+    // When retrieving pool data for a registry that isn't 'main', mainRegistryLpTokensPricesMap
+    // is retrieved at the very beginning. However if querying pool data for the
+    // main registry, we construct this map as we iterate through pools.
+    if (registryId === 'main') {
+      const {
+        address,
+        usdTotal,
+        totalSupply,
+      } = augmentedPool;
+      const lpTokenAddress = mainRegistryPoolsAndLpTokens.find(({ address: addressB }) => addressB.toLowerCase() === address.toLowerCase()).lpTokenAddress.toLowerCase();
+      mainRegistryLpTokensPricesMap[lpTokenAddress] = (usdTotal / (totalSupply / 1e18));
+    }
+
+    return augmentedPool;
   });
 
   // The distinction between tvlAll and tvl is useful when facto pools are added to the main
@@ -790,6 +907,10 @@ export default fn(async ({ blockchainId, registryId, preventQueryingFactoData })
       ),
     } : {}),
   };
-}, {
+};
+
+const getPoolsFn = fn(getPools, {
   maxAge: 60,
 });
+
+export default getPoolsFn;
