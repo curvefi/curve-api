@@ -16,6 +16,8 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-40', // broken non pegged
     'factory-v2-46', // non pegged
     'factory-v2-54', // duplicate
+    'factory-v2-81', // outdated, team asked to hide it
+    'factory-v2-103', // broken
     'factory-v2-65', // non pegged
     'factory-crypto-0', // price borked
     'factory-crypto-1', // price borked
