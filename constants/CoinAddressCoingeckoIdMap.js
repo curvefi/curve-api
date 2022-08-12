@@ -1,15 +1,12 @@
-// THESE ARE THE ONLY THINGS FETCHED FROM COINGECKO ANYMORE
-
 /**
- * On most chains we can retrieve coin prices from their token address straight from
- * coingecko, and for the few token addresses unknown to coingecko on this chain, derive
- * missing prices using the others (using `/pages/api/getPools/_utils.js`).
+ * In order for the whole app to be aware of the entirety of tokens prices, it:
+ * 1. Retrieves the price of a few generic and widely-traded tokens like USDC (the "starting point")
+ * 2. Derives the price of every single other token in any Curve pool using Curve pools
+ *    themselves and the price that assets are trading at in them
  *
- * However on some less popular chains, coingecko has listed very few (if any) token
- * addresses, hence there's no primary source of data to derive missing prices from.
- * For these less popular chains, we can hardcode some address<>coingeckoId info
- * for a few major coins in order for our scripts to have some basic price information
- * to derive the rest of the prices from.
+ * Hence the list below represents the only tokens that the app queries Coingecko for.
+ * See the context surrounding `REGISTRIES_DEPENDENCIES` in `getPools/index.js`, and
+ * `deriveMissingCoinPricesSinglePass` in `getPools/_utils.js` to dig deeper into how this works.
  */
 
 export default {

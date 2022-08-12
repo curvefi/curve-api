@@ -28,7 +28,6 @@ const deriveMissingCoinPricesSinglePass = async ({
   mainRegistryLpTokensPricesMap,
   otherRegistryTokensPricesMap,
 }) => {
-  // console.log('pool id', poolInfo.id);
   /**
    * Method 1: A coin's price is unknown, another one is known. Use the known price,
    * alongside the price oracle, to derive the other coin's price. Alternatively, use
@@ -41,7 +40,8 @@ const deriveMissingCoinPricesSinglePass = async ({
   const canUsePriceOracle = (
     coins.filter(({ usdPrice }) => usdPrice === null).length === 1 &&
     (coins.length === 2 || coins.findIndex(({ usdPrice }) => usdPrice === null) < 2) &&
-    (!!poolInfo.priceOracle)
+    (!!poolInfo.priceOracle) &&
+    poolInfo.totalSupply > 0 // Don't operate on empty pools because their rates will be unrepresentative
   );
 
   if (canUsePriceOracle) {
@@ -111,13 +111,10 @@ const deriveMissingCoinPricesSinglePass = async ({
    */
   const canUseInternalPriceOracle = (
     internalPoolPrices.length > 0 &&
-    coins.filter(({ usdPrice }) => usdPrice !== null).length >= 1
+    coins.filter(({ usdPrice }) => usdPrice !== null).length >= 1 &&
+    poolInfo.totalSupply > 0 // Don't operate on empty pools because their rates will be unrepresentative
   );
-  if (canUseInternalPriceOracle || poolInfo.id === 'factory-v2-105') {
-    console.log('factory-v2-105');
-    console.log('internalPoolPrices', internalPoolPrices);
-    console.log('canUseInternalPriceOracle', canUseInternalPriceOracle);
-  }
+
   if (canUseInternalPriceOracle) {
     if (IS_DEV) console.log('Missing coin price: using method 3 to derive price', poolInfo.id);
     const coinWithKnownPrice = coins.find(({ usdPrice }) => usdPrice !== null);
@@ -149,7 +146,7 @@ const deriveMissingCoinPricesSinglePass = async ({
   }
 
   /**
-   * Method 4: Same as method 3, with values from other registries' pools instead of
+   * Method 4: Same as method 2, with values from other registries' pools instead of
    * values from other pools in the same registry.
    */
   const canUseOtherPoolBaseLpTokenPrice = coins.some(({ address, usdPrice }) => (
@@ -173,7 +170,7 @@ const deriveMissingCoinPricesSinglePass = async ({
   /**
    * *This method probably never kicks in anymore because superseded by the above,
    * leaving it here just in case for now*
-   * Method 4.old: Same as method 3, with values from main registry pools instead of
+   * Method 4.old: Same as method 2, with values from main registry pools instead of
    * values from other pools in the same registry.
    */
   const canFetchMoreDataFromMainRegistry = registryId !== 'main';

@@ -111,8 +111,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   if (typeof preventQueryingFactoData === 'undefined') preventQueryingFactoData = false; // Default value
   /* eslint-enable no-param-reassign */
 
-  console.log('RUNNING getPools FOR', registryId);
-
   const config = configs[blockchainId];
   if (typeof config === 'undefined') {
     throw new Error(`No factory data for blockchainId "${blockchainId}"`);
@@ -243,7 +241,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       registryId: id,
     }))
   ));
-  // console.log('otherRegistryPoolsData', otherRegistryPoolsData)
   const mainRegistryLpTokensPricesMap = arrayToHashmap(otherRegistryPoolsData.map((pool) => {
     const {
       address,
@@ -291,7 +288,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       poolUsdTotalB > poolUsdTotalA ? 1 : 0
     ))[0].usdPrice,
   ]));
-  // console.log('otherRegistryTokensPricesMap', otherRegistryTokensPricesMap)
 
   const poolDataWithTries = await multiCall(flattenArray(poolAddresses.map((address, i) => {
     const poolId = poolIds[i];
@@ -398,7 +394,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     )];
   })));
 
-  const poolDataWithoutMainRegistryLpTokenFallbacks = poolDataWithTries.map(({ data, metaData }) => {
+  const poolData = poolDataWithTries.map(({ data, metaData }) => {
     const isLpTokenAddressTry = metaData.type?.startsWith('lpTokenAddress_try_');
     if (isLpTokenAddressTry) {
       // If address isn't null, use this as the definitive lpTokenAddress value
@@ -418,33 +414,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
     return { data, metaData };
   }).filter((o) => o !== null);
-
-  /**
-   * Some main pools, especially on Ethereum where ABIs diverge quite a bit in the early
-   * days of Curve, some pools that have an lp token do not have it exposed in any public
-   * method on their pool contract; mainRegistryPoolsAndLpTokens contains the proper mapping
-   * for those, so we inject the right lp token addresses here in our data parsing so that
-   * lp token related data such as totalSupply can be fetched below.
-   */
-  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
-  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
-  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
-  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
-  // NOTE: IF ALL WORKS WITHOUT THIS, THEN GET RID OF IT
-  const poolData = (
-    // registryId === 'main' ? poolDataWithoutMainRegistryLpTokenFallbacks.map(({ data, metaData }) => {
-    false ? poolDataWithoutMainRegistryLpTokenFallbacks.map(({ data, metaData }) => {
-      if (metaData.type !== 'lpTokenAddress') return { data, metaData };
-      if (data !== ZERO_ADDRESS) return { data, metaData };
-
-      console.log('main pool missing an lp token address:', metaData.poolId, mainRegistryPoolsAndLpTokens[metaData.poolId].lpTokenAddress)
-
-      return {
-        data: mainRegistryPoolsAndLpTokens[metaData.poolId].lpTokenAddress,
-        metaData,
-      };
-    }) : poolDataWithoutMainRegistryLpTokenFallbacks
-  );
 
   const tweakedPoolData = (
     (registryId === 'factory' && typeof BASE_POOL_LP_TO_GAUGE_LP_MAP !== 'undefined') ?
@@ -492,8 +461,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     metaData.type === 'lpTokenAddress' &&
     data !== ZERO_ADDRESS
   ));
-
-  // console.log({ lpTokensWithMetadata });
 
   const lpTokenData = (
     lpTokensWithMetadata.length === 0 ? [] :
@@ -565,7 +532,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ) :
       {}
   );
-  // console.log('coinAddressesAndPricesMapFallback', coinAddressesAndPricesMapFallback);
 
   const ycTokensAddressesAndPricesMapFallback = (
     (blockchainId === 'ethereum' || blockchainId === 'fantom') ?
@@ -652,8 +618,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     )];
   })));
 
-  // console.log('otherRegistryTokensPricesMap', otherRegistryTokensPricesMap);
-
   const mergedCoinData = coinData.reduce((accu, { data, metaData: { poolId, poolAddress, coinAddress, type, isNativeEth } }) => {
     const key = `${getIdForPool(poolId)}-${coinAddress}`;
     const coinInfo = accu[key];
@@ -667,18 +631,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) ||
       null
     );
-
-    // console.log('mainRegistryLpTokensPricesMap', mainRegistryLpTokensPricesMap);
-
-    // if (coinAddress.toLowerCase() === '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0') {
-    //   console.log({
-    //     coinAddress,
-    //     'coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()]': coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()],
-    //     'otherRegistryTokensPricesMap[coinAddress.toLowerCase()]': otherRegistryTokensPricesMap[coinAddress.toLowerCase()],
-    //     'mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()]': mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()],
-    //     coinPrice,
-    //   })
-    // }
 
     const hardcodedInfoForNativeEth = {
       decimals: 18,
@@ -731,8 +683,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   // This is only for "factory" pools; not "main", not "crypto", not "factory-crypto", which all have other
   // methods of deriving internal prices.
   const rawInternalPoolsPrices = (
-    false ? [] : // TESTING ENABLING THIS FOR EVERYTHING BECAUSE WE NEED IT
-    // registryId !== 'factory' ? [] :
     await multiCall(flattenArray(mergedPoolData.map(({
       id,
       address,
@@ -740,7 +690,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       decimals,
       totalSupply,
     }) => {
-      console.log('decimals', decimals);
       const SMALL_AMOUNT_UNIT = BN(1);
       if (Number(totalSupply) < SMALL_AMOUNT_UNIT.times(1e18).times(10)) return []; // Ignore empty pools
 
@@ -771,8 +720,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     })))
   );
 
-  // console.log('rawInternalPoolsPrices', rawInternalPoolsPrices);
-
   const internalPoolsPrices = groupBy(rawInternalPoolsPrices.map(({
     data,
     metaData: { poolId, i, j, jDivideBy },
@@ -780,8 +727,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const rate = data / jDivideBy;
     return { rate, poolId, i, j };
   }), 'poolId');
-
-  // console.log('internalPoolsPrices', JSON.stringify(internalPoolsPrices));
 
   const augmentedData = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
     const implementation = (
