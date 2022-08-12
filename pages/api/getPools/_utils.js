@@ -28,7 +28,6 @@ const deriveMissingCoinPricesSinglePass = async ({
   mainRegistryLpTokensPricesMap,
   otherRegistryTokensPricesMap,
 }) => {
-  // console.log('pool id', poolInfo.id);
   /**
    * Method 1: A coin's price is unknown, another one is known. Use the known price,
    * alongside the price oracle, to derive the other coin's price. Alternatively, use
@@ -113,11 +112,7 @@ const deriveMissingCoinPricesSinglePass = async ({
     internalPoolPrices.length > 0 &&
     coins.filter(({ usdPrice }) => usdPrice !== null).length >= 1
   );
-  if (canUseInternalPriceOracle || poolInfo.id === 'factory-v2-105') {
-    console.log('factory-v2-105');
-    console.log('internalPoolPrices', internalPoolPrices);
-    console.log('canUseInternalPriceOracle', canUseInternalPriceOracle);
-  }
+
   if (canUseInternalPriceOracle) {
     if (IS_DEV) console.log('Missing coin price: using method 3 to derive price', poolInfo.id);
     const coinWithKnownPrice = coins.find(({ usdPrice }) => usdPrice !== null);
