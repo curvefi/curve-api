@@ -30,7 +30,7 @@ export default {
     '0xBcca60bB61934080951369a648Fb03DF4F96263C': 'aave-usdc', // aUSDC
     '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811': 'aave-usdt', // aUSDT
     '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643': 'cdai', // cDAI
-    '0xD71eCFF9342A5Ced620049e616c5035F1dB98620': 'seur', // sEUR
+    '0xdb25f211ab05b1c97d595516f45794528a807ad8': 'stasis-eurs', // EURS
     '0x514910771AF9Ca656af840dff83E8264EcF986CA': 'chainlink', // LINK
     '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0': 'matic-network', // MATIC
     '0x6bea7cfef803d1e3d5f7c0103f7ded065644e197': 'gamma-strategies', // GAMMA
