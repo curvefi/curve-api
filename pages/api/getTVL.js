@@ -72,6 +72,18 @@ export default fn(async () => {
   	let aggcalls = await multicall.methods.aggregate(calls).call()
   	let poolList = aggcalls[1].map(hex => web3.eth.abi.decodeParameter('address', hex))
 
+    //those pool exist in main and factory registry so we ignore them from the main TVL to avoid double counting
+    const excludeLists = [
+      '0xEd279fDD11cA84bEef15AF5D39BB4d4bEE23F0cA',
+      '0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B',
+      '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+      '0x5a6A4D54456819380173272A5E8E9B9904BdF41B',
+      '0xFD5dB7463a3aB53fD211b4af195c5BCCC1A03890'
+    ]
+
+    poolList = poolList.filter(item => !excludeLists.includes(item));
+
+
     calls = []
     poolList.map(async(pool_address) => {
       calls.push([registryAddress, registry.methods.get_balances(pool_address).encodeABI()])
