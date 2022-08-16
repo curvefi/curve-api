@@ -24,7 +24,7 @@ export default fn(async () => {
     let resFacto = await (await fetch(`https://api.curve.fi/api/getPools/ethereum/factory`)).json()
     let resCryptoFacto = await (await fetch(`https://api.curve.fi/api/getPools/ethereum/factory-crypto`)).json()
 
-    tvl = +resCrypto.tvl + +resMain.tvl + +resFacto.tvl + +resCryptoFacto.tvl
+    tvl = +resCrypto.data.tvl + +resMain.data.tvl + +resFacto.data.tvl + +resCryptoFacto.data.tvl
 
     let sideTVLs = []
     let endPoints = [
@@ -33,8 +33,11 @@ export default fn(async () => {
       'getTVLxDai',
       'getTVLAvalanche',
       'getTVLHarmony',
-      'getTVLArbitrum'
+      'getTVLArbitrum',
+      'getTVLOptimism',
+      'getTVLMoonbeam'
     ]
+    
     let sideChainTVL = 0
     await Promise.all(
       endPoints.map(async (endPoint) => {
