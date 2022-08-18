@@ -154,6 +154,7 @@ export default fn(async ({ blockchainId } = {}) => {
         name: 'tbtc',
         gauge: '0x6828bcF74279eE32f2723eC536c22c51Eed383C6',
         type: 'bitcoin',
+        is_killed: true,
       },
       rsv: {
         swap: '0xC18cC39da8b11dA8c3541C598eE022258F9744da',
