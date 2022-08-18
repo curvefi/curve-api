@@ -1123,7 +1123,7 @@ export default fn(async ({ blockchainId } = {}) => {
         type: 'stable',
         factory: true,
       },
-      "f-fraxbptusd": {
+      "f-europool": {
         swap: '0xe7a3b38c39f97e977723bd1239c3470702568e7b',
         swap_token: '0xe7a3b38c39f97e977723bd1239c3470702568e7b',
         name: 'f-europool',
