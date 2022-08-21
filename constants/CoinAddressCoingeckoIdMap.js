@@ -134,4 +134,13 @@ export default {
     '0xffffffff1fcacbd218edc0eba20fc2308c778080': 'polkadot',
     '0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108': 'polkadot',
   },
+  kava: {
+    '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f': 'usd-coin',
+    '0x765277EebeCA2e31912C9946eAe1021199B39C61': 'dai',
+    '0xB44a9B6905aF7c801311e8F4E76932ee959c663C': 'tether',
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'kava',
+    '0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b': 'kava', // wKAVA
+    '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b': 'wrapped-bitcoin',
+    '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D': 'ethereum',
+  },
 };

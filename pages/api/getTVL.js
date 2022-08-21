@@ -36,8 +36,9 @@ export default fn(async () => {
       'getTVLArbitrum',
       'getTVLOptimism',
       'getTVLMoonbeam'
+      'getTVLKava'
     ]
-    
+
     let sideChainTVL = 0
     await Promise.all(
       endPoints.map(async (endPoint) => {
