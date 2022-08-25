@@ -46,7 +46,11 @@ export default {
     '0xdbdb4d16eda451d0503b854cf79d55697f90c8df': 'alchemix',
   },
   polygon: {
+    '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063': 'dai', // DAI
+    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174': 'usd-coin', // USDC
+    '0xc2132D05D31c914a87C6611C10748AEb04B58e8F': 'tether', // USDT
     '0x1a13F4Ca1d028320A707D99520AbFefca3998b7F': 'usd-coin', // amUSDC
+    '0x9719d867a500ef117cc201206b8ab51e794d3f82': 'matic-aave-usdc', // maUSDC
     '0x5c2ed810328349100A66B82b78a1791B101C9D61': 'wrapped-bitcoin', // amWBTC
     '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6': 'wrapped-bitcoin', // amWBTC
     '0x28424507fefb6f7f8E9D3860F56504E4e5f5f390': 'ethereum', // amWETH
@@ -62,6 +66,11 @@ export default {
     '0xc67238827da94b15f6ba10f3d35f690809919f75': 'ampleforth',
     '0x553d3d295e0f695b9228246232edf400ed3560b5': 'pax-gold',
     '0x172370d5Cd63279eFa6d502DAB29171933a610AF': 'curve-dao-token', // CRV
+    '0x5d146d8b1dacb1ebba5cb005ae1059da8a1fbf57': 'cad-coin', // CADC
+    '0xE0B52e49357Fd4DAf2c15e02058DCE6BC0057db4': 'ageur', // agEUR
+    '0x6ae7dfc73e0dde2aa99ac063dcf7e8a63265108c': 'jpyc', // JPYC
+    '0x431d5dff03120afa4bdf332c61a6e1766ef37bdb': 'jpy-coin', // JPYC
+    '0xeCDCB5B88F8e3C15f95c720C51c71c9E2080525d': 'binancecoin', // wBNB
   },
   arbitrum: {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'ethereum', // Native ETH
