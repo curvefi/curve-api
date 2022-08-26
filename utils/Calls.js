@@ -16,6 +16,7 @@ const FALLBACK_DECODED_PARAMETERS_VALUES = {
   int128: 0,
   address: ZERO_ADDRESS,
   bool: false,
+  string: '',
 };
 
 // Contract instances cache store
