@@ -17,7 +17,6 @@ import getFactoryV2SidechainGaugeRewards from 'utils/data/getFactoryV2SidechainG
 export default fn(async ({ blockchainId }) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
 
-  // For now all ethereum gauges (including facto gauges) are hardcoded in getGauges
   if (blockchainId === 'ethereum') {
     return {
       gauges: [],
