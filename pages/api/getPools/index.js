@@ -309,6 +309,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       params: [address],
       metaData: { poolId, type: 'decimals' },
       ...networkSettingsParam,
+    }, {
+      contract: poolContract,
+      methodName: 'get_virtual_price',
+      metaData: { poolId, type: 'virtualPrice' },
+      ...networkSettingsParam,
     },
     // 'main' and 'factory' registries have these pieces of info, others do not
     ...(

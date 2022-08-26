@@ -1,19 +1,9 @@
-import memoize from 'memoizee';
 import { flattenArray, arrayToHashmap } from 'utils/Array';
-import Request from 'utils/Request';
-import { IS_DEV, BASE_API_DOMAIN } from 'constants/AppConstants';
+import { IS_DEV } from 'constants/AppConstants';
 
 // Can be increased if needed, "3" is currently the max we've needed based on situations
 // where coins were missing prices that we've encountered so far.
 const MAX_PASSES = 4;
-
-const getMainRegistryPools = memoize(async (blockchainId) => (
-  (await (await Request.get(`${BASE_API_DOMAIN}/api/getPools/${blockchainId}/main`)).json()).data.poolData
-), {
-  promise: true,
-  maxAge: 60 * 60 * 1000, // 1h
-  length: 1,
-});
 
 /**
  * Tries to derive missing coin prices from other available data using different methods.
@@ -165,39 +155,6 @@ const deriveMissingCoinPricesSinglePass = async ({
         } : coin
       ))
     );
-  }
-
-  /**
-   * *This method probably never kicks in anymore because superseded by the above,
-   * leaving it here just in case for now*
-   * Method 4.old: Same as method 2, with values from main registry pools instead of
-   * values from other pools in the same registry.
-   */
-  const canFetchMoreDataFromMainRegistry = registryId !== 'main';
-  if (canFetchMoreDataFromMainRegistry) {
-    const mainRegistryPools = await getMainRegistryPools(blockchainId);
-
-    const mainPoolsCoinsAddressesAndPricesMap = arrayToHashmap(flattenArray(mainRegistryPools.map((pool) => (
-      pool.coins.filter(({ usdPrice }) => usdPrice !== null)
-    ).map(({ address, usdPrice }) => [address.toLowerCase(), usdPrice]))));
-
-    const canUseSameCoinPriceInMainPool = coins.some(({ address, usdPrice }) => (
-      usdPrice === null &&
-      mainPoolsCoinsAddressesAndPricesMap[address]
-    ));
-
-    if (canUseSameCoinPriceInMainPool) {
-      if (IS_DEV) console.log('Missing coin price: using method 4.b to derive price', poolInfo.id);
-
-      return (
-        coins.map((coin) => (
-          coin.usdPrice === null ? {
-            ...coin,
-            usdPrice: (mainPoolsCoinsAddressesAndPricesMap[coin.address.toLowerCase()] || null),
-          } : coin
-        ))
-      );
-    }
   }
 
   /**
