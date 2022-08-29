@@ -39,13 +39,14 @@ export default fn(async ( {blockchainId} ) => {
   await runConcurrentlyAtMost(poolList.map((_, i) => async () => {
       let POOL_QUERY = `
       {
-        hourlySwapVolumeSnapshots(
+        swapVolumeSnapshots(
           first: 1000,
           orderBy: timestamp,
           orderDirection: desc,
           where: {
             pool: "${poolList[i].address.toLowerCase()}"
             timestamp_gt: ${TIMESTAMP_24H_AGO}
+            period: 3600
           }
         )
         {
@@ -66,7 +67,7 @@ export default fn(async ( {blockchainId} ) => {
       let rollingDaySummedVolume = 0
       let rollingRawVolume = 0
 
-      if (GRAPH_ENDPOINT_FALLBACK && data.data.hourlySwapVolumeSnapshots.length === 0) {
+      if (GRAPH_ENDPOINT_FALLBACK && data.data.swapVolumeSnapshots.length === 0) {
         const res = await fetch(GRAPH_ENDPOINT_FALLBACK, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -75,11 +76,11 @@ export default fn(async ( {blockchainId} ) => {
         data = await res.json()
       }
 
-      for (let i = 0; i < data.data.hourlySwapVolumeSnapshots.length; i ++) {
-          const hourlyVolUSD = parseFloat(data.data.hourlySwapVolumeSnapshots[i].volumeUSD)
+      for (let i = 0; i < data.data.swapVolumeSnapshots.length; i ++) {
+          const hourlyVolUSD = parseFloat(data.data.swapVolumeSnapshots[i].volumeUSD)
           rollingDaySummedVolume =  rollingDaySummedVolume + hourlyVolUSD
 
-          const hourlyVol = parseFloat(data.data.hourlySwapVolumeSnapshots[i].volume)
+          const hourlyVol = parseFloat(data.data.swapVolumeSnapshots[i].volume)
           rollingRawVolume =  rollingRawVolume + hourlyVol
       }
 
