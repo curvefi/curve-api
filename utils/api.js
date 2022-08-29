@@ -1,9 +1,10 @@
 import memoize from 'memoizee';
 import { IS_DEV } from 'constants/AppConstants';
 
-const formatJsonSuccess = (data) => ({
+const formatJsonSuccess = ({ generatedTimeMs, ...data }) => ({
   success: true,
   data,
+  generatedTimeMs,
 });
 
 const formatJsonError = (err) => ({

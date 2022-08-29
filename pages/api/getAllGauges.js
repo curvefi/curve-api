@@ -58,6 +58,11 @@ const getPoolName = (pool) => {
   return `${prefix}${pool.coins.map((coin) => coin.symbol).join('+')} (${pool.address.slice(0, 6)}…${pool.address.slice(-4)})`;
 };
 
+const getPoolShortName = (pool) => {
+  const prefix = pool.blockchainId === 'ethereum' ? '' : `${configs[pool.blockchainId].shortId}-`;
+  return `${prefix}${pool.coins.map((coin) => coin.symbol).join('+')} (${pool.address.slice(0, 6)}…)`;
+};
+
 export default fn(async () => {
   const chainsToQuery = SIDECHAINS_WITH_FACTORY_GAUGES;
   const blockchainIds = [
@@ -190,6 +195,7 @@ export default fn(async () => {
       ...gaugeData,
       poolAddress: pool.address,
       name: getPoolName(pool),
+      shortName: getPoolShortName(pool),
       virtualPrice: pool.virtualPrice,
       factory: pool.factory || false,
       type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
@@ -263,12 +269,14 @@ export default fn(async () => {
       }) => {
         const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
         const name = getPoolName(pool);
+        const shortName = getPoolShortName(pool);
 
         return [
           name, {
             swap: lc(swap),
             swap_token: lc(swap_token),
             name,
+            shortName,
             gauge: lc(gauge),
             type,
             side_chain: true,
@@ -291,5 +299,5 @@ export default fn(async () => {
 
   return gauges;
 }, {
-  maxAge: 30,
+  maxAge: 5 * 60,
 });

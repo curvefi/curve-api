@@ -44,6 +44,7 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
   },
   polygon: {
+    shortId: 'poly',
     nativeCurrencySymbol: 'MATIC',
     chainId: 137,
     nativeCurrencyCoingeckoId: 'matic-network',
@@ -95,6 +96,7 @@ const configs = {
     graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-matic-staging",
   },
   fantom: {
+    shortId: 'ftm',
     nativeCurrencySymbol: 'FTM',
     chainId: 250,
     nativeCurrencyCoingeckoId: 'fantom',
@@ -138,6 +140,7 @@ const configs = {
     graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom"
   },
   arbitrum: {
+    shortId: 'arbi',
     nativeCurrencySymbol: 'ETH',
     chainId: 42161,
     nativeCurrencyCoingeckoId: 'ethereum',
@@ -177,6 +180,7 @@ const configs = {
     graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum",
   },
   avalanche: {
+    shortId: 'ava',
     nativeCurrencySymbol: 'AVAX',
     chainId: 43114,
     nativeCurrencyCoingeckoId: 'avalanche-2',
@@ -221,6 +225,7 @@ const configs = {
     approxBlocksPerDay: 43000,
   },
   optimism: {
+    shortId: 'op',
     nativeCurrencySymbol: 'ETH',
     chainId: 10,
     nativeCurrencyCoingeckoId: 'ethereum',
@@ -258,6 +263,7 @@ const configs = {
     graphEndpoint: "https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism-staging"
   },
   xdai: {
+    shortId: 'xdai',
     nativeCurrencySymbol: 'xDAI',
     chainId: 100,
     nativeCurrencyCoingeckoId: 'xdai',
@@ -300,6 +306,7 @@ const configs = {
     // ])
   },
   harmony: {
+    shortId: 'hmny',
     nativeCurrencySymbol: 'ONE',
     chainId: 1666600000,
     nativeCurrencyCoingeckoId: 'harmony',
@@ -314,6 +321,7 @@ const configs = {
     getCryptoRegistryAddress: async () => '', // Has one crypto pool but no crypto registry
   },
   moonbeam: {
+    shortId: 'moon',
     nativeCurrencySymbol: 'GLMR',
     chainId: 1284,
     nativeCurrencyCoingeckoId: 'moonbeam',
