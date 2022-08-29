@@ -291,5 +291,5 @@ export default fn(async () => {
 
   return gauges;
 }, {
-  maxAge: 30,
+  maxAge: 5 * 60,
 });
