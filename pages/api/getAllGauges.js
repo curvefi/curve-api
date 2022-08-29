@@ -219,6 +219,7 @@ export default fn(async () => {
     swap: lc(poolAddress),
     swap_token: lc(lpTokenAddress),
     name,
+    shortName,
     gauge: lc(address),
     swap_data: {
       virtual_price: virtualPrice,
