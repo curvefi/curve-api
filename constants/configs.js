@@ -38,6 +38,7 @@ const configs = {
       ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
     ]),
+    factoryCryptoMetaBasePoolLpTokenAddress: '0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC',
     getFactoryCryptoRegistryAddress: async () => '0xF18056Bbd320E96A48e3Fbf8bC061322531aac99',
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet-test',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
