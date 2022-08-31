@@ -195,9 +195,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   const poolCount = Number(await registry.methods.pool_count().call());
   if (poolCount === 0) return { poolData: [], tvlAll: 0, tvl: 0 };
 
-  const unfileteredPoolIds = Array(poolCount).fill(0).map((_, i) => i);
+  const unfilteredPoolIds = Array(poolCount).fill(0).map((_, i) => i);
 
-  const unfilteredPoolAddresses = await multiCall(unfileteredPoolIds.map((id) => ({
+  const unfilteredPoolAddresses = await multiCall(unfilteredPoolIds.map((id) => ({
     contract: registry,
     methodName: 'pool_list',
     params: [id],
@@ -208,7 +208,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   const poolAddresses = unfilteredPoolAddresses.filter((address) => (
     !DISABLED_POOLS_ADDRESSES.includes(address.toLowerCase())
   ));
-  const poolIds = unfileteredPoolIds.filter((id) => (
+  const poolIds = unfilteredPoolIds.filter((id) => (
     !DISABLED_POOLS_ADDRESSES.includes(unfilteredPoolAddresses[id]?.toLowerCase())
   ));
 
@@ -736,7 +736,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   const augmentedData = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
     const implementation = (
       (registryId === 'factory-crypto') ? (
-        // Meta crypto facto pools (on sidechains only) do not work with a special implementation:
+        // Meta crypto facto pools do not work with a special implementation:
         // rather, they simply use the meta pool's lp token as one of their tokens, and expose a
         // zap to ease interactions with underlyings.
         poolInfo.coinsAddresses.some((address) => address.toLowerCase() === config.factoryCryptoMetaBasePoolLpTokenAddress?.toLowerCase()) ? 'metacrypto' : ''
