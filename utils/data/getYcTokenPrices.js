@@ -22,21 +22,9 @@ const YC_TOKENS = {
 const getYcTokenPrices = memoize(async (
   networkSettingsParam,
   blockchainId,
-  coinAddressesAndPricesMapFallback,
+  coinAddressesAndPricesMapFallback
 ) => {
   const ycTokensDataPart1 = await multiCall(flattenArray(YC_TOKENS[blockchainId].map((address) => [{
-    address,
-    abi: YC_TOKEN_ABI,
-    methodName: 'totalSupply',
-    metaData: { type: 'totalSupply', address },
-    ...networkSettingsParam,
-  }, {
-    address,
-    abi: YC_TOKEN_ABI,
-    methodName: 'getCash',
-    metaData: { type: 'underlyingBalance', address },
-    ...networkSettingsParam,
-  }, {
     address,
     abi: YC_TOKEN_ABI,
     methodName: 'underlying',
@@ -45,8 +33,8 @@ const getYcTokenPrices = memoize(async (
   }, {
     address,
     abi: YC_TOKEN_ABI,
-    methodName: 'decimals',
-    metaData: { type: 'decimals', address },
+    methodName: 'exchangeRateStored',
+    metaData: { type: 'exchangeRateStored', address },
     ...networkSettingsParam,
   }])));
 
@@ -85,13 +73,12 @@ const getYcTokenPrices = memoize(async (
     address,
     data,
   ]) => {
-    const underlyingBalance = data.underlyingBalance / (10 ** data.underlyingDecimals);
     const underlyingPrice = (
       underlyingPrices[data.underlyingAddress.toLowerCase()] ||
       coinAddressesAndPricesMapFallback[data.underlyingAddress.toLowerCase()]
     );
-    const totalSupply = data.totalSupply / (10 ** data.decimals);
-    const price = underlyingBalance * underlyingPrice / totalSupply;
+    const exchangeRateStored = data.exchangeRateStored / (10 ** (18 - 8 + Number(data.underlyingDecimals)));
+    const price = underlyingPrice * exchangeRateStored;
 
     return [address, price];
   }));
