@@ -6,7 +6,7 @@ const DECIMALS_GWEI = 1e9;
 const MAX_UINT256 = BN(2).pow(256).minus(1);
 
 const RPC_URL = `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY_ETHEREUM}`;
-const RPC_BACKUP_URL = "https://eth.chain.satoshiandkin.com/u/9DA0E466A16F4798AED70965D61BE7CB";
+const RPC_BACKUP_URL = `https://eth.chain.satoshiandkin.com/u/${process.env.LLAMANODES_API_KEY}`;
 
 const RPC_URL_BSC = 'https://bsc-dataseed.binance.org/';
 
