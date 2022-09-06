@@ -6,6 +6,7 @@ import configs from 'constants/configs';
 import WEB3_CONSTANTS from 'constants/Web3';
 import { ZERO_ADDRESS } from 'utils/Web3/web3';
 import { IS_DEV } from 'constants/AppConstants';
+import { sequentialPromiseMap } from 'utils/Async';
 import MULTICALL2_ABI from '../constants/abis/multicall2.json';
 import { getArrayChunks, flattenArray } from './Array';
 
@@ -124,18 +125,17 @@ const multiCall = async (callsConfig, isDebugging = false) => {
   const { networkSettings } = augmentedCallsConfig[0];
 
   const multicall = getContractInstance(networkSettings.multicall2Address, MULTICALL2_ABI, networkSettings.web3);
-  const chunkedReturnData = [];
-  const chunkedCalls = getArrayChunks(calls, 200); // Keep each multicall size reasonable
+  const chunkedCalls = getArrayChunks(calls, 400); // Keep each multicall size reasonable
 
   let decodedData;
   try {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const callsChunk of chunkedCalls) {
-      // eslint-disable-next-line no-await-in-loop
-      const aggregateReturnData = await multicall.methods.tryAggregate(false, callsChunk).call();
-      const returnData = aggregateReturnData.map(({ success, returnData: hexData }) => ({ success, hexData }));
-      chunkedReturnData.push(returnData);
-    }
+    const chunkedReturnData = await sequentialPromiseMap(chunkedCalls, async (callsChunk) => (
+      Promise.all(callsChunk.map(async (chunk) => {
+        const aggregateReturnData = await multicall.methods.tryAggregate(false, chunk).call();
+        const returnData = aggregateReturnData.map(({ success, returnData: hexData }) => ({ success, hexData }));
+        return returnData;
+      }))
+    ), 10);
 
     const returnData = flattenArray(chunkedReturnData);
 

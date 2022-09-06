@@ -250,7 +250,7 @@ export default fn(async () => {
         }))
       ))
     )))
-  ), 4);
+  ), 8);
 
   const gauges = {
     ...mainGaugesEthereum,
@@ -302,4 +302,5 @@ export default fn(async () => {
   return gauges;
 }, {
   maxAge: 5 * 60,
+  name: 'getAllGauges',
 });
