@@ -338,4 +338,5 @@ export default fn(async ({ blockchainId }) => {
   };
 }, {
   maxAge: 60,
+  name: 'getFactoGauges',
 });

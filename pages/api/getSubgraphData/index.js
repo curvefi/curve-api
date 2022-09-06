@@ -185,7 +185,7 @@ export default fn(async ( {blockchainId} ) => {
        poolList[i].latestWeeklyApy = Math.min(latestWeeklyApy, 1e6);
        poolList[i].virtualPrice = snapshots[0] ? snapshots[0].virtualPrice : undefined;
 
-  }), 2);
+  }), 10);
 
   // When a crypto pool uses a base pool lp as one of its underlying assets, apy calculations
   // using xcp_profit need to add up 1/3rd of the underlying pool's base volume

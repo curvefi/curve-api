@@ -147,7 +147,7 @@ const configs = {
     platformCoingeckoId: 'ethereum',
     nativeAssetId: 'eth', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'weth',
-    rpcUrl: `https://arb-mainnet.g.alchemy.com/v2/D5O-iVrTJhd_coUFfsPFrcX5RFaJ0LIa`,
+    rpcUrl: `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_ARBITRUM}`,
     multicallAddress: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     multicall2Address: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
