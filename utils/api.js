@@ -36,7 +36,7 @@ const fn = (cb, options = {}) => {
     name = null, // Name, used for logging purposes
   } = options;
 
-  const callback = maxAgeSec !== null ?
+  const callback = (false && maxAgeSec !== null) ?
     memoize(async (query) => logRuntime(() => addGeneratedTime(cb(query)), name, query), {
       promise: true,
       maxAge: maxAgeSec * 1000,
@@ -47,7 +47,7 @@ const fn = (cb, options = {}) => {
   const apiCall = async (req, res) => (
     Promise.resolve(callback(req.query))
       .then((data) => {
-        if (maxAgeSec !== null) res.setHeader('Cache-Control', `max-age=0, s-maxage=${maxAgeSec}, stale-while-revalidate`);
+        if (maxAgeSec !== null) res.setHeader('Cache-Control', `s-maxage=${maxAgeSec}, stale-while-revalidate=${maxAgeSec}`);
         res.status(200).json(formatJsonSuccess(data));
       })
       .catch((err) => {
