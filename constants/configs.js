@@ -340,5 +340,34 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
   },
+  kava: {
+    nativeCurrencySymbol: 'KAVA',
+    chainId: 2222,
+    nativeCurrencyCoingeckoId: 'kava',
+    platformCoingeckoId: 'kava',
+    nativeAssetId: 'kava', // Coin id from the blockchain's coins config
+    nativeAssetErc20WrapperId: 'wrapped-kava', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://evm.kava.io',
+    multicallAddress: '0x7ED7bBd8C454a1B0D9EdD939c45a81A03c20131C',
+    multicall2Address: '0x30A62aA52Fa099C4B227869EB6aeaDEda054d121',
+    getFactoryRegistryAddress: async () => '0x40bc62805471eF53DdD5C5cF99ed3d9e5aa81b48',
+    factoryImplementationAddressMap: new Map([
+      ['0x2632679f5CA396a1bd2647092d9dBf7eC5d7B263'.toLowerCase(), 'plain2basic'],
+      ['0x12f196251EfcaCA0fd73D5b58132B16760ba96A8'.toLowerCase(), 'plain2balances'],
+      ['0xafdAB4F8F6E6992B16e3906295FbA390aAB59CA5'.toLowerCase(), 'plain2eth'],
+      ['0x50D7A3e0d5350d52e9E08a1b58EeFD1dB8759d7D'.toLowerCase(), 'plain2optimized'],
+      ['0xc8913D486a42459e6B34db33F0C660FCa61306b9'.toLowerCase(), 'plain3basic'],
+      ['0xC5eC776A55eA062FA3173C6C76703E9c9fA91C47'.toLowerCase(), 'plain3balances'],
+      ['0xED2c5F2C4CAb6E82630d5615EA15Dd47d8B29983'.toLowerCase(), 'plain3eth'],
+      ['0xE7d5293c01685A414dDDE527eB5eFfbF92b52648'.toLowerCase(), 'plain3optimized'],
+      ['0x77016d2dE65DE15a3C36bEBBDdc90804f670d2d0'.toLowerCase(), 'plain4basic'],
+      ['0xd59C875DcCb6cDCb3a75B91b58A363b5e4B0ca9A'.toLowerCase(), 'plain4balances'],
+      ['0x6378dD741B24BD884f3590d7bc7555FdB2f5b003'.toLowerCase(), 'plain4eth'],
+      ['0x509495DFEEc3a53aCb2F60669985d868131Ad9a5'.toLowerCase(), 'plain4optimized'],
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 13500, // https://explorer.kava.io/
+  },
 };
 export default configs;
