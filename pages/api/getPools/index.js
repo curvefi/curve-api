@@ -120,6 +120,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     nativeCurrencySymbol,
     platformCoingeckoId,
     rpcUrl,
+    backuprpcUrl,
     factoryImplementationAddressMap: implementationAddressMap,
     getFactoryRegistryAddress,
     getCryptoRegistryAddress,
@@ -183,7 +184,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     factoryV2RegistryAbi
   );
 
-  const web3 = new Web3(rpcUrl);
+  const rpcTouse = (backuprpcUrl)?backuprpcUrl:rpcUrl
+  console.log(`Using RPC:: ${rpcTouse}`)
+  const web3 = new Web3(rpcTouse);
   const registry = new web3.eth.Contract(REGISTRY_ABI, registryAddress);
 
   const networkSettingsParam = (
