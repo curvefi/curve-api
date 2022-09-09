@@ -1,9 +1,10 @@
 import { fn } from 'utils/api';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 export default fn(async ({ blockchainId }) => {
 
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
-  const { data: { totalVolume, cryptoShare } } = await (await fetch(`https://api.curve.fi/api/getSubgraphData/${blockchainId}`)).json();
+  const { data: { totalVolume, cryptoShare } } = await (await fetch(`${BASE_API_DOMAIN}/api/getSubgraphData/${blockchainId}`)).json();
 
   return {
     totalVolume,

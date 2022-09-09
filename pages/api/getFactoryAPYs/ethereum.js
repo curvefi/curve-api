@@ -34,7 +34,7 @@ export default fn(async ({ version }) => {
       version === 'crypto' ? 'getPools/ethereum/factory-crypto' :
       undefined
     );
-    const { data: { poolData } } = await (await fetch(`https://api.curve.fi/api/${factoryPoolsApiEndpoint}`)).json()
+    const { data: { poolData } } = await (await fetch(`${BASE_API_DOMAIN}/api/${factoryPoolsApiEndpoint}`)).json()
 
     let poolDetails = [];
     let totalVolume = 0

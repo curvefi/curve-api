@@ -2,6 +2,7 @@ import axios from 'axios';
 import Web3 from 'web3';
 import BigNumber from 'big-number';
 import WEB3_CONSTANTS from 'constants/Web3';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 import { fn } from 'utils/api';
 import { getRegistry, getMultiCall } from 'utils/getters';
@@ -19,10 +20,10 @@ export default fn(async () => {
     let tvl = 0;
 
 
-    let resCrypto = await (await fetch(`https://api.curve.fi/api/getPools/ethereum/crypto`)).json()
-    let resMain = await (await fetch(`https://api.curve.fi/api/getPools/ethereum/main`)).json()
-    let resFacto = await (await fetch(`https://api.curve.fi/api/getPools/ethereum/factory`)).json()
-    let resCryptoFacto = await (await fetch(`https://api.curve.fi/api/getPools/ethereum/factory-crypto`)).json()
+    let resCrypto = await (await fetch(`${BASE_API_DOMAIN}/api/getPools/ethereum/crypto`)).json()
+    let resMain = await (await fetch(`${BASE_API_DOMAIN}/api/getPools/ethereum/main`)).json()
+    let resFacto = await (await fetch(`${BASE_API_DOMAIN}/api/getPools/ethereum/factory`)).json()
+    let resCryptoFacto = await (await fetch(`${BASE_API_DOMAIN}/api/getPools/ethereum/factory-crypto`)).json()
 
     tvl = +resCrypto.data.tvl + +resMain.data.tvl + +resFacto.data.tvl + +resCryptoFacto.data.tvl
 
@@ -42,7 +43,7 @@ export default fn(async () => {
     let sideChainTVL = 0
     await Promise.all(
       endPoints.map(async (endPoint) => {
-        let res = await (await fetch(`https://api.curve.fi/api/${endPoint}`)).json()
+        let res = await (await fetch(`${BASE_API_DOMAIN}/api/${endPoint}`)).json()
         let sideChain  = {
           'chain': endPoint.replace('getTVL', ''),
           'tvl': parseFloat(res.data.tvl)

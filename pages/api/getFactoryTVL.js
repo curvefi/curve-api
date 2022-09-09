@@ -2,6 +2,7 @@ import axios from 'axios';
 import Web3 from 'web3';
 import BigNumber from 'big-number';
 import WEB3_CONSTANTS from 'constants/Web3';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 import { fn } from 'utils/api';
 import { getFactoryRegistry, getMultiCall } from 'utils/getters';
@@ -14,7 +15,7 @@ const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 export default fn(async () => {
 
-    let res = await (await fetch(`https://api.curve.fi/api/getFactoryV2Pools`)).json()
+    let res = await (await fetch(`${BASE_API_DOMAIN}/api/getFactoryV2Pools`)).json()
     const factoryBalances = res.data.tvl
     return { factoryBalances };
 

@@ -8,6 +8,7 @@ import registryAbi from 'constants/abis/factory_registry.json';
 import multicallAbi from 'constants/abis/multicall.json';
 import erc20Abi from 'constants/abis/erc20.json';
 import aavePool from 'constants/abis/pools/aave.json';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 const web3 = new Web3(`https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_ARBITRUM}`);
 
@@ -84,7 +85,7 @@ export default fn(async () => {
       }
 
 
-    let res = await (await fetch(`https://api.curve.fi/api/getFactoryV2Pools/arbitrum`)).json()
+    let res = await (await fetch(`${BASE_API_DOMAIN}/api/getFactoryV2Pools/arbitrum`)).json()
     tvl += res.data.tvlAll
     const factory = {
       'tvl': res.data.tvlAll

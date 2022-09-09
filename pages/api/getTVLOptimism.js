@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Web3 from 'web3';
 import BigNumber from 'big-number';
-
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 import { fn } from 'utils/api';
 import { getFactoryRegistry, getMultiCall } from 'utils/getters';
 import registryAbi from 'constants/abis/factory_registry.json';
@@ -55,7 +55,7 @@ export default fn(async () => {
         }
       }
 
-      const factoDetails = await (await fetch(`https://api.curve.fi/api/getFactoryV2Pools/optimism`)).json()
+      const factoDetails = await (await fetch(`${BASE_API_DOMAIN}/api/getFactoryV2Pools/optimism`)).json()
       tvl += factoDetails.data.tvlAll
       const factory = {
         'tvl': factoDetails.data.tvlAll

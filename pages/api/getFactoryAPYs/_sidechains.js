@@ -9,7 +9,7 @@ export default async ({ blockchainId, version }) => {
 
     const poolDetails = [];
 
-    const { data: { poolList: poolsStats } } = await (await fetch(`https://api.curve.fi/api/getSubgraphData/${blockchainId}`)).json();
+    const { data: { poolList: poolsStats } } = await (await fetch(`${BASE_API_DOMAIN}/api/getSubgraphData/${blockchainId}`)).json();
     poolData.forEach((pool, index) => {
       const lcSwapAddress = pool.address.toLowerCase();
       const poolStats = poolsStats.find(({ address }) => address.toLowerCase() === lcSwapAddress);
