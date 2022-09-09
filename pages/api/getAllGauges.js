@@ -79,8 +79,8 @@ export default fn(async () => {
     ))
   );
 
-  const { rpcUrl, chainId } = configs.ethereum;
-  const web3 = new Web3(rpcUrl);
+  const { rpcUrl, backuprpcUrl, chainId } = configs.ethereum;
+  const web3 = new Web3(backuprpcUrl);
   const web3Data = { account: '', library: web3, chainId };
 
   const [mainGaugesCount] = await multiCall([{
