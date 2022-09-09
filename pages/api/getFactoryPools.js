@@ -2,11 +2,11 @@ import Web3 from 'web3';
 import WEB3_CONSTANTS from 'constants/Web3';
 import configs from 'constants/configs';
 
-import { fn } from '../../utils/api';
-import { getMultiCall, getFactoryRegistry } from '../../utils/getters';
-import registryAbi from '../../constants/abis/factory_registry.json';
-import multicallAbi from '../../constants/abis/multicall.json';
-import erc20Abi from '../../constants/abis/erc20.json';
+import { fn } from 'utils/api';
+import { getMultiCall, getFactoryRegistry } from 'utils/getters';
+import registryAbi from 'constants/abis/factory_registry.json';
+import multicallAbi from 'constants/abis/multicall.json';
+import erc20Abi from 'constants/abis/erc20.json';
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 

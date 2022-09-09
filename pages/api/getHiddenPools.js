@@ -1,4 +1,4 @@
-import { fn } from '../../utils/api';
+import { fn } from 'utils/api';
 
 const HIDDEN_POOLS_IDS = {
   ethereum: [

@@ -3,12 +3,12 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 import WEB3_CONSTANTS from 'constants/Web3';
 
-import { fn } from '../../utils/api';
-import { getRegistry, getMultiCall } from '../../utils/getters';
-import registryAbi from '../../constants/abis/registry.json';
-import multicallAbi from '../../constants/abis/multicall.json';
-import erc20Abi from '../../constants/abis/erc20.json';
-import cryptoPoolAbi from '../../constants/abis/crypto_pool.json';
+import { fn } from 'utils/api';
+import { getRegistry, getMultiCall } from 'utils/getters';
+import registryAbi from 'constants/abis/registry.json';
+import multicallAbi from 'constants/abis/multicall.json';
+import erc20Abi from 'constants/abis/erc20.json';
+import cryptoPoolAbi from 'constants/abis/crypto_pool.json';
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 

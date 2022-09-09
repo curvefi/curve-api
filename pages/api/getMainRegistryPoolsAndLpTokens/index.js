@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import configs from 'constants/configs';
-import getMainRegistryPoolsFn from 'pages/api/getMainRegistryPools';
+import { API } from 'utils/Request';
 import { multiCall } from 'utils/Calls';
 import { fn } from 'utils/api';
 import { ZERO_ADDRESS } from 'utils/Web3';
@@ -9,7 +9,7 @@ import POOL_SWAP_ABI from 'utils/data/abis/json/aave/swap.json';
 export default fn(async ({ blockchainId } = {}) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum';
 
-  const { poolList: mainRegistryPools } = await getMainRegistryPoolsFn.straightCall({ blockchainId });
+  const { poolList: mainRegistryPools } = await API.get(`getMainRegistryPools/${blockchainId}`);
 
   const config = configs[blockchainId];
   const web3Side = new Web3(config.rpcUrl);

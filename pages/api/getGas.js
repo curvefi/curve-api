@@ -1,5 +1,5 @@
 import memoize from 'memoizee';
-import { fn } from '../../utils/api';
+import { fn } from 'utils/api';
 
 const blocknativeApiFetchOptions = {
   method: 'GET',

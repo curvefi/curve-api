@@ -1,8 +1,8 @@
 import axios from 'axios';
 import Web3 from 'web3';
 import WEB3_CONSTANTS from 'constants/Web3';
-import { fn } from '../../utils/api';
-import aggregatorInterfaceABI from '../../constants/abis/aggregator.json';
+import { fn } from 'utils/api';
+import aggregatorInterfaceABI from 'constants/abis/aggregator.json';
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 const chainlinkETHUSDaddress = '0xF79D6aFBb6dA890132F9D7c355e3015f15F3406F';

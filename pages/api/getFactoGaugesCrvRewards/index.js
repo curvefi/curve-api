@@ -4,9 +4,7 @@
 
 import { fn } from 'utils/api';
 import getAssetsPrices from 'utils/data/assets-prices';
-
-import getFactoGauges from 'pages/api/getFactoGauges';
-import getPools from 'pages/api/getPools';
+import { API } from 'utils/Request';
 import configs from 'constants/configs';
 
 export default fn(async ({ blockchainId }) => {
@@ -14,13 +12,13 @@ export default fn(async ({ blockchainId }) => {
 
   const config = configs[blockchainId];
 
-  const { gauges } = await getFactoGauges.straightCall({ blockchainId });
-  const { poolData: mainPoolData } = await getPools.straightCall({ blockchainId, registryId: 'main' });
-  const { poolData: cryptoPoolData } = await getPools.straightCall({ blockchainId, registryId: 'crypto' });
-  const { poolData: factoStablePoolData } = await getPools.straightCall({ blockchainId, registryId: 'factory' });
+  const { gauges } = await API.get(`getFactoGauges/${blockchainId}`);
+  const { poolData: mainPoolData } = await API.get(`getPools/${blockchainId}/main`);
+  const { poolData: cryptoPoolData } = await API.get(`getPools/${blockchainId}/crypto`);
+  const { poolData: factoStablePoolData } = await API.get(`getPools/${blockchainId}/factory`);
   const { poolData: factoCryptoPoolData } = (
     config.getFactoryCryptoRegistryAddress ?
-      await getPools.straightCall({ blockchainId, registryId: 'factory-crypto' }) :
+      await API.get(`getPools/${blockchainId}/factory-crypto`) :
       { poolData: [] }
   );
   const poolData = [...mainPoolData, ...cryptoPoolData, ...factoStablePoolData, ...factoCryptoPoolData];

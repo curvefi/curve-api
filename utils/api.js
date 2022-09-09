@@ -36,7 +36,8 @@ const fn = (cb, options = {}) => {
     name = null, // Name, used for logging purposes
   } = options;
 
-  const callback = (false && maxAgeSec !== null) ?
+  // In prod, each endpoint is a lambda, hence no shared memory, hence no point in memoizing
+  const callback = (IS_DEV && maxAgeSec !== null) ?
     memoize(async (query) => logRuntime(() => addGeneratedTime(cb(query)), name, query), {
       promise: true,
       maxAge: maxAgeSec * 1000,
@@ -51,8 +52,12 @@ const fn = (cb, options = {}) => {
         res.status(200).json(formatJsonSuccess(data));
       })
       .catch((err) => {
-        if (IS_DEV) throw err;
-        else res.status(500).json(formatJsonError(err));
+        if (IS_DEV) {
+          console.log(err);
+          throw err;
+        } else {
+          res.status(500).json(formatJsonError(err));
+        }
       })
   );
 

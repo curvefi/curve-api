@@ -1,10 +1,10 @@
 import Web3 from 'web3';
 import WEB3_CONSTANTS from 'constants/Web3';
-import { fn } from '../../utils/api';
-import registryAbi from '../../constants/abis/registry-v1.1.json';
-import multicallAbi from '../../constants/abis/multicall.json';
-import { getMultiCall, getRegistry } from '../../utils/getters';
-import erc20Abi from '../../constants/abis/erc20.json';
+import { fn } from 'utils/api';
+import registryAbi from 'constants/abis/registry-v1.1.json';
+import multicallAbi from 'constants/abis/multicall.json';
+import { getMultiCall, getRegistry } from 'utils/getters';
+import erc20Abi from 'constants/abis/erc20.json';
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 const BASE_API_DOMAIN = 'https://api.curve.fi';

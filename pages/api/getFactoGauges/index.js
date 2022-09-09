@@ -10,7 +10,7 @@ import gaugeControllerAbi from 'constants/abis/gauge_controller.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
 import { multiCall } from 'utils/Calls';
 import { arrayToHashmap, arrayOfIncrements, flattenArray } from 'utils/Array';
-import getPools from 'pages/api/getPools';
+import { API } from 'utils/Request';
 import configs from 'constants/configs';
 import getFactoryV2SidechainGaugeRewards from 'utils/data/getFactoryV2SidechainGaugeRewards';
 
@@ -206,18 +206,18 @@ export default fn(async ({ blockchainId }) => {
     factoPools,
     factoCryptoPools,
   ] = await Promise.all([(
-    (await getPools.straightCall({ blockchainId, registryId: 'main', preventQueryingFactoData: true })).poolData
+    (await API.get(`getPools/${blockchainId}/main/true`)).poolData
   ), (
     hasCryptoPools ?
-      (await getPools.straightCall({ blockchainId, registryId: 'crypto', preventQueryingFactoData: true })).poolData :
+      (await API.get(`getPools/${blockchainId}/crypto/true`)).poolData :
       []
   ), (
     hasFactoPools ?
-      (await getPools.straightCall({ blockchainId, registryId: 'factory', preventQueryingFactoData: true })).poolData :
+      (await API.get(`getPools/${blockchainId}/factory/true`)).poolData :
       []
   ), (
     hasFactoCryptoPools ?
-      (await getPools.straightCall({ blockchainId, registryId: 'factory-crypto', preventQueryingFactoData: true })).poolData :
+      (await API.get(`getPools/${blockchainId}/factory-crypto/true`)).poolData :
       []
   )]);
 

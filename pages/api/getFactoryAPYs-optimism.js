@@ -2,12 +2,12 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
-import configs from '../../constants/configs';
-import { fn } from '../../utils/api';
-import registryAbi from '../../constants/abis/factory_registry.json';
-import multicallAbi from '../../constants/abis/multicall.json';
-import erc20Abi from '../../constants/abis/erc20.json';
-import factorypool3Abi from '../../constants/abis/factory_swap.json';
+import configs from 'constants/configs';
+import { fn } from 'utils/api';
+import registryAbi from 'constants/abis/factory_registry.json';
+import multicallAbi from 'constants/abis/multicall.json';
+import erc20Abi from 'constants/abis/erc20.json';
+import factorypool3Abi from 'constants/abis/factory_swap.json';
 
 const web3 = new Web3(`https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_OPTIMISM}`);
 

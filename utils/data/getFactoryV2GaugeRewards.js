@@ -6,7 +6,7 @@ import { multiCall } from 'utils/Calls';
 import { flattenArray, uniq } from 'utils/Array';
 import { getNowTimestamp } from 'utils/Date';
 import getTokensPrices from 'utils/data/tokens-prices';
-import getGauges from 'pages/api/getGauges';
+import { API } from 'utils/Request';
 import ERC20_ABI from 'constants/abis/erc20.json';
 
 // eslint-disable-next-line
@@ -15,7 +15,7 @@ const FACTORY_GAUGES_ABI = [{"stateMutability":"view","type":"function","name":"
 export default memoize(async ({ factoryGaugesAddresses, blockchainId } = {}) => {
   if (typeof blockchainId === 'undefined') blockchainId = undefined; // Default value
   if (typeof factoryGaugesAddresses === 'undefined') {
-    const { gauges } = await getGauges.straightCall({ blockchainId });
+    const { gauges } = await API.get(`getGauges/${blockchainId}`);
 
     const factoryGauges = Array.from(Object.values(gauges)).filter(({ factory, side_chain }) => factory && !side_chain);
     factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge); // eslint-disable-line no-param-reassign

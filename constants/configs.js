@@ -185,7 +185,7 @@ const configs = {
     chainId: 43114,
     nativeCurrencyCoingeckoId: 'avalanche-2',
     platformCoingeckoId: 'avalanche',
-    rpcUrl: 'https://api.avax.network/ext/bc/C/rpc',
+    rpcUrl: `https://api.avax.network/ext/bc/C/rpc?token=${process.env.API_KEY_AVALANCHE}`,
     nativeAssetId: 'avax', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wavax',
     multicallAddress: '0xa00FB557AA68d2e98A830642DBbFA534E8512E5f',

@@ -5,17 +5,17 @@
 
 import Web3 from 'web3';
 import WEB3_CONSTANTS from 'constants/Web3';
-import getFactoGauges from 'pages/api/getFactoGauges';
+import { API } from 'utils/Request';
 import { fn } from 'utils/api';
 import { arrayToHashmap, flattenArray } from 'utils/Array';
 import { sequentialPromiseMap } from 'utils/Async';
-import aggregatorInterfaceABI from '../../constants/abis/aggregator.json';
-import multicallAbi from '../../constants/abis/multicall.json';
-import gaugeControllerAbi from '../../constants/abis/gauge_controller.json';
-import exampleGaugeAbi from '../../constants/abis/example_gauge.json';
-import swapAbi from '../../constants/abis/tripool_swap.json';
+import aggregatorInterfaceABI from 'constants/abis/aggregator.json';
+import multicallAbi from 'constants/abis/multicall.json';
+import gaugeControllerAbi from 'constants/abis/gauge_controller.json';
+import exampleGaugeAbi from 'constants/abis/example_gauge.json';
+import swapAbi from 'constants/abis/tripool_swap.json';
 
-import { getFactoryRegistry, getMultiCall } from '../../utils/getters';
+import { getFactoryRegistry, getMultiCall } from 'utils/getters';
 
 const CHAINS_WITH_FACTORY_GAUGES = [
   'fantom',
@@ -26,7 +26,7 @@ const CHAINS_WITH_FACTORY_GAUGES = [
   'xdai',
 ];
 
-const web3 = new Web3(WEB3_CONSTANTS.RPC_BACKUP_URL);
+const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 export default fn(async ({ blockchainId } = {}) => {
   if (typeof blockchainId === 'undefined') blockchainId = undefined; // Default value (return gauges for all chains)
@@ -1238,7 +1238,7 @@ export default fn(async ({ blockchainId } = {}) => {
   if (chainsToQuery.length > 1) console.trace();
   const factoGauges = await sequentialPromiseMap(chainsToQuery, (blockchainIds) => (
     Promise.all(blockchainIds.map((blockchainId) => (
-      getFactoGauges.straightCall({ blockchainId })
+      API.get(`getFactoGauges/${blockchainId}`)
     )))
   ), 4);
 

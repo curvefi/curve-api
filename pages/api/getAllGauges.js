@@ -11,14 +11,14 @@
 import Web3 from 'web3';
 import partition from 'lodash.partition';
 import configs from 'constants/configs';
-import getFactoGauges from 'pages/api/getFactoGauges';
 import { fn } from 'utils/api';
 import { multiCall } from 'utils/Calls';
+import { API } from 'utils/Request';
 import getAllCurvePoolsData from 'utils/data/curve-pools-data';
 import { arrayOfIncrements, flattenArray, arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseMap } from 'utils/Async';
-import GAUGE_CONTROLLER_ABI from '../../constants/abis/gauge_controller.json';
-import GAUGE_ABI from '../../constants/abis/example_gauge_2.json';
+import GAUGE_CONTROLLER_ABI from 'constants/abis/gauge_controller.json';
+import GAUGE_ABI from 'constants/abis/example_gauge_2.json';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{"stateMutability":"view","type":"function","name":"bridger","inputs":[],"outputs":[{"name":"","type":"address"}]}];
@@ -243,7 +243,7 @@ export default fn(async () => {
 
   const factoGauges = await sequentialPromiseMap(blockchainIds, (blockchainIdsChunk) => (
     Promise.all(blockchainIdsChunk.map((blockchainId) => (
-      getFactoGauges.straightCall({ blockchainId }).then(({ gauges }) => (
+      API.get(`getFactoGauges/${blockchainId}`).then(({ gauges }) => (
         gauges.map((gaugeData) => ({
           ...gaugeData,
           blockchainId,

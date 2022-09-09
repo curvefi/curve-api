@@ -1,8 +1,8 @@
 import { fn } from 'utils/api';
-import getPoolsFn from 'pages/api/getPools';
+import { API } from 'utils/Request';
 
 export default fn(async ({ blockchainId }) => (
-  getPoolsFn.straightCall({ blockchainId, registryId: 'factory' })
+  API.get(`getPools/${blockchainId}/factory`)
 ), {
   maxAge: 60,
 });

@@ -10,7 +10,7 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
-import getPoolsFn from 'pages/api/getPools';
+import { API } from 'utils/Request';
 import configs from 'constants/configs';
 import { fn } from 'utils/api';
 import registryAbi from 'constants/abis/factory_registry.json';
@@ -27,7 +27,7 @@ export default fn(async (query) => {
   let multicallAddress = config.multicallAddress;
 	let registry = new web3.eth.Contract(registryAbi, registryAddress);
 	let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
-  let res = await getPoolsFn.straightCall({ blockchainId: 'kava', registryId: 'factory' })
+  let res = await API.get('getPools/kava/factory');
   let poolDetails = [];
   let totalVolume = 0
 

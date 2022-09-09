@@ -1,10 +1,10 @@
 import Web3 from 'web3';
 import configs from 'constants/configs';
 import { ZERO_ADDRESS } from 'utils/Web3';
-import { fn } from '../../utils/api';
-import { getRegistry, getMultiCall } from '../../utils/getters';
-import registryAbi from '../../constants/abis/factory_registry.json';
-import multicallAbi from '../../constants/abis/multicall.json';
+import { fn } from 'utils/api';
+import { getRegistry, getMultiCall } from 'utils/getters';
+import registryAbi from 'constants/abis/factory_registry.json';
+import multicallAbi from 'constants/abis/multicall.json';
 
 export default fn(async ({ blockchainId } = {}) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum';

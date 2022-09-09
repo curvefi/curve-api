@@ -2,12 +2,12 @@ import axios from 'axios';
 import Web3 from 'web3';
 import BigNumber from 'big-number';
 
-import { fn } from '../../utils/api';
-import { getFactoryRegistry, getMultiCall } from '../../utils/getters';
-import registryAbi from '../../constants/abis/factory_registry.json';
-import multicallAbi from '../../constants/abis/multicall.json';
-import erc20Abi from '../../constants/abis/erc20.json';
-import poolTwo from '../../constants/abis/pools/2pool.json';
+import { fn } from 'utils/api';
+import { getFactoryRegistry, getMultiCall } from 'utils/getters';
+import registryAbi from 'constants/abis/factory_registry.json';
+import multicallAbi from 'constants/abis/multicall.json';
+import erc20Abi from 'constants/abis/erc20.json';
+import poolTwo from 'constants/abis/pools/2pool.json';
 
 const web3 = new Web3(`https://rpc.ftm.tools/`);
 

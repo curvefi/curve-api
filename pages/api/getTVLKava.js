@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import configs from 'constants/configs';
 
-import getPoolsFn from 'pages/api/getPools';
+import { API } from 'utils/Request';
 import { fn } from 'utils/api';
 import erc20Abi from 'constants/abis/erc20.json';
 import aavePool from 'constants/abis/pools/aave.json';
@@ -45,7 +45,7 @@ export default fn(async () => {
         }
       }
 
-    const factoDetails = await getPoolsFn.straightCall({ blockchainId: 'kava', registryId: 'factory' })
+    const factoDetails = await API.get('getPools/kava/factory')
     tvl += factoDetails.tvlAll
     const factory = {
       tvl: factoDetails.tvlAll

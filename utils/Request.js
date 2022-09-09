@@ -10,6 +10,7 @@
  */
 
 import formUrlEncoded from 'form-urlencoded';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 class Request {
   static send(url, data = {}, customSettings = {}) {
@@ -67,4 +68,11 @@ class Request {
   }
 }
 
+const API = {
+  get: async (path, data) => (
+    (await (await Request.get(`${BASE_API_DOMAIN}/api/${path}`, data)).json()).data
+  ),
+};
+
 export default Request;
+export { API };

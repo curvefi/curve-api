@@ -25,7 +25,7 @@ import { ZERO_ADDRESS } from 'utils/Web3';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseReduce, sequentialPromiseFlatMap } from 'utils/Async';
 import { getRegistry } from 'utils/getters';
-import getTokensPrices from 'utils/data/tokens-prices';
+import { API } from 'utils/Request';
 import getAssetsPrices from 'utils/data/assets-prices';
 import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getTempleTokenPrices from 'utils/data/getTempleTokenPrices';
@@ -51,18 +51,17 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData }) => {
 
   if (!preventQueryingFactoData) {
     const getFactoryV2GaugeRewards = (await import('utils/data/getFactoryV2GaugeRewards')).default;
-    const getGauges = (await import('pages/api/getGauges')).default;
 
     ([
       { gauges: gaugesData },
       gaugeRewards,
     ] = await Promise.all([
-      getGauges.straightCall({ blockchainId: 'ethereum' }),
+      API.get('getGauges/ethereum'),
       getFactoryV2GaugeRewards({ blockchainId: 'ethereum' }),
     ]));
   }
 
-  const { poolList: mainRegistryPoolList } = await getMainRegistryPools.straightCall();
+  const { poolList: mainRegistryPoolList } = await API.get('getMainRegistryPools');
 
   const gaugesDataArray = Array.from(Object.values(gaugesData));
   const factoryGaugesPoolAddressesAndCoingeckoIdMap = arrayToHashmap(
@@ -109,6 +108,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
    * the pool list only.
    */
   if (typeof preventQueryingFactoData === 'undefined') preventQueryingFactoData = false; // Default value
+  else preventQueryingFactoData = (preventQueryingFactoData === 'true');
+  console.log({ preventQueryingFactoData });
   /* eslint-enable no-param-reassign */
 
   const config = configs[blockchainId];
@@ -233,10 +234,10 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     'factory-crypto': ['main', 'crypto'],
     factory: ['main', 'crypto', 'factory-crypto'],
   };
-  const { poolsAndLpTokens: mainRegistryPoolsAndLpTokens } = await getMainRegistryPoolsAndLpTokensFn.straightCall({ blockchainId });
+  const { poolsAndLpTokens: mainRegistryPoolsAndLpTokens } = await API.get(`getMainRegistryPoolsAndLpTokens/${blockchainId}`);
   const otherRegistryPoolsData = await sequentialPromiseFlatMap(REGISTRIES_DEPENDENCIES[registryId], async (id) => (
     // eslint-disable-next-line no-use-before-define
-    (await getPoolsFn.straightCall({ blockchainId, registryId: id, preventQueryingFactoData: true })).poolData.map((poolData) => ({
+    (await API.get(`getPools/${blockchainId}/${id}/true`)).poolData.map((poolData) => ({
       ...poolData,
       registryId: id,
     }))
