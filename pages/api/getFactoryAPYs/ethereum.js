@@ -14,7 +14,7 @@ import factorypool3Abi from 'constants/abis/factory_swap.json';
 import getSubgraphData from 'pages/api/getSubgraphData';
 import { sum } from 'utils/Array';
 
-const web3 = new Web3(WEB3_CONSTANTS.RPC_BACKUP_URL);
+const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 export default fn(async ({ version }) => {
     version = (

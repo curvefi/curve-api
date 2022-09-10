@@ -6,7 +6,7 @@ import multicallAbi from '../../constants/abis/multicall.json';
 import { getMultiCall, getRegistry } from '../../utils/getters';
 import erc20Abi from '../../constants/abis/erc20.json';
 
-const web3 = new Web3(WEB3_CONSTANTS.RPC_BACKUP_URL);
+const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 const BASE_API_DOMAIN = 'https://api.curve.fi';
 
 export default fn(async () => {
