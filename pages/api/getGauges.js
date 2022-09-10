@@ -26,7 +26,7 @@ const CHAINS_WITH_FACTORY_GAUGES = [
   'xdai',
 ];
 
-const web3 = new Web3(WEB3_CONSTANTS.RPC_BACKUP_URL);
+const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 export default fn(async ({ blockchainId } = {}) => {
   if (typeof blockchainId === 'undefined') blockchainId = undefined; // Default value (return gauges for all chains)
