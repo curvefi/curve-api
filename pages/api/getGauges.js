@@ -1137,7 +1137,7 @@ export default fn(async ({ blockchainId } = {}) => {
         swap_token: '0xBa3436Fd341F2C8A928452Db3C5A3670d1d5Cc73',
         name: 'f-ageureuroc',
         gauge: '0xF9F46eF781b9C7B76e8B505226d5E0e0E7FE2f04',
-        type: 'crypto',
+        type: 'stable',
         factory: true,
       },
       // "f-pusdfraxbp": {
