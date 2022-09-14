@@ -1140,14 +1140,14 @@ export default fn(async ({ blockchainId } = {}) => {
         type: 'crypto',
         factory: true,
       },
-      "f-pusdfraxbp": {
-        swap: '0xC47EBd6c0f68fD5963005D28D0ba533750E5C11B',
-        swap_token: '0xC47EBd6c0f68fD5963005D28D0ba533750E5C11B',
-        name: 'f-pusdfraxbp',
-        gauge: '0x28216318D85b2D6d8c2cB38eed08001d9348803b',
-        type: 'stable',
-        factory: true,
-      },
+      // "f-pusdfraxbp": {
+      //   swap: '0xC47EBd6c0f68fD5963005D28D0ba533750E5C11B',
+      //   swap_token: '0xC47EBd6c0f68fD5963005D28D0ba533750E5C11B',
+      //   name: 'f-pusdfraxbp',
+      //   gauge: '0x28216318D85b2D6d8c2cB38eed08001d9348803b',
+      //   type: 'stable',
+      //   factory: true,
+      // },
       "f-dolafraxbp": {
         swap: '0xE57180685E3348589E9521aa53Af0BCD497E884d',
         swap_token: '0xE57180685E3348589E9521aa53Af0BCD497E884d',
