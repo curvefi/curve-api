@@ -199,6 +199,7 @@ export default fn(async () => {
       virtualPrice: pool.virtualPrice,
       factory: pool.factory || false,
       type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
+      lpTokenPrice: (pool.usdTotal / (pool.totalSupply / 1e18)),
     };
   });
 
@@ -216,6 +217,7 @@ export default fn(async () => {
     isKilled,
     factory,
     type,
+    lpTokenPrice,
   }) => [name, {
     swap: lc(poolAddress),
     swap_token: lc(lpTokenAddress),
@@ -239,6 +241,7 @@ export default fn(async () => {
     is_killed: isKilled,
     hasNoCrv: LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY.includes(lc(address)),
     type,
+    lpTokenPrice,
   }]));
 
   const factoGauges = await sequentialPromiseMap(blockchainIds, (blockchainIdsChunk) => (
@@ -267,6 +270,7 @@ export default fn(async () => {
         swap,
         swap_token,
         type,
+        lpTokenPrice,
         hasCrv,
       }) => {
         const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
@@ -293,6 +297,7 @@ export default fn(async () => {
               inflation_rate,
             },
             hasNoCrv: !hasCrv,
+            lpTokenPrice,
           },
         ];
       })

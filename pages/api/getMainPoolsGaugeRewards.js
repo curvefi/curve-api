@@ -94,11 +94,6 @@ export default fn(async () => {
     ),
   }));
 
-
-  const mainPoolsGaugesReferenceAssetCoingeckoIds = uniq(mainPoolsGauges.map(({ type }) => type).filter((type) => type !== 'stable' && type !== 'crypto'));
-
-  const referenceAssetPricesPromise = getAssetsPrices(mainPoolsGaugesReferenceAssetCoingeckoIds);
-
   const gaugesData = await multiCall(flattenArray(
     mainPoolsGaugesAddressesAndVersion
       .filter(({ version }) => (
@@ -264,7 +259,7 @@ export default fn(async () => {
   const rewardDataPerRewardContractAndToken = groupBy(rewardData, ({ metaData: { rewardContract, rewardToken } }) => `${rewardContract}-${rewardToken}`);
 
   // Awaiting only here so there's as much work done in parallel as possible
-  const [tokenPrices, referenceAssetPrices] = await Promise.all([tokenPricesPromise, referenceAssetPricesPromise]);
+  const [tokenPrices] = await Promise.all([tokenPricesPromise]);
 
   const nowTimestamp = getNowTimestamp();
   const rewardsInfo = Array.from(Object.values(rewardDataPerRewardContractAndToken)).map((rewardDataForContractToken) => {
@@ -302,10 +297,7 @@ export default fn(async () => {
     const tokenPrice = tokenPrices[lcTokenPriceIndex];
 
     const gaugeData = mainPoolsGauges.find(({ gauge }) => gauge === address);
-    const referenceAssetPrice = (
-      gaugeData.type === 'stable' ? 1 :
-      referenceAssetPrices[gaugeData.type]
-    );
+    const referenceAssetPrice = gaugeData.lpTokenPrice;
 
     const isRewardStillActive = rewardPeriodFinish > nowTimestamp;
 
