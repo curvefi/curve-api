@@ -51,10 +51,10 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData }) => {
 
   if (!preventQueryingFactoData) {
     const getFactoryV2GaugeRewards = (await import('utils/data/getFactoryV2GaugeRewards')).default;
-    const getGauges = (await import('pages/api/getGauges')).default;
+    const getGauges = (await import('pages/api/getAllGauges')).default;
 
     ([
-      { gauges: gaugesData },
+      gaugesData,
       gaugeRewards,
     ] = await Promise.all([
       getGauges.straightCall({ blockchainId: 'ethereum' }),
@@ -790,7 +790,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     )));
 
     const gaugeAddress = typeof ethereumOnlyData !== 'undefined' ?
-      ethereumOnlyData.gaugesDataArray.find(({ swap }) => swap.toLowerCase() === poolInfo.address.toLowerCase())?.gauge?.toLowerCase() :
+      ethereumOnlyData.gaugesDataArray.find(({ swap }) => (
+        swap?.toLowerCase() === poolInfo.address.toLowerCase()
+      ))?.gauge?.toLowerCase() :
       undefined;
     const gaugeRewardsInfo = gaugeAddress ? ethereumOnlyData.gaugeRewards[gaugeAddress] : undefined;
 

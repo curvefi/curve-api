@@ -11,7 +11,7 @@ import { ZERO_ADDRESS } from 'utils/Web3/web3';
 import getTokensPrices from 'utils/data/tokens-prices';
 import getAssetsPrices from 'utils/data/assets-prices';
 import getFactoryV2GaugeRewards from 'utils/data/getFactoryV2GaugeRewards';
-import getGauges from 'pages/api/getGauges';
+import getGauges from 'pages/api/getAllGauges';
 import ERC20_ABI from 'constants/abis/erc20.json';
 import getAavePoolRewardsInfo from 'utils/data/getAavePoolRewardsInfo';
 import RewardContractV1ABI from 'utils/data/abis/json/reward-contracts/v1.json';
@@ -64,7 +64,7 @@ const FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES_REF_ASSET_PRICE = {
 const GAUGES_PARTIAL_ABI = [{"name":"reward_contract","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2051},{"name":"totalSupply","outputs":[{"type":"uint256","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":1691},{"stateMutability":"view","type":"function","name":"reward_tokens","inputs":[{"name":"arg0","type":"uint256"}],"outputs":[{"name":"","type":"address"}],"gas":3787},{"name":"rewarded_token","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2201}];
 
 export default fn(async () => {
-  let { gauges } = await getGauges.straightCall();
+  let gauges = await getGauges.straightCall();
 
   //empty gauges cause reverts
   const remove = [
@@ -81,7 +81,7 @@ export default fn(async () => {
     delete gauges[p]
   })
 
-  const mainPoolsGauges = Array.from(Object.values(gauges)).filter(({ side_chain, factory }) => (!side_chain && !factory));
+  const mainPoolsGauges = Array.from(Object.values(gauges)).filter(({ gauge, side_chain, factory }) => (!side_chain && !factory && gauge));
 
   const mainPoolsGaugesAddressesAndVersion = mainPoolsGauges.map(({ gauge, name }, i) => ({
     address: gauge,
@@ -93,11 +93,6 @@ export default fn(async () => {
       'v2'
     ),
   }));
-
-
-  const mainPoolsGaugesReferenceAssetCoingeckoIds = uniq(mainPoolsGauges.map(({ type }) => type).filter((type) => type !== 'stable' && type !== 'crypto'));
-
-  const referenceAssetPricesPromise = getAssetsPrices(mainPoolsGaugesReferenceAssetCoingeckoIds);
 
   const gaugesData = await multiCall(flattenArray(
     mainPoolsGaugesAddressesAndVersion
@@ -264,7 +259,7 @@ export default fn(async () => {
   const rewardDataPerRewardContractAndToken = groupBy(rewardData, ({ metaData: { rewardContract, rewardToken } }) => `${rewardContract}-${rewardToken}`);
 
   // Awaiting only here so there's as much work done in parallel as possible
-  const [tokenPrices, referenceAssetPrices] = await Promise.all([tokenPricesPromise, referenceAssetPricesPromise]);
+  const [tokenPrices] = await Promise.all([tokenPricesPromise]);
 
   const nowTimestamp = getNowTimestamp();
   const rewardsInfo = Array.from(Object.values(rewardDataPerRewardContractAndToken)).map((rewardDataForContractToken) => {
@@ -302,10 +297,7 @@ export default fn(async () => {
     const tokenPrice = tokenPrices[lcTokenPriceIndex];
 
     const gaugeData = mainPoolsGauges.find(({ gauge }) => gauge === address);
-    const referenceAssetPrice = (
-      gaugeData.type === 'stable' ? 1 :
-      referenceAssetPrices[gaugeData.type]
-    );
+    const referenceAssetPrice = gaugeData.lpTokenPrice;
 
     const isRewardStillActive = rewardPeriodFinish > nowTimestamp;
 

@@ -41,8 +41,8 @@ export default {
     '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2': 'sushi', // SUSHI
     '0x31429d1856aD1377A8A0079410B297e1a9e214c2': 'angle-protocol', // ANGLE
     '0xed35af169af46a02ee13b9d79eb57d6d68c1749e': 'ecomi', // OMI
-
     '0x9559aaa82d9649c7a7b220e7c461d2e74c9a3593': 'reth',
+    '0xae78736cd615f374d3085123a210448e74fc6393': 'rocket-pool-eth',
     '0xdbdb4d16eda451d0503b854cf79d55697f90c8df': 'alchemix',
   },
   polygon: {

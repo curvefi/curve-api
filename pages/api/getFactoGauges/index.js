@@ -248,12 +248,14 @@ export default fn(async ({ blockchainId }) => {
       return null;
     }
 
+    const pool = (poolInMainRegistry || poolInCryptoRegistry || poolInCryptoFactoRegistry || poolInStableFactoRegistry);
+
     return {
       ...gaugeData,
-      poolAddress: (poolInMainRegistry || poolInCryptoRegistry || poolInCryptoFactoRegistry || poolInStableFactoRegistry).address,
+      poolAddress: pool.address,
       lpTokenPrice: (
-        (poolInMainRegistry || poolInCryptoRegistry || poolInCryptoFactoRegistry || poolInStableFactoRegistry).usdTotal /
-        ((poolInMainRegistry || poolInCryptoRegistry || poolInCryptoFactoRegistry || poolInStableFactoRegistry).totalSupply / 1e18)
+        pool.usdTotal /
+        (pool.totalSupply / 1e18)
       ),
       type: ((poolInCryptoFactoRegistry || poolInCryptoRegistry) ? 'crypto' : 'stable'),
     };
@@ -285,10 +287,10 @@ export default fn(async ({ blockchainId }) => {
     getGaugeWeight,
     poolAddress,
     type,
+    lpTokenPrice,
     poolVirtualPrice,
     isMirrored,
     lastRequest,
-    lpTokenPrice,
   }) => {
     const effectiveInflationRate = Number(inflationRate) || (getGaugeWeight > 0 ? pendingEmissions[address] : 0);
     const rewardsNeedNudging = (
