@@ -7,7 +7,6 @@ const configs = {
     chainId: 1,
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'ethereum',
-    nativeAssetId: 'eth', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: WEB3_CONSTANTS.RPC_URL,
     backuprpcUrl: WEB3_CONSTANTS.RPC_BACKUP_URL,
@@ -50,7 +49,6 @@ const configs = {
     chainId: 137,
     nativeCurrencyCoingeckoId: 'matic-network',
     platformCoingeckoId: 'polygon-pos',
-    nativeAssetId: 'MATIC', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wmatic',
     rpcUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_POLYGON}`,
     multicallAddress: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
@@ -102,7 +100,6 @@ const configs = {
     chainId: 250,
     nativeCurrencyCoingeckoId: 'fantom',
     platformCoingeckoId: 'fantom',
-    nativeAssetId: 'ftm', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wftm',
     rpcUrl: 'https://rpc.ftm.tools/',
     multicallAddress: '0xb828c456600857abd4ed6c32facc607bd0464f4f',
@@ -146,7 +143,6 @@ const configs = {
     chainId: 42161,
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'ethereum',
-    nativeAssetId: 'eth', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'weth',
     rpcUrl: `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_ARBITRUM}`,
     multicallAddress: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
@@ -187,7 +183,6 @@ const configs = {
     nativeCurrencyCoingeckoId: 'avalanche-2',
     platformCoingeckoId: 'avalanche',
     rpcUrl: `https://api.avax.network/ext/bc/C/rpc?token=${process.env.API_KEY_AVALANCHE}`,
-    nativeAssetId: 'avax', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wavax',
     multicallAddress: '0xa00FB557AA68d2e98A830642DBbFA534E8512E5f',
     multicall2Address: '0x29b6603D17B9D8f021EcB8845B6FD06E1Adf89DE',
@@ -231,7 +226,6 @@ const configs = {
     chainId: 10,
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'optimistic-ethereum',
-    nativeAssetId: 'eth', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://mainnet.optimism.io',
     multicallAddress: '0x2DC0E2aa608532Da689e89e237dF582B783E552C',
@@ -269,7 +263,6 @@ const configs = {
     chainId: 100,
     nativeCurrencyCoingeckoId: 'xdai',
     platformCoingeckoId: 'xdai',
-    nativeAssetId: 'xdai', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wxdai', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://rpc.gnosischain.com/curve',
     multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
@@ -296,13 +289,26 @@ const configs = {
     ]),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-xdai-test',
   },
+  aurora: {
+    shortId: 'aur',
+    nativeCurrencySymbol: 'AURORA',
+    chainId: 1313161555,
+    nativeCurrencyCoingeckoId: 'aurora-near',
+    platformCoingeckoId: 'haurora',
+    nativeAssetErc20WrapperId: 'aurora-near', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://mainnet.aurora.dev',
+    multicallAddress: '0xace58a26b8Db90498eF0330fDC9C2655db0C45E2',
+    multicall2Address: '0xace58a26b8Db90498eF0330fDC9C2655db0C45E2',
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 72000, // https://aurorascan.dev/chart/blocks
+    getCryptoRegistryAddress: async () => '',
+  },
   harmony: {
     shortId: 'hmny',
     nativeCurrencySymbol: 'ONE',
     chainId: 1666600000,
     nativeCurrencyCoingeckoId: 'harmony',
     platformCoingeckoId: 'harmony-shard-0',
-    nativeAssetId: 'one', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wone', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://rpc.s0.t.hmny.io',
     multicallAddress: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
@@ -317,7 +323,6 @@ const configs = {
     chainId: 1284,
     nativeCurrencyCoingeckoId: 'moonbeam',
     platformCoingeckoId: 'moonbeam',
-    nativeAssetId: 'moonbeam', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wGLMR', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://moonbeam.api.onfinality.io/public',
     multicallAddress: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
@@ -346,7 +351,6 @@ const configs = {
     chainId: 2222,
     nativeCurrencyCoingeckoId: 'kava',
     platformCoingeckoId: 'kava',
-    nativeAssetId: 'kava', // Coin id from the blockchain's coins config
     nativeAssetErc20WrapperId: 'wrapped-kava', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://evm.kava.io',
     multicallAddress: '0x7ED7bBd8C454a1B0D9EdD939c45a81A03c20131C',

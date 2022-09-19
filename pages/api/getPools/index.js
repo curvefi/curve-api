@@ -113,7 +113,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
   const config = configs[blockchainId];
   if (typeof config === 'undefined') {
-    throw new Error(`No factory data for blockchainId "${blockchainId}"`);
+    throw new Error(`No config data for blockchainId "${blockchainId}"`);
   }
 
   const {
