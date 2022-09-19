@@ -136,6 +136,9 @@ export default {
     '0x4ecaba5870353805a9f068101a40e0f32ed605c6': 'tether',
     '0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb': 'gnosis',
   },
+  aurora: {
+    '0xe3520349F477A5F6EB06107066048508498A291b': 'dai',
+  },
   moonbeam: {
     '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9': 'usd-coin', // madUSDC
     '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b': 'usd-coin', // mUSDC
