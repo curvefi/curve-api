@@ -25,7 +25,6 @@ import { ZERO_ADDRESS } from 'utils/Web3';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseReduce, sequentialPromiseFlatMap } from 'utils/Async';
 import { getRegistry } from 'utils/getters';
-import getTokensPrices from 'utils/data/tokens-prices';
 import getAssetsPrices from 'utils/data/assets-prices';
 import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getTempleTokenPrices from 'utils/data/getTempleTokenPrices';
@@ -801,13 +800,34 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       undefined;
     const gaugeRewardsInfo = gaugeAddress ? ethereumOnlyData.gaugeRewards[gaugeAddress] : undefined;
 
+    const metaPoolBasePoolLpToken = augmentedCoins.find(({ isBasePoolLpToken }) => isBasePoolLpToken);
+    const isMetaPool = typeof metaPoolBasePoolLpToken !== 'undefined';
+
+    const underlyingPoolCoins = (
+      isMetaPool ? (
+        [...mergedPoolData, ...otherRegistryPoolsData].find(({ lpTokenAddress, address }) => (
+          (lpTokenAddress || address).toLowerCase() === metaPoolBasePoolLpToken.address.toLowerCase()
+        )).coins
+      ) : undefined
+    );
+
+    const underlyingCoins = (
+      isMetaPool ? (
+        flattenArray(augmentedCoins.map((coin) => (
+          coin.isBasePoolLpToken ? underlyingPoolCoins : coin
+        )))
+      ) : undefined
+    );
+
     const augmentedPool = {
       ...poolInfo,
       implementation,
       assetTypeName,
       coins: augmentedCoins,
       usdTotal,
-      isMetaPool: augmentedCoins.some(({ isBasePoolLpToken }) => isBasePoolLpToken),
+      isMetaPool,
+      underlyingDecimals: (isMetaPool ? poolInfo.underlyingDecimals : undefined),
+      underlyingCoins,
       usdTotalExcludingBasePool,
       gaugeAddress,
       gaugeRewards: (
