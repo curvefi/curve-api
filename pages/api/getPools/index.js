@@ -805,7 +805,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
     const underlyingPoolCoins = (
       isMetaPool ? (
-        [...mergedPoolData, ...otherRegistryPoolsData].find(({ lpTokenAddress, address }) => (
+        [...wipMergedPoolData, ...otherRegistryPoolsData].find(({ lpTokenAddress, address }) => (
           (lpTokenAddress || address).toLowerCase() === metaPoolBasePoolLpToken.address.toLowerCase()
         )).coins
       ) : undefined
