@@ -38,7 +38,10 @@ const configs = {
       ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
     ]),
-    factoryCryptoMetaBasePoolLpTokenAddress: '0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC',
+    factoryCryptoMetaBasePoolLpTokenAddressMap: new Map([
+      ['0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC'.toLowerCase(), 'metacrypto'],
+      ['0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'.toLowerCase(), 'metacrypto-3pool'],
+    ]),
     getFactoryCryptoRegistryAddress: async () => '0xF18056Bbd320E96A48e3Fbf8bC061322531aac99',
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet-test',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
@@ -75,7 +78,9 @@ const configs = {
       ['0xD8336532f6ED7b94282fAF724fe41d6145E07Cfc'.toLowerCase(), 'metabtcbalances'],
       ['0x5bcA7dDF1bcccB2eE8e46c56bfc9d3CDC77262bC'.toLowerCase(), 'crypto'],
     ]),
-    factoryCryptoMetaBasePoolLpTokenAddress: '0xdAD97F7713Ae9437fa9249920eC8507e5FbB23d3',
+    factoryCryptoMetaBasePoolLpTokenAddressMap: new Map([
+      ['0xdAD97F7713Ae9437fa9249920eC8507e5FbB23d3'.toLowerCase(), 'metacrypto'],
+    ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0xE7a24EF0C5e95Ffb0f6684b813A78F2a3AD7D171', '0x19793B454D3AfC7b454F206Ffe95aDE26cA6912c'], // meta usd
       ['0xf8a57c1d3b9629b77b6726a042ca48990A84Fb49', '0xffbACcE0CC7C19d46132f1258FC16CF6871D153c'], // meta btc
