@@ -9,7 +9,6 @@ const configs = {
     platformCoingeckoId: 'ethereum',
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: WEB3_CONSTANTS.RPC_URL,
-    rpcUrl: WEB3_CONSTANTS.RPC_BACKUP_URL,
     backuprpcUrl: WEB3_CONSTANTS.RPC_BACKUP_URL,
     multicallAddress: '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441',
     multicall2Address: '0x5ba1e12693dc8f9c48aad8770482f4739beed696',
