@@ -232,7 +232,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'optimistic-ethereum',
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://mainnet.optimism.io',
+    rpcUrl: `https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_OPTIMISM}`,
     multicallAddress: '0x2DC0E2aa608532Da689e89e237dF582B783E552C',
     multicall2Address: '0x2DC0E2aa608532Da689e89e237dF582B783E552C',
     getFactoryRegistryAddress: async () => '0x2db0E83599a91b508Ac268a6197b8B14F5e72840',
