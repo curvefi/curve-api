@@ -51,8 +51,12 @@ const fn = (cb, options = {}) => {
         res.status(200).json(formatJsonSuccess(data));
       })
       .catch((err) => {
-        if (IS_DEV) throw err;
-        else res.status(500).json(formatJsonError(err));
+        if (IS_DEV) {
+          console.log('ERROR', err);
+          throw err;
+        } else {
+          res.status(500).json(formatJsonError(err));
+        }
       })
   );
 
