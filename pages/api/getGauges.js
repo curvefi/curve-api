@@ -1355,5 +1355,5 @@ export default fn(async ({ blockchainId } = {}) => {
   return { gauges };
 
 }, {
-  maxAge: 30,
+  maxAge: 60 * 60, // Now that this endpoint is deprecated, cache it for a long time
 });
