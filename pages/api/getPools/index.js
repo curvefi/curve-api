@@ -803,11 +803,27 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const metaPoolBasePoolLpToken = augmentedCoins.find(({ isBasePoolLpToken }) => isBasePoolLpToken);
     const isMetaPool = typeof metaPoolBasePoolLpToken !== 'undefined';
 
-    const underlyingPoolCoins = (
+    const underlyingPool = (
       isMetaPool ? (
         [...wipMergedPoolData, ...otherRegistryPoolsData].find(({ lpTokenAddress, address }) => (
           (lpTokenAddress || address).toLowerCase() === metaPoolBasePoolLpToken.address.toLowerCase()
-        )).coins
+        ))
+      ) : undefined
+    );
+
+    // How much does that pool owns, in its balances, of the underlying pool
+    const underlyingPoolLpOwnershipRate = (
+      isMetaPool ? (
+        (metaPoolBasePoolLpToken.poolBalance / 1e18) / (underlyingPool.totalSupply / 1e18)
+      ) : undefined
+    );
+
+    const underlyingPoolCoins = (
+      isMetaPool ? (
+        underlyingPool.coins.map((coin) => ({
+          ...coin,
+          poolBalance: BN(coin.poolBalance).times(underlyingPoolLpOwnershipRate).toFixed(0),
+        }))
       ) : undefined
     );
 
