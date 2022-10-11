@@ -3,6 +3,8 @@ import { CaseInsensitiveMap } from 'utils/Array';
 
 const configs = {
   ethereum: {
+    poolsBaseUrlOld: 'https://curve.fi/',
+    poolsBaseUrl: 'https://curve.exchange/#/ethereum/pools/',
     nativeCurrencySymbol: 'ETH',
     chainId: 1,
     nativeCurrencyCoingeckoId: 'ethereum',
@@ -47,6 +49,8 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
   },
   polygon: {
+    poolsBaseUrlOld: 'https://polygon.curve.fi/',
+    poolsBaseUrl: 'https://curve.exchange/#/polygon/pools/',
     shortId: 'poly',
     nativeCurrencySymbol: 'MATIC',
     chainId: 137,
@@ -100,6 +104,8 @@ const configs = {
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-matic-test',
   },
   fantom: {
+    poolsBaseUrlOld: 'https://ftm.curve.fi/',
+    poolsBaseUrl: 'https://curve.exchange/#/fantom/pools/',
     shortId: 'ftm',
     nativeCurrencySymbol: 'FTM',
     chainId: 250,
@@ -143,6 +149,8 @@ const configs = {
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom-test'
   },
   arbitrum: {
+    poolsBaseUrlOld: 'https://arbitrum.curve.fi/',
+    poolsBaseUrl: 'https://curve.exchange/#/arbitrum/pools/',
     shortId: 'arbi',
     nativeCurrencySymbol: 'ETH',
     chainId: 42161,
@@ -182,6 +190,8 @@ const configs = {
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum-test',
   },
   avalanche: {
+    poolsBaseUrlOld: 'https://avax.curve.fi/',
+    poolsBaseUrl: 'https://curve.exchange/#/avalanche/pools/',
     shortId: 'ava',
     nativeCurrencySymbol: 'AVAX',
     chainId: 43114,
@@ -226,6 +236,8 @@ const configs = {
     approxBlocksPerDay: 43000,
   },
   optimism: {
+    poolsBaseUrlOld: 'https://optimism.curve.fi/',
+    poolsBaseUrl: 'https://curve.exchange/#/optimism/pools/',
     shortId: 'op',
     nativeCurrencySymbol: 'ETH',
     chainId: 10,
@@ -263,6 +275,8 @@ const configs = {
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism-test',
   },
   xdai: {
+    poolsBaseUrlOld: 'https://xdai.curve.fi/',
+    poolsBaseUrl: 'https://curve.exchange/#/gnosis/pools/',
     shortId: 'xdai',
     nativeCurrencySymbol: 'xDAI',
     chainId: 100,
@@ -295,6 +309,8 @@ const configs = {
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-xdai-test',
   },
   aurora: {
+    poolsBaseUrlOld: 'https://aurora.curve.fi/',
+    poolsBaseUrl: null,
     shortId: 'aur',
     nativeCurrencySymbol: 'AURORA',
     chainId: 1313161555,
@@ -309,6 +325,8 @@ const configs = {
     getCryptoRegistryAddress: async () => '',
   },
   harmony: {
+    poolsBaseUrlOld: 'https://harmony.curve.fi/',
+    poolsBaseUrl: null,
     shortId: 'hmny',
     nativeCurrencySymbol: 'ONE',
     chainId: 1666600000,
@@ -323,6 +341,8 @@ const configs = {
     getCryptoRegistryAddress: async () => '', // Has one crypto pool but no crypto registry
   },
   moonbeam: {
+    poolsBaseUrlOld: 'https://moonbeam.curve.fi/',
+    poolsBaseUrl: null,
     shortId: 'moon',
     nativeCurrencySymbol: 'GLMR',
     chainId: 1284,
@@ -352,6 +372,8 @@ const configs = {
     approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
   },
   kava: {
+    poolsBaseUrlOld: 'https://kava.curve.fi/',
+    poolsBaseUrl: null,
     nativeCurrencySymbol: 'KAVA',
     chainId: 2222,
     nativeCurrencyCoingeckoId: 'kava',
