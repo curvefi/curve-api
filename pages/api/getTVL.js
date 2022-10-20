@@ -37,6 +37,7 @@ export default fn(async () => {
       'getTVLOptimism',
       'getTVLMoonbeam',
       'getTVLKava',
+      'getTVLCelo',
     ]
 
     let sideChainTVL = 0
