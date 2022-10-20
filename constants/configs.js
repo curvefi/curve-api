@@ -402,13 +402,14 @@ const configs = {
     approxBlocksPerDay: 13500, // https://explorer.kava.io/
   },
   celo: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: 'https://celo.curve.fi/',
     poolsBaseUrl: null,
     nativeCurrencySymbol: 'CELO',
     chainId: 42220,
     nativeCurrencyCoingeckoId: 'celo',
     platformCoingeckoId: 'celo',
-    // nativeAssetErc20WrapperId: 'wrapped-kava', // Used by crypto facto, since it handles wrapped native as native
+    nativeAssetErc20WrapperId: 'celo', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://forno.celo.org',
     multicallAddress: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
     multicall2Address: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',

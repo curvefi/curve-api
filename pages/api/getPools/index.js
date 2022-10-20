@@ -116,6 +116,14 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     throw new Error(`No config data for blockchainId "${blockchainId}"`);
   }
 
+  if (config.hasNoMainRegistry && registryId === 'main') {
+    return {
+      poolData: [],
+      tvlAll: 0,
+      tvl: 0,
+    };
+  }
+
   const {
     nativeCurrencySymbol,
     platformCoingeckoId,
