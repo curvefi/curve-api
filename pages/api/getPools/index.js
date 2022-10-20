@@ -33,6 +33,7 @@ import getMainRegistryPoolsAndLpTokensFn from 'pages/api/getMainRegistryPoolsAnd
 import configs from 'constants/configs';
 import allCoins from 'constants/coins';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
+import { getHardcodedPoolId } from 'constants/PoolAddressInternalIdMap';
 import { deriveMissingCoinPrices } from 'pages/api/getPools/_utils';
 
 /* eslint-disable */
@@ -835,8 +836,42 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ) : undefined
     );
 
+    const poolsUrlsIds = [
+      (config.poolsBaseUrlOld ? (
+        (registryId === 'main' || registryId === 'crypto') ?
+          (getHardcodedPoolId(blockchainId, poolInfo.address) || null) :
+          poolInfo.id.replace('factory-v2-', 'factory/').replace('factory-crypto-', 'factory-crypto/')
+      ) : null),
+      (config.poolsBaseUrl ? (
+        (registryId === 'main' || registryId === 'crypto') ?
+          (getHardcodedPoolId(blockchainId, poolInfo.address) || null) :
+          poolInfo.id
+      ) : null),
+    ];
+
+    const poolUrls = [
+      (poolsUrlsIds[0] !== null ? `${config.poolsBaseUrlOld}${poolsUrlsIds[0]}` : null),
+      (poolsUrlsIds[1] !== null ? `${config.poolsBaseUrl}${poolsUrlsIds[1]}` : null),
+    ];
+
+    const detailedPoolUrls = {
+      swap: [
+        (poolUrls[0] !== null ? `${poolUrls[0]}` : null),
+        (poolUrls[1] !== null ? `${poolUrls[1]}/swap` : null),
+      ].filter((o) => o !== null),
+      deposit: [
+        (poolUrls[0] !== null ? `${poolUrls[0]}/deposit` : null),
+        (poolUrls[1] !== null ? `${poolUrls[1]}/deposit` : null),
+      ].filter((o) => o !== null),
+      withdraw: [
+        (poolUrls[0] !== null ? `${poolUrls[0]}/withdraw` : null),
+        (poolUrls[1] !== null ? `${poolUrls[1]}/withdraw` : null),
+      ].filter((o) => o !== null),
+    };
+
     const augmentedPool = {
       ...poolInfo,
+      poolUrls: detailedPoolUrls,
       implementation,
       assetTypeName,
       coins: augmentedCoins,
