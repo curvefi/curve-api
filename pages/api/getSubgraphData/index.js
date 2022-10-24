@@ -10,9 +10,9 @@ import tripoolSwapAbi from 'constants/abis/tripool_swap.json';
 import configs from 'constants/configs';
 import { BASE_API_DOMAIN } from 'constants/AppConstants';
 import { runConcurrentlyAtMost } from 'utils/Async';
+import getAllCurvePoolsData from 'utils/data/curve-pools-data';
 
-
-
+const lc = (str) => str.toLowerCase();
 
 export default fn(async ( {blockchainId} ) => {
 
@@ -31,12 +31,20 @@ export default fn(async ( {blockchainId} ) => {
   const GRAPH_ENDPOINT_FALLBACK = config.fallbackGraphEndpoint;
   const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
   const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
+
+  const allPools = await getAllCurvePoolsData([blockchainId]);
+  const getPoolByAddress = (address) => (
+    allPools.find((pool) => (lc(pool.address) === lc(address)))
+  );
+
   const poolListData = await (await fetch(`${BASE_API_DOMAIN}/api/getPoolList/${blockchainId}`)).json()
   let poolList = poolListData.data.poolList
   let totalVolume = 0
   let cryptoVolume = 0
 
   await runConcurrentlyAtMost(poolList.map((_, i) => async () => {
+    const poolAddress = lc(poolList[i].address);
+
       let POOL_QUERY = `
       {
         swapVolumeSnapshots(
@@ -44,7 +52,7 @@ export default fn(async ( {blockchainId} ) => {
           orderBy: timestamp,
           orderDirection: desc,
           where: {
-            pool: "${poolList[i].address.toLowerCase()}"
+            pool: "${poolAddress}"
             timestamp_gt: ${TIMESTAMP_24H_AGO}
             period: 3600
           }
@@ -84,8 +92,20 @@ export default fn(async ( {blockchainId} ) => {
           rollingRawVolume =  rollingRawVolume + hourlyVol
       }
 
-      poolList[i].volumeUSD = rollingDaySummedVolume
+      if (rollingDaySummedVolume === 0 && rollingRawVolume > 0) {
+        const poolData = getPoolByAddress(poolAddress);
+        const poolLpTokenPrice = poolData.usdTotal / (poolData.totalSupply / 1e18);
+        const usdVolumeRectified = poolLpTokenPrice * rollingRawVolume;
+
+        if (usdVolumeRectified > 0) {
+          rollingDaySummedVolume = usdVolumeRectified;
+
+          console.log(`Missing usd volume from subgraph: derived using lp token price from getPools endpoint for pool ${poolAddress} (derived rolling day usd volume: ${usdVolumeRectified})`);
+        }
+      }
+
       poolList[i].rawVolume = rollingRawVolume
+      poolList[i].volumeUSD = rollingDaySummedVolume
 
       totalVolume += parseFloat(rollingDaySummedVolume)
       cryptoVolume += (poolList[i].type.includes('crypto')) ? parseFloat(rollingDaySummedVolume) : 0
