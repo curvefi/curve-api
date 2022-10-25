@@ -10,6 +10,8 @@ export default fn(async ({ blockchainId } = {}) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum';
 
   const config = configs[blockchainId];
+  if (config.hasNoMainRegistry) return { poolList: [] };
+
   const { rpcUrl, multicall2Address } = config;
   const web3 = new Web3(rpcUrl);
 

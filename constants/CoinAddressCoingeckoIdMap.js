@@ -155,4 +155,11 @@ export default {
     '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b': 'wrapped-bitcoin',
     '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D': 'ethereum',
   },
+  celo: {
+    '0x471ece3750da237f93b8e339c536989b8978a438': 'celo',
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'celo',
+    '0xef4229c8c3250C675F21BCefa42f58EfbfF6002a': 'usd-coin',
+    '0x90Ca507a5D4458a4C6C6249d186b6dCb02a5BCCd': 'dai',
+    '0x88eeC49252c8cbc039DCdB394c0c2BA2f1637EA0': 'tether',
+  },
 };

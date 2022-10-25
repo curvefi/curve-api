@@ -401,5 +401,36 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 13500, // https://explorer.kava.io/
   },
+  celo: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: 'https://celo.curve.fi/',
+    poolsBaseUrl: null,
+    nativeCurrencySymbol: 'CELO',
+    chainId: 42220,
+    nativeCurrencyCoingeckoId: 'celo',
+    platformCoingeckoId: 'celo',
+    nativeAssetErc20WrapperId: 'celo', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://forno.celo.org',
+    multicallAddress: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
+    multicall2Address: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
+    getFactoryRegistryAddress: async () => '0x5277A0226d10392295E8D383E9724D6E416d6e6C',
+    factoryImplementationAddressMap: new Map([
+      ['0xfEE7166C32Bdf6356Ef60636f43400AA55551A96'.toLowerCase(), 'plain2basic'],
+      ['0x183Bb362aAa53f24BDF76a5E0FE11eEEce21F44d'.toLowerCase(), 'plain2balances'],
+      ['0x469CF0874E62cfbaD342AE7e11aBCfC0F08dC17d'.toLowerCase(), 'plain2eth'],
+      ['0xE5ddCc991c29d3a5350E1Eb669439F0237dB7490'.toLowerCase(), 'plain2optimized'],
+      ['0xBcdCADB91446366d10b293152c967e64dE789B92'.toLowerCase(), 'plain3basic'],
+      ['0x9Adb8f6B5c4A6Be6625E46e2fd352B859B4bf711'.toLowerCase(), 'plain3balances'],
+      ['0x15Eb833Fa0689458Dc7B11517932780DfdFaa046'.toLowerCase(), 'plain3eth'],
+      ['0xa72F339708461537223Bc415008eD61338Fe0CA2'.toLowerCase(), 'plain3optimized'],
+      ['0x59395Ef4FB6F266F7B117CF0a7223eC45d78A2AF'.toLowerCase(), 'plain4basic'],
+      ['0x3730D8B82BF3fF6Cc6dFDBe2Fd7B2A655e74eAae'.toLowerCase(), 'plain4balances'],
+      ['0x0F5390AB4C5456a769056C96E4D7C71770b52319'.toLowerCase(), 'plain4eth'],
+      ['0xA73b02a97B45604cd9f0BBAA153eCfe01f409350'.toLowerCase(), 'plain4optimized'],
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 17280, // https://celoscan.io/chart/blocks
+  },
 };
 export default configs;

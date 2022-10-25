@@ -10,33 +10,33 @@ import Web3 from 'web3';
 import BigNumber from 'big-number';
 import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
-import configs from '../../constants/configs';
-import { fn } from '../../utils/api';
-import registryAbi from '../../constants/abis/factory_registry.json';
-import multicallAbi from '../../constants/abis/multicall.json';
-import erc20Abi from '../../constants/abis/erc20.json';
-import factorypool3Abi from '../../constants/abis/factory_swap.json';
+import getPoolsFn from 'pages/api/getPools';
+import configs from 'constants/configs';
+import { fn } from 'utils/api';
+import registryAbi from 'constants/abis/factory_registry.json';
+import multicallAbi from 'constants/abis/multicall.json';
+import factorypool3Abi from 'constants/abis/factory_swap.json';
 
-const web3 = new Web3(configs.moonbeam.rpcUrl);
+const web3 = new Web3(configs.celo.rpcUrl);
 
 export default fn(async (query) => {
-  const config = configs.moonbeam;
+  const config = configs.celo;
   const version = 2
 
   let registryAddress = await config.getFactoryRegistryAddress();
   let multicallAddress = config.multicallAddress;
 	let registry = new web3.eth.Contract(registryAbi, registryAddress);
 	let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
-  let res = await (await fetch(`${BASE_API_DOMAIN}/api/getFactoryV2Pools/moonbeam`)).json()
+  let res = await getPoolsFn.straightCall({ blockchainId: 'celo', registryId: 'factory' })
   let poolDetails = [];
   let totalVolume = 0
 
   const latest = await web3.eth.getBlockNumber()
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
-  let DAY_BLOCKS = 500
+  let DAY_BLOCKS = 9000
 
   await Promise.all(
-    res.data.poolData.map(async (pool, index) => {
+    res.poolData.map(async (pool, index) => {
 
       let poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
 
