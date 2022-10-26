@@ -52,7 +52,6 @@ const LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY = [
   '0xb0a6F55a758C8F035C067672e89903d76A5AbE9b', // dchf/3pool gauge, until voted
   '0xdA0DD1798BE66E17d5aB1Dc476302b56689C2DB4', // factory-crypto/134 gauge, until voted
   '0xf476d99f892c23b3ec828762eba2b46c3fda949f', // factory/218 gauge, until voted
-  '0x3eE0bD06D004C25273339c5aD91e1443523DC2dF', // factory/194 gauge, until voted
 ].map(lc);
 
 const GAUGE_CONTROLLER_ADDRESS = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB';
