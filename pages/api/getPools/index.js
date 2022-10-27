@@ -23,7 +23,7 @@ import erc20AbiMKR from 'constants/abis/erc20_mkr.json';
 import { multiCall } from 'utils/Calls';
 import { ZERO_ADDRESS } from 'utils/Web3';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
-import { sequentialPromiseReduce, sequentialPromiseFlatMap } from 'utils/Async';
+import { sequentialPromiseReduce, sequentialPromiseFlatMap, sequentialPromiseMap } from 'utils/Async';
 import { getRegistry } from 'utils/getters';
 import getAssetsPrices from 'utils/data/assets-prices';
 import getYcTokenPrices from 'utils/data/getYcTokenPrices';
@@ -877,6 +877,46 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ].filter((o) => o !== null),
     };
 
+    const gaugeRewards = (
+      typeof gaugeRewardsInfo === 'undefined' ?
+        undefined :
+        await sequentialPromiseMap(gaugeRewardsInfo, async ({
+          tokenAddress,
+          apyData,
+          ...rewardInfo
+        }) => {
+          const gaugeTotalSupply = apyData.totalSupply;
+          const poolTotalSupply = poolInfo.totalSupply / 1e18;
+          const gaugeUsdTotal = gaugeTotalSupply / poolTotalSupply * usdTotal;
+          const tokenCoingeckoPrice = apyData.tokenPrice;
+
+          const [augmentedCoin] = await deriveMissingCoinPrices({
+            blockchainId,
+            registryId,
+            coins: [{ address: tokenAddress, usdPrice: null }],
+            poolInfo: { id: poolInfo.id }, // Passing a subset of poolInfo to avoid hitting other derivation methods for this very specific use-case
+            otherPools: (
+              wipMergedPoolData
+                .concat({ coins: augmentedCoins }) // Attach this pool's own augmented coins
+            ),
+            internalPoolPrices: internalPoolsPrices[poolInfo.id] || [],
+            mainRegistryLpTokensPricesMap,
+            otherRegistryTokensPricesMap,
+          });
+          const tokenPrice = augmentedCoin.usdPrice || tokenCoingeckoPrice;
+
+          return {
+            ...rewardInfo,
+            tokenPrice,
+            apy: (
+              apyData.isRewardStillActive ?
+                apyData.rate * 86400 * 365 * tokenPrice / gaugeUsdTotal * 100 :
+                0
+            ),
+          };
+        })
+    );
+
     const augmentedPool = {
       ...poolInfo,
       poolUrls: detailedPoolUrls,
@@ -889,27 +929,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       underlyingCoins,
       usdTotalExcludingBasePool,
       gaugeAddress,
-      gaugeRewards: (
-        typeof gaugeRewardsInfo === 'undefined' ?
-          undefined :
-          gaugeRewardsInfo.map(({
-            apyData,
-            ...rewardInfo
-          }) => {
-            const gaugeTotalSupply = apyData.totalSupply;
-            const poolTotalSupply = poolInfo.totalSupply / 1e18;
-            const gaugeUsdTotal = gaugeTotalSupply / poolTotalSupply * usdTotal;
-
-            return {
-              ...rewardInfo,
-              apy: (
-                apyData.isRewardStillActive ?
-                  apyData.rate * 86400 * 365 * apyData.tokenPrice / gaugeUsdTotal * 100 :
-                  0
-              ),
-            };
-          })
-      ),
+      gaugeRewards,
     };
 
     // When retrieving pool data for a registry that isn't 'main', mainRegistryLpTokensPricesMap
