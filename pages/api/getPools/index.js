@@ -894,7 +894,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
             blockchainId,
             registryId,
             coins: [{ address: tokenAddress, usdPrice: null }],
-            poolInfo,
+            poolInfo: { id: poolInfo.id }, // Passing a subset of poolInfo to avoid hitting other derivation methods for this very specific use-case
             otherPools: (
               wipMergedPoolData
                 .concat({ coins: augmentedCoins }) // Attach this pool's own augmented coins
