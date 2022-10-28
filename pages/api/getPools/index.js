@@ -907,6 +907,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
           return {
             ...rewardInfo,
+            tokenAddress,
             tokenPrice,
             apy: (
               apyData.isRewardStillActive ?
