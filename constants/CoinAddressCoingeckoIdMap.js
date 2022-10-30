@@ -159,6 +159,7 @@ export default {
     '0x471ece3750da237f93b8e339c536989b8978a438': 'celo',
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'celo',
     '0xef4229c8c3250C675F21BCefa42f58EfbfF6002a': 'usd-coin',
+    '0x37f750B7cC259A2f741AF45294f6a16572CF5cAd': 'usd-coin',
     '0x90Ca507a5D4458a4C6C6249d186b6dCb02a5BCCd': 'dai',
     '0x88eeC49252c8cbc039DCdB394c0c2BA2f1637EA0': 'tether',
   },
