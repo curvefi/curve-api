@@ -70,6 +70,7 @@ const map = {
     [lc('0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B')]: 'frax',
     [lc('0xecd5e75afb02efa118af914515d6521aabd189f1')]: 'tusd',
     [lc('0xfd5db7463a3ab53fd211b4af195c5bccc1a03890')]: 'eurt',
+    [lc('0xa1F8A6807c402E4A15ef4EBa36528A3FED24E577')]: 'frxeth',
   },
   arbitrum: {
     [lc('0x7f90122bf0700f9e7e1f688fe926940e8839f353')]: '2pool',
