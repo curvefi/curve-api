@@ -35,6 +35,7 @@ import allCoins from 'constants/coins';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
 import { getHardcodedPoolId } from 'constants/PoolAddressInternalIdMap';
 import { deriveMissingCoinPrices } from 'pages/api/getPools/_utils';
+import { lc } from 'utils/String';
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "uint256" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
@@ -44,6 +45,17 @@ const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"funct
 const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}, {"stateMutability":"view","type":"function","name":"lp_token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}];
 /* eslint-enable */
 /* eslint-disable object-curly-newline */
+
+// Lowercase token address <> symbol to use
+const CURVE_POOL_LP_SYMBOLS_OVERRIDES = new Map([
+  ['0x3175df0976dfa876431c2e9ee6bc45b65d3473cc', 'FRAXBP'],
+  ['0x075b1bb99792c9e1041ba13afef80c91a1e70fb3', 'sbtcCrv'],
+]);
+
+const overrideSymbol = (coin) => ({
+  ...coin,
+  symbol: (CURVE_POOL_LP_SYMBOLS_OVERRIDES.get(lc(coin.address)) || coin.symbol),
+});
 
 const getEthereumOnlyData = async ({ preventQueryingFactoData }) => {
   let gaugesData = {};
@@ -923,7 +935,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       poolUrls: detailedPoolUrls,
       implementation,
       assetTypeName,
-      coins: augmentedCoins,
+      coins: augmentedCoins.map(overrideSymbol),
       usdTotal,
       isMetaPool,
       underlyingDecimals: (isMetaPool ? poolInfo.underlyingDecimals : undefined),
