@@ -1,3 +1,6 @@
+// Step 2 is great, jus tneed working supply now and uncommenting the other pieces of data
+
+
 /* eslint-disable camelcase */
 
 /**
@@ -17,8 +20,10 @@ import { multiCall } from 'utils/Calls';
 import getAllCurvePoolsData from 'utils/data/curve-pools-data';
 import { arrayOfIncrements, flattenArray, arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseMap } from 'utils/Async';
+import { ZERO_ADDRESS } from 'utils/Web3';
 import GAUGE_CONTROLLER_ABI from '../../constants/abis/gauge_controller.json';
 import GAUGE_ABI from '../../constants/abis/example_gauge_2.json';
+import META_REGISTRY_ABI from '../../constants/abis/meta-registry.json';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{"stateMutability":"view","type":"function","name":"bridger","inputs":[],"outputs":[{"name":"","type":"address"}]}];
@@ -85,10 +90,20 @@ export default fn(async ({ blockchainId } = {}) => {
     ))
   );
 
+  const getPoolByAddress = (address, blockchainId) => (
+    allPools.find((pool) => (
+      pool.blockchainId === blockchainId &&
+      lc(pool.address) === lc(address)
+    ))
+  );
+
   const { rpcUrl, backuprpcUrl, chainId } = configs.ethereum;
   const web3 = new Web3(rpcUrl);
   const web3Data = { account: '', library: web3, chainId };
 
+  /**
+   * Step 1: Retrieve mainnet gauges that are in the gauge registry (dao vote has passed)
+   */
   const [mainGaugesCount] = await multiCall([{
     address: GAUGE_CONTROLLER_ADDRESS,
     abi: GAUGE_CONTROLLER_ABI,
@@ -148,14 +163,6 @@ export default fn(async ({ blockchainId } = {}) => {
       ...baseConfigData,
       methodName: 'lp_token',
       metaData: { gaugeAddress, type: 'lpTokenAddress' },
-    }, {
-      ...baseConfigData,
-      methodName: 'name',
-      metaData: { gaugeAddress, type: 'name' },
-    }, {
-      ...baseConfigData,
-      methodName: 'symbol',
-      metaData: { gaugeAddress, type: 'symbol' },
     }, {
       ...baseConfigData,
       methodName: 'working_supply',
@@ -250,6 +257,92 @@ export default fn(async ({ blockchainId } = {}) => {
     lpTokenPrice,
   }]));
 
+  /**
+   * Step 2: Retrieve mainnet gauges that aren't in the gauge registry (no dao vote yet),
+   * but have been deployed (they're in the metaregistry).
+   */
+  const META_REGISTRY_ADDRESS = '0xF98B45FA17DE75FB1aD0e7aFD971b0ca00e379fC';
+  const allGaugesEthereum = await multiCall(allPools.map(({ address }) => ({
+    address: META_REGISTRY_ADDRESS,
+    abi: META_REGISTRY_ABI,
+    methodName: 'get_gauge',
+    params: [address],
+    metaData: { poolAddress: address },
+    web3Data,
+  })));
+
+  const nonVotedGaugesEthereum = allGaugesEthereum.filter(({ data }) => (
+    data !== ZERO_ADDRESS &&
+    !gaugesData.some(({ address }) => lc(address) === lc(data))
+  ));
+
+  const nonVotedGaugesEthereumDataRaw = await multiCall(flattenArray(nonVotedGaugesEthereum.map(({
+    data: gaugeAddress,
+  }) => {
+    const baseConfigData = {
+      address: gaugeAddress,
+      abi: GAUGE_ABI,
+      web3Data,
+    };
+
+    return [{
+      ...baseConfigData,
+      methodName: 'lp_token',
+      metaData: { gaugeAddress, type: 'lpTokenAddress' },
+    }, {
+      ...baseConfigData,
+      methodName: 'working_supply',
+      metaData: { gaugeAddress, type: 'workingSupply' },
+    }, {
+      ...baseConfigData,
+      methodName: 'totalSupply',
+      metaData: { gaugeAddress, type: 'totalSupply' },
+    }, {
+      ...baseConfigData,
+      methodName: 'inflation_rate',
+      metaData: { gaugeAddress, type: 'inflationRate' },
+    }];
+  })));
+
+  const nonVotedGaugesEthereumData = arrayToHashmap(nonVotedGaugesEthereum.map(({
+    data: address,
+    metaData: { poolAddress },
+  }) => {
+    const pool = getPoolByAddress(poolAddress, 'ethereum');
+    const name = getPoolName(pool);
+    const shortName = getPoolShortName(pool);
+    const rawData = arrayToHashmap(nonVotedGaugesEthereumDataRaw.filter(({ metaData }) => lc(metaData.gaugeAddress) === lc(address)).map(({ data, metaData: { type } }) => [
+      type,
+      data,
+    ]));
+
+    return [name, {
+      swap: lc(poolAddress),
+      swap_token: lc(pool.lpTokenAddress || pool.address),
+      name,
+      shortName,
+      gauge: lc(address),
+      gauge_data: {
+        inflation_rate: rawData.inflationRate,
+        working_supply: rawData.workingSupply,
+      },
+      gauge_controller: {
+        gauge_relative_weight: '0',
+        get_gauge_weight: '0',
+        inflation_rate: rawData.inflationRate,
+      },
+      factory: true,
+      side_chain: false,
+      is_killed: false,
+      hasNoCrv: true,
+      type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
+      lpTokenPrice: (pool.usdTotal / (pool.totalSupply / 1e18)),
+    }];
+  }));
+
+  /**
+   * Step 3: Retrieve sidechain factory gauges
+   */
   const factoGauges = await sequentialPromiseMap(blockchainIds, (blockchainIdsChunk) => (
     Promise.all(blockchainIdsChunk.map((blockchainId) => (
       getFactoGauges.straightCall({ blockchainId }).then(({ gauges }) => (
@@ -262,6 +355,7 @@ export default fn(async ({ blockchainId } = {}) => {
   ), 8);
 
   const gauges = {
+    ...nonVotedGaugesEthereumData,
     ...mainGaugesEthereum,
     ...arrayToHashmap(flattenArray(factoGauges.map((blockchainFactoGauges) => (
       blockchainFactoGauges.map(({
