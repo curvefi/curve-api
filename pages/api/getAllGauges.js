@@ -372,6 +372,8 @@ export default fn(async ({ blockchainId } = {}) => {
         type,
         lpTokenPrice,
         hasCrv,
+        areCrvRewardsStuckInBridge,
+        rewardsNeedNudging,
       }) => {
         const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
         const name = getPoolName(pool);
@@ -398,6 +400,12 @@ export default fn(async ({ blockchainId } = {}) => {
             },
             hasNoCrv: !hasCrv,
             lpTokenPrice,
+            ...(blockchainId !== 'ethereum' ? {
+              gaugeStatus: {
+                areCrvRewardsStuckInBridge,
+                rewardsNeedNudging,
+              },
+            } : {}),
           },
         ];
       })
