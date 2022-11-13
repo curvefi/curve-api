@@ -400,8 +400,12 @@ export default fn(async ({ blockchainId } = {}) => {
             },
             hasNoCrv: !hasCrv,
             lpTokenPrice,
-            areCrvRewardsStuckInBridge,
-            rewardsNeedNudging,
+            ...(blockchainId !== 'ethereum' ? {
+              gaugeStatus: {
+                areCrvRewardsStuckInBridge,
+                rewardsNeedNudging,
+              },
+            } : {}),
           },
         ];
       })

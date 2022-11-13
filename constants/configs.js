@@ -3,8 +3,8 @@ import { CaseInsensitiveMap } from 'utils/Array';
 
 const configs = {
   ethereum: {
-    poolsBaseUrlOld: 'https://curve.fi/',
-    poolsBaseUrl: 'https://curve.exchange/#/ethereum/pools/',
+    poolsBaseUrlOld: 'https://classic.curve.fi/',
+    poolsBaseUrl: 'https://curve.fi/#/ethereum/pools/',
     nativeCurrencySymbol: 'ETH',
     chainId: 1,
     nativeCurrencyCoingeckoId: 'ethereum',
@@ -50,7 +50,7 @@ const configs = {
   },
   polygon: {
     poolsBaseUrlOld: 'https://polygon.curve.fi/',
-    poolsBaseUrl: 'https://curve.exchange/#/polygon/pools/',
+    poolsBaseUrl: 'https://curve.fi/#/polygon/pools/',
     shortId: 'poly',
     nativeCurrencySymbol: 'MATIC',
     chainId: 137,
@@ -105,7 +105,7 @@ const configs = {
   },
   fantom: {
     poolsBaseUrlOld: 'https://ftm.curve.fi/',
-    poolsBaseUrl: 'https://curve.exchange/#/fantom/pools/',
+    poolsBaseUrl: 'https://curve.fi/#/fantom/pools/',
     shortId: 'ftm',
     nativeCurrencySymbol: 'FTM',
     chainId: 250,
@@ -150,7 +150,7 @@ const configs = {
   },
   arbitrum: {
     poolsBaseUrlOld: 'https://arbitrum.curve.fi/',
-    poolsBaseUrl: 'https://curve.exchange/#/arbitrum/pools/',
+    poolsBaseUrl: 'https://curve.fi/#/arbitrum/pools/',
     shortId: 'arbi',
     nativeCurrencySymbol: 'ETH',
     chainId: 42161,
@@ -191,7 +191,7 @@ const configs = {
   },
   avalanche: {
     poolsBaseUrlOld: 'https://avax.curve.fi/',
-    poolsBaseUrl: 'https://curve.exchange/#/avalanche/pools/',
+    poolsBaseUrl: 'https://curve.fi/#/avalanche/pools/',
     shortId: 'ava',
     nativeCurrencySymbol: 'AVAX',
     chainId: 43114,
@@ -237,7 +237,7 @@ const configs = {
   },
   optimism: {
     poolsBaseUrlOld: 'https://optimism.curve.fi/',
-    poolsBaseUrl: 'https://curve.exchange/#/optimism/pools/',
+    poolsBaseUrl: 'https://curve.fi/#/optimism/pools/',
     shortId: 'op',
     nativeCurrencySymbol: 'ETH',
     chainId: 10,
@@ -276,7 +276,7 @@ const configs = {
   },
   xdai: {
     poolsBaseUrlOld: 'https://xdai.curve.fi/',
-    poolsBaseUrl: 'https://curve.exchange/#/gnosis/pools/',
+    poolsBaseUrl: 'https://curve.fi/#/gnosis/pools/',
     shortId: 'xdai',
     nativeCurrencySymbol: 'xDAI',
     chainId: 100,
