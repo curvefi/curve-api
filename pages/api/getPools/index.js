@@ -774,6 +774,10 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
     const isUsdMetaPool = implementation.startsWith('metausd') || implementation.startsWith('v1metausd');
     const isBtcMetaPool = implementation.startsWith('metabtc') || implementation.startsWith('v1metabtc');
+    const isNativeStablePool = (
+      (registryId === 'factory' || registryId === 'main') &&
+      poolInfo.coinsAddresses.some((address) => lc(address) === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+    );
 
     // We derive asset type (i.e. used as the reference asset on the FE) from pool implementation if possible,
     // and fall back to the assetType prop.
@@ -781,6 +785,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       (implementation === 'plain2eth' || implementation === 'plain3eth' || implementation === 'plain4eth') ? nativeCurrencySymbol.toLowerCase() :
       isBtcMetaPool ? 'btc' :
       isUsdMetaPool ? 'usd' :
+      isNativeStablePool ? nativeCurrencySymbol.toLowerCase() :
       (assetTypeMap.get(poolInfo.assetType) || 'unknown')
     );
 
