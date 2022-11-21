@@ -74,5 +74,5 @@ export default fn(async ({ blockchainId }) => {
 
   return { sideChainGaugesApys };
 }, {
-  maxAge: 60,
+  maxAge: 5 * 60,
 });

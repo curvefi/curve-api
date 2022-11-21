@@ -986,7 +986,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 };
 
 const getPoolsFn = fn(getPools, {
-  maxAge: 60,
+  maxAge: 5 * 60,
   name: 'getPools',
 });
 
