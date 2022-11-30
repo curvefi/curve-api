@@ -14,6 +14,14 @@ import getAllCurvePoolsData from 'utils/data/curve-pools-data';
 
 const lc = (str) => str.toLowerCase();
 
+// Pools for which volume data on the subgraph is incorrect, and needs
+// to be overriden with a manual calculation.
+const POOLS_WITH_INCORRECT_SUBGRAPH_USD_VOLUME = {
+  ethereum: [
+    '0x84997FAFC913f1613F51Bb0E2b5854222900514B',
+  ].map(lc),
+};
+
 export default fn(async ( {blockchainId} ) => {
 
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
@@ -92,9 +100,19 @@ export default fn(async ( {blockchainId} ) => {
           rollingRawVolume =  rollingRawVolume + hourlyVol
       }
 
-      if (rollingDaySummedVolume === 0 && rollingRawVolume > 0) {
+      const hasRawVolumeButNoUsdVolume = (rollingDaySummedVolume === 0 && rollingRawVolume > 0);
+      const needsFallbackUsdVolume = (
+        hasRawVolumeButNoUsdVolume ||
+        (POOLS_WITH_INCORRECT_SUBGRAPH_USD_VOLUME[blockchainId] || []).includes(poolAddress)
+      );
+
+      if (needsFallbackUsdVolume) {
         const poolData = getPoolByAddress(poolAddress);
-        const poolLpTokenPrice = poolData.usdTotal / (poolData.totalSupply / 1e18);
+        const poolLpTokenPrice = (
+          poolData.usdTotal > 100 ?
+            (poolData.usdTotal / (poolData.totalSupply / 1e18)) :
+            0
+        );
         const usdVolumeRectified = poolLpTokenPrice * rollingRawVolume;
 
         if (usdVolumeRectified > 0) {
