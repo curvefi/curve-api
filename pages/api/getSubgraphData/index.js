@@ -107,15 +107,16 @@ export default fn(async ( {blockchainId} ) => {
       );
 
       if (needsFallbackUsdVolume) {
+        const ILLIQUID_THRESHOLD = 100;
         const poolData = getPoolByAddress(poolAddress);
         const poolLpTokenPrice = (
-          poolData.usdTotal > 100 ?
+          poolData.usdTotal > ILLIQUID_THRESHOLD ?
             (poolData.usdTotal / (poolData.totalSupply / 1e18)) :
             0
         );
         const usdVolumeRectified = poolLpTokenPrice * rollingRawVolume;
 
-        if (usdVolumeRectified > 0) {
+        if (usdVolumeRectified > 0 || poolData.usdTotal <= ILLIQUID_THRESHOLD) {
           rollingDaySummedVolume = usdVolumeRectified;
 
           console.log(`Missing usd volume from subgraph: derived using lp token price from getPools endpoint for pool ${poolAddress} (derived rolling day usd volume: ${usdVolumeRectified})`);
