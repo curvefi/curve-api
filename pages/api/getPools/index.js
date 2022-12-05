@@ -819,12 +819,25 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       poolBalance / (10 ** decimals) * usdPrice
     )));
 
-    const gaugeAddress = typeof ethereumOnlyData !== 'undefined' ?
+    const gaugeData = typeof ethereumOnlyData !== 'undefined' ?
       ethereumOnlyData.gaugesDataArray.find(({ swap }) => (
         swap?.toLowerCase() === poolInfo.address.toLowerCase()
-      ))?.gauge?.toLowerCase() :
+      )) :
       undefined;
+    const gaugeAddress = typeof gaugeData !== 'undefined' ? gaugeData.gauge?.toLowerCase() : undefined;
     const gaugeRewardsInfo = gaugeAddress ? ethereumOnlyData.gaugeRewards[gaugeAddress] : undefined;
+
+    const totalSupply = poolInfo.totalSupply / 1e18;
+    const lpTokenPrice = totalSupply > 0 ? (usdTotal / totalSupply) : undefined;
+    const {
+      [allCoins.crv.coingeckoId]: crvPrice,
+    } = await getAssetsPrices([allCoins.crv.coingeckoId]);
+
+    const gaugeCrvBaseApy = (
+      (gaugeData && typeof lpTokenPrice !== 'undefined') ? (
+        (gaugeData.gauge_controller.inflation_rate / 1e18) * (gaugeData.gauge_controller.gauge_relative_weight / 1e18) * 31536000 / (gaugeData.gauge_data.working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
+      ) : undefined
+    );
 
     const metaPoolBasePoolLpToken = augmentedCoins.find(({ isBasePoolLpToken }) => isBasePoolLpToken);
     const isMetaPool = typeof metaPoolBasePoolLpToken !== 'undefined';
@@ -948,6 +961,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       usdTotalExcludingBasePool,
       gaugeAddress,
       gaugeRewards,
+      gaugeCrvApy: [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)],
     };
 
     // When retrieving pool data for a registry that isn't 'main', mainRegistryLpTokensPricesMap
