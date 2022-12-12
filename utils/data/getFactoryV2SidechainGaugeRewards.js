@@ -11,6 +11,7 @@ import configs from 'constants/configs';
 import ERC20_ABI from 'constants/abis/erc20.json';
 import SIDECHAIN_FACTO_GAUGE_ABI from 'constants/abis/sidechain-gauge.json';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
+import getGauges from 'pages/api/getAllGauges';
 
 export default memoize(async ({ blockchainId, gauges }) => {
   const config = configs[blockchainId];
@@ -23,9 +24,13 @@ export default memoize(async ({ blockchainId, gauges }) => {
     multicall2Address: config.multicall2Address,
   };
 
-  const sidechainOnlyFactoryGauges = gauges;
+  let sidechainOnlyFactoryGauges = gauges;
 
-  if (sidechainOnlyFactoryGauges.length === 0) return {};
+  if (typeof sidechainOnlyFactoryGauges === 'undefined') {
+    const factoGauges = await getGauges.straightCall({ blockchainId });
+
+    sidechainOnlyFactoryGauges = Array.from(Object.values(factoGauges)).filter(({ factory, side_chain }) => factory && side_chain);
+  }
 
   const gaugesData = await multiCall(flattenArray(sidechainOnlyFactoryGauges.map(({
     name,
@@ -147,6 +152,12 @@ export default memoize(async ({ blockchainId, gauges }) => {
       name: tokenName,
       symbol: tokenSymbol,
       decimals: tokenDecimals,
+      apyData: {
+        isRewardStillActive,
+        tokenPrice,
+        rate: effectiveRate / 1e18,
+        totalSupply,
+      },
       apy: (
         isRewardStillActive ?
           (effectiveRate) / 1e18 * 86400 * 365 * tokenPrice / totalSupply / lpTokenPrice * 100 :
@@ -163,5 +174,5 @@ export default memoize(async ({ blockchainId, gauges }) => {
 }, {
   promise: true,
   maxAge: 2 * 60 * 1000, // 2 min
-  normalizer: ([{ blockchainId, gauges }]) => `${blockchainId}-${gauges.length}`,
+  normalizer: ([{ blockchainId, gauges }]) => `${blockchainId}-${gauges?.length}`,
 });

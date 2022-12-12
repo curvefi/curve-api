@@ -57,20 +57,24 @@ const overrideSymbol = (coin) => ({
   symbol: (CURVE_POOL_LP_SYMBOLS_OVERRIDES.get(lc(coin.address)) || coin.symbol),
 });
 
-const getEthereumOnlyData = async ({ preventQueryingFactoData }) => {
+const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) => {
   let gaugesData = {};
   let gaugeRewards = {};
 
   if (!preventQueryingFactoData) {
-    const getFactoryV2GaugeRewards = (await import('utils/data/getFactoryV2GaugeRewards')).default;
+    const getFactoryV2GaugeRewards = (
+      blockchainId === 'ethereum' ?
+        (await import('utils/data/getFactoryV2GaugeRewards')).default :
+        (await import('utils/data/getFactoryV2SidechainGaugeRewards')).default
+    );
     const getGauges = (await import('pages/api/getAllGauges')).default;
 
     ([
       gaugesData,
       gaugeRewards,
     ] = await Promise.all([
-      getGauges.straightCall({ blockchainId: 'ethereum' }),
-      getFactoryV2GaugeRewards({ blockchainId: 'ethereum' }),
+      getGauges.straightCall({ blockchainId }),
+      getFactoryV2GaugeRewards({ blockchainId }),
     ]));
   }
 
@@ -234,9 +238,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     !DISABLED_POOLS_ADDRESSES.includes(unfilteredPoolAddresses[id]?.toLowerCase())
   ));
 
-  const ethereumOnlyData = blockchainId === 'ethereum' ?
-    await getEthereumOnlyData({ preventQueryingFactoData }) :
-    undefined;
+  const ethereumOnlyData = await getEthereumOnlyData({ preventQueryingFactoData, blockchainId });
 
   /**
    * We use pools from other registries as a fallback data source for the current registry.

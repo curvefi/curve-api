@@ -78,7 +78,8 @@ export default fn(async ({ blockchainId } = {}) => {
     ...chainsToQuery,
   ].filter((id) => (
     typeof blockchainId === 'undefined' ||
-    id === blockchainId
+    id === blockchainId ||
+    id === 'ethereum' // Always include ethereum
   ));
 
   const allPools = await getAllCurvePoolsData(blockchainIds);

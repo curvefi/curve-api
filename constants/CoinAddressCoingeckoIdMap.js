@@ -71,6 +71,7 @@ export default {
     '0x6ae7dfc73e0dde2aa99ac063dcf7e8a63265108c': 'jpyc', // JPYC
     '0x431d5dff03120afa4bdf332c61a6e1766ef37bdb': 'jpy-coin', // JPYC
     '0xeCDCB5B88F8e3C15f95c720C51c71c9E2080525d': 'binancecoin', // wBNB
+    '0xc3c7d422809852031b44ab29eec9f1eff2a58756': 'lido-dao',
   },
   arbitrum: {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'ethereum', // Native ETH
@@ -88,6 +89,7 @@ export default {
     '0x17fc002b466eec40dae837fc4be5c67993ddbd6f': 'frax',
     '0x115d8bf0a53e751f8a472f88d587944ec1c8ca6d': 'ptokens-btc',
     '0xae6aab43c4f3e0cea4ab83752c278f8debaba689': 'dforce-token',
+    '0x13ad51ed4f1b7e9dc168d8a00cb3f4ddd85efa60': 'lido-dao',
   },
   avalanche: {
     '0xd586e7f844cea2f87f50152665bcbc2c279d8d70': 'dai', // DAI
@@ -131,6 +133,7 @@ export default {
     '0x7f5c764cbc14f9669b88837ca1490cca17c31607': 'usd-coin',
     '0x625E7708f30cA75bfd92586e17077590C60eb4cD': 'usd-coin', // aOptUSDC
     '0x68f180fcce6836688e9084f035309e29bf0a2095': 'wrapped-bitcoin',
+    '0xfdb794692724153d1488ccdbe0c56c252596735f': 'lido-dao',
   },
   xdai: {
     '0x4ecaba5870353805a9f068101a40e0f32ed605c6': 'tether',
