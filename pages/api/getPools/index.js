@@ -835,9 +835,15 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       [allCoins.crv.coingeckoId]: crvPrice,
     } = await getAssetsPrices([allCoins.crv.coingeckoId]);
 
+    const relativeWeightRate = (
+      blockchainId === 'ethereum' ?
+        (gaugeData?.gauge_controller?.gauge_relative_weight / 1e18) :
+        1
+    );
+
     const gaugeCrvBaseApy = (
       (gaugeData && typeof lpTokenPrice !== 'undefined') ? (
-        (gaugeData.gauge_controller.inflation_rate / 1e18) * (gaugeData.gauge_controller.gauge_relative_weight / 1e18) * 31536000 / (gaugeData.gauge_data.working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
+        (gaugeData.gauge_controller.inflation_rate / 1e18) * relativeWeightRate * 31536000 / (gaugeData.gauge_data.working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
       ) : undefined
     );
 
