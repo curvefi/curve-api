@@ -165,5 +165,6 @@ export default {
     '0x37f750B7cC259A2f741AF45294f6a16572CF5cAd': 'usd-coin',
     '0x90Ca507a5D4458a4C6C6249d186b6dCb02a5BCCd': 'dai',
     '0x88eeC49252c8cbc039DCdB394c0c2BA2f1637EA0': 'tether',
+    '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049': 'ageur',
   },
 };
