@@ -17,8 +17,8 @@ export default memoize(async ({ factoryGaugesAddresses, blockchainId } = {}) => 
   if (typeof factoryGaugesAddresses === 'undefined') {
     const gauges = await getGauges.straightCall({ blockchainId });
 
-    const factoryGauges = Array.from(Object.values(gauges)).filter(({ factory, side_chain }) => factory && !side_chain);
-    factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge); // eslint-disable-line no-param-reassign
+    const factoryGauges = Array.from(Object.values(gauges)).filter(({ factory, side_chain }) => !side_chain);
+    factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge).filter((s) => s); // eslint-disable-line no-param-reassign
   }
 
   const gaugesData = await multiCall(flattenArray(factoryGaugesAddresses.map((address) => [{

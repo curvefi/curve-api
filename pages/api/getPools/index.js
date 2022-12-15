@@ -962,8 +962,16 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       underlyingCoins,
       usdTotalExcludingBasePool,
       gaugeAddress,
-      gaugeRewards,
-      gaugeCrvApy: [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)],
+      gaugeRewards: (
+        gaugeAddress ?
+          (gaugeRewards || []) :
+          undefined
+      ),
+      gaugeCrvApy: (
+        gaugeAddress ?
+          [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)] :
+          undefined
+      ),
     };
 
     // When retrieving pool data for a registry that isn't 'main', mainRegistryLpTokensPricesMap
