@@ -20,6 +20,9 @@ const POOLS_WITH_INCORRECT_SUBGRAPH_USD_VOLUME = {
   ethereum: [
     '0x84997FAFC913f1613F51Bb0E2b5854222900514B',
   ].map(lc),
+  polygon: [
+    '0x7c1aa4989df27970381196d3ef32a7410e3f2748',
+  ].map(lc),
 };
 
 export default fn(async ( {blockchainId} ) => {
