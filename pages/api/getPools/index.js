@@ -50,6 +50,7 @@ const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name
 const CURVE_POOL_LP_SYMBOLS_OVERRIDES = new Map([
   ['0x3175df0976dfa876431c2e9ee6bc45b65d3473cc', 'FRAXBP'],
   ['0x075b1bb99792c9e1041ba13afef80c91a1e70fb3', 'sbtcCrv'],
+  ['0x051d7e5609917bd9b73f04bac0ded8dd46a74301', 'sbtc2Crv'],
 ]);
 
 const overrideSymbol = (coin) => ({
