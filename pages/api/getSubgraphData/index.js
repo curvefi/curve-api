@@ -19,6 +19,7 @@ const lc = (str) => str.toLowerCase();
 const POOLS_WITH_INCORRECT_SUBGRAPH_USD_VOLUME = {
   ethereum: [
     '0x84997FAFC913f1613F51Bb0E2b5854222900514B',
+    '0x2863a328a0b7fc6040f11614fa0728587db8e353',
   ].map(lc),
   polygon: [
     '0x7c1aa4989df27970381196d3ef32a7410e3f2748',
