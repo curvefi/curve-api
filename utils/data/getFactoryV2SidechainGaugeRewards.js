@@ -11,6 +11,7 @@ import configs from 'constants/configs';
 import ERC20_ABI from 'constants/abis/erc20.json';
 import SIDECHAIN_FACTO_GAUGE_ABI from 'constants/abis/sidechain-gauge.json';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
+import COIN_ADDRESS_REPLACEMENT_MAP from 'constants/CoinAddressReplacementMap';
 import getGauges from 'pages/api/getAllGauges';
 
 export default memoize(async ({ blockchainId, gauges }) => {
@@ -67,9 +68,11 @@ export default memoize(async ({ blockchainId, gauges }) => {
     }))
   ))));
 
-  const coinAddressesAndPricesMap = await getTokensPrices(uniq(rewardTokens.map(({ data: rewardTokenAddress }) => (
+  const rewardTokenAddresses = rewardTokens.map(({ data: rewardTokenAddress }) => (
     rewardTokenAddress
-  ))), config.platformCoingeckoId);
+  ));
+
+  const coinAddressesAndPricesMap = await getTokensPrices(uniq(rewardTokenAddresses), config.platformCoingeckoId);
 
   const coinsFallbackPrices = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
@@ -139,9 +142,14 @@ export default memoize(async ({ blockchainId, gauges }) => {
     const tokenSymbol = tokenData.find(({ metaData }) => metaData.name === name && metaData.type === 'symbol').data;
     const tokenDecimals = tokenData.find(({ metaData }) => metaData.name === name && metaData.type === 'decimals').data;
 
+    const effectiveTokenRewardAddressForPrice = (
+      COIN_ADDRESS_REPLACEMENT_MAP[blockchainId]?.[rewardTokenAddress.toLowerCase()] ||
+      rewardTokenAddress.toLowerCase()
+    );
+
     const tokenPrice = (
-      coinAddressesAndPricesMap[rewardTokenAddress.toLowerCase()] ||
-      coinAddressesAndPricesMapFallback[rewardTokenAddress.toLowerCase()] ||
+      coinAddressesAndPricesMap[effectiveTokenRewardAddressForPrice] ||
+      coinAddressesAndPricesMapFallback[effectiveTokenRewardAddressForPrice] ||
       null
     );
 
