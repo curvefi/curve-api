@@ -152,6 +152,7 @@ export default {
   kava: {
     '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f': 'usd-coin',
     '0x765277EebeCA2e31912C9946eAe1021199B39C61': 'dai',
+    '0x5C7e299CF531eb66f2A1dF637d37AbB78e6200C7': 'dai', // axlDAI
     '0xB44a9B6905aF7c801311e8F4E76932ee959c663C': 'tether',
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'kava',
     '0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b': 'kava', // wKAVA
