@@ -82,6 +82,9 @@ const HIDDEN_POOLS_IDS = {
   moonbeam: [
     'factory-v2-5', // spam
   ],
+  kava: [
+    'factory-v2-1', // typo in name
+  ],
 };
 
 export default fn(async () => HIDDEN_POOLS_IDS);
