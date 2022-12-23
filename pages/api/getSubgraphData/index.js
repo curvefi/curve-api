@@ -129,10 +129,13 @@ export default fn(async ( {blockchainId} ) => {
         }
       }
 
-      if (blockchainId === 'ethereum' && (poolAddress === '0x141ace5fd4435fd341e396d579c91df99fed10d4' || poolAddress === '0x2863a328a0b7fc6040f11614fa0728587db8e353')) poolList[i].rawVolume = 0
-      else poolList[i].rawVolume = rollingRawVolume
-
-      poolList[i].volumeUSD = rollingDaySummedVolume
+      if (blockchainId === 'ethereum' && (poolAddress === '0x141ace5fd4435fd341e396d579c91df99fed10d4' || poolAddress === '0x2863a328a0b7fc6040f11614fa0728587db8e353')) {
+        poolList[i].rawVolume = 0
+        poolList[i].volumeUSD = 0
+      } else {
+        poolList[i].rawVolume = rollingRawVolume
+        poolList[i].volumeUSD = rollingDaySummedVolume
+      }
 
       totalVolume += parseFloat(rollingDaySummedVolume)
       cryptoVolume += (poolList[i].type.includes('crypto')) ? parseFloat(rollingDaySummedVolume) : 0
