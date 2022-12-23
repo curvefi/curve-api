@@ -726,7 +726,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       totalSupply,
     }) => {
       const SMALL_AMOUNT_UNIT = BN(1);
-      if (Number(totalSupply) < SMALL_AMOUNT_UNIT.times(1e18).times(10)) return []; // Ignore empty pools
+      if (Number(totalSupply) < SMALL_AMOUNT_UNIT.times(1e18)) return []; // Ignore empty pools
 
       const coinsAddresses = unfilteredCoinsAddresses.filter(isDefinedCoin);
       const poolContract = new web3.eth.Contract(POOL_ABI, address);
