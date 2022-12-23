@@ -129,7 +129,9 @@ export default fn(async ( {blockchainId} ) => {
         }
       }
 
-      poolList[i].rawVolume = rollingRawVolume
+      if (blockchainId === 'ethereum' && poolAddress === '0x141ace5fd4435fd341e396d579c91df99fed10d4') poolList[i].rawVolume = 0
+      else poolList[i].rawVolume = rollingRawVolume
+
       poolList[i].volumeUSD = rollingDaySummedVolume
 
       totalVolume += parseFloat(rollingDaySummedVolume)
