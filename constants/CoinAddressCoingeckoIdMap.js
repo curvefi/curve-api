@@ -45,6 +45,7 @@ export default {
     '0x9559aaa82d9649c7a7b220e7c461d2e74c9a3593': 'reth',
     '0xae78736cd615f374d3085123a210448e74fc6393': 'rocket-pool-eth',
     '0xdbdb4d16eda451d0503b854cf79d55697f90c8df': 'alchemix',
+    '0x0ec9f76202a7061eb9b3a7d6b59d36215a7e37da': 'blackpool-token',
   },
   polygon: {
     '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063': 'dai', // DAI
