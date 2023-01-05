@@ -12,7 +12,6 @@ import ERC20_ABI from 'constants/abis/erc20.json';
 import SIDECHAIN_FACTO_GAUGE_ABI from 'constants/abis/sidechain-gauge.json';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
 import COIN_ADDRESS_REPLACEMENT_MAP from 'constants/CoinAddressReplacementMap';
-import getGauges from 'pages/api/getAllGauges';
 
 export default memoize(async ({ blockchainId, gauges }) => {
   const config = configs[blockchainId];
@@ -28,9 +27,7 @@ export default memoize(async ({ blockchainId, gauges }) => {
   let sidechainOnlyFactoryGauges = gauges;
 
   if (typeof sidechainOnlyFactoryGauges === 'undefined') {
-    const factoGauges = await getGauges.straightCall({ blockchainId });
-
-    sidechainOnlyFactoryGauges = Array.from(Object.values(factoGauges)).filter(({ factory, side_chain }) => factory && side_chain);
+    throw new Error('sidechainOnlyFactoryGauges is undefined in getFactoryV2SidechainGaugeRewards()');
   }
 
   const gaugesData = await multiCall(flattenArray(sidechainOnlyFactoryGauges.map(({
