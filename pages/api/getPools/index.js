@@ -940,6 +940,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           apyData,
           ...rewardInfo
         }) => {
+          if (!apyData) console.log({
+            tokenAddress,
+            apyData,
+            ...rewardInfo
+          })
           const gaugeTotalSupply = apyData.totalSupply;
           const poolTotalSupply = poolInfo.totalSupply / 1e18;
           const gaugeUsdTotal = gaugeTotalSupply / poolTotalSupply * usdTotal;
