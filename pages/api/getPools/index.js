@@ -30,7 +30,7 @@ import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getTempleTokenPrices from 'utils/data/getTempleTokenPrices';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
 import getMainRegistryPoolsAndLpTokensFn from 'pages/api/getMainRegistryPoolsAndLpTokens';
-import Request from 'utils/Request';
+import getMainPoolsGaugeRewards from 'pages/api/getMainPoolsGaugeRewards';
 import configs from 'constants/configs';
 import allCoins from 'constants/coins';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
@@ -54,12 +54,6 @@ const CURVE_POOL_LP_SYMBOLS_OVERRIDES = new Map([
   ['0x075b1bb99792c9e1041ba13afef80c91a1e70fb3', 'sbtcCrv'],
   ['0x051d7e5609917bd9b73f04bac0ded8dd46a74301', 'sbtc2Crv'],
 ]);
-
-const getMainPoolsGaugeRewardsUrl = (
-  IS_DEV ?
-    'http://localhost:3000/api/getMainPoolsGaugeRewards' :
-    'https://api.curve.fi/api/getMainPoolsGaugeRewards'
-);
 
 const overrideSymbol = (coin) => ({
   ...coin,
@@ -90,7 +84,7 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
   const { poolList: mainRegistryPoolList } = await getMainRegistryPools.straightCall();
   const mainRegistryPoolGaugesRewards = (
     blockchainId === 'ethereum' ?
-      (await (await Request.get(getMainPoolsGaugeRewardsUrl)).json()).data.mainPoolsGaugeRewards :
+      (await getMainPoolsGaugeRewards.straightCall()).mainPoolsGaugeRewards :
       {}
   );
 
