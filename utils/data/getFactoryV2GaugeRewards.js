@@ -6,7 +6,6 @@ import { multiCall } from 'utils/Calls';
 import { flattenArray, uniq } from 'utils/Array';
 import { getNowTimestamp } from 'utils/Date';
 import getTokensPrices from 'utils/data/tokens-prices';
-import getGauges from 'pages/api/getAllGauges';
 import ERC20_ABI from 'constants/abis/erc20.json';
 
 // eslint-disable-next-line
@@ -15,10 +14,7 @@ const FACTORY_GAUGES_ABI = [{"stateMutability":"view","type":"function","name":"
 export default memoize(async ({ factoryGaugesAddresses, blockchainId } = {}) => {
   if (typeof blockchainId === 'undefined') blockchainId = undefined; // Default value
   if (typeof factoryGaugesAddresses === 'undefined') {
-    const gauges = await getGauges.straightCall({ blockchainId });
-
-    const factoryGauges = Array.from(Object.values(gauges)).filter(({ factory, side_chain }) => !side_chain);
-    factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge).filter((s) => s); // eslint-disable-line no-param-reassign
+    throw new Error('factoryGaugesAddresses is undefined in getFactoryV2GaugeRewards()')
   }
 
   const gaugesData = await multiCall(flattenArray(factoryGaugesAddresses.map((address) => [{

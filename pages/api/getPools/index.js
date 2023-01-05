@@ -1,4 +1,4 @@
-/* eslint-disable object-curly-newline */
+/* eslint-disable object-curly-newline, camelcase */
 
 /**
  * Fetches all sorts of pool information. Works for all pools, in all registries, on all chains.
@@ -37,7 +37,6 @@ import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
 import { getHardcodedPoolId } from 'constants/PoolAddressInternalIdMap';
 import { deriveMissingCoinPrices } from 'pages/api/getPools/_utils';
 import { lc } from 'utils/String';
-import { IS_DEV } from 'constants/AppConstants';
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "uint256" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
@@ -46,7 +45,7 @@ const POOL_PRICE_ORACLE_NO_ARGS_ABI = [{"stateMutability":"view","type":"functio
 const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[{"name":"k","type":"uint256"}],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}, {"stateMutability":"view","type":"function","name":"lp_token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}];
 /* eslint-enable */
-/* eslint-disable object-curly-newline */
+/* eslint-disable object-curly-newline, camelcase */
 
 // Lowercase token address <> symbol to use
 const CURVE_POOL_LP_SYMBOLS_OVERRIDES = new Map([
@@ -71,13 +70,15 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
         (await import('utils/data/getFactoryV2SidechainGaugeRewards')).default
     );
     const getGauges = (await import('pages/api/getAllGauges')).default;
+    gaugesData = await getGauges.straightCall({ blockchainId });
+
+    const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => !side_chain);
+    const factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge).filter((s) => s); // eslint-disable-line no-param-reassign
 
     ([
-      gaugesData,
       gaugeRewards,
     ] = await Promise.all([
-      getGauges.straightCall({ blockchainId }),
-      getFactoryV2GaugeRewards({ blockchainId }),
+      getFactoryV2GaugeRewards({ blockchainId, factoryGaugesAddresses }),
     ]));
   }
 
@@ -934,11 +935,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           apyData,
           ...rewardInfo
         }) => {
-          if (!apyData) console.log({
-            tokenAddress,
-            apyData,
-            ...rewardInfo
-          })
           const gaugeTotalSupply = apyData.totalSupply;
           const poolTotalSupply = poolInfo.totalSupply / 1e18;
           const gaugeUsdTotal = gaugeTotalSupply / poolTotalSupply * usdTotal;
