@@ -30,12 +30,14 @@ import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getTempleTokenPrices from 'utils/data/getTempleTokenPrices';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
 import getMainRegistryPoolsAndLpTokensFn from 'pages/api/getMainRegistryPoolsAndLpTokens';
+import Request from 'utils/Request';
 import configs from 'constants/configs';
 import allCoins from 'constants/coins';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
 import { getHardcodedPoolId } from 'constants/PoolAddressInternalIdMap';
 import { deriveMissingCoinPrices } from 'pages/api/getPools/_utils';
 import { lc } from 'utils/String';
+import { IS_DEV } from 'constants/AppConstants';
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [ { "name": "arg0", "type": "uint256" } ], "name": "balances", "outputs": [ { "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" }];
@@ -52,6 +54,12 @@ const CURVE_POOL_LP_SYMBOLS_OVERRIDES = new Map([
   ['0x075b1bb99792c9e1041ba13afef80c91a1e70fb3', 'sbtcCrv'],
   ['0x051d7e5609917bd9b73f04bac0ded8dd46a74301', 'sbtc2Crv'],
 ]);
+
+const getMainPoolsGaugeRewardsUrl = (
+  IS_DEV ?
+    'http://localhost:3000/api/getMainPoolsGaugeRewards' :
+    'https://api.curve.fi/api/getMainPoolsGaugeRewards'
+);
 
 const overrideSymbol = (coin) => ({
   ...coin,
@@ -80,6 +88,11 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
   }
 
   const { poolList: mainRegistryPoolList } = await getMainRegistryPools.straightCall();
+  const mainRegistryPoolGaugesRewards = (
+    blockchainId === 'ethereum' ?
+      (await (await Request.get(getMainPoolsGaugeRewardsUrl)).json()).data.mainPoolsGaugeRewards :
+      {}
+  );
 
   const gaugesDataArray = Array.from(Object.values(gaugesData));
   const factoryGaugesPoolAddressesAndCoingeckoIdMap = arrayToHashmap(
@@ -104,7 +117,10 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
   return {
     mainRegistryPoolList: mainRegistryPoolList.map((address) => address.toLowerCase()),
     gaugesDataArray,
-    gaugeRewards,
+    gaugeRewards: {
+      ...gaugeRewards,
+      ...mainRegistryPoolGaugesRewards,
+    },
     factoryGaugesPoolAddressesAndAssetPricesMap,
   };
 };
