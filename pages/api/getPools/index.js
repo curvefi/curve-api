@@ -85,7 +85,7 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
   const { poolList: mainRegistryPoolList } = await getMainRegistryPools.straightCall();
   const mainRegistryPoolGaugesRewards = (
     blockchainId === 'ethereum' ?
-      (await getMainPoolsGaugeRewards.straightCall()).mainPoolsGaugeRewards :
+      (await getMainPoolsGaugeRewards.straightCall(gaugesData)).mainPoolsGaugeRewards :
       {}
   );
 
