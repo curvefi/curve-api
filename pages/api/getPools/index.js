@@ -72,14 +72,16 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
     const getGauges = (await import('pages/api/getAllGauges')).default;
     gaugesData = await getGauges.straightCall({ blockchainId });
 
-    const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => !side_chain);
-    const factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge).filter((s) => s); // eslint-disable-line no-param-reassign
+    if (blockchainId === 'ethereum') {
+      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => !side_chain);
+      const factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge).filter((s) => s); // eslint-disable-line no-param-reassign
 
-    ([
-      gaugeRewards,
-    ] = await Promise.all([
-      getFactoryV2GaugeRewards({ blockchainId, factoryGaugesAddresses }),
-    ]));
+      gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, factoryGaugesAddresses });
+    } else {
+      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => side_chain);
+
+      gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, gauges: factoryGauges });
+    }
   }
 
   const { poolList: mainRegistryPoolList } = await getMainRegistryPools.straightCall();
