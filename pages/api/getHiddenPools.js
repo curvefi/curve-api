@@ -85,6 +85,9 @@ const HIDDEN_POOLS_IDS = {
   kava: [
     'factory-v2-1', // typo in name
   ],
+  xdai: [
+    'factory-v2-12',
+  ],
 };
 
 export default fn(async () => HIDDEN_POOLS_IDS);
