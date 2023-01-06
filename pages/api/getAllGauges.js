@@ -37,6 +37,9 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'avalanche',
   'optimism',
   'xdai',
+  'moonbeam',
+  'kava',
+  'celo',
 ];
 
 const lc = (str) => str.toLowerCase();
