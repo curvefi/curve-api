@@ -22,7 +22,7 @@ export default {
     '0xe6354ed5bc4b393a5aad09f21c46e101e692d447': 'tether', // yUSDT
     '0x04bc0ab673d88ae9dbc9da2380cb6b79c4bca9ae': 'binance-usd', // yBUSD
     '0x16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'dai', // yDAI
-'0xdb25f211ab05b1c97d595516f45794528a807ad8': 'tether-eurt', // EURS patch
+    '0xdb25f211ab05b1c97d595516f45794528a807ad8': 'tether-eurt', // EURS patch
     '0x8e870d67f660d95d5be530380d0ec0bd388289e1': 'paxos-standard', // USDP
     '0xd6ad7a6750a7593e092a9b218d66c0a814a3436e': 'usd-coin', // ycUSDC
     '0x83f798e925bcd4017eb265844fddabb448f1707d': 'tether', // ycUSDT
@@ -140,6 +140,8 @@ export default {
   xdai: {
     '0x4ecaba5870353805a9f068101a40e0f32ed605c6': 'tether',
     '0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb': 'gnosis',
+    '0x8e5bbbb09ed1ebde8674cda39a0c169401db4252': 'wrapped-bitcoin',
+    '0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1': 'ethereum',
   },
   aurora: {
     '0xe3520349F477A5F6EB06107066048508498A291b': 'dai',
