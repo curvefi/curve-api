@@ -47,7 +47,7 @@ const configs = {
       ['0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'.toLowerCase(), 'metacrypto-3pool'],
     ]),
     getFactoryCryptoRegistryAddress: async () => '0xF18056Bbd320E96A48e3Fbf8bC061322531aac99',
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet-test',
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
   },
   polygon: {
