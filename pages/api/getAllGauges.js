@@ -59,6 +59,10 @@ const LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY = [
   '0x25530f3c929d3f4137a766de3d37700d2fc00ff8',
 ].map(lc);
 
+const NON_STANDARD_OUTDATED_GAUGES = [
+  '0x4969e38b8d37fc42a1897295Ea6d7D0b55944497',
+].map(lc);
+
 const GAUGE_CONTROLLER_ADDRESS = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB';
 
 const getPoolName = (pool) => {
@@ -359,57 +363,61 @@ export default fn(async ({ blockchainId } = {}) => {
     ...nonVotedGaugesEthereumData,
     ...mainGaugesEthereum,
     ...arrayToHashmap(flattenArray(factoGauges.map((blockchainFactoGauges) => (
-      blockchainFactoGauges.map(({
-        blockchainId,
-        gauge,
-        gauge_data: {
-          gauge_relative_weight,
-          get_gauge_weight,
-          inflation_rate,
-          working_supply,
-        },
-        swap,
-        swap_token,
-        type,
-        lpTokenPrice,
-        hasCrv,
-        areCrvRewardsStuckInBridge,
-        rewardsNeedNudging,
-      }) => {
-        const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
-        const name = getPoolName(pool);
-        const shortName = getPoolShortName(pool);
-
-        return [
-          name, {
-            swap: lc(swap),
-            swap_token: lc(swap_token),
-            name,
-            shortName,
-            gauge: lc(gauge),
-            type,
-            side_chain: true,
-            factory: true,
-            gauge_data: {
-              inflation_rate,
-              working_supply,
-            },
-            gauge_controller: {
-              gauge_relative_weight,
-              get_gauge_weight,
-              inflation_rate,
-            },
-            hasNoCrv: !hasCrv,
-            lpTokenPrice,
-            ...(blockchainId !== 'ethereum' ? {
-              gaugeStatus: {
-                areCrvRewardsStuckInBridge,
-                rewardsNeedNudging,
-              },
-            } : {}),
+      blockchainFactoGauges
+        .filter(({ gauge, blockchainId }) => (
+          NON_STANDARD_OUTDATED_GAUGES.includes(`${blockchainId}-${lc(gauge)}`)
+        ))
+        .map(({
+          blockchainId,
+          gauge,
+          gauge_data: {
+            gauge_relative_weight,
+            get_gauge_weight,
+            inflation_rate,
+            working_supply,
           },
-        ];
-      })
+          swap,
+          swap_token,
+          type,
+          lpTokenPrice,
+          hasCrv,
+          areCrvRewardsStuckInBridge,
+          rewardsNeedNudging,
+        }) => {
+          const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
+          const name = getPoolName(pool);
+          const shortName = getPoolShortName(pool);
+
+          return [
+            name, {
+              swap: lc(swap),
+              swap_token: lc(swap_token),
+              name,
+              shortName,
+              gauge: lc(gauge),
+              type,
+              side_chain: true,
+              factory: true,
+              gauge_data: {
+                inflation_rate,
+                working_supply,
+              },
+              gauge_controller: {
+                gauge_relative_weight,
+                get_gauge_weight,
+                inflation_rate,
+              },
+              hasNoCrv: !hasCrv,
+              lpTokenPrice,
+              ...(blockchainId !== 'ethereum' ? {
+                gaugeStatus: {
+                  areCrvRewardsStuckInBridge,
+                  rewardsNeedNudging,
+                },
+              } : {}),
+            },
+          ];
+        })
     )))),
   };
 
