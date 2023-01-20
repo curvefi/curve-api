@@ -365,7 +365,7 @@ export default fn(async ({ blockchainId } = {}) => {
     ...arrayToHashmap(flattenArray(factoGauges.map((blockchainFactoGauges) => (
       blockchainFactoGauges
         .filter(({ gauge, blockchainId }) => (
-          NON_STANDARD_OUTDATED_GAUGES.includes(`${blockchainId}-${lc(gauge)}`)
+          !NON_STANDARD_OUTDATED_GAUGES.includes(`${blockchainId}-${lc(gauge)}`)
         ))
         .map(({
           blockchainId,
