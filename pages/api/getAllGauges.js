@@ -306,6 +306,10 @@ export default fn(async ({ blockchainId } = {}) => {
       ...baseConfigData,
       methodName: 'inflation_rate',
       metaData: { gaugeAddress, type: 'inflationRate' },
+    }, {
+      ...baseConfigData,
+      methodName: 'is_killed',
+      metaData: { gaugeAddress, type: 'isKilled' },
     }];
   })));
 
@@ -338,7 +342,7 @@ export default fn(async ({ blockchainId } = {}) => {
       },
       factory: true,
       side_chain: false,
-      is_killed: false,
+      is_killed: rawData.isKilled,
       hasNoCrv: true,
       type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
       lpTokenPrice: (pool.usdTotal / (pool.totalSupply / 1e18)),
