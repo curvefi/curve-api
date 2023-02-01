@@ -149,6 +149,7 @@ export default {
   moonbeam: {
     '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9': 'usd-coin', // madUSDC
     '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b': 'usd-coin', // mUSDC
+    '0xffffffffea09fb06d082fd1275cd48b191cbcd1d': 'tether', // xcUSDT
     '0x9fda7ceec4c18008096c2fe2b85f05dc300f94d0': 'lido-dao',
     '0xffffffff1fcacbd218edc0eba20fc2308c778080': 'polkadot',
     '0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108': 'polkadot',
