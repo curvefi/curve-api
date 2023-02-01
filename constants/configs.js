@@ -372,6 +372,7 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-moonbeam',
   },
   kava: {
     poolsBaseUrlOld: 'https://kava.curve.fi/',
