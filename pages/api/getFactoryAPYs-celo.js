@@ -44,6 +44,7 @@ export default fn(async (query) => {
       try {
       vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
       } catch (e) {
+        console.error(`Couldn't fetch get_virtual_price for block ${latest - DAY_BLOCKS}: ${e.toString()}`);
       vPriceOldFetch = 1 * (10 ** 18)
       }
       const testPool = pool.address
@@ -111,6 +112,13 @@ export default fn(async (query) => {
       let apy = (vPriceNew - vPrice) / vPrice * 100 * 365
       let apyFormatted = `${apy.toFixed(2)}%`
       totalVolume += correctedVolume
+
+      if (index === 1) console.log({
+        vPrice,
+        vPriceNew,
+        apy,
+      })
+
       let p = {
       index,
       'poolAddress' : pool.address,
