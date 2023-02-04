@@ -8,6 +8,11 @@ import getAssetsPrices from 'utils/data/assets-prices';
 import getFactoGauges from 'pages/api/getFactoGauges';
 import getPools from 'pages/api/getPools';
 import configs from 'constants/configs';
+import { lc } from 'utils/String';
+
+const NON_STANDARD_OUTDATED_GAUGES = [
+  'celo-0x4969e38b8d37fc42a1897295Ea6d7D0b55944497',
+].map(lc);
 
 export default fn(async ({ blockchainId }) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
@@ -29,10 +34,12 @@ export default fn(async ({ blockchainId }) => {
     side_chain: isSideChain,
     name,
     is_killed: isKilled,
+    gauge,
   }) => (
     isSideChain &&
     // name.startsWith(`${blockchainId}-`) &&
-    !isKilled
+    !isKilled &&
+    !NON_STANDARD_OUTDATED_GAUGES.includes(`${blockchainId}-${lc(gauge)}`)
   ));
 
   if (sideChainGauges.length === 0) {
