@@ -36,9 +36,12 @@ export default fn(async () => {
 		let week = 604800;
 		let virtual_price = await tri_pool.methods.get_virtual_price().call()
 		virtual_price = virtual_price / 1e18
+		
+		const startTime = await distributor.methods.start_time().call();
+		const weeksElapsed = Math.ceil((currentTs - startTime) / (60 * 60 * 24 * 7));
 
 		let weeklyFeesTable = []
-		for (var i = 0; i < 100; i++) {
+		for (var i = 0; i < weeksElapsed; i++) {
 			let thisWeekFees = await distributor.methods.tokens_per_week(t).call();
 			//console.log('Checking fees for timestamp', t, thisWeekFees);
 			if (thisWeekFees > 0 || i < 10) {
