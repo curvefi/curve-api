@@ -1,4 +1,4 @@
-/* eslint-disable object-curly-newline */
+/* eslint-disable object-curly-newline, camelcase */
 
 /**
  * Fetches all sorts of pool information. Works for all pools, in all registries, on all chains.
@@ -30,6 +30,7 @@ import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getTempleTokenPrices from 'utils/data/getTempleTokenPrices';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
 import getMainRegistryPoolsAndLpTokensFn from 'pages/api/getMainRegistryPoolsAndLpTokens';
+import getMainPoolsGaugeRewards from 'pages/api/getMainPoolsGaugeRewards';
 import configs from 'constants/configs';
 import allCoins from 'constants/coins';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
@@ -44,12 +45,13 @@ const POOL_PRICE_ORACLE_NO_ARGS_ABI = [{"stateMutability":"view","type":"functio
 const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[{"name":"k","type":"uint256"}],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}, {"stateMutability":"view","type":"function","name":"lp_token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}];
 /* eslint-enable */
-/* eslint-disable object-curly-newline */
+/* eslint-disable object-curly-newline, camelcase */
 
 // Lowercase token address <> symbol to use
 const CURVE_POOL_LP_SYMBOLS_OVERRIDES = new Map([
   ['0x3175df0976dfa876431c2e9ee6bc45b65d3473cc', 'FRAXBP'],
   ['0x075b1bb99792c9e1041ba13afef80c91a1e70fb3', 'sbtcCrv'],
+  ['0x051d7e5609917bd9b73f04bac0ded8dd46a74301', 'sbtc2Crv'],
 ]);
 
 const overrideSymbol = (coin) => ({
@@ -57,24 +59,37 @@ const overrideSymbol = (coin) => ({
   symbol: (CURVE_POOL_LP_SYMBOLS_OVERRIDES.get(lc(coin.address)) || coin.symbol),
 });
 
-const getEthereumOnlyData = async ({ preventQueryingFactoData }) => {
+const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) => {
   let gaugesData = {};
   let gaugeRewards = {};
 
   if (!preventQueryingFactoData) {
-    const getFactoryV2GaugeRewards = (await import('utils/data/getFactoryV2GaugeRewards')).default;
+    const getFactoryV2GaugeRewards = (
+      blockchainId === 'ethereum' ?
+        (await import('utils/data/getFactoryV2GaugeRewards')).default :
+        (await import('utils/data/getFactoryV2SidechainGaugeRewards')).default
+    );
     const getGauges = (await import('pages/api/getAllGauges')).default;
+    gaugesData = await getGauges.straightCall({ blockchainId });
 
-    ([
-      gaugesData,
-      gaugeRewards,
-    ] = await Promise.all([
-      getGauges.straightCall({ blockchainId: 'ethereum' }),
-      getFactoryV2GaugeRewards({ blockchainId: 'ethereum' }),
-    ]));
+    if (blockchainId === 'ethereum') {
+      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => !side_chain);
+      const factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge).filter((s) => s); // eslint-disable-line no-param-reassign
+
+      gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, factoryGaugesAddresses });
+    } else {
+      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => side_chain);
+
+      gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, gauges: factoryGauges });
+    }
   }
 
   const { poolList: mainRegistryPoolList } = await getMainRegistryPools.straightCall();
+  const mainRegistryPoolGaugesRewards = (
+    blockchainId === 'ethereum' ?
+      (await getMainPoolsGaugeRewards.straightCall(gaugesData)).mainPoolsGaugeRewards :
+      {}
+  );
 
   const gaugesDataArray = Array.from(Object.values(gaugesData));
   const factoryGaugesPoolAddressesAndCoingeckoIdMap = arrayToHashmap(
@@ -99,7 +114,10 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData }) => {
   return {
     mainRegistryPoolList: mainRegistryPoolList.map((address) => address.toLowerCase()),
     gaugesDataArray,
-    gaugeRewards,
+    gaugeRewards: {
+      ...gaugeRewards,
+      ...mainRegistryPoolGaugesRewards,
+    },
     factoryGaugesPoolAddressesAndAssetPricesMap,
   };
 };
@@ -234,9 +252,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     !DISABLED_POOLS_ADDRESSES.includes(unfilteredPoolAddresses[id]?.toLowerCase())
   ));
 
-  const ethereumOnlyData = blockchainId === 'ethereum' ?
-    await getEthereumOnlyData({ preventQueryingFactoData }) :
-    undefined;
+  const ethereumOnlyData = await getEthereumOnlyData({ preventQueryingFactoData, blockchainId });
 
   /**
    * We use pools from other registries as a fallback data source for the current registry.
@@ -723,7 +739,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       totalSupply,
     }) => {
       const SMALL_AMOUNT_UNIT = BN(1);
-      if (Number(totalSupply) < SMALL_AMOUNT_UNIT.times(1e18).times(10)) return []; // Ignore empty pools
+      if (Number(totalSupply) < SMALL_AMOUNT_UNIT.times(1e18)) return []; // Ignore empty pools
 
       const coinsAddresses = unfilteredCoinsAddresses.filter(isDefinedCoin);
       const poolContract = new web3.eth.Contract(POOL_ABI, address);
@@ -833,9 +849,15 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       [allCoins.crv.coingeckoId]: crvPrice,
     } = await getAssetsPrices([allCoins.crv.coingeckoId]);
 
+    const relativeWeightRate = (
+      blockchainId === 'ethereum' ?
+        (gaugeData?.gauge_controller?.gauge_relative_weight / 1e18) :
+        1
+    );
+
     const gaugeCrvBaseApy = (
       (gaugeData && typeof lpTokenPrice !== 'undefined') ? (
-        (gaugeData.gauge_controller.inflation_rate / 1e18) * (gaugeData.gauge_controller.gauge_relative_weight / 1e18) * 31536000 / (gaugeData.gauge_data.working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
+        (gaugeData.gauge_controller.inflation_rate / 1e18) * relativeWeightRate * 31536000 / (gaugeData.gauge_data.working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
       ) : undefined
     );
 
@@ -960,8 +982,16 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       underlyingCoins,
       usdTotalExcludingBasePool,
       gaugeAddress,
-      gaugeRewards,
-      gaugeCrvApy: [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)],
+      gaugeRewards: (
+        gaugeAddress ?
+          (gaugeRewards || []) :
+          undefined
+      ),
+      gaugeCrvApy: (
+        gaugeAddress ?
+          [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)] :
+          undefined
+      ),
     };
 
     // When retrieving pool data for a registry that isn't 'main', mainRegistryLpTokensPricesMap

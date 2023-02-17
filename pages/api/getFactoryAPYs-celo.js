@@ -41,9 +41,12 @@ export default fn(async (query) => {
       let poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
 
       let vPriceOldFetch;
+      let vPriceOldFetchFailed = false;
       try {
       vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
       } catch (e) {
+        console.error(`Couldn't fetch get_virtual_price for block ${latest - DAY_BLOCKS}: ${e.toString()}`);
+        vPriceOldFetchFailed = true;
       vPriceOldFetch = 1 * (10 ** 18)
       }
       const testPool = pool.address
@@ -106,11 +109,18 @@ export default fn(async (query) => {
       vPriceFetch = 1 * (10 ** 18)
       }
 
-      let vPrice = vPriceOldFetch
+      let vPrice = vPriceOldFetchFailed ? vPriceFetch : vPriceOldFetch
       let vPriceNew = vPriceFetch
       let apy = (vPriceNew - vPrice) / vPrice * 100 * 365
       let apyFormatted = `${apy.toFixed(2)}%`
       totalVolume += correctedVolume
+
+      if (index === 1) console.log({
+        vPrice,
+        vPriceNew,
+        apy,
+      })
+
       let p = {
       index,
       'poolAddress' : pool.address,

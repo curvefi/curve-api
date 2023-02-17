@@ -19,6 +19,12 @@ const lc = (str) => str.toLowerCase();
 const POOLS_WITH_INCORRECT_SUBGRAPH_USD_VOLUME = {
   ethereum: [
     '0x84997FAFC913f1613F51Bb0E2b5854222900514B',
+    '0x2863a328a0b7fc6040f11614fa0728587db8e353',
+  ].map(lc),
+  polygon: [
+    '0x7c1aa4989df27970381196d3ef32a7410e3f2748',
+    '0xB05475d2A99ec4f7fa9ff1Ffb0e65894d2A639f3',
+    '0x8914B29F7Bea602A183E89D6843EcB251D56D07e',
   ].map(lc),
 };
 
@@ -123,8 +129,13 @@ export default fn(async ( {blockchainId} ) => {
         }
       }
 
-      poolList[i].rawVolume = rollingRawVolume
-      poolList[i].volumeUSD = rollingDaySummedVolume
+      if (blockchainId === 'ethereum' && (poolAddress === '0x141ace5fd4435fd341e396d579c91df99fed10d4' || poolAddress === '0x2863a328a0b7fc6040f11614fa0728587db8e353')) {
+        poolList[i].rawVolume = 0
+        poolList[i].volumeUSD = 0
+      } else {
+        poolList[i].rawVolume = rollingRawVolume
+        poolList[i].volumeUSD = rollingDaySummedVolume
+      }
 
       totalVolume += parseFloat(rollingDaySummedVolume)
       cryptoVolume += (poolList[i].type.includes('crypto')) ? parseFloat(rollingDaySummedVolume) : 0

@@ -22,6 +22,7 @@ export default {
     '0xe6354ed5bc4b393a5aad09f21c46e101e692d447': 'tether', // yUSDT
     '0x04bc0ab673d88ae9dbc9da2380cb6b79c4bca9ae': 'binance-usd', // yBUSD
     '0x16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'dai', // yDAI
+    '0xdb25f211ab05b1c97d595516f45794528a807ad8': 'tether-eurt', // EURS patch
     '0x8e870d67f660d95d5be530380d0ec0bd388289e1': 'paxos-standard', // USDP
     '0xd6ad7a6750a7593e092a9b218d66c0a814a3436e': 'usd-coin', // ycUSDC
     '0x83f798e925bcd4017eb265844fddabb448f1707d': 'tether', // ycUSDT
@@ -30,7 +31,6 @@ export default {
     '0xBcca60bB61934080951369a648Fb03DF4F96263C': 'aave-usdc', // aUSDC
     '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811': 'aave-usdt', // aUSDT
     '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643': 'cdai', // cDAI
-    '0xdb25f211ab05b1c97d595516f45794528a807ad8': 'stasis-eurs', // EURS
     '0x514910771AF9Ca656af840dff83E8264EcF986CA': 'chainlink', // LINK
     '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0': 'matic-network', // MATIC
     '0x6bea7cfef803d1e3d5f7c0103f7ded065644e197': 'gamma-strategies', // GAMMA
@@ -41,9 +41,11 @@ export default {
     '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2': 'sushi', // SUSHI
     '0x31429d1856aD1377A8A0079410B297e1a9e214c2': 'angle-protocol', // ANGLE
     '0xed35af169af46a02ee13b9d79eb57d6d68c1749e': 'ecomi', // OMI
+    '0x4104b135dbc9609fc1a9490e61369036497660c8': 'apwine',
     '0x9559aaa82d9649c7a7b220e7c461d2e74c9a3593': 'reth',
     '0xae78736cd615f374d3085123a210448e74fc6393': 'rocket-pool-eth',
     '0xdbdb4d16eda451d0503b854cf79d55697f90c8df': 'alchemix',
+    '0x0ec9f76202a7061eb9b3a7d6b59d36215a7e37da': 'blackpool-token',
   },
   polygon: {
     '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063': 'dai', // DAI
@@ -71,6 +73,7 @@ export default {
     '0x6ae7dfc73e0dde2aa99ac063dcf7e8a63265108c': 'jpyc', // JPYC
     '0x431d5dff03120afa4bdf332c61a6e1766ef37bdb': 'jpy-coin', // JPYC
     '0xeCDCB5B88F8e3C15f95c720C51c71c9E2080525d': 'binancecoin', // wBNB
+    '0xc3c7d422809852031b44ab29eec9f1eff2a58756': 'lido-dao',
   },
   arbitrum: {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'ethereum', // Native ETH
@@ -88,6 +91,7 @@ export default {
     '0x17fc002b466eec40dae837fc4be5c67993ddbd6f': 'frax',
     '0x115d8bf0a53e751f8a472f88d587944ec1c8ca6d': 'ptokens-btc',
     '0xae6aab43c4f3e0cea4ab83752c278f8debaba689': 'dforce-token',
+    '0x13ad51ed4f1b7e9dc168d8a00cb3f4ddd85efa60': 'lido-dao',
   },
   avalanche: {
     '0xd586e7f844cea2f87f50152665bcbc2c279d8d70': 'dai', // DAI
@@ -131,10 +135,13 @@ export default {
     '0x7f5c764cbc14f9669b88837ca1490cca17c31607': 'usd-coin',
     '0x625E7708f30cA75bfd92586e17077590C60eb4cD': 'usd-coin', // aOptUSDC
     '0x68f180fcce6836688e9084f035309e29bf0a2095': 'wrapped-bitcoin',
+    '0xfdb794692724153d1488ccdbe0c56c252596735f': 'lido-dao',
   },
   xdai: {
     '0x4ecaba5870353805a9f068101a40e0f32ed605c6': 'tether',
     '0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb': 'gnosis',
+    '0x8e5bbbb09ed1ebde8674cda39a0c169401db4252': 'wrapped-bitcoin',
+    '0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1': 'ethereum',
   },
   aurora: {
     '0xe3520349F477A5F6EB06107066048508498A291b': 'dai',
@@ -142,6 +149,7 @@ export default {
   moonbeam: {
     '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9': 'usd-coin', // madUSDC
     '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b': 'usd-coin', // mUSDC
+    '0xffffffffea09fb06d082fd1275cd48b191cbcd1d': 'tether', // xcUSDT
     '0x9fda7ceec4c18008096c2fe2b85f05dc300f94d0': 'lido-dao',
     '0xffffffff1fcacbd218edc0eba20fc2308c778080': 'polkadot',
     '0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108': 'polkadot',
@@ -149,6 +157,7 @@ export default {
   kava: {
     '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f': 'usd-coin',
     '0x765277EebeCA2e31912C9946eAe1021199B39C61': 'dai',
+    '0x5C7e299CF531eb66f2A1dF637d37AbB78e6200C7': 'dai', // axlDAI
     '0xB44a9B6905aF7c801311e8F4E76932ee959c663C': 'tether',
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'kava',
     '0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b': 'kava', // wKAVA
@@ -162,5 +171,6 @@ export default {
     '0x37f750B7cC259A2f741AF45294f6a16572CF5cAd': 'usd-coin',
     '0x90Ca507a5D4458a4C6C6249d186b6dCb02a5BCCd': 'dai',
     '0x88eeC49252c8cbc039DCdB394c0c2BA2f1637EA0': 'tether',
+    '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049': 'ageur',
   },
 };

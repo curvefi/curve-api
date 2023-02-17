@@ -10,12 +10,15 @@ import pools from 'constants/pools';
 import { fn } from '../../utils/api';
 
 export default fn(async ({ address }) => {
+  const getGauges = (await import('pages/api/getAllGauges')).default;
+  const gaugesData = await getGauges.straightCall({ blockchainId: 'ethereum' });
+
   const [
     mainPoolsGaugeRewards,
     { weeklyApy: baseApys },
     { CRVAPYs: crvApys, boosts, CRVprice: crvPrice },
   ] = await Promise.all([
-    getMainPoolsGaugeRewards.straightCall(),
+    getMainPoolsGaugeRewards.straightCall(gaugesData),
     getAPY(),
     getCRVAPY(address || '0x0000000000000000000000000000000000000000'),
   ]);

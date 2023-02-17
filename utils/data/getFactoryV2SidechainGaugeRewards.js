@@ -11,6 +11,7 @@ import configs from 'constants/configs';
 import ERC20_ABI from 'constants/abis/erc20.json';
 import SIDECHAIN_FACTO_GAUGE_ABI from 'constants/abis/sidechain-gauge.json';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
+import COIN_ADDRESS_REPLACEMENT_MAP from 'constants/CoinAddressReplacementMap';
 
 export default memoize(async ({ blockchainId, gauges }) => {
   const config = configs[blockchainId];
@@ -23,9 +24,11 @@ export default memoize(async ({ blockchainId, gauges }) => {
     multicall2Address: config.multicall2Address,
   };
 
-  const sidechainOnlyFactoryGauges = gauges;
+  let sidechainOnlyFactoryGauges = gauges;
 
-  if (sidechainOnlyFactoryGauges.length === 0) return {};
+  if (typeof sidechainOnlyFactoryGauges === 'undefined') {
+    throw new Error('sidechainOnlyFactoryGauges is undefined in getFactoryV2SidechainGaugeRewards()');
+  }
 
   const gaugesData = await multiCall(flattenArray(sidechainOnlyFactoryGauges.map(({
     name,
@@ -62,9 +65,11 @@ export default memoize(async ({ blockchainId, gauges }) => {
     }))
   ))));
 
-  const coinAddressesAndPricesMap = await getTokensPrices(uniq(rewardTokens.map(({ data: rewardTokenAddress }) => (
+  const rewardTokenAddresses = rewardTokens.map(({ data: rewardTokenAddress }) => (
     rewardTokenAddress
-  ))), config.platformCoingeckoId);
+  ));
+
+  const coinAddressesAndPricesMap = await getTokensPrices(uniq(rewardTokenAddresses), config.platformCoingeckoId);
 
   const coinsFallbackPrices = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
@@ -134,9 +139,14 @@ export default memoize(async ({ blockchainId, gauges }) => {
     const tokenSymbol = tokenData.find(({ metaData }) => metaData.name === name && metaData.type === 'symbol').data;
     const tokenDecimals = tokenData.find(({ metaData }) => metaData.name === name && metaData.type === 'decimals').data;
 
+    const effectiveTokenRewardAddressForPrice = (
+      COIN_ADDRESS_REPLACEMENT_MAP[blockchainId]?.[rewardTokenAddress.toLowerCase()] ||
+      rewardTokenAddress.toLowerCase()
+    );
+
     const tokenPrice = (
-      coinAddressesAndPricesMap[rewardTokenAddress.toLowerCase()] ||
-      coinAddressesAndPricesMapFallback[rewardTokenAddress.toLowerCase()] ||
+      coinAddressesAndPricesMap[effectiveTokenRewardAddressForPrice] ||
+      coinAddressesAndPricesMapFallback[effectiveTokenRewardAddressForPrice] ||
       null
     );
 
@@ -147,6 +157,12 @@ export default memoize(async ({ blockchainId, gauges }) => {
       name: tokenName,
       symbol: tokenSymbol,
       decimals: tokenDecimals,
+      apyData: {
+        isRewardStillActive,
+        tokenPrice,
+        rate: effectiveRate / 1e18,
+        totalSupply,
+      },
       apy: (
         isRewardStillActive ?
           (effectiveRate) / 1e18 * 86400 * 365 * tokenPrice / totalSupply / lpTokenPrice * 100 :
@@ -163,5 +179,5 @@ export default memoize(async ({ blockchainId, gauges }) => {
 }, {
   promise: true,
   maxAge: 2 * 60 * 1000, // 2 min
-  normalizer: ([{ blockchainId, gauges }]) => `${blockchainId}-${gauges.length}`,
+  normalizer: ([{ blockchainId, gauges }]) => `${blockchainId}-${gauges?.length}`,
 });

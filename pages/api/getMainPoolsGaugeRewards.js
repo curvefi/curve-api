@@ -9,9 +9,8 @@ import { multiCall } from 'utils/Calls';
 import { flattenArray, uniq } from 'utils/Array';
 import { ZERO_ADDRESS } from 'utils/Web3/web3';
 import getTokensPrices from 'utils/data/tokens-prices';
-import getAssetsPrices from 'utils/data/assets-prices';
+import Request from 'utils/Request';
 import getFactoryV2GaugeRewards from 'utils/data/getFactoryV2GaugeRewards';
-import getGauges from 'pages/api/getAllGauges';
 import ERC20_ABI from 'constants/abis/erc20.json';
 import getAavePoolRewardsInfo from 'utils/data/getAavePoolRewardsInfo';
 import RewardContractV1ABI from 'utils/data/abis/json/reward-contracts/v1.json';
@@ -63,8 +62,11 @@ const FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES_REF_ASSET_PRICE = {
 // eslint-disable-next-line
 const GAUGES_PARTIAL_ABI = [{"name":"reward_contract","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2051},{"name":"totalSupply","outputs":[{"type":"uint256","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":1691},{"stateMutability":"view","type":"function","name":"reward_tokens","inputs":[{"name":"arg0","type":"uint256"}],"outputs":[{"name":"","type":"address"}],"gas":3787},{"name":"rewarded_token","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2201}];
 
-export default fn(async () => {
-  let gauges = await getGauges.straightCall();
+export default fn(async (gauges) => {
+  if (typeof gauges === 'undefined') {
+    throw new Error('gauges is undefined in getMainPoolsGaugeRewards()');
+  }
+  // const gauges = (await (await Request.get('https://api.curve.fi/api/getAllGauges')).json()).data;
 
   //empty gauges cause reverts
   const remove = [
@@ -313,6 +315,12 @@ export default fn(async () => {
           (rate * 86400 * 365 * tokenPrice / (totalSupply * referenceAssetPrice) * 100) :
           0
       ),
+      apyData: {
+        isRewardStillActive,
+        tokenPrice,
+        rate,
+        totalSupply,
+      },
     };
   });
 
@@ -323,6 +331,7 @@ export default fn(async () => {
       ...rewardInfo
     }) => ({
       ...rewardInfo,
+      apyData,
       apy: (
         apyData.isRewardStillActive ?
           apyData.rate * 86400 * 365 * apyData.tokenPrice / (apyData.totalSupply * FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES_REF_ASSET_PRICE[rewardInfo.gaugeAddress]) * 100 :

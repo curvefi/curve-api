@@ -35,6 +35,8 @@ const configs = {
       ['0xc4C78b08fA0c3d0a312605634461A88184Ecd630'.toLowerCase(), 'metabtcbalances'],
       ['0xECAaecd9d2193900b424774133B1f51ae0F29d9E'.toLowerCase(), 'metabtc-ren'],
       ['0x40fd58d44cfe63e8517c9bb3ac98676838ea56a8'.toLowerCase(), 'metabtcbalances-ren'],
+      ['0x008CFa89df5B0c780cA3462fc2602D7F8c7Ac315'.toLowerCase(), 'metabtc-sbtc2'],
+      ['0xAbc533EbCDdeD41215C46ee078C5818B5b0A252F'.toLowerCase(), 'metabtcbalances-sbtc2'],
       ['0x33bB0e62d5e8C688E645Dd46DFb48Cd613250067'.toLowerCase(), 'metausd-fraxusdc'],
       ['0x2EB24483Ef551dA247ab87Cf18e1Cc980073032D'.toLowerCase(), 'metausdbalances-fraxusdc'],
       ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
@@ -45,7 +47,7 @@ const configs = {
       ['0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'.toLowerCase(), 'metacrypto-3pool'],
     ]),
     getFactoryCryptoRegistryAddress: async () => '0xF18056Bbd320E96A48e3Fbf8bC061322531aac99',
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet-test',
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
   },
   polygon: {
@@ -283,7 +285,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'xdai',
     platformCoingeckoId: 'xdai',
     nativeAssetErc20WrapperId: 'wxdai', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://rpc.gnosischain.com/curve',
+    rpcUrl: 'https://rpc.gnosis.gateway.fm',
     multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
     multicall2Address: '0xFAa296891cA6CECAF2D86eF5F7590316d0A17dA0',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
@@ -370,6 +372,7 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-moonbeam',
   },
   kava: {
     poolsBaseUrlOld: 'https://kava.curve.fi/',
