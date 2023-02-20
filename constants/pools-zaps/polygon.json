@@ -1,0 +1,18 @@
+{
+    "implementations": {
+        "v1metausd": "0x5ab5c56b9db92ba45a0b46a207286cd83c15c939",
+        "metausd": "0x5ab5c56b9db92ba45a0b46a207286cd83c15c939",
+        "metausdbalances": "0x5ab5c56b9db92ba45a0b46a207286cd83c15c939",
+        "v1metabtc": "0xe2e6dc1708337a6e59f227921db08f21e3394723",
+        "metabtc": "0xe2e6dc1708337a6e59f227921db08f21e3394723",
+        "metabtcbalances": "0xe2e6dc1708337a6e59f227921db08f21e3394723",
+        "metacrypto": "0x3d8eadb739d1ef95dd53d718e4810721837c69c1"
+    },
+    "pools": {
+        "0x751b1e21756bdbc307cbcc5085c042a0e9aaef36": "0x3fcd5de6a9fc8a99995c406c77dda3ed7e406f81",
+        "0x92577943c7ac4accb35288ab2cc84d75fec330af": "0x3fa8ebd5d16445b42e0b6a54678718c94ea99abc",
+        "0x92215849c439e1f8612b6646060b4e3e5ef822cc": "0x1d8b86e3d88cdb2d34688e87e72f388cb541b7c8",
+        "0xb446bf7b8d6d4276d0c75ec0e3ee8dd7fe15783a": "0x225fb4176f0e20cdb66b4a3df70ca3063281e855",
+        "0x9b3d675fdbe6a0935e8b7d1941bc6f78253549b7": "0x4df7ef55e99a56851187822d96b4e17d98a47ded"
+    }
+}

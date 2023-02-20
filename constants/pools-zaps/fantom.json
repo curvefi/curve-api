@@ -1,0 +1,15 @@
+{
+    "implementations": {
+        "v1metausd": "0x78d51eb71a62c081550efcc0a9f9ea94b2ef081c",
+        "metausd": "0x78d51eb71a62c081550efcc0a9f9ea94b2ef081c",
+        "metausdbalances": "0x78d51eb71a62c081550efcc0a9f9ea94b2ef081c",
+        "metausd-geist": "0x247aeb220e87f24c40c9f86b65d6bd5d3c987b55",
+        "metausdbalances-geist": "0x247aeb220e87f24c40c9f86b65d6bd5d3c987b55",
+        "v1metabtc": "0x001e3ba199b4ff4b5b6e97acd96dafc0e2e4156e",
+        "metabtc": "0x001e3ba199b4ff4b5b6e97acd96dafc0e2e4156e",
+        "metabtcbalances": "0x001e3ba199b4ff4b5b6e97acd96dafc0e2e4156e"
+    },
+    "pools": {
+        "0x92d5ebf3593a92888c25c0abef126583d4b5312e": "0xa42bd395f183726d1a8774cfa795771f8acfd777"
+    }
+}
