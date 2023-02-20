@@ -33,6 +33,7 @@ import getMainRegistryPoolsAndLpTokensFn from 'pages/api/getMainRegistryPoolsAnd
 import getMainPoolsGaugeRewards from 'pages/api/getMainPoolsGaugeRewards';
 import configs from 'constants/configs';
 import allCoins from 'constants/coins';
+import POOLS_ZAPS from 'constants/pools-zaps';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
 import { getHardcodedPoolId } from 'constants/PoolAddressInternalIdMap';
 import { deriveMissingCoinPrices } from 'pages/api/getPools/_utils';
@@ -974,6 +975,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ...poolInfo,
       poolUrls: detailedPoolUrls,
       implementation,
+      zapAddress: (
+        POOLS_ZAPS?.[blockchainId]?.pools?.[lc(poolInfo.addresss)] ||
+        POOLS_ZAPS?.[blockchainId]?.implementations?.[implementation] ||
+        undefined
+      ),
       assetTypeName,
       coins: augmentedCoins.map(overrideSymbol),
       usdTotal,

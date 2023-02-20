@@ -1,0 +1,16 @@
+{
+    "implementations": {
+        "v1metausd": "0x7544fe3d184b6b55d6b36c3fca1157ee0ba30287",
+        "metausd": "0x7544fe3d184b6b55d6b36c3fca1157ee0ba30287",
+        "metausdbalances": "0x7544fe3d184b6b55d6b36c3fca1157ee0ba30287",
+        "metausd-factory-v2-41": "0x58ac91f5be7dc0c35b24b96b19bac55fbb8e705e",
+        "metausdbalances-factory-v2-41": "0x58ac91f5be7dc0c35b24b96b19bac55fbb8e705e",
+        "v1metabtc": "0x803a2b40c5a9bb2b86dd630b274fa2a9202874c2",
+        "metabtc": "0x803a2b40c5a9bb2b86dd630b274fa2a9202874c2",
+        "metabtcbalances": "0x803a2b40c5a9bb2b86dd630b274fa2a9202874c2"
+    },
+    "pools": {
+        "0x960ea3e3c7fb317332d990873d354e18d7645590": "0xf97c707024ef0dd3e77a0824555a46b622bfb500",
+        "0xa827a652ead76c6b0b3d19dba05452e06e25c27e": "0x25e2e8d104bc1a70492e2be32da7c1f8367f9d2c"
+    }
+}
