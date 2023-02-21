@@ -377,6 +377,7 @@ const configs = {
   kava: {
     poolsBaseUrlOld: 'https://kava.curve.fi/',
     poolsBaseUrl: null,
+    shortId: 'kava',
     nativeCurrencySymbol: 'KAVA',
     chainId: 2222,
     nativeCurrencyCoingeckoId: 'kava',
@@ -408,6 +409,7 @@ const configs = {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: 'https://celo.curve.fi/',
     poolsBaseUrl: null,
+    shortId: 'celo',
     nativeCurrencySymbol: 'CELO',
     chainId: 42220,
     nativeCurrencyCoingeckoId: 'celo',
