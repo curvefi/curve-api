@@ -1,5 +1,6 @@
 import WEB3_CONSTANTS from 'constants/Web3';
 import { CaseInsensitiveMap } from 'utils/Array';
+import { ZERO_ADDRESS } from 'utils/Web3';
 
 const configs = {
   ethereum: {
@@ -317,14 +318,16 @@ const configs = {
     nativeCurrencySymbol: 'AURORA',
     chainId: 1313161555,
     nativeCurrencyCoingeckoId: 'aurora-near',
-    platformCoingeckoId: 'haurora',
+    platformCoingeckoId: 'aurora',
     nativeAssetErc20WrapperId: 'aurora-near', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://mainnet.aurora.dev',
     multicallAddress: '0xace58a26b8Db90498eF0330fDC9C2655db0C45E2',
     multicall2Address: '0xace58a26b8Db90498eF0330fDC9C2655db0C45E2',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 72000, // https://aurorascan.dev/chart/blocks
-    getCryptoRegistryAddress: async () => '',
+    getFactoryRegistryAddress: async () => ZERO_ADDRESS,
+    getCryptoRegistryAddress: async () => ZERO_ADDRESS,
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-aurora',
   },
   harmony: {
     poolsBaseUrlOld: 'https://harmony.curve.fi/',
@@ -436,6 +439,7 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 17280, // https://celoscan.io/chart/blocks
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-celo',
   },
 };
 export default configs;
