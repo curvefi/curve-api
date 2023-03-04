@@ -79,6 +79,7 @@ const map = {
     [lc('0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb')]: 'ren',
     [lc('0xA827a652Ead76c6B0b3D19dba05452E06e25c27e')]: 'eursusd',
     [lc('0x6eB2dc694eB516B16Dc9FBc678C60052BbdD7d80')]: 'wsteth',
+    [lc('0xc9b8a3fdecb9d5b218d02555a8baf332e5b740d5')]: 'factory-v2-41',
   },
   aurora: {
     [lc('0xbF7E49483881C76487b0989CD7d9A8239B20CA41')]: '3pool',
@@ -107,6 +108,7 @@ const map = {
   optimism: {
     [lc('0x1337BedC9D22ecbe766dF105c9623922A27963EC')]: '3pool',
     [lc('0xB90B9B1F91a01Ea22A182CD84C1E22222e39B415')]: 'wsteth',
+    [lc('0x29a3d66b30bc4ad674a4fdaf27578b64f6afbfe7')]: 'factory-v2-16',
   },
   polygon: {
     [lc('0x445FE580eF8d70FF569aB36e80c647af338db351')]: 'aave',

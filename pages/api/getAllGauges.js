@@ -237,6 +237,7 @@ export default fn(async ({ blockchainId } = {}) => {
     type,
     lpTokenPrice,
   }) => [name, {
+    poolUrls: getPoolByLpTokenAddress(lpTokenAddress, 'ethereum').poolUrls,
     swap: lc(poolAddress),
     swap_token: lc(lpTokenAddress),
     name,
@@ -326,6 +327,7 @@ export default fn(async ({ blockchainId } = {}) => {
     ]));
 
     return [name, {
+      poolUrls: getPoolByLpTokenAddress((pool.lpTokenAddress || pool.address), 'ethereum').poolUrls,
       swap: lc(poolAddress),
       swap_token: lc(pool.lpTokenAddress || pool.address),
       name,
@@ -394,6 +396,7 @@ export default fn(async ({ blockchainId } = {}) => {
 
           return [
             name, {
+              poolUrls: pool.poolUrls,
               swap: lc(swap),
               swap_token: lc(swap_token),
               name,
