@@ -42,7 +42,6 @@ export default fn(async ( {blockchainId} ) => {
 
 
   const GRAPH_ENDPOINT = config.graphEndpoint;
-  const GRAPH_ENDPOINT_FALLBACK = config.fallbackGraphEndpoint;
   const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
   const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
 
@@ -88,15 +87,6 @@ export default fn(async ( {blockchainId} ) => {
       let data = await res.json()
       let rollingDaySummedVolume = 0
       let rollingRawVolume = 0
-
-      if (GRAPH_ENDPOINT_FALLBACK && data.data.swapVolumeSnapshots.length === 0) {
-        const res = await fetch(GRAPH_ENDPOINT_FALLBACK, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: POOL_QUERY })
-        })
-        data = await res.json()
-      }
 
       for (let i = 0; i < data.data.swapVolumeSnapshots.length; i ++) {
           const hourlyVolUSD = parseFloat(data.data.swapVolumeSnapshots[i].volumeUSD)
@@ -182,17 +172,6 @@ export default fn(async ( {blockchainId} ) => {
 
        let dataAPY = await resAPY.json();
        dataAPY = dataAPY.data;
-
-       if (GRAPH_ENDPOINT_FALLBACK && dataAPY.dailyPoolSnapshots.length === 0) {
-         const resAPY = await fetch(GRAPH_ENDPOINT_FALLBACK, {
-           method: "POST",
-           headers: { "Content-Type": "application/json" },
-           body: JSON.stringify({ query: APY_QUERY_OLD }),
-         });
-
-         dataAPY = await resAPY.json();
-         dataAPY = dataAPY.data;
-       }
 
        const snapshots = dataAPY.dailyPoolSnapshots.map((a) => ({
          baseApr: +a.baseApr,
