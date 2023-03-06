@@ -104,7 +104,7 @@ const configs = {
       '0x64FFf0e27c223097c824f9d9278eFD5B55c3430e', // Broken pool
     ].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-matic-test',
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-matic',
   },
   fantom: {
     poolsBaseUrlOld: 'https://ftm.curve.fi/',
@@ -149,7 +149,7 @@ const configs = {
     ]),
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 95000, // https://ftmscan.com/chart/blocks
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom-test'
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom'
   },
   arbitrum: {
     poolsBaseUrlOld: 'https://arbitrum.curve.fi/',
@@ -190,7 +190,7 @@ const configs = {
       ['0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb', '0xC2b1DF84112619D190193E48148000e3990Bf627'], // meta btc
     ]),
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum-test',
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum',
   },
   avalanche: {
     poolsBaseUrlOld: 'https://avax.curve.fi/',
@@ -235,7 +235,7 @@ const configs = {
       ['0xB755B949C126C04e0348DD881a5cF55d424742B2', '0x7f90122BF0700F9E7e1F688fe926940E8839F353'], // atricrypto<>aave
     ]),
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche-test',
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche',
     approxBlocksPerDay: 43000,
   },
   optimism: {
@@ -275,7 +275,7 @@ const configs = {
     // ])
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism-test',
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism',
   },
   xdai: {
     poolsBaseUrlOld: 'https://xdai.curve.fi/',
@@ -309,7 +309,7 @@ const configs = {
       ['0x4A5bF7Ab9A8202692051c19B102d3eDD62aaBAE6'.toLowerCase(), 'metausd'],
       ['0x0B4dc7A945695D11FD83e40B2DfC2B896A02395F'.toLowerCase(), 'metausdbalances'],
     ]),
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-xdai-test',
+    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-xdai',
   },
   aurora: {
     poolsBaseUrlOld: 'https://aurora.curve.fi/',
