@@ -29,7 +29,6 @@ const POOLS_WITH_INCORRECT_SUBGRAPH_USD_VOLUME = {
 };
 
 export default fn(async ( {blockchainId} ) => {
-
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
 
   const config = configs[blockchainId];
@@ -39,11 +38,11 @@ export default fn(async ( {blockchainId} ) => {
     throw new Error(`No factory data for blockchainId "${blockchainId}"`);
   }
 
-
-
   const GRAPH_ENDPOINT = config.graphEndpoint;
   const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
   const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
+
+  let subgraphHasErrors = false;
 
   const allPools = await getAllCurvePoolsData([blockchainId]);
   const getPoolByAddress = (address) => (
@@ -88,12 +87,15 @@ export default fn(async ( {blockchainId} ) => {
       let rollingDaySummedVolume = 0
       let rollingRawVolume = 0
 
-      for (let i = 0; i < data.data.swapVolumeSnapshots.length; i ++) {
-          const hourlyVolUSD = parseFloat(data.data.swapVolumeSnapshots[i].volumeUSD)
-          rollingDaySummedVolume =  rollingDaySummedVolume + hourlyVolUSD
+      subgraphHasErrors = data.errors?.length > 0;
+      if (!subgraphHasErrors) {
+        for (let i = 0; i < data.data.swapVolumeSnapshots.length; i ++) {
+            const hourlyVolUSD = parseFloat(data.data.swapVolumeSnapshots[i].volumeUSD)
+            rollingDaySummedVolume =  rollingDaySummedVolume + hourlyVolUSD
 
-          const hourlyVol = parseFloat(data.data.swapVolumeSnapshots[i].volume)
-          rollingRawVolume =  rollingRawVolume + hourlyVol
+            const hourlyVol = parseFloat(data.data.swapVolumeSnapshots[i].volume)
+            rollingRawVolume =  rollingRawVolume + hourlyVol
+        }
       }
 
       const hasRawVolumeButNoUsdVolume = (rollingDaySummedVolume === 0 && rollingRawVolume > 0);
@@ -148,22 +150,6 @@ export default fn(async ( {blockchainId} ) => {
      }
      `;
 
-      // Without xcp fields
-      const APY_QUERY_OLD = `
-     {
-       dailyPoolSnapshots(first: 7,
-                        orderBy: timestamp,
-                        orderDirection: desc,
-                        where:
-                        {pool: "${poolList[i].address.toLowerCase()}"})
-       {
-         baseApr
-         virtualPrice
-         timestamp
-       }
-     }
-     `;
-
        const resAPY = await fetch(GRAPH_ENDPOINT, {
          method: "POST",
          headers: { "Content-Type": "application/json" },
@@ -171,15 +157,14 @@ export default fn(async ( {blockchainId} ) => {
        });
 
        let dataAPY = await resAPY.json();
-       dataAPY = dataAPY.data;
 
-       const snapshots = dataAPY.dailyPoolSnapshots.map((a) => ({
+       const snapshots = dataAPY?.data?.dailyPoolSnapshots?.map((a) => ({
          baseApr: +a.baseApr,
          virtualPrice: +a.virtualPrice,
          xcpProfit: a.xcpProfit ? +a.xcpProfit : undefined,
          xcpProfitA: a.xcpProfitA ? +a.xcpProfitA : undefined,
          timestamp: a.timestamp,
-       }));
+       })) || [];
 
        let latestDailyApy = 0
        let latestWeeklyApy = 0
@@ -243,7 +228,7 @@ export default fn(async ( {blockchainId} ) => {
 
   const cryptoShare = (cryptoVolume / totalVolume) * 100
 
-  return { poolList, totalVolume, cryptoVolume, cryptoShare }
+  return { poolList, totalVolume, cryptoVolume, cryptoShare, subgraphHasErrors }
 }, {
   maxAge: 5 * 60, // 15 min
 });
