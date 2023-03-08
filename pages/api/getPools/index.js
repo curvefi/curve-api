@@ -980,6 +980,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         POOLS_ZAPS?.[blockchainId]?.implementations?.[implementation] ||
         undefined
       ),
+      lpTokenAddress: (poolInfo.lpTokenAddress || poolInfo.address),
       assetTypeName,
       coins: augmentedCoins.map(overrideSymbol),
       usdTotal,
