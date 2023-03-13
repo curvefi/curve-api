@@ -22,6 +22,8 @@ const configs = {
       ['0x24D937143d3F5cF04c72bA112735151A8CAE2262'.toLowerCase(), 'plain2balances'],
       ['0x6326DEbBAa15bCFE603d831e7D75f4fc10d9B43E'.toLowerCase(), 'plain2eth'],
       ['0x4A4d7868390EF5CaC51cDA262888f34bD3025C3F'.toLowerCase(), 'plain2optimized'],
+      ['0xc629a01eC23AB04E1050500A3717A2a5c0701497'.toLowerCase(), 'plain2basicema'],
+      ['0x94b4DFd9Ba5865Cc931195c99A2db42F3fc5d45B'.toLowerCase(), 'plain2ethema'],
       ['0x9B52F13DF69D79Ec5aAB6D1aCe3157d29B409cC3'.toLowerCase(), 'plain3basic'],
       ['0x50b085f2e5958C4A87baf93A8AB79F6bec068494'.toLowerCase(), 'plain3balances'],
       ['0x8c1aB78601c259E1B43F19816923609dC7d7de9B'.toLowerCase(), 'plain3eth'],
