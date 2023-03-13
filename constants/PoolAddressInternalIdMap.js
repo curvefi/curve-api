@@ -49,7 +49,7 @@ const map = {
     [lc('0x618788357D0EBd8A37e763ADab3bc575D54c2C7d')]: 'rai',
     [lc('0xA2B47E3D5c44877cca798226B7B8118F9BFb7A56')]: 'compound',
     [lc('0xA96A65c051bF88B4095Ee1f2451C2A9d43F53Ae2')]: 'ankreth',
-    [lc('0xA5407eAE9Ba41422680e2e00537571bcC53efBfD')]: 'susdv2',
+    [lc('0xA5407eAE9Ba41422680e2e00537571bcC53efBfD')]: 'susd',
     [lc('0xAdCFcf9894335dC340f6Cd182aFA45999F45Fc44')]: 'xautusd',
     [lc('0xB576491F1E6e5E62f1d8F26062Ee822B40B0E0d4')]: 'cvxeth',
     [lc('0xC18cC39da8b11dA8c3541C598eE022258F9744da')]: 'rsv',
