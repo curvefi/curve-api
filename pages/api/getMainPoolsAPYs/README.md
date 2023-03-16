@@ -1,0 +1,1 @@
+**Important note:** this endpoint is only for chains that do NOT have a subgraph (lack of `graphEndpoint` prop in `configs.js`), this endpoint is a legitimate (yet non-optimal) way of retrieving apys for their main registry pools
