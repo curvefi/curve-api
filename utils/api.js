@@ -34,6 +34,7 @@ const fn = (cb, options = {}) => {
   const {
     maxAge: maxAgeSec = null, // Caching duration, in seconds
     name = null, // Name, used for logging purposes
+    returnFlatData = false,
   } = options;
 
   const callback = maxAgeSec !== null ?
@@ -48,11 +49,15 @@ const fn = (cb, options = {}) => {
     Promise.resolve(callback(req.query))
       .then((data) => {
         if (maxAgeSec !== null) res.setHeader('Cache-Control', `max-age=0, s-maxage=${maxAgeSec}, stale-while-revalidate`);
-        res.status(200).json(formatJsonSuccess(data));
+        res.status(200).json(
+          returnFlatData ?
+            data :
+            formatJsonSuccess(data)
+        );
       })
       .catch((err) => {
         if (IS_DEV) {
-          console.log('ERROR', err);
+          console.log('ERROR that would be caught and served with success=false on prod', err);
           throw err;
         } else {
           res.status(500).json(formatJsonError(err));
