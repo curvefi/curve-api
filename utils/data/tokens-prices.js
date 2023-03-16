@@ -16,16 +16,17 @@ const getTokensPrices = memoize(async (addresses, platform = 'ethereum') => {
   // eslint-disable-next-line no-param-reassign
   if (attachRkp3rPrice) addresses = addresses.concat(KP3R_ADDRESS_ON_ETHEREUM);
 
+  // https://defillama.com/docs/api
   const pricesChunks = await sequentialPromiseMap(addresses, (addressesChunk) => (
-    backOff(() => Request.get(`https://api.coingecko.com/api/v3/simple/token_price/${platform}?contract_addresses=${addressesChunk.join(',')}&vs_currencies=usd`), {
+    backOff(() => Request.get(`https://coins.llama.fi/prices/current/${addressesChunk.map((a) => `${platform}:${a}`).join(',')}`), {
       retry: (e, attemptNumber) => {
-        console.log(`coingecko retrying!`, { attemptNumber, addressesChunk });
+        console.log(`defillama retrying!`, { attemptNumber, addressesChunk });
         return true;
       },
     })
       .then((response) => response.json())
-      .then((prices) => arrayToHashmap(Array.from(Object.entries(prices)).map(([address, { usd: usdPrice }]) => [
-        address.toLowerCase(),
+      .then(({ coins: prices }) => arrayToHashmap(Array.from(Object.entries(prices)).map(([platformAndAddress, { price: usdPrice }]) => [
+        platformAndAddress.split(':')[1].toLowerCase(),
         usdPrice,
       ])))
   ), MAX_ADDRESSES_PER_COINGECKO_REQUEST);
