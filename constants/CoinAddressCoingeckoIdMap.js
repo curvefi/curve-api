@@ -136,6 +136,7 @@ export default {
     '0x625E7708f30cA75bfd92586e17077590C60eb4cD': 'usd-coin', // aOptUSDC
     '0x68f180fcce6836688e9084f035309e29bf0a2095': 'wrapped-bitcoin',
     '0xfdb794692724153d1488ccdbe0c56c252596735f': 'lido-dao',
+    '0x4200000000000000000000000000000000000042': 'optimism',
   },
   xdai: {
     '0x4ecaba5870353805a9f068101a40e0f32ed605c6': 'tether',
