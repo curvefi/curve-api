@@ -48,6 +48,12 @@ const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name
 /* eslint-enable */
 /* eslint-disable object-curly-newline, camelcase */
 
+const IGNORED_COINS = {
+  polygon: [
+    '0x8dacf090f8803f53ee3c44f0d7a07b9d70453c42', // spam
+  ].map(lc),
+};
+
 // Lowercase token address <> symbol to use
 const CURVE_POOL_LP_SYMBOLS_OVERRIDES = new Map([
   ['0x3175df0976dfa876431c2e9ee6bc45b65d3473cc', 'FRAXBP'],
@@ -672,6 +678,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const coinInfo = accu[key];
 
     const coinPrice = (
+      (IGNORED_COINS[blockchainId] || []).includes(coinAddress.toLowerCase()) ?
+        0 :
+        (
       otherRegistryTokensPricesMap[coinAddress.toLowerCase()] ||
       mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()] ||
       coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
@@ -679,6 +688,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       templeTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) ||
       null
+        )
     );
 
     const hardcodedInfoForNativeEth = {
@@ -819,7 +829,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
         return {
           ...mergedCoinData[key],
-          usdPrice: mergedCoinData[key]?.usdPrice || null,
+          usdPrice: (mergedCoinData[key]?.usdPrice === 0 ? 0 : (mergedCoinData[key]?.usdPrice || null)),
         };
       });
 
