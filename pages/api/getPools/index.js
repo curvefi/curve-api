@@ -36,7 +36,7 @@ import allCoins from 'constants/coins';
 import POOLS_ZAPS from 'constants/pools-zaps';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
 import { getHardcodedPoolId } from 'constants/PoolAddressInternalIdMap';
-import { deriveMissingCoinPrices } from 'pages/api/getPools/_utils';
+import { deriveMissingCoinPrices, getImplementation } from 'pages/api/getPools/_utils';
 import { lc } from 'utils/String';
 
 /* eslint-disable */
@@ -732,14 +732,24 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   // This is only for "factory" pools; not "main", not "crypto", not "factory-crypto", which all have other
   // methods of deriving internal prices.
   const rawInternalPoolsPrices = (
-    await multiCall(flattenArray(mergedPoolData.map(({
-      id,
-      address,
-      coinsAddresses: unfilteredCoinsAddresses,
-      decimals,
-      totalSupply,
-    }) => {
-      const SMALL_AMOUNT_UNIT = BN(1);
+    await multiCall(flattenArray(mergedPoolData.map((poolInfo) => {
+      const {
+        id,
+        address,
+        coinsAddresses: unfilteredCoinsAddresses,
+        decimals,
+        totalSupply,
+      } = poolInfo;
+
+      const implementation = getImplementation({
+        registryId,
+        config,
+        poolInfo,
+        implementationAddressMap,
+      });
+      const isUsdMetaPool = implementation.startsWith('metausd') || implementation.startsWith('v1metausd');
+
+      const SMALL_AMOUNT_UNIT = BN(isUsdMetaPool ? 10000 : 1);
       if (Number(totalSupply) < SMALL_AMOUNT_UNIT.times(1e18)) return []; // Ignore empty pools
 
       const coinsAddresses = unfilteredCoinsAddresses.filter(isDefinedCoin);
@@ -778,16 +788,12 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   }), 'poolId');
 
   const augmentedData = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
-    const implementation = (
-      (registryId === 'factory-crypto') ? (
-        // Meta crypto facto pools do not work with a special implementation:
-        // rather, they simply use the meta pool's lp token as one of their tokens, and expose a
-        // zap to ease interactions with underlyings.
-        config.factoryCryptoMetaBasePoolLpTokenAddressMap?.get(poolInfo.coinsAddresses.find((address) => config.factoryCryptoMetaBasePoolLpTokenAddressMap?.has(address.toLowerCase()))?.toLowerCase()) || ''
-      ) : (registryId === 'factory') ? (
-        (implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) || '')
-      ) : ''
-    );
+    const implementation = getImplementation({
+      registryId,
+      config,
+      poolInfo,
+      implementationAddressMap,
+    });
 
     const isUsdMetaPool = implementation.startsWith('metausd') || implementation.startsWith('v1metausd');
     const isBtcMetaPool = implementation.startsWith('metabtc') || implementation.startsWith('v1metabtc');

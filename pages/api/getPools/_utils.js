@@ -1,6 +1,22 @@
 import { flattenArray, arrayToHashmap } from 'utils/Array';
 import { IS_DEV } from 'constants/AppConstants';
 
+const getImplementation = ({
+  registryId,
+  config,
+  poolInfo,
+  implementationAddressMap,
+}) => (
+  (registryId === 'factory-crypto') ? (
+    // Meta crypto facto pools do not work with a special implementation:
+    // rather, they simply use the meta pool's lp token as one of their tokens, and expose a
+    // zap to ease interactions with underlyings.
+    config.factoryCryptoMetaBasePoolLpTokenAddressMap?.get(poolInfo.coinsAddresses.find((address) => config.factoryCryptoMetaBasePoolLpTokenAddressMap?.has(address.toLowerCase()))?.toLowerCase()) || ''
+  ) : (registryId === 'factory') ? (
+    (implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) || '')
+  ) : ''
+);
+
 // Can be increased if needed, "3" is currently the max we've needed based on situations
 // where coins were missing prices that we've encountered so far.
 const MAX_PASSES = 4;
@@ -217,5 +233,6 @@ const deriveMissingCoinPrices = async ({
 };
 
 export {
+  getImplementation,
   deriveMissingCoinPrices,
 };
