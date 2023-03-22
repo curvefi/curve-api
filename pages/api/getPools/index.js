@@ -384,6 +384,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         methodName: 'totalSupply',
         metaData: { poolId, type: 'totalSupply' },
         ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'name',
+        metaData: { poolId, type: 'name' },
+        ...networkSettingsParam,
       }] : []
     ),
     ...(
@@ -392,11 +397,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         methodName: 'get_implementation_address', // address
         params: [address],
         metaData: { poolId, type: 'implementationAddress' },
-        ...networkSettingsParam,
-      }, {
-        contract: poolContract,
-        methodName: 'name',
-        metaData: { poolId, type: 'name' },
         ...networkSettingsParam,
       }, {
         contract: poolContract,
