@@ -314,7 +314,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     usdTotal,
   }) => {
     coins.forEach(({ address, usdPrice }) => {
-      if (usdPrice !== null && !Number.isNaN(usdPrice)) {
+      if (usdPrice !== null && !Number.isNaN(usdPrice) && usdTotal > 5000) {
         const lcAddress = address.toLowerCase();
         const tokenUsdPrices = accu.get(lcAddress) || [];
 
