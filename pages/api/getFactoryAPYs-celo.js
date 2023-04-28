@@ -115,12 +115,6 @@ export default fn(async (query) => {
       let apyFormatted = `${apy.toFixed(2)}%`
       totalVolume += correctedVolume
 
-      if (index === 1) console.log({
-        vPrice,
-        vPriceNew,
-        apy,
-      })
-
       let p = {
       index,
       'poolAddress' : pool.address,
