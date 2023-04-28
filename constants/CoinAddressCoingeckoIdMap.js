@@ -116,6 +116,7 @@ export default {
     '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7': 'wrapped-avax', // WAVAX
     '0x6feFd97F328342a8A840546A55FDcfEe7542F9A8': 'ageur', // agEUR
     '0x9fB1d52596c44603198fB0aee434fac3a679f702': 'jarvis-synthetic-euro', // jEUR
+    '0x152b9d0fdc40c096757f570a51e494bd4b943e50': 'bitcoin-avalanche-bridged-btc-b', // BTC.b
   },
   fantom: {
     '0x74b23882a30290451a17c44f4f05243b6b58c76d': 'weth', // WETH
