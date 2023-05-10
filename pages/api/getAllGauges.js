@@ -258,7 +258,7 @@ export default fn(async ({ blockchainId } = {}) => {
     factory,
     side_chain: false,
     is_killed: isKilled,
-    hasNoCrv: LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY.includes(lc(address)),
+    hasNoCrv: (LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY.includes(lc(address)) && lc(address) !== lc('0x50161102a240b1456d770Dbb55c76d8dc2D160Aa')),
     type,
     lpTokenPrice,
   }]));
