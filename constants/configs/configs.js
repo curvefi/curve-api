@@ -422,7 +422,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'celo',
     platformCoingeckoId: 'celo',
     nativeAssetErc20WrapperId: 'celo', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://forno.celo.org',
+    rpcUrl: 'https://rpc.ankr.com/celo',
     multicallAddress: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
     multicall2Address: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
     getFactoryRegistryAddress: async () => '0x5277A0226d10392295E8D383E9724D6E416d6e6C',
