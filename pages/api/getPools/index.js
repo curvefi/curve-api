@@ -757,6 +757,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         // and use as fallback value for poolBalance
         type === 'poolBalanceInt128' ? { poolBalance: BN.max(coinInfo.poolBalance, data).toFixed() } :
         type === 'poolStakedBalance' ? { poolBalance: BN(coinInfo.poolBalance).plus(data).toFixed() } :
+        // Force 'MKR' as symbol for MKR token on Ethereum, which uses bytes32 and not string
+        (type === 'symbol' && blockchainId === 'ethereum' && lc(coinAddress) === '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2') ? { symbol: 'MKR' } :
         { [type]: data }
       ),
       ...(isNativeEth ? hardcodedInfoForNativeEth : {}),
