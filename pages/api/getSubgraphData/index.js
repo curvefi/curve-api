@@ -227,6 +227,30 @@ export default fn(async ( {blockchainId} ) => {
     })
   }
 
+  // [start] Temporary addition while main ethereum subgraph syncs new crvusd factory pools
+  if (blockchainId === 'ethereum') {
+    const getCrvusdData = (await import('./crvusd-mainnet-temp.js')).default;
+    const crvusdData = await getCrvusdData();
+
+    if (!crvusdData.subgraphHasErrors) {
+      const crvusdPoolsAddresses = [
+        '0x4dece678ceceb27446b35c672dc7d61f30bad69e',
+        '0x390f3595bca2df7d23783dfd126427cceb997bf4',
+        '0xca978a0528116dda3cba9acd3e68bc6191ca53d0',
+        '0x34d655069f4cac1547e4c8ca284ffff5ad4a8db0',
+      ].map(lc);
+
+      poolList = (
+        poolList
+          .filter(({ address }) => !crvusdPoolsAddresses.includes(lc(address)))
+          .concat(crvusdData.poolList)
+      );
+
+      totalVolume += crvusdData.totalVolume;
+    }
+  }
+  // [end] Temporary addition while main ethereum subgraph syncs new crvusd factory pools
+
 
   const cryptoShare = (cryptoVolume / totalVolume) * 100
 
