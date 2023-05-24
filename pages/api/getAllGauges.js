@@ -53,9 +53,17 @@ const GAUGES_ADDRESSES_TO_IGNORE = [
   '0x174baa6b56ffe479b604CC20f22D09AD74F1Ca49', // Already absent from legacy endpoint data
 ].map(lc);
 
+const CRVUSD_POOLS_GAUGES = [
+  '0x95f00391cb5eebcd190eb58728b4ce23dbfa6ac1',
+  '0x4e6bb6b7447b7b2aa268c16ab87f4bb48bf57939',
+  '0xfcAf4EC80a94a5409141Af16a1DcA950a6973a39',
+  '0x5c07440a172805d566Faf7eBAf16EF068aC05f43',
+].map(lc);
+
 const LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY = [
   '0x82d0aDea8C4CF2fc84A499b568F4C1194d63113d',
   '0x25530f3c929d3f4137a766de3d37700d2fc00ff8',
+  ...CRVUSD_POOLS_GAUGES,
 ].map(lc);
 
 const NON_STANDARD_OUTDATED_GAUGES = [
@@ -257,7 +265,7 @@ export default fn(async ({ blockchainId } = {}) => {
     factory,
     side_chain: false,
     is_killed: isKilled,
-    hasNoCrv: (LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY.includes(lc(address))),
+    hasNoCrv: (LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY.includes(lc(address)) && !CRVUSD_POOLS_GAUGES.includes(lc(address))),
     type,
     lpTokenPrice,
   }]));
