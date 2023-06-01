@@ -52,6 +52,8 @@ const POOL_BALANCE_ABI_INT128 = [{ "gas": 1823, "inputs": [ { "name": "arg0", "t
 const POOL_PRICE_ORACLE_NO_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[{"name":"k","type":"uint256"}],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}, {"stateMutability":"view","type":"function","name":"lp_token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}];
+const POOL_NAME_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"name","inputs":[],"outputs":[{"name":"","type":"string"}]}];
+const POOL_SYMBOL_METHOD_ABI = [{ "stateMutability": "view", "type": "function", "name":"symbol","inputs":[],"outputs":[{"name":"","type":"string"}]}];
 /* eslint-enable */
 /* eslint-disable object-curly-newline, camelcase */
 
@@ -394,6 +396,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const poolContract = new web3.eth.Contract([
       ...POOL_ABI,
       ...POOL_TOKEN_METHOD_ABI,
+      ...POOL_NAME_METHOD_ABI,
+      ...POOL_SYMBOL_METHOD_ABI,
     ], address);
 
     // Note: reverting for at least some pools, prob non-meta ones: get_underlying_coins, get_underlying_decimals
@@ -459,6 +463,19 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         metaData: { poolId, type: 'symbol' },
         ...networkSettingsParam,
       }] : [] // Not fetching totalSupply for main pools because not all pool implementations have a lp token
+    ),
+    ...(
+      registryId === 'factory-tricrypto' ? [{
+        contract: poolContract,
+        methodName: 'name',
+        metaData: { poolId, type: 'name' },
+        ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'symbol',
+        metaData: { poolId, type: 'symbol' },
+        ...networkSettingsParam,
+      }] : []
     ),
     ...(
       // Different abis exist for these older pools, try to retrieve lpTokenAddress
