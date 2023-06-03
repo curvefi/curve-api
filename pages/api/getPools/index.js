@@ -54,6 +54,7 @@ const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"funct
 const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}, {"stateMutability":"view","type":"function","name":"lp_token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}];
 const POOL_NAME_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"name","inputs":[],"outputs":[{"name":"","type":"string"}]}];
 const POOL_SYMBOL_METHOD_ABI = [{ "stateMutability": "view", "type": "function", "name":"symbol","inputs":[],"outputs":[{"name":"","type":"string"}]}];
+const POOL_TOTALSUPPLY_METHOD_ABI = [{"name":"totalSupply","outputs":[{"type":"uint256","name":""}],"inputs":[],"stateMutability":"view","type":"function"}];
 /* eslint-enable */
 /* eslint-disable object-curly-newline, camelcase */
 
@@ -398,6 +399,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ...POOL_TOKEN_METHOD_ABI,
       ...POOL_NAME_METHOD_ABI,
       ...POOL_SYMBOL_METHOD_ABI,
+      ...POOL_TOTALSUPPLY_METHOD_ABI,
     ], address);
 
     // Note: reverting for at least some pools, prob non-meta ones: get_underlying_coins, get_underlying_decimals
@@ -474,6 +476,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         contract: poolContract,
         methodName: 'symbol',
         metaData: { poolId, type: 'symbol' },
+        ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'totalSupply',
+        metaData: { poolId, type: 'totalSupply' },
         ...networkSettingsParam,
       }] : []
     ),
