@@ -55,6 +55,7 @@ const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name
 const POOL_NAME_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"name","inputs":[],"outputs":[{"name":"","type":"string"}]}];
 const POOL_SYMBOL_METHOD_ABI = [{ "stateMutability": "view", "type": "function", "name":"symbol","inputs":[],"outputs":[{"name":"","type":"string"}]}];
 const POOL_TOTALSUPPLY_METHOD_ABI = [{"name":"totalSupply","outputs":[{"type":"uint256","name":""}],"inputs":[],"stateMutability":"view","type":"function"}];
+const REGISTRY_GET_IMPLEMENTATION_ADDRESS_ABI = [factoryV2RegistryAbi.find(({ name }) => name === 'get_implementation_address')]
 /* eslint-enable */
 /* eslint-disable object-curly-newline, camelcase */
 
@@ -278,7 +279,10 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   const REGISTRY_ABI = (
     registryId === 'factory-crypto' ? factoryCryptoRegistryAbi :
     registryId === 'factory-crvusd' ? factoryCrvusdRegistryAbi :
-    registryId === 'factory-tricrypto' ? factoryTricryptoRegistryAbi :
+    registryId === 'factory-tricrypto' ? [
+      ...factoryTricryptoRegistryAbi,
+      ...REGISTRY_GET_IMPLEMENTATION_ADDRESS_ABI, // Hack, see get_implementation_address call for factory-tricrypto for context
+    ] :
     registryId === 'factory-eywa' ? factoryEywaRegistryAbi :
     registryId === 'crypto' ? cryptoRegistryAbi :
     factoryV2RegistryAbi
@@ -482,6 +486,19 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         methodName: 'totalSupply',
         metaData: { poolId, type: 'totalSupply' },
         ...networkSettingsParam,
+      }, {
+        contract: registry,
+        methodName: 'get_implementation_address',
+        params: [address],
+        metaData: { poolId, type: 'implementationAddress' },
+        ...networkSettingsParam,
+        // factory-tricrypto pools do not have any view method to read their implementation; currently
+        // there's only one implementation available in this registry, so we hardcode it by querying
+        // an unexisting method and falling back to the desired value, but we'll need to find
+        // another way when another implementation is added.
+        superSettings: {
+          fallbackValue: '0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f',
+        },
       }] : []
     ),
     ...(

@@ -45,6 +45,7 @@ const configs = {
       ['0x2EB24483Ef551dA247ab87Cf18e1Cc980073032D'.toLowerCase(), 'metausdbalances-fraxusdc'],
       ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
+      ['0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f'.toLowerCase(), 'tricrypto-1'],
     ]),
     factoryCryptoMetaBasePoolLpTokenAddressMap: new Map([
       ['0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC'.toLowerCase(), 'metacrypto'],
