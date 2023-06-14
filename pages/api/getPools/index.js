@@ -864,7 +864,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     // We derive asset type (i.e. used as the reference asset on the FE) from pool implementation if possible,
     // and fall back to the assetType prop.
     const assetTypeName = (
-      (implementation === 'plain2eth' || implementation === 'plain3eth' || implementation === 'plain4eth') ? nativeCurrencySymbol.toLowerCase() :
+      (implementation === 'plain2eth' || implementation === 'plain2ethema' || implementation === 'plain2ethema2' || implementation === 'plain3eth' || implementation === 'plain4eth') ? nativeCurrencySymbol.toLowerCase() :
       isBtcMetaPool ? 'btc' :
       isUsdMetaPool ? 'usd' :
       isNativeStablePool ? nativeCurrencySymbol.toLowerCase() :
