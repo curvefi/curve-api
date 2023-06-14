@@ -45,6 +45,7 @@ export default {
     '0xdbdb4d16eda451d0503b854cf79d55697f90c8df': 'alchemix',
     '0x0ec9f76202a7061eb9b3a7d6b59d36215a7e37da': 'blackpool-token',
     '0x865377367054516e17014ccded1e7d814edc9ce4': 'dola-usd',
+    '0x808507121b80c02388fad14726482e061b8da827': 'pendle',
   },
   polygon: {
     '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063': 'dai', // DAI
