@@ -14,6 +14,7 @@ const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 
 const FALLBACK_DECODED_PARAMETERS_VALUES = {
   uint256: 0,
+  uint8: 0,
   int128: 0,
   address: ZERO_ADDRESS,
   bool: false,
