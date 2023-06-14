@@ -56,7 +56,6 @@ const GAUGES_ADDRESSES_TO_IGNORE = [
 const LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY = [
   '0x82d0aDea8C4CF2fc84A499b568F4C1194d63113d',
   '0x25530f3c929d3f4137a766de3d37700d2fc00ff8',
-  '0x50161102a240b1456d770Dbb55c76d8dc2D160Aa', // not voted in yet
 ].map(lc);
 
 const NON_STANDARD_OUTDATED_GAUGES = [
@@ -258,7 +257,7 @@ export default fn(async ({ blockchainId } = {}) => {
     factory,
     side_chain: false,
     is_killed: isKilled,
-    hasNoCrv: (LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY.includes(lc(address)) && lc(address) !== lc('0x50161102a240b1456d770Dbb55c76d8dc2D160Aa')),
+    hasNoCrv: (LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY.includes(lc(address))),
     type,
     lpTokenPrice,
   }]));
