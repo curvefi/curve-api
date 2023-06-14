@@ -255,7 +255,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     registryId === 'factory-eywa' ? await getFactoryEywaRegistryAddress() :
     undefined
   );
-  if (registryAddress === ZERO_ADDRESS) return { poolData: [], tvlAll: 0 };
+  if (registryAddress === ZERO_ADDRESS || !registryAddress) return { poolData: [], tvlAll: 0 };
 
   const getIdForPool = (id) => (
     registryId === 'factory' ? `factory-v2-${id}` :
