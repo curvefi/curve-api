@@ -36,7 +36,7 @@ export default fn(async () => {
       'getTVLArbitrum',
       'getTVLOptimism',
       'getTVLMoonbeam',
-      // 'getTVLKava',
+      'getTVLKava',
       'getTVLCelo',
     ]
 
