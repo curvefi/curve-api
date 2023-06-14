@@ -125,6 +125,7 @@ const configs = {
     getFactoryRegistryAddress: async () => '0x686d67265703d1f124c45e33d47d794c566889ba',
     getCryptoRegistryAddress: async () => '0x4fb93D7d320E8A263F22f62C2059dFC2A8bCbC4c',
     getFactoryCryptoRegistryAddress: async () => '0xE5De15A9C9bBedb4F5EC13B131E61245f2983A69',
+    getFactoryEywaRegistryAddress: async () => '0x37f22a0b028f2152e6cacef210e0c4d3b875f367',
     factoryImplementationAddressMap: new Map([
       ['0x61E10659fe3aa93d036d099405224E4Ac24996d0'.toLowerCase(), 'plain2basic'],
       ['0xd9Acb0BAeeD77C99305017821167674Cc7e82f7a'.toLowerCase(), 'plain2balances'],
