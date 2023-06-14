@@ -38,16 +38,17 @@ export default fn(async ({blockchainId}) => {
   const factory_registry = await address_getter_contract.methods.get_address(3).call()
   const crypto_registry = await address_getter_contract.methods.get_address(5).call()
   const crypto_factory_registry = config.getFactoryCryptoRegistryAddress ? await config.getFactoryCryptoRegistryAddress() : null
+  const crvusd_factory_registry = config.getFactoryCrvusdRegistryAddress ? await config.getFactoryCrvusdRegistryAddress() : null
 
 
   let registries =
-  [main_registry, factory_registry, crypto_registry, crypto_factory_registry]
+  [main_registry, factory_registry, crypto_registry, crypto_factory_registry, crvusd_factory_registry]
 
   registries = registries.filter((address) => !!address && address !== '0x0000000000000000000000000000000000000000');
 
 
   let poolList = []
-  let registries_name = ['main', 'stable-factory', 'crypto', 'crypto-factory']
+  let registries_name = ['main', 'stable-factory', 'crypto', 'crypto-factory', 'factory-crvusd']
 
   for (var i = 0; i < registries.length; i++) {
 
