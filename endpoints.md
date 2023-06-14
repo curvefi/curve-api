@@ -59,6 +59,9 @@ GET /api/getPools/<blockchainId>/<registryId>
 - https://api.curve.fi/api/getPools/xdai/crypto
 - https://api.curve.fi/api/getPools/xdai/factory
 
+This endpoint returns *all* pools from all these registries, in exactly the same shape, except for the fact that each pool object will also contain a `blockchainId` prop.
+For each pool object in the endpoints above, the `id` prop is unique. For each pool object in this single "all pools" endpoint, the combination of props `blockchainId` and `id` is unique.
+
 ### getETHprice
 ```
 GET /api/getETHprice
