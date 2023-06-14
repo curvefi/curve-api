@@ -19,7 +19,6 @@ export default {
     '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599': 'wrapped-bitcoin', // wBTC
     '0xc2cb1040220768554cf699b0d863a3cd4324ce32': 'dai', // yDAI
     '0x26ea744e5b887e5205727f55dfbe8685e3b21951': 'usd-coin', // yUSDC
-    '0xe6354ed5bc4b393a5aad09f21c46e101e692d447': 'tether', // yUSDT
     '0x04bc0ab673d88ae9dbc9da2380cb6b79c4bca9ae': 'binance-usd', // yBUSD
     '0x16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'dai', // yDAI
     '0xdb25f211ab05b1c97d595516f45794528a807ad8': 'tether-eurt', // EURS patch
