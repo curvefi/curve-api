@@ -38,7 +38,7 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'optimism',
   'xdai',
   'moonbeam',
-  'kava',
+  // 'kava', // rpcs currently down
   'celo',
 ];
 
