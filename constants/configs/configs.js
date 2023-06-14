@@ -52,6 +52,7 @@ const configs = {
     ]),
     getFactoryCryptoRegistryAddress: async () => '0xF18056Bbd320E96A48e3Fbf8bC061322531aac99',
     getFactoryCrvusdRegistryAddress: async () => '0x4F8846Ae9380B90d2E71D5e3D042dff3E7ebb40d',
+    getFactoryTricryptoRegistryAddress: async () => '0x0c0e5f2ff0ff18a3be9b835635039256dc4b4963',
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet',
     DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
   },
