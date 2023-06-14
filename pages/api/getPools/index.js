@@ -66,7 +66,7 @@ const EXTERNAL_ORACLE_COINS_ADDRESSES = {
     '0x5555f75e3d5278082200fb451d1b6ba946d8e13b', // ibJPY (no curve crypto pool to act as oracle)
     '0xF48e200EAF9906362BB1442fca31e0835773b8B4', // sAUD (no curve crypto pool to act as oracle)
     '0x97fe22E7341a0Cd8Db6F6C021A24Dc8f4DAD855F', // sGBP (no curve crypto pool to act as oracle)
-    '0x1cc481ce2bd2ec7bf67d1be64d4878b16078f309', // ibCHF (no curve crypto pool to act as oracle)
+    '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d', // sCHF (no curve crypto pool to act as oracle)
     '0xc2544a32872a91f4a553b404c6950e89de901fdb', // FPIS (no liquid curve crypto pool to act as oracle)
     '0xa0d69e286b938e21cbf7e51d71f6a4c8918f482f', // eUSD (no curve crypto pool to act as oracle)
   ].map(lc),
