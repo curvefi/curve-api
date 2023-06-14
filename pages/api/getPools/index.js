@@ -16,8 +16,10 @@ import { fn } from 'utils/api';
 import factoryV2RegistryAbi from 'constants/abis/factory-v2-registry.json';
 import factoryPoolAbi from 'constants/abis/factory-v2/Plain2Balances.json';
 import factoryCryptoRegistryAbi from 'constants/abis/factory-crypto-registry.json';
+import factoryCrvusdRegistryAbi from 'constants/abis/factory-crvusd/registry.json';
 import cryptoRegistryAbi from 'constants/abis/crypto-registry.json';
 import factoryCryptoPoolAbi from 'constants/abis/factory-crypto/factory-crypto-pool-2.json';
+import factoryCrvusdPoolAbi from 'constants/abis/factory-crvusd/pool.json';
 import erc20Abi from 'constants/abis/erc20.json';
 import erc20AbiMKR from 'constants/abis/erc20_mkr.json';
 import { multiCall } from 'utils/Calls';
@@ -147,7 +149,7 @@ const isDefinedCoin = (address) => address !== '0x000000000000000000000000000000
 /**
  * Params:
  * - blockchainId: 'ethereum' (default) | any side chain
- * - registryId: 'factory' | 'main' | 'crypto' | 'factory-crypto'
+ * - registryId: 'factory' | 'main' | 'crypto' | 'factory-crypto' | 'factory-crvusd'
  */
 const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) => {
   /* eslint-disable no-param-reassign */
@@ -183,13 +185,14 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     getFactoryRegistryAddress,
     getCryptoRegistryAddress,
     getFactoryCryptoRegistryAddress,
+    getFactoryCrvusdRegistryAddress,
     multicall2Address,
     BASE_POOL_LP_TO_GAUGE_LP_MAP,
     DISABLED_POOLS_ADDRESSES,
   } = config;
 
-  if (registryId !== 'factory' && registryId !== 'main' && registryId !== 'crypto' && registryId !== 'factory-crypto') {
-    throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'');
+  if (registryId !== 'factory' && registryId !== 'main' && registryId !== 'crypto' && registryId !== 'factory-crypto' && registryId !== 'factory-crvusd') {
+    throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'|\'factory-crvusd\'');
   }
 
   if (registryId === 'factory' && typeof getFactoryRegistryAddress !== 'function') {
@@ -207,6 +210,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     return { poolData: [] };
   }
 
+  if (registryId === 'factory-crvusd' && typeof getFactoryCrvusdRegistryAddress !== 'function') {
+    console.error(`No getFactoryCrvusdRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    return { poolData: [] };
+  }
+
   const assetTypeMap = new Map([
     ['0', 'usd'],
     ['1', nativeCurrencySymbol.toLowerCase()],
@@ -219,6 +227,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     registryId === 'main' ? await getRegistry({ blockchainId }) :
     registryId === 'crypto' ? await getCryptoRegistryAddress() :
     registryId === 'factory-crypto' ? await getFactoryCryptoRegistryAddress() :
+    registryId === 'factory-crvusd' ? await getFactoryCrvusdRegistryAddress() :
     undefined
   );
   if (registryAddress === ZERO_ADDRESS) return { poolData: [], tvlAll: 0 };
@@ -228,16 +237,19 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     registryId === 'main' ? `${id}` :
     registryId === 'crypto' ? `crypto-${id}` :
     registryId === 'factory-crypto' ? `factory-crypto-${id}` :
+    registryId === 'factory-crvusd' ? `factory-crvusd-${id}` :
     undefined
   );
 
   const POOL_ABI = (
     registryId === 'factory-crypto' ? factoryCryptoPoolAbi :
+    registryId === 'factory-crvusd' ? factoryCrvusdPoolAbi :
     factoryPoolAbi
   );
 
   const REGISTRY_ABI = (
     registryId === 'factory-crypto' ? factoryCryptoRegistryAbi :
+    registryId === 'factory-crvusd' ? factoryCrvusdRegistryAbi :
     registryId === 'crypto' ? cryptoRegistryAbi :
     factoryV2RegistryAbi
   );
@@ -277,7 +289,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   /**
    * We use pools from other registries as a fallback data source for the current registry.
    * Registries depend on each other in the following one-way fashion to prevent circular dependencies:
-   * main <- crypto <- factory-crypto <- factory.
+   * main <- crypto <- factory-crypto <- factory <- factory-crvusd.
    * So main does not depend on other registries, crypto only depends on main, factory-crypto
    * depends on the two previous, and factory on all three others.
    * With this order of precedence, any asset can be priced automatically by simply having
@@ -288,8 +300,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   const REGISTRIES_DEPENDENCIES = {
     main: [],
     crypto: ['main'],
-    'factory-crypto': ['main', 'crypto'],
-    factory: ['main', 'crypto', 'factory-crypto'],
+    'factory-crvusd': ['main'],
+    'factory-crypto': ['main', 'crypto', 'factory-crvusd'],
+    factory: ['main', 'crypto', 'factory-crypto', 'factory-crvusd'],
   };
   const { poolsAndLpTokens: mainRegistryPoolsAndLpTokens } = await getMainRegistryPoolsAndLpTokensFn.straightCall({ blockchainId });
   const otherRegistryPoolsData = await sequentialPromiseFlatMap(REGISTRIES_DEPENDENCIES[registryId], async (id) => (
@@ -380,7 +393,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     },
     // 'main' and 'factory' registries have these pieces of info, others do not
     ...(
-      (registryId === 'main' || registryId === 'factory') ? [{
+      (registryId === 'main' || registryId === 'factory' || registryId === 'factory-crvusd') ? [{
         contract: registry,
         methodName: 'get_underlying_decimals', // address[8]
         params: [address],
@@ -405,7 +418,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       }] : []
     ),
     ...(
-      registryId === 'factory' ? [{
+      (registryId === 'factory' || registryId === 'factory-crvusd') ? [{
         contract: registry,
         methodName: 'get_implementation_address', // address
         params: [address],
