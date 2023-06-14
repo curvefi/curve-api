@@ -12,7 +12,7 @@ const getImplementation = ({
     // rather, they simply use the meta pool's lp token as one of their tokens, and expose a
     // zap to ease interactions with underlyings.
     config.factoryCryptoMetaBasePoolLpTokenAddressMap?.get(poolInfo.coinsAddresses.find((address) => config.factoryCryptoMetaBasePoolLpTokenAddressMap?.has(address.toLowerCase()))?.toLowerCase()) || ''
-  ) : (registryId === 'factory') ? (
+  ) : (registryId === 'factory' || registryId === 'factory-tricrypto') ? (
     (implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) || '')
   ) : ''
 );
@@ -36,8 +36,8 @@ const deriveMissingCoinPricesSinglePass = async ({
 }) => {
   /**
    * Method 1: A coin's price is unknown, another one is known. Use the known price,
-   * alongside the price oracle, to derive the other coin's price. Alternatively, use
-   * 1 as the price oracle value in the case of stable pools in the main registry.
+   * alongside the price oracle, to derive the other coin's price. This method requires
+   * the pool to have a price oracle.
    *
    * Note: The current logic is simplistic, and only allows filling in the blanks when
    * a pool is missing a single coin's price at index 0 or 1. Let's improve it later
@@ -53,22 +53,14 @@ const deriveMissingCoinPricesSinglePass = async ({
   if (canUsePriceOracle) {
     if (IS_DEV) console.log('Missing coin price: using method 1 to derive price', poolInfo.id);
 
-    /**
-     * Main pools are stable and without too-risky coins, so we can approximate 1:1;
-     * a better alternative would be to use get_dy(0, 1, small_unit) but it's prone to
-     * reverts in extreme but not so rare occasions, so the little added precision
-     * doesn't seem worth the brittleness.
-     */
-    const priceOracle = registryId === 'main' ? 1 : poolInfo.priceOracle;
-
     return (
       coins.map((coin, i) => (
         coin.usdPrice === null ? {
           ...coin,
           usdPrice: (
             i === 0 ?
-              (coins[1].usdPrice / priceOracle) :
-              (coins[0].usdPrice * priceOracle)
+              (coins[1].usdPrice / poolInfo.priceOracle) :
+              (coins[0].usdPrice * poolInfo.priceOracle)
           ),
         } : coin
       ))

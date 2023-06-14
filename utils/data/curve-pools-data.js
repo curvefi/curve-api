@@ -29,6 +29,12 @@ const getAllCurvePoolsData = memoize(async (blockchainIds) => (
         .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory', poolData)).map(attachFactoryTag)),
       (getPools.straightCall({ blockchainId, registryId: 'factory-crypto', preventQueryingFactoData: true }))
         .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory-crypto', poolData)).map(attachFactoryTag)),
+      (getPools.straightCall({ blockchainId, registryId: 'factory-crvusd', preventQueryingFactoData: true }))
+        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory-crvusd', poolData)).map(attachFactoryTag)),
+      (getPools.straightCall({ blockchainId, registryId: 'factory-tricrypto', preventQueryingFactoData: true }))
+        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory-tricrypto', poolData)).map(attachFactoryTag)),
+      (getPools.straightCall({ blockchainId, registryId: 'factory-eywa', preventQueryingFactoData: true }))
+        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory-eywa', poolData)).map(attachFactoryTag)),
     ])
   )))
 ), {

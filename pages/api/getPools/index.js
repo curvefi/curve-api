@@ -16,8 +16,14 @@ import { fn } from 'utils/api';
 import factoryV2RegistryAbi from 'constants/abis/factory-v2-registry.json';
 import factoryPoolAbi from 'constants/abis/factory-v2/Plain2Balances.json';
 import factoryCryptoRegistryAbi from 'constants/abis/factory-crypto-registry.json';
+import factoryCrvusdRegistryAbi from 'constants/abis/factory-crvusd/registry.json';
+import factoryTricryptoRegistryAbi from 'constants/abis/factory-tricrypto/registry.json';
+import factoryEywaRegistryAbi from 'constants/abis/fantom/factory-eywa/registry.json';
 import cryptoRegistryAbi from 'constants/abis/crypto-registry.json';
 import factoryCryptoPoolAbi from 'constants/abis/factory-crypto/factory-crypto-pool-2.json';
+import factoryTricryptoPoolAbi from 'constants/abis/factory-crypto/factory-crypto-pool-2.json';
+import factoryCrvusdPoolAbi from 'constants/abis/factory-crvusd/pool.json';
+import factoryEywaPoolAbi from 'constants/abis/fantom/factory-eywa/pool.json';
 import erc20Abi from 'constants/abis/erc20.json';
 import erc20AbiMKR from 'constants/abis/erc20_mkr.json';
 import { multiCall } from 'utils/Calls';
@@ -26,6 +32,7 @@ import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseReduce, sequentialPromiseFlatMap, sequentialPromiseMap } from 'utils/Async';
 import { getRegistry } from 'utils/getters';
 import getAssetsPrices from 'utils/data/assets-prices';
+import getTokensPrices from 'utils/data/tokens-prices';
 import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getTempleTokenPrices from 'utils/data/getTempleTokenPrices';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
@@ -45,12 +52,29 @@ const POOL_BALANCE_ABI_INT128 = [{ "gas": 1823, "inputs": [ { "name": "arg0", "t
 const POOL_PRICE_ORACLE_NO_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_PRICE_ORACLE_WITH_ARGS_ABI = [{"stateMutability":"view","type":"function","name":"price_oracle","inputs":[{"name":"k","type":"uint256"}],"outputs":[{"name":"","type":"uint256"}]}];
 const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}, {"stateMutability":"view","type":"function","name":"lp_token","inputs":[],"outputs":[{"name":"","type":"address"}],"gas":468}];
+const POOL_NAME_METHOD_ABI = [{"stateMutability":"view","type":"function","name":"name","inputs":[],"outputs":[{"name":"","type":"string"}]}];
+const POOL_SYMBOL_METHOD_ABI = [{ "stateMutability": "view", "type": "function", "name":"symbol","inputs":[],"outputs":[{"name":"","type":"string"}]}];
+const POOL_TOTALSUPPLY_METHOD_ABI = [{"name":"totalSupply","outputs":[{"type":"uint256","name":""}],"inputs":[],"stateMutability":"view","type":"function"}];
+const REGISTRY_GET_IMPLEMENTATION_ADDRESS_ABI = [factoryV2RegistryAbi.find(({ name }) => name === 'get_implementation_address')]
 /* eslint-enable */
 /* eslint-disable object-curly-newline, camelcase */
 
 const IGNORED_COINS = {
   polygon: [
     '0x8dacf090f8803f53ee3c44f0d7a07b9d70453c42', // spam
+  ].map(lc),
+};
+
+// Tokens for which to use Defillama as external price oracle
+const EXTERNAL_ORACLE_COINS_ADDRESSES = {
+  ethereum: [
+    '0x95dfdc8161832e4ff7816ac4b6367ce201538253', // ibKRW (no curve crypto pool to act as oracle)
+    '0x5555f75e3d5278082200fb451d1b6ba946d8e13b', // ibJPY (no curve crypto pool to act as oracle)
+    '0xF48e200EAF9906362BB1442fca31e0835773b8B4', // sAUD (no curve crypto pool to act as oracle)
+    '0x97fe22E7341a0Cd8Db6F6C021A24Dc8f4DAD855F', // sGBP (no curve crypto pool to act as oracle)
+    '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d', // sCHF (no curve crypto pool to act as oracle)
+    '0xc2544a32872a91f4a553b404c6950e89de901fdb', // FPIS (no liquid curve crypto pool to act as oracle)
+    '0xa0d69e286b938e21cbf7e51d71f6a4c8918f482f', // eUSD (no curve crypto pool to act as oracle)
   ].map(lc),
 };
 
@@ -134,7 +158,9 @@ const isDefinedCoin = (address) => address !== '0x000000000000000000000000000000
 /**
  * Params:
  * - blockchainId: 'ethereum' (default) | any side chain
- * - registryId: 'factory' | 'main' | 'crypto' | 'factory-crypto'
+ * - registryId: 'factory' | 'main' | 'crypto' | 'factory-crypto' | 'factory-crvusd' | 'factory-tricrypto' | 'factory-eywa'
+ *
+ * 'factory-crvusd', 'factory-tricrypto' and 'factory-eywa' are custom factories that aren't meant to be found on all chains
  */
 const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) => {
   /* eslint-disable no-param-reassign */
@@ -170,13 +196,16 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     getFactoryRegistryAddress,
     getCryptoRegistryAddress,
     getFactoryCryptoRegistryAddress,
+    getFactoryCrvusdRegistryAddress,
+    getFactoryTricryptoRegistryAddress,
+    getFactoryEywaRegistryAddress,
     multicall2Address,
     BASE_POOL_LP_TO_GAUGE_LP_MAP,
     DISABLED_POOLS_ADDRESSES,
   } = config;
 
-  if (registryId !== 'factory' && registryId !== 'main' && registryId !== 'crypto' && registryId !== 'factory-crypto') {
-    throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'');
+  if (registryId !== 'factory' && registryId !== 'main' && registryId !== 'crypto' && registryId !== 'factory-crypto' && registryId !== 'factory-crvusd' && registryId !== 'factory-tricrypto' && registryId !== 'factory-eywa') {
+    throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'|\'factory-crvusd\'|\'factory-tricrypto\'|\'factory-eywa\'');
   }
 
   if (registryId === 'factory' && typeof getFactoryRegistryAddress !== 'function') {
@@ -194,6 +223,21 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     return { poolData: [] };
   }
 
+  if (registryId === 'factory-crvusd' && typeof getFactoryCrvusdRegistryAddress !== 'function') {
+    console.error(`No getFactoryCrvusdRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    return { poolData: [] };
+  }
+
+  if (registryId === 'factory-tricrypto' && typeof getFactoryTricryptoRegistryAddress !== 'function') {
+    console.error(`No getFactoryTricryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    return { poolData: [] };
+  }
+
+  if (registryId === 'factory-eywa' && typeof getFactoryEywaRegistryAddress !== 'function') {
+    console.error(`No getFactoryEywaRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+    return { poolData: [] };
+  }
+
   const assetTypeMap = new Map([
     ['0', 'usd'],
     ['1', nativeCurrencySymbol.toLowerCase()],
@@ -206,6 +250,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     registryId === 'main' ? await getRegistry({ blockchainId }) :
     registryId === 'crypto' ? await getCryptoRegistryAddress() :
     registryId === 'factory-crypto' ? await getFactoryCryptoRegistryAddress() :
+    registryId === 'factory-crvusd' ? await getFactoryCrvusdRegistryAddress() :
+    registryId === 'factory-tricrypto' ? await getFactoryTricryptoRegistryAddress() :
+    registryId === 'factory-eywa' ? await getFactoryEywaRegistryAddress() :
     undefined
   );
   if (registryAddress === ZERO_ADDRESS) return { poolData: [], tvlAll: 0 };
@@ -215,16 +262,28 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     registryId === 'main' ? `${id}` :
     registryId === 'crypto' ? `crypto-${id}` :
     registryId === 'factory-crypto' ? `factory-crypto-${id}` :
+    registryId === 'factory-crvusd' ? `factory-crvusd-${id}` :
+    registryId === 'factory-tricrypto' ? `factory-tricrypto-${id}` :
+    registryId === 'factory-eywa' ? `factory-eywa-${id}` :
     undefined
   );
 
   const POOL_ABI = (
     registryId === 'factory-crypto' ? factoryCryptoPoolAbi :
+    registryId === 'factory-crvusd' ? factoryCrvusdPoolAbi :
+    registryId === 'factory-tricrypto' ? factoryTricryptoPoolAbi :
+    registryId === 'factory-eywa' ? factoryEywaPoolAbi :
     factoryPoolAbi
   );
 
   const REGISTRY_ABI = (
     registryId === 'factory-crypto' ? factoryCryptoRegistryAbi :
+    registryId === 'factory-crvusd' ? factoryCrvusdRegistryAbi :
+    registryId === 'factory-tricrypto' ? [
+      ...factoryTricryptoRegistryAbi,
+      ...REGISTRY_GET_IMPLEMENTATION_ADDRESS_ABI, // Hack, see get_implementation_address call for factory-tricrypto for context
+    ] :
+    registryId === 'factory-eywa' ? factoryEywaRegistryAbi :
     registryId === 'crypto' ? cryptoRegistryAbi :
     factoryV2RegistryAbi
   );
@@ -264,7 +323,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   /**
    * We use pools from other registries as a fallback data source for the current registry.
    * Registries depend on each other in the following one-way fashion to prevent circular dependencies:
-   * main <- crypto <- factory-crypto <- factory.
+   * main <- crypto <- factory-crypto <- factory
    * So main does not depend on other registries, crypto only depends on main, factory-crypto
    * depends on the two previous, and factory on all three others.
    * With this order of precedence, any asset can be priced automatically by simply having
@@ -275,8 +334,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   const REGISTRIES_DEPENDENCIES = {
     main: [],
     crypto: ['main'],
-    'factory-crypto': ['main', 'crypto'],
-    factory: ['main', 'crypto', 'factory-crypto'],
+    'factory-tricrypto': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
+    'factory-crvusd': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
+    'factory-eywa': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
+    'factory-crypto': ['main', 'crypto', 'factory-crvusd', 'factory-tricrypto'],
+    factory: ['main', 'crypto', 'factory-crypto', 'factory-crvusd', 'factory-tricrypto'],
   };
   const { poolsAndLpTokens: mainRegistryPoolsAndLpTokens } = await getMainRegistryPoolsAndLpTokensFn.straightCall({ blockchainId });
   const otherRegistryPoolsData = await sequentialPromiseFlatMap(REGISTRIES_DEPENDENCIES[registryId], async (id) => (
@@ -314,7 +376,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     usdTotal,
   }) => {
     coins.forEach(({ address, usdPrice }) => {
-      if (usdPrice !== null && !Number.isNaN(usdPrice)) {
+      if (usdPrice !== null && !Number.isNaN(usdPrice) && usdTotal > 5000) {
         const lcAddress = address.toLowerCase();
         const tokenUsdPrices = accu.get(lcAddress) || [];
 
@@ -339,6 +401,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const poolContract = new web3.eth.Contract([
       ...POOL_ABI,
       ...POOL_TOKEN_METHOD_ABI,
+      ...POOL_NAME_METHOD_ABI,
+      ...POOL_SYMBOL_METHOD_ABI,
+      ...POOL_TOTALSUPPLY_METHOD_ABI,
     ], address);
 
     // Note: reverting for at least some pools, prob non-meta ones: get_underlying_coins, get_underlying_decimals
@@ -367,7 +432,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     },
     // 'main' and 'factory' registries have these pieces of info, others do not
     ...(
-      (registryId === 'main' || registryId === 'factory') ? [{
+      (registryId === 'main' || registryId === 'factory' || registryId === 'factory-crvusd' || registryId === 'factory-eywa') ? [{
         contract: registry,
         methodName: 'get_underlying_decimals', // address[8]
         params: [address],
@@ -392,7 +457,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       }] : []
     ),
     ...(
-      registryId === 'factory' ? [{
+      (registryId === 'factory' || registryId === 'factory-crvusd' || registryId === 'factory-eywa') ? [{
         contract: registry,
         methodName: 'get_implementation_address', // address
         params: [address],
@@ -404,6 +469,37 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         metaData: { poolId, type: 'symbol' },
         ...networkSettingsParam,
       }] : [] // Not fetching totalSupply for main pools because not all pool implementations have a lp token
+    ),
+    ...(
+      registryId === 'factory-tricrypto' ? [{
+        contract: poolContract,
+        methodName: 'name',
+        metaData: { poolId, type: 'name' },
+        ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'symbol',
+        metaData: { poolId, type: 'symbol' },
+        ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'totalSupply',
+        metaData: { poolId, type: 'totalSupply' },
+        ...networkSettingsParam,
+      }, {
+        contract: registry,
+        methodName: 'get_implementation_address',
+        params: [address],
+        metaData: { poolId, type: 'implementationAddress' },
+        ...networkSettingsParam,
+        // factory-tricrypto pools do not have any view method to read their implementation; currently
+        // there's only one implementation available in this registry, so we hardcode it by querying
+        // an unexisting method and falling back to the desired value, but we'll need to find
+        // another way when another implementation is added.
+        superSettings: {
+          fallbackValue: '0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f',
+        },
+      }] : []
     ),
     ...(
       // Different abis exist for these older pools, try to retrieve lpTokenAddress
@@ -571,22 +667,45 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     return accu;
   }, []);
 
-  const coinsFallbackPrices = (
+  const coinsFallbackPricesFromCgId = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
       await getAssetsPrices(Array.from(Object.values(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))) :
       {}
   );
-  const coinAddressesAndPricesMapFallback = (
+
+  const coinAddressesAndPricesMapFallbackFromCgId = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
       arrayToHashmap(
         Array.from(Object.entries(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))
           .map(([address, coingeckoId]) => [
             address.toLowerCase(),
-            coinsFallbackPrices[coingeckoId],
+            coinsFallbackPricesFromCgId[coingeckoId],
           ])
       ) :
       {}
   );
+
+  const coinsFallbackPricesFromAddress = (
+    EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
+      await getTokensPrices(EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId]) :
+      {}
+  );
+
+  const coinAddressesAndPricesMapFallbackFromAddress = (
+    EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
+      arrayToHashmap(
+        EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId].map((address) => [
+          address,
+          coinsFallbackPricesFromAddress[address],
+        ])
+      ) :
+      {}
+  );
+
+  const coinAddressesAndPricesMapFallback = {
+    ...coinAddressesAndPricesMapFallbackFromCgId,
+    ...coinAddressesAndPricesMapFallbackFromAddress,
+  };
 
   const ycTokensAddressesAndPricesMapFallback = (
     (blockchainId === 'ethereum' || blockchainId === 'fantom') ?
@@ -708,6 +827,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         // and use as fallback value for poolBalance
         type === 'poolBalanceInt128' ? { poolBalance: BN.max(coinInfo.poolBalance, data).toFixed() } :
         type === 'poolStakedBalance' ? { poolBalance: BN(coinInfo.poolBalance).plus(data).toFixed() } :
+        // Force 'MKR' as symbol for MKR token on Ethereum, which uses bytes32 and not string
+        (type === 'symbol' && blockchainId === 'ethereum' && lc(coinAddress) === '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2') ? { symbol: 'MKR' } :
         { [type]: data }
       ),
       ...(isNativeEth ? hardcodedInfoForNativeEth : {}),
@@ -815,7 +936,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     // We derive asset type (i.e. used as the reference asset on the FE) from pool implementation if possible,
     // and fall back to the assetType prop.
     const assetTypeName = (
-      (implementation === 'plain2eth' || implementation === 'plain3eth' || implementation === 'plain4eth') ? nativeCurrencySymbol.toLowerCase() :
+      (implementation === 'plain2eth' || implementation === 'plain2ethema' || implementation === 'plain2ethema2' || implementation === 'plain3eth' || implementation === 'plain4eth') ? nativeCurrencySymbol.toLowerCase() :
       isBtcMetaPool ? 'btc' :
       isUsdMetaPool ? 'usd' :
       isNativeStablePool ? nativeCurrencySymbol.toLowerCase() :

@@ -33,7 +33,7 @@ export default fn(async (query) => {
 
   const latest = await web3.eth.getBlockNumber()
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
-  let DAY_BLOCKS = 9000
+  let DAY_BLOCKS = 2000
 
   await Promise.all(
     res.poolData.map(async (pool, index) => {
@@ -114,12 +114,6 @@ export default fn(async (query) => {
       let apy = (vPriceNew - vPrice) / vPrice * 100 * 365
       let apyFormatted = `${apy.toFixed(2)}%`
       totalVolume += correctedVolume
-
-      if (index === 1) console.log({
-        vPrice,
-        vPriceNew,
-        apy,
-      })
 
       let p = {
       index,

@@ -227,7 +227,6 @@ export default fn(async ( {blockchainId} ) => {
     })
   }
 
-
   const cryptoShare = (cryptoVolume / totalVolume) * 100
 
   return { poolList, totalVolume, cryptoVolume, cryptoShare, subgraphHasErrors }

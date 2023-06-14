@@ -77,10 +77,17 @@ const truncWithXSignificantDecimals = (numberBN, decimalCount = 2) => {
   return truncWithoutZeroDecimals(numberBN, decimalPlaces + decimalCount - 1);
 };
 
+// Returns the decimals number, rather than the number of decimals
+// E.g. 18 -> 1e18; noop if already a decimals number, e.g. 1e18 -> 1e18
+const decimalsNumber = (decimals) => (
+  decimals > 18 ? decimals : (10 ** decimals)
+);
+
 export {
   trunc,
   formatLargeNumber,
   truncWithoutZeroDecimals,
   truncWithXSignificantDecimals,
   localNumber,
+  decimalsNumber,
 };

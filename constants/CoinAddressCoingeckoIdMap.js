@@ -19,13 +19,11 @@ export default {
     '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599': 'wrapped-bitcoin', // wBTC
     '0xc2cb1040220768554cf699b0d863a3cd4324ce32': 'dai', // yDAI
     '0x26ea744e5b887e5205727f55dfbe8685e3b21951': 'usd-coin', // yUSDC
-    '0xe6354ed5bc4b393a5aad09f21c46e101e692d447': 'tether', // yUSDT
     '0x04bc0ab673d88ae9dbc9da2380cb6b79c4bca9ae': 'binance-usd', // yBUSD
     '0x16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'dai', // yDAI
     '0xdb25f211ab05b1c97d595516f45794528a807ad8': 'tether-eurt', // EURS patch
     '0x8e870d67f660d95d5be530380d0ec0bd388289e1': 'paxos-standard', // USDP
     '0xd6ad7a6750a7593e092a9b218d66c0a814a3436e': 'usd-coin', // ycUSDC
-    '0x83f798e925bcd4017eb265844fddabb448f1707d': 'tether', // ycUSDT
     '0x8cb24ed2e4f7e2065f4eb2be5f6b0064b1919850': 'south-african-tether', // ZARP
     '0x028171bca77440897b824ca71d1c56cac55b68a3': 'aave-dai', // aDAI
     '0xBcca60bB61934080951369a648Fb03DF4F96263C': 'aave-usdc', // aUSDC
@@ -47,6 +45,7 @@ export default {
     '0xdbdb4d16eda451d0503b854cf79d55697f90c8df': 'alchemix',
     '0x0ec9f76202a7061eb9b3a7d6b59d36215a7e37da': 'blackpool-token',
     '0x865377367054516e17014ccded1e7d814edc9ce4': 'dola-usd',
+    '0x808507121b80c02388fad14726482e061b8da827': 'pendle',
   },
   polygon: {
     '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063': 'dai', // DAI
@@ -118,6 +117,7 @@ export default {
     '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7': 'wrapped-avax', // WAVAX
     '0x6feFd97F328342a8A840546A55FDcfEe7542F9A8': 'ageur', // agEUR
     '0x9fB1d52596c44603198fB0aee434fac3a679f702': 'jarvis-synthetic-euro', // jEUR
+    '0x152b9d0fdc40c096757f570a51e494bd4b943e50': 'bitcoin-avalanche-bridged-btc-b', // BTC.b
   },
   fantom: {
     '0x74b23882a30290451a17c44f4f05243b6b58c76d': 'weth', // WETH

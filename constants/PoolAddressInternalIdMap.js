@@ -71,7 +71,9 @@ const map = {
     [lc('0xecd5e75afb02efa118af914515d6521aabd189f1')]: 'tusd',
     [lc('0xfd5db7463a3ab53fd211b4af195c5bccc1a03890')]: 'eurt',
     [lc('0xa1F8A6807c402E4A15ef4EBa36528A3FED24E577')]: 'frxeth',
+    [lc('0xbfab6fa95e0091ed66058ad493189d2cb29385e6')]: 'wbeth',
     [lc('0xf253f83AcA21aAbD2A20553AE0BF7F65C755A07F')]: 'sbtc2',
+    [lc('0xae34574ac03a15cd58a92dc79de7b1a0800f1ce3')]: 'fraxusdp',
   },
   arbitrum: {
     [lc('0x7f90122bf0700f9e7e1f688fe926940e8839f353')]: '2pool',
