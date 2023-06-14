@@ -12,7 +12,7 @@ const getImplementation = ({
     // rather, they simply use the meta pool's lp token as one of their tokens, and expose a
     // zap to ease interactions with underlyings.
     config.factoryCryptoMetaBasePoolLpTokenAddressMap?.get(poolInfo.coinsAddresses.find((address) => config.factoryCryptoMetaBasePoolLpTokenAddressMap?.has(address.toLowerCase()))?.toLowerCase()) || ''
-  ) : (registryId === 'factory') ? (
+  ) : (registryId === 'factory' || registryId === 'factory-tricrypto') ? (
     (implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) || '')
   ) : ''
 );
