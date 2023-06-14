@@ -29,18 +29,23 @@ GET /api/getPools/<blockchainId>/<registryId>
 
 **View**:
 
-*This is the list of all deployed registries on all chains, as of March 16, 2022*
+*This is the list of all deployed registries on all chains, as of June 14, 2023*
 
 - https://api.curve.fi/api/getPools/ethereum/main
 - https://api.curve.fi/api/getPools/ethereum/crypto
 - https://api.curve.fi/api/getPools/ethereum/factory
 - https://api.curve.fi/api/getPools/ethereum/factory-crypto
+- https://api.curve.fi/api/getPools/ethereum/factory-crvusd
+- https://api.curve.fi/api/getPools/ethereum/factory-tricrypto
 - https://api.curve.fi/api/getPools/polygon/main
 - https://api.curve.fi/api/getPools/polygon/crypto
 - https://api.curve.fi/api/getPools/polygon/factory
+- https://api.curve.fi/api/getPools/polygon/factory-crypto
 - https://api.curve.fi/api/getPools/fantom/main
 - https://api.curve.fi/api/getPools/fantom/crypto
 - https://api.curve.fi/api/getPools/fantom/factory
+- https://api.curve.fi/api/getPools/fantom/factory-crypto
+- https://api.curve.fi/api/getPools/fantom/factory-eywa
 - https://api.curve.fi/api/getPools/arbitrum/main
 - https://api.curve.fi/api/getPools/arbitrum/crypto
 - https://api.curve.fi/api/getPools/arbitrum/factory
@@ -51,6 +56,8 @@ GET /api/getPools/<blockchainId>/<registryId>
 - https://api.curve.fi/api/getPools/optimism/crypto
 - https://api.curve.fi/api/getPools/optimism/factory
 - https://api.curve.fi/api/getPools/xdai/main
+- https://api.curve.fi/api/getPools/xdai/crypto
+- https://api.curve.fi/api/getPools/xdai/factory
 
 ### getETHprice
 ```
