@@ -26,6 +26,7 @@ import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseReduce, sequentialPromiseFlatMap, sequentialPromiseMap } from 'utils/Async';
 import { getRegistry } from 'utils/getters';
 import getAssetsPrices from 'utils/data/assets-prices';
+import getTokensPrices from 'utils/data/tokens-prices';
 import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getTempleTokenPrices from 'utils/data/getTempleTokenPrices';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
@@ -51,6 +52,13 @@ const POOL_TOKEN_METHOD_ABI = [{"stateMutability":"view","type":"function","name
 const IGNORED_COINS = {
   polygon: [
     '0x8dacf090f8803f53ee3c44f0d7a07b9d70453c42', // spam
+  ].map(lc),
+};
+
+// Tokens for which to use Defillama as external price oracle
+const EXTERNAL_ORACLE_COINS_ADDRESSES = {
+  ethereum: [
+    '0x95dfdc8161832e4ff7816ac4b6367ce201538253', // No curve crypto pool to act as oracle
   ].map(lc),
 };
 
@@ -571,22 +579,45 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     return accu;
   }, []);
 
-  const coinsFallbackPrices = (
+  const coinsFallbackPricesFromCgId = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
       await getAssetsPrices(Array.from(Object.values(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))) :
       {}
   );
-  const coinAddressesAndPricesMapFallback = (
+
+  const coinAddressesAndPricesMapFallbackFromCgId = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
       arrayToHashmap(
         Array.from(Object.entries(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))
           .map(([address, coingeckoId]) => [
             address.toLowerCase(),
-            coinsFallbackPrices[coingeckoId],
+            coinsFallbackPricesFromCgId[coingeckoId],
           ])
       ) :
       {}
   );
+
+  const coinsFallbackPricesFromAddress = (
+    EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
+      await getTokensPrices(EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId]) :
+      {}
+  );
+
+  const coinAddressesAndPricesMapFallbackFromAddress = (
+    EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
+      arrayToHashmap(
+        EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId].map((address) => [
+          address,
+          coinsFallbackPricesFromAddress[address],
+        ])
+      ) :
+      {}
+  );
+
+  const coinAddressesAndPricesMapFallback = {
+    ...coinAddressesAndPricesMapFallbackFromCgId,
+    ...coinAddressesAndPricesMapFallbackFromAddress,
+  };
 
   const ycTokensAddressesAndPricesMapFallback = (
     (blockchainId === 'ethereum' || blockchainId === 'fantom') ?
