@@ -5,6 +5,7 @@ import { REWARD_TOKENS_REPLACE_MAP } from 'constants/AppConstants';
 import { multiCall } from 'utils/Calls';
 import { flattenArray, uniq } from 'utils/Array';
 import { getNowTimestamp } from 'utils/Date';
+import { decimalsNumber } from 'utils/Number';
 import getTokensPrices from 'utils/data/tokens-prices';
 import ERC20_ABI from 'constants/abis/erc20.json';
 
@@ -84,11 +85,11 @@ export default memoize(async ({ factoryGaugesAddresses, blockchainId } = {}) => 
   const rewardsInfo = rewardData.map(({ data, metaData: { gaugeAddress, rewardTokenAddress } }) => {
     const periodFinish = Number(data.period_finish);
     const isRewardStillActive = periodFinish > nowTimestamp;
-    const rate = data.rate / 1e18;
+    const tokenDecimals = tokenData.find(({ metaData }) => metaData.rewardTokenAddress === rewardTokenAddress && metaData.type === 'decimals').data;
+    const rate = data.rate / decimalsNumber(tokenDecimals);
     const totalSupply = gaugesTotalSupply.find(({ metaData: { address } }) => address === gaugeAddress).data / 1e18;
     const tokenName = tokenData.find(({ metaData }) => metaData.rewardTokenAddress === rewardTokenAddress && metaData.type === 'name').data;
     const tokenSymbol = tokenData.find(({ metaData }) => metaData.rewardTokenAddress === rewardTokenAddress && metaData.type === 'symbol').data;
-    const tokenDecimals = tokenData.find(({ metaData }) => metaData.rewardTokenAddress === rewardTokenAddress && metaData.type === 'decimals').data;
     const lcTokenPriceIndex = (REWARD_TOKENS_REPLACE_MAP[rewardTokenAddress] || rewardTokenAddress).toLowerCase();
     const tokenPrice = tokenPrices[lcTokenPriceIndex];
 
