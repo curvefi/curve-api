@@ -24,7 +24,6 @@ export default {
     '0xdb25f211ab05b1c97d595516f45794528a807ad8': 'tether-eurt', // EURS patch
     '0x8e870d67f660d95d5be530380d0ec0bd388289e1': 'paxos-standard', // USDP
     '0xd6ad7a6750a7593e092a9b218d66c0a814a3436e': 'usd-coin', // ycUSDC
-    '0x83f798e925bcd4017eb265844fddabb448f1707d': 'tether', // ycUSDT
     '0x8cb24ed2e4f7e2065f4eb2be5f6b0064b1919850': 'south-african-tether', // ZARP
     '0x028171bca77440897b824ca71d1c56cac55b68a3': 'aave-dai', // aDAI
     '0xBcca60bB61934080951369a648Fb03DF4F96263C': 'aave-usdc', // aUSDC
