@@ -228,7 +228,7 @@ export default fn(async ( {blockchainId} ) => {
   }
 
   // [start] Temporary addition while main ethereum subgraph syncs new crvusd factory pools
-  if (blockchainId === 'ethereum') {
+  /*if (blockchainId === 'ethereum') {
     const getCrvusdData = (await import('./crvusd-mainnet-temp.js')).default;
     const crvusdData = await getCrvusdData();
 
@@ -248,7 +248,7 @@ export default fn(async ( {blockchainId} ) => {
 
       totalVolume += crvusdData.totalVolume;
     }
-  }
+  }*/
   // [end] Temporary addition while main ethereum subgraph syncs new crvusd factory pools
 
 
