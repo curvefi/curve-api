@@ -334,11 +334,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   const REGISTRIES_DEPENDENCIES = {
     main: [],
     crypto: ['main'],
-    'factory-tricrypto': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
     'factory-crvusd': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
     'factory-eywa': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
-    'factory-crypto': ['main', 'crypto', 'factory-crvusd', 'factory-tricrypto'],
-    factory: ['main', 'crypto', 'factory-crypto', 'factory-crvusd', 'factory-tricrypto'],
+    'factory-crypto': ['main', 'crypto', 'factory-crvusd'],
+    factory: ['main', 'crypto', 'factory-crypto', 'factory-crvusd'],
+    'factory-tricrypto': ['main', 'factory-crvusd', 'factory'],
   };
   const { poolsAndLpTokens: mainRegistryPoolsAndLpTokens } = await getMainRegistryPoolsAndLpTokensFn.straightCall({ blockchainId });
   const otherRegistryPoolsData = await sequentialPromiseFlatMap(REGISTRIES_DEPENDENCIES[registryId], async (id) => (
