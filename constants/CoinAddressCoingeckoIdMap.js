@@ -130,6 +130,10 @@ export default {
     '0x049d68029688eabf473097a2fc38ef61633a3c7a': 'tether', // fUSDT
     '0x1e4f97b9f9f913c46f1632781732927b9019c68b': 'curve-dao-token', // CRV
     '0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50': 'binance-usd', // BUSD
+    '0x0ac7e2f9f78de2ccc467139d43b6f32473454dd9': 'tether', // sUSDT_BSC, base price for price inferences on eywa facto pools
+    '0xE35177E61d09bFDb61Ea29db92d19B5E05EdDa8f': 'usd-coin', // sUSDC_BSC, base price for price inferences on eywa facto pools
+    '0x88486E058865611c939D1077725F293378E7bD75': 'dai', // sDAI_BSC, base price for price inferences on eywa facto pools
+    '0xC4417bE9c9b3f682fd03224A4B29e01CE34602fE': 'true-usd', // sTUSD_BSC, base price for price inferences on eywa facto pools
   },
   optimism: {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'ethereum', // Native ETH
