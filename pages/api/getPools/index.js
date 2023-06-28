@@ -35,6 +35,7 @@ import getAssetsPrices from 'utils/data/assets-prices';
 import getTokensPrices from 'utils/data/tokens-prices';
 import getYcTokenPrices from 'utils/data/getYcTokenPrices';
 import getTempleTokenPrices from 'utils/data/getTempleTokenPrices';
+import getEywaTokenPrices from 'utils/data/getEywaTokenPrices';
 import getMainRegistryPools from 'pages/api/getMainRegistryPools';
 import getMainRegistryPoolsAndLpTokensFn from 'pages/api/getMainRegistryPoolsAndLpTokens';
 import getMainPoolsGaugeRewards from 'pages/api/getMainPoolsGaugeRewards';
@@ -719,6 +720,12 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       {}
   );
 
+  const eywaTokensAddressesAndPricesMapFallback = (
+    (blockchainId === 'fantom' && registryId === 'factory-eywa') ?
+      await getEywaTokenPrices(networkSettingsParam, blockchainId, coinAddressesAndPricesMapFallback, allCoinAddresses) :
+      {}
+  );
+
   const coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
     // In crypto facto pools, native eth is represented as weth
     const isNativeEth = (
@@ -805,6 +812,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       ycTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       templeTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
+      eywaTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
       (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) ||
       null
         )
