@@ -86,9 +86,20 @@ const CURVE_POOL_LP_SYMBOLS_OVERRIDES = new Map([
   ['0x051d7e5609917bd9b73f04bac0ded8dd46a74301', 'sbtc2Crv'],
 ]);
 
-const overrideSymbol = (coin) => ({
+// Lowercase token address <> symbol to use
+const CURVE_POOL_SYMBOLS_OVERRIDES = new Map([
+  ['kava-0xfa9343c3897324496a05fc75abed6bac29f8a40f', 'multiUSDC'],
+  ['kava-0x765277eebeca2e31912c9946eae1021199b39c61', 'multiDAI'],
+  ['kava-0xb44a9b6905af7c801311e8f4e76932ee959c663c', 'multiUSDT'],
+]);
+
+const overrideSymbol = (coin, blockchainId) => ({
   ...coin,
-  symbol: (CURVE_POOL_LP_SYMBOLS_OVERRIDES.get(lc(coin.address)) || coin.symbol),
+  symbol: (
+    CURVE_POOL_LP_SYMBOLS_OVERRIDES.get(lc(coin.address)) ||
+    CURVE_POOL_SYMBOLS_OVERRIDES.get(`${blockchainId}-${lc(coin.address)}`) ||
+    coin.symbol
+  ),
 });
 
 const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) => {
@@ -1127,7 +1138,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ),
       lpTokenAddress: (poolInfo.lpTokenAddress || poolInfo.address),
       assetTypeName,
-      coins: augmentedCoins.map(overrideSymbol),
+      coins: augmentedCoins.map((coin) => overrideSymbol(coin, blockchainId)),
       usdTotal,
       isMetaPool,
       underlyingDecimals: (isMetaPool ? poolInfo.underlyingDecimals : undefined),
