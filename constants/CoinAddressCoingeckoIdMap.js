@@ -79,6 +79,7 @@ export default {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'ethereum', // Native ETH
     '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1': 'dai',
     '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8': 'usd-coin',
+    '0xaf88d065e77c8cC2239327C5EDb3A432268e5831': 'usd-coin',
     '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9': 'tether',
     '0x82e64f49ed5ec1bc6e43dad4fc8af9bb3a2312ee': 'dai',
     '0x625e7708f30ca75bfd92586e17077590c60eb4cd': 'usd-coin',

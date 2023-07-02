@@ -504,7 +504,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         params: [address],
         metaData: { poolId, type: 'implementationAddress' },
         ...networkSettingsParam,
-        // factory-tricrypto pools do not have any view method to read their implementation; currently
+        // factory-tricrypto pools on mainnet do not have any view method to read their implementation; currently
         // there's only one implementation available in this registry, so we hardcode it by querying
         // an unexisting method and falling back to the desired value, but we'll need to find
         // another way when another implementation is added.

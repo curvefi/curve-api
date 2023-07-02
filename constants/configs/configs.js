@@ -171,6 +171,7 @@ const configs = {
     multicallAddress: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     multicall2Address: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
+    getFactoryTricryptoRegistryAddress: async () => '0xbC0797015fcFc47d9C1856639CaE50D0e69FbEE8',
     getCryptoRegistryAddress: async () => '0x0E9fBb167DF83EdE3240D6a5fa5d40c6C6851e15',
     factoryImplementationAddressMap: new Map([
       ['0x54e8A25d0Ac0E4945b697C80b8372445FEA17A62'.toLowerCase(), 'plain2basic'],
@@ -191,6 +192,7 @@ const configs = {
       ['0x3edE9b145F82e9e46C03f8A8F67B77aEE847b632'.toLowerCase(), 'metausdbalances-factory-v2-41'],
       ['0x094d12e5b541784701FD8d65F11fc0598FBC6332'.toLowerCase(), 'metabtc'],
       ['0xF1f85a74AD6c64315F85af52d3d46bF715236ADc'.toLowerCase(), 'metabtcbalances'],
+      ['0xd7E72f3615aa65b92A4DBdC211E296a35512988B'.toLowerCase(), 'tricrypto-1'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x7f90122bf0700f9e7e1f688fe926940e8839f353', '0xbF7E49483881C76487b0989CD7d9A8239B20CA41'], // meta usd
