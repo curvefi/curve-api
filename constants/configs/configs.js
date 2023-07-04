@@ -450,5 +450,71 @@ const configs = {
     approxBlocksPerDay: 17280, // https://celoscan.io/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-celo',
   },
+  zkevm: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: null,
+    shortId: 'zkevm',
+    nativeCurrencySymbol: 'ETH',
+    chainId: 1101,
+    nativeCurrencyCoingeckoId: 'ethereum',
+    platformCoingeckoId: 'polygon-zkevm',
+    nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://zkevm-rpc.com',
+    multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    getFactoryRegistryAddress: async () => '0xCDC481031E23AEd8CbBe6e07A638298a790D445a',
+    factoryImplementationAddressMap: new Map([
+      ['0xDec8C0e31A66ed2eEf7ed54155647c9abcf49b9F'.toLowerCase(), 'plain2basic'],
+      ['0x6842E0412AC1c00464dc48961330156a07268d14'.toLowerCase(), 'plain2balances'],
+      ['0x9fAe78C4bBB649deB7b2295dDB8A03adA7eB660F'.toLowerCase(), 'plain2eth'],
+      ['0xfCE359115dFe1533a2458650123F86C454BC0213'.toLowerCase(), 'plain2optimized'],
+      ['0xD19Baeadc667Cf2015e395f2B08668Ef120f41F5'.toLowerCase(), 'plain3basic'],
+      ['0x04e39EF8332e979Cf8e4f8891E64934FF65F231b'.toLowerCase(), 'plain3balances'],
+      ['0xC9438d8928486bD9621D326002F4672bF684187A'.toLowerCase(), 'plain3eth'],
+      ['0x2b70A5B878665FfDB4A06Ba40a264d6c70f68F4B'.toLowerCase(), 'plain3optimized'],
+      ['0x7Bb707085905c9D80854652809A1ba8480C11789'.toLowerCase(), 'plain4basic'],
+      ['0xec9cEBE650E181079576C1b6d0d2e092B1EdfF13'.toLowerCase(), 'plain4balances'],
+      ['0xe8269B33E47761f552E1a3070119560d5fa8bBD6'.toLowerCase(), 'plain4eth'],
+      ['0x114C4042B11a2b16F58Fe1BFe847589a122F678a'.toLowerCase(), 'plain4optimized'],
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 50000, // https://zkevm.polygonscan.com/chart/blocks
+    graphEndpoint: undefined, // Not supported by TheGraph's hosted service
+  },
+  zksync: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: null,
+    shortId: 'zksync',
+    nativeCurrencySymbol: 'ETH',
+    chainId: 324,
+    nativeCurrencyCoingeckoId: 'ethereum',
+    platformCoingeckoId: 'zksync',
+    nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://mainnet.era.zksync.io',
+    multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11', // ??
+    multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11', // ??
+    getFactoryRegistryAddress: async () => '0xAF5261eD780fd5b80CF6E206b6BF90CbB97F511B',
+    factoryImplementationAddressMap: new Map([
+      ['0x7c2a205C52361410233540008f7095dEF5915843'.toLowerCase(), 'plain2basic'],
+      ['0xEF04fC6b95b1658AfdFd527aF9b947cd7BD46bde'.toLowerCase(), 'plain2balances'],
+      ['0x4887ef1a68f30364a25a8b0bAA13EeeA7eeBE574'.toLowerCase(), 'plain2eth'],
+      ['0x044f8F31078c0CB898f25fff3286cE905C18434e'.toLowerCase(), 'plain2optimized'],
+      ['0x2e6De7148Afc6e4B1ee766D070DDeff0C84831a5'.toLowerCase(), 'plain3basic'],
+      ['0x5D18b28C052Bb0C1573d90Ea055b13048026d83F'.toLowerCase(), 'plain3balances'],
+      ['0x9707Bbf96eBB136B67788aa7E46d771Ec18895f4'.toLowerCase(), 'plain3eth'],
+      ['0xb274f2cdCff70A0bac146e9Ca5a8a28f59a3f812'.toLowerCase(), 'plain3optimized'],
+      ['0x30eb3F0EF60993584e8dD231dF7539db31800555'.toLowerCase(), 'plain4basic'],
+      ['0x3D21E268d6A526948e978ad1595052c949927e54'.toLowerCase(), 'plain4balances'],
+      ['0xD46aed59fBd5eB6c134b1AFb364240bb62dA0451'.toLowerCase(), 'plain4eth'],
+      ['0xE80AeF1a4782eA7b7f9Ad9F0c2ed9343861934e3'.toLowerCase(), 'plain4optimized'],
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    approxBlocksPerDay: 70000, // Very approx from list of blocks on https://explorer.zksync.io/blocks
+    graphEndpoint: undefined, // Not supported by TheGraph's hosted service
+  },
 };
 export default configs;
