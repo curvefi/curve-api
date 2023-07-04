@@ -494,8 +494,8 @@ const configs = {
     platformCoingeckoId: 'zksync',
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://mainnet.era.zksync.io',
-    multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11', // ??
-    multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11', // ??
+    multicallAddress: '0xF9cda624FBC7e059355ce98a31693d299FACd963',
+    multicall2Address: '0xF9cda624FBC7e059355ce98a31693d299FACd963',
     getFactoryRegistryAddress: async () => '0xAF5261eD780fd5b80CF6E206b6BF90CbB97F511B',
     factoryImplementationAddressMap: new Map([
       ['0x7c2a205C52361410233540008f7095dEF5915843'.toLowerCase(), 'plain2basic'],
