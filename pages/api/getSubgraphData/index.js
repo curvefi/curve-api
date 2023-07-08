@@ -263,7 +263,10 @@ export default fn(async ({ blockchainId }) => {
    * Add additional ETH staking APY to pools containing ETH LSDs
    */
   poolList = poolList.map((pool) => {
-    const { usesRateOracle, coins, usdTotal } = getPoolByAddress(pool.address);
+    const poolData = getPoolByAddress(pool.address);
+    if (!poolData) return pool; // Some broken/ignored pools might still be picked up by the subgraph
+
+    const { usesRateOracle, coins, usdTotal } = poolData;
     const needsAdditionalLsdAssetApy = (
       !usesRateOracle &&
       coins.some(({ ethLsdApy }) => typeof ethLsdApy !== 'undefined')
