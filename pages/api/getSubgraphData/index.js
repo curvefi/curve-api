@@ -220,8 +220,8 @@ export default fn(async ({ blockchainId }) => {
 
         return {
           ...pool,
-          latestDailyApy: BN(latestDailyApy).plus(BN(underlyingPool.latestDailyApy).div(3)).toFixed(),
-          latestWeeklyApy: BN(latestWeeklyApy).plus(BN(underlyingPool.latestWeeklyApy).div(3)).toFixed(),
+          latestDailyApy: BN(latestDailyApy).plus(BN(underlyingPool.latestDailyApy).div(3)).toNumber(),
+          latestWeeklyApy: BN(latestWeeklyApy).plus(BN(underlyingPool.latestWeeklyApy).div(3)).toNumber(),
         }
       }
 
@@ -287,8 +287,8 @@ export default fn(async ({ blockchainId }) => {
 
     return {
       ...pool,
-      latestDailyApy: BN(pool.latestDailyApy).plus(sumBN(additionalApysPcentFromLsds)).toFixed(),
-      latestWeeklyApy: BN(pool.latestWeeklyApy).plus(sumBN(additionalApysPcentFromLsds)).toFixed(),
+      latestDailyApy: BN(pool.latestDailyApy).plus(sumBN(additionalApysPcentFromLsds)).toNumber(),
+      latestWeeklyApy: BN(pool.latestWeeklyApy).plus(sumBN(additionalApysPcentFromLsds)).toNumber(),
     }
   });
 
