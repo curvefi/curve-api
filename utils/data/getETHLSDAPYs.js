@@ -7,10 +7,11 @@ const FALLBACK_RETURN_VALUE = {};
 
 const REPRESENTATIONS = {
   [lc('0xae7ab96520de3a18e5e111b5eaab095312d7fe84')]: lc('0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0'), // stETH <> wstETH
+  [lc('0x5e8422345238f34275888049021821e8e08caa1f')]: lc('0xac3e018457b222d93114458476f3e3416abbe38f'), // frxETH <> sfrxETH
 };
 
 const MIRROR_REPRESENTATIONS = [
-  [lc('0x5e8422345238f34275888049021821e8e08caa1f'), lc('0xac3e018457b222d93114458476f3e3416abbe38f')], // frxETH <> sfrxETH
+
 ];
 
 // Returns a map of ETH LSD address <> staking apy
