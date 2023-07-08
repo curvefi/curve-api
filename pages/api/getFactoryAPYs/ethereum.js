@@ -34,7 +34,7 @@ export default fn(async ({ version }) => {
         version === 'crypto' ? 'getPools/ethereum/factory-crypto' :
           undefined
   );
-  const { data: { poolData } } = await (await fetch(`http://localhost:3000/api/${factoryPoolsApiEndpoint}`)).json()
+  const { data: { poolData } } = await (await fetch(`https://api.curve.fi/api/${factoryPoolsApiEndpoint}`)).json()
 
   let poolDetails = [];
   let totalVolume = 0
@@ -122,7 +122,7 @@ export default fn(async ({ version }) => {
       })
     )
   } else {
-    const { data: { poolList: poolsStats } } = await (await fetch('http://localhost:3000/api/getSubgraphData/ethereum')).json();
+    const { data: { poolList: poolsStats } } = await (await fetch('https://api.curve.fi/api/getSubgraphData/ethereum')).json();
     poolData.forEach((pool, index) => {
       const lcSwapAddress = pool.address.toLowerCase();
       const poolStats = poolsStats.find(({ address }) => address.toLowerCase() === lcSwapAddress);
