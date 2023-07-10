@@ -19,13 +19,16 @@ const addGeneratedTime = async (res) => ({
   generatedTimeMs: getNowMs(),
 });
 
-const logRuntime = async (fn, name, query) => {
+const logRuntime = async (fn, name, query, silenceParamsLog) => {
   const startMs = getNowMs();
 
   const res = await fn();
 
   const endMs = getNowMs();
-  if (IS_DEV) console.log('Run time (ms):', endMs - startMs, name, query);
+  if (IS_DEV) {
+    const queryText = silenceParamsLog ? 'QUERY_LOGGING_SILENCED' : query;
+    console.log('Run time (ms):', endMs - startMs, name, queryText);
+  }
 
   return res;
 };
@@ -35,15 +38,16 @@ const fn = (cb, options = {}) => {
     maxAge: maxAgeSec = null, // Caching duration, in seconds
     name = null, // Name, used for logging purposes
     returnFlatData = false,
+    silenceParamsLog = false, // Don't log params (can be used because the fn is passed a huge object that creates noise)
   } = options;
 
   const callback = maxAgeSec !== null ?
-    memoize(async (query) => logRuntime(() => addGeneratedTime(cb(query)), name, query), {
+    memoize(async (query) => logRuntime(() => addGeneratedTime(cb(query)), name, query, silenceParamsLog), {
       promise: true,
       maxAge: maxAgeSec * 1000,
       normalizer: ([query]) => JSON.stringify(query), // Separate cache entries for each route & query params,
     }) :
-    async (query) => logRuntime(() => addGeneratedTime(cb(query)), name, query);
+    async (query) => logRuntime(() => addGeneratedTime(cb(query)), name, query, silenceParamsLog);
 
   const apiCall = async (req, res) => (
     Promise.resolve(callback(req.query))

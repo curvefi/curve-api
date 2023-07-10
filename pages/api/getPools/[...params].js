@@ -5,4 +5,5 @@ export default fn(async ({ params: [blockchainId, registryId] }) => (
   getPoolsApiFn.straightCall({ blockchainId, registryId })
 ), {
   maxAge: 60,
+  name: 'getPools[...params]',
 });

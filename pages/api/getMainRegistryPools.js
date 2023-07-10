@@ -31,9 +31,10 @@ export default fn(async ({ blockchainId } = {}) => {
   const poolList = aggcalls[1].map((hex) => web3.eth.abi.decodeParameter('address', hex));
 
 
-  return { poolList  };
+  return { poolList };
 
 }, {
   maxAge: 3600, // 1 hour
+  name: 'getMainRegistryPools',
   normalizer: ([{ blockchainId } = {}]) => blockchainId,
 });

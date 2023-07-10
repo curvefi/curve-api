@@ -60,7 +60,7 @@ const FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES_REF_ASSET_PRICE = {
 };
 
 // eslint-disable-next-line
-const GAUGES_PARTIAL_ABI = [{"name":"reward_contract","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2051},{"name":"totalSupply","outputs":[{"type":"uint256","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":1691},{"stateMutability":"view","type":"function","name":"reward_tokens","inputs":[{"name":"arg0","type":"uint256"}],"outputs":[{"name":"","type":"address"}],"gas":3787},{"name":"rewarded_token","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2201}];
+const GAUGES_PARTIAL_ABI = [{ "name": "reward_contract", "outputs": [{ "type": "address", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function", "gas": 2051 }, { "name": "totalSupply", "outputs": [{ "type": "uint256", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function", "gas": 1691 }, { "stateMutability": "view", "type": "function", "name": "reward_tokens", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3787 }, { "name": "rewarded_token", "outputs": [{ "type": "address", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function", "gas": 2201 }];
 
 export default fn(async (gauges) => {
   if (typeof gauges === 'undefined') {
@@ -70,7 +70,7 @@ export default fn(async (gauges) => {
 
   //empty gauges cause reverts
   const remove = [
-     'eurtusd', // Todo adapt script to this new type of gauges
+    'eurtusd', // Todo adapt script to this new type of gauges
     'eursusd', // Todo adapt script to this new type of gauges
     'crveth', // Todo adapt script to this new type of gauges
     'cvxeth', // Todo adapt script to this new type of gauges
@@ -89,10 +89,10 @@ export default fn(async (gauges) => {
     address: gauge,
     version: (
       V0_GAUGES_ADDRESSES.includes(gauge) ? null :
-      FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES.includes(gauge.toLowerCase()) ? 'factory' :
-      name === 'ankreth' ? 'v-rewarddata' : // Uses the rewardData implementation
-      i < 18 ? 'v1' :
-      'v2'
+        FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES.includes(gauge.toLowerCase()) ? 'factory' :
+          name === 'ankreth' ? 'v-rewarddata' : // Uses the rewardData implementation
+            i < 18 ? 'v1' :
+              'v2'
     ),
   }));
 
@@ -119,13 +119,13 @@ export default fn(async (gauges) => {
           methodName: 'rewarded_token',
           metaData: { address, type: 'rewardToken' },
         }] :
-        [...Array(Number(REWARDS_CONFIG[version].maxRewardCount)).keys()].map((rewardIndex) => ({
-          address,
-          abi: GAUGES_PARTIAL_ABI,
-          methodName: 'reward_tokens',
-          params: [rewardIndex],
-          metaData: { address, type: 'rewardToken' },
-        }))
+          [...Array(Number(REWARDS_CONFIG[version].maxRewardCount)).keys()].map((rewardIndex) => ({
+            address,
+            abi: GAUGES_PARTIAL_ABI,
+            methodName: 'reward_tokens',
+            params: [rewardIndex],
+            metaData: { address, type: 'rewardToken' },
+          }))
       )])
   ));
 
@@ -283,9 +283,9 @@ export default fn(async (gauges) => {
         rewardRate,
         periodFinish,
       ] = [
-        rewardDataForContractToken.find(({ metaData: { type } }) => type === 'rewardRate').data,
-        rewardDataForContractToken.find(({ metaData: { type } }) => type === 'periodFinish').data,
-      ];
+          rewardDataForContractToken.find(({ metaData: { type } }) => type === 'rewardRate').data,
+          rewardDataForContractToken.find(({ metaData: { type } }) => type === 'periodFinish').data,
+        ];
 
       rate = rewardRate / 1e18;
       rewardPeriodFinish = periodFinish;
@@ -348,5 +348,7 @@ export default fn(async (gauges) => {
 
   return { mainPoolsGaugeRewards: groupBy(mergedRewardsInfo, 'gaugeAddress') };
 }, {
+  name: 'getMainPoolsGaugeRewards',
+  silenceParamsLog: true,
   maxAge: 5 * 60, // 5 min
 });
