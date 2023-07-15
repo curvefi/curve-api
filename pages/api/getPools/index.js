@@ -34,6 +34,7 @@ import { getRegistry } from 'utils/getters';
 import getAssetsPrices from 'utils/data/assets-prices';
 import getTokensPrices from 'utils/data/tokens-prices';
 import getYcTokenPrices from 'utils/data/getYcTokenPrices';
+import getCrvusdPrice from 'utils/data/getCrvusdPrice';
 import getETHLSDAPYs from 'utils/data/getETHLSDAPYs';
 import getTempleTokenPrices from 'utils/data/getTempleTokenPrices';
 import getEywaTokenPrices from 'utils/data/getEywaTokenPrices';
@@ -727,6 +728,12 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     ...coinAddressesAndPricesMapFallbackFromAddress,
   };
 
+  const crvusdTokenAddresseAndPriceMapFallback = (
+    blockchainId === 'ethereum' ?
+      await getCrvusdPrice(networkSettingsParam) :
+      {}
+  );
+
   const ycTokensAddressesAndPricesMapFallback = (
     (blockchainId === 'ethereum' || blockchainId === 'fantom') ?
       await getYcTokenPrices(networkSettingsParam, blockchainId, coinAddressesAndPricesMapFallback) :
@@ -826,6 +833,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       (IGNORED_COINS[blockchainId] || []).includes(coinAddress.toLowerCase()) ?
         0 :
         (
+          crvusdTokenAddresseAndPriceMapFallback[coinAddress.toLowerCase()] ||
           otherRegistryTokensPricesMap[coinAddress.toLowerCase()] ||
           mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()] ||
           coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] ||
