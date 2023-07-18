@@ -423,7 +423,7 @@ export default fn(async ({ blockchainId } = {}) => {
                 inflation_rate,
               },
               hasNoCrv: !hasCrv,
-              isKilled,
+              is_killed: isKilled,
               lpTokenPrice,
               ...(blockchainId !== 'ethereum' ? {
                 gaugeStatus: {
