@@ -26,8 +26,8 @@ import GAUGE_ABI from '../../constants/abis/example_gauge_2.json';
 import META_REGISTRY_ABI from '../../constants/abis/meta-registry.json';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
-const GAUGE_IS_ROOT_GAUGE_ABI = [{"stateMutability":"view","type":"function","name":"bridger","inputs":[],"outputs":[{"name":"","type":"address"}]}];
-const GAUGE_IS_ROOT_GAUGE_2_ABI = [{"stateMutability":"view","type":"function","name":"emissions","inputs":[],"outputs":[{"name":"","type":"uint256"}],"gas":2778}];
+const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
+const GAUGE_IS_ROOT_GAUGE_2_ABI = [{ "stateMutability": "view", "type": "function", "name": "emissions", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 2778 }];
 /* eslint-enable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 
 const SIDECHAINS_WITH_FACTORY_GAUGES = [
@@ -396,6 +396,7 @@ export default fn(async ({ blockchainId } = {}) => {
           hasCrv,
           areCrvRewardsStuckInBridge,
           rewardsNeedNudging,
+          isKilled,
         }) => {
           const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
           const name = getPoolName(pool);
@@ -422,6 +423,7 @@ export default fn(async ({ blockchainId } = {}) => {
                 inflation_rate,
               },
               hasNoCrv: !hasCrv,
+              isKilled,
               lpTokenPrice,
               ...(blockchainId !== 'ethereum' ? {
                 gaugeStatus: {
