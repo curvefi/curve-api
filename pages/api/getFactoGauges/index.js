@@ -9,6 +9,7 @@ import sideChainRootGauge from 'constants/abis/sidechain-root-gauge.json';
 import gaugeControllerAbi from 'constants/abis/gauge_controller.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
 import { multiCall } from 'utils/Calls';
+import { lc } from 'utils/String';
 import { arrayToHashmap, arrayOfIncrements, flattenArray } from 'utils/Array';
 import getPools from 'pages/api/getPools';
 import configs from 'constants/configs';
@@ -76,10 +77,7 @@ export default fn(async ({ blockchainId }) => {
     methodName: 'is_killed',
   })));
 
-  const gaugeList = unfilteredGaugeList.filter((address, index) => {
-    const isKilled = gaugesKilledInfo[index];
-    return !isKilled;
-  });
+  const gaugeList = unfilteredGaugeList;
 
   const weekSeconds = 86400 * 7;
   const nowTs = +Date.now() / 1000;
@@ -326,6 +324,7 @@ export default fn(async ({ blockchainId }) => {
         Number(inflationRate) === 0 &&
         !rewardsNeedNudging
       ),
+      isKilled: gaugesKilledInfo[unfilteredGaugeList.findIndex((gaugeAddress) => lc(gaugeAddress) === lc(address))],
     };
   });
 
