@@ -134,6 +134,7 @@ export default fn(async ({ blockchainId }) => {
     }
 
     totalVolume += parseFloat(rollingDaySummedVolume)
+    console.log('totalVolume', totalVolume, rollingDaySummedVolume, parseFloat(rollingDaySummedVolume), poolAddress)
     cryptoVolume += (poolList[i].type.includes('crypto')) ? parseFloat(rollingDaySummedVolume) : 0
 
 
@@ -228,36 +229,6 @@ export default fn(async ({ blockchainId }) => {
       return pool;
     })
   }
-
-  // [start] Temporary addition while main ethereum subgraph syncs new crvusd factory pools
-  if (blockchainId === 'ethereum') {
-    const getCrvusdData = (await import('./crvusd-mainnet-temp.js')).default;
-    const crvusdData = await getCrvusdData();
-
-    if (!crvusdData.subgraphHasErrors) {
-      const crvusdPoolsAddresses = [
-        '0x0cd6f267b2086bea681e922e19d40512511be538',
-        '0x2889302a794da87fbf1d6db415c1492194663d13',
-        '0x4dece678ceceb27446b35c672dc7d61f30bad69e',
-        '0x390f3595bca2df7d23783dfd126427cceb997bf4',
-        '0xca978a0528116dda3cba9acd3e68bc6191ca53d0',
-        '0x34d655069f4cac1547e4c8ca284ffff5ad4a8db0',
-        '0x58b94400bdad7b9ac8d5335e12ef96e8b4966b4a',
-        '0x7f86bf177dd4f3494b841a37e810a34dd56c829b',
-        '0xf5f5b97624542d72a9e06f04804bf81baa15e2b4',
-      ].map(lc);
-
-      poolList = (
-        poolList
-          .filter(({ address }) => !crvusdPoolsAddresses.includes(lc(address)))
-          .concat(crvusdData.poolList)
-      );
-
-      totalVolume += crvusdData.totalVolume;
-    }
-  }
-  // [end] Temporary addition while main ethereum subgraph syncs latest crvusd factory pools
-
 
   /**
    * Add additional ETH staking APY to pools containing ETH LSDs
