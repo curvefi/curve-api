@@ -69,7 +69,7 @@ export default memoize(async ({ blockchainId, gauges }) => {
     rewardTokenAddress
   ));
 
-  const coinAddressesAndPricesMap = await getTokensPrices(uniq(rewardTokenAddresses), config.platformCoingeckoId);
+  const coinAddressesAndPricesMap = await getTokensPrices(uniq(rewardTokenAddresses), blockchainId);
 
   const coinsFallbackPrices = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
