@@ -134,7 +134,7 @@ export default memoize(async ({ blockchainId, gauges }) => {
     const effectiveRate = typeof rate !== 'undefined' ? rate : rateFallback;
     const effectivePeriodFinish = Number(typeof periodFinish !== 'undefined' ? periodFinish : periodFinishFallback);
     const isRewardStillActive = effectivePeriodFinish > nowTimestamp;
-    const totalSupply = gaugesTotalSupply.find(({ metaData }) => metaData.name === name).data / 1e18;
+    const totalSupply = gaugesTotalSupply.find(({ metaData }) => metaData.gauge === gauge).data / 1e18;
     const tokenName = tokenData.find(({ metaData }) => metaData.rewardTokenAddress === rewardTokenAddress && metaData.name === name && metaData.type === 'name').data;
     const tokenSymbol = tokenData.find(({ metaData }) => metaData.rewardTokenAddress === rewardTokenAddress && metaData.name === name && metaData.type === 'symbol').data;
     const tokenDecimals = tokenData.find(({ metaData }) => metaData.rewardTokenAddress === rewardTokenAddress && metaData.name === name && metaData.type === 'decimals').data;
