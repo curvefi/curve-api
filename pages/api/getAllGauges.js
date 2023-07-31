@@ -402,6 +402,14 @@ export default fn(async ({ blockchainId } = {}) => {
           const name = getPoolName(pool);
           const shortName = getPoolShortName(pool);
 
+          const isSupersededByOtherGauge = blockchainFactoGauges.some((factoGauge) => (
+            factoGauge.gauge !== gauge &&
+            !factoGauge.isKilled &&
+            factoGauge.hasCrv &&
+            (isKilled || !hasCrv)
+          ));
+          if (isSupersededByOtherGauge) return null; // Ignore this gauge, a prefered one exists
+
           return [
             name, {
               poolUrls: pool.poolUrls,
@@ -433,7 +441,7 @@ export default fn(async ({ blockchainId } = {}) => {
               } : {}),
             },
           ];
-        })
+        }).filter((o) => o !== null)
     )))),
   };
 
