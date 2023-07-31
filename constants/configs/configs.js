@@ -1,5 +1,6 @@
 import WEB3_CONSTANTS from 'constants/Web3';
 import { CaseInsensitiveMap } from 'utils/Array';
+import { lc } from 'utils/String';
 import { ZERO_ADDRESS } from 'utils/Web3';
 
 const configs = {
@@ -55,7 +56,13 @@ const configs = {
     getFactoryCrvusdRegistryAddress: async () => '0x4F8846Ae9380B90d2E71D5e3D042dff3E7ebb40d',
     getFactoryTricryptoRegistryAddress: async () => '0x0c0e5f2ff0ff18a3be9b835635039256dc4b4963',
     graphEndpoint: `https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet`,
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    BROKEN_POOLS_ADDRESSES: [
+      '0x8301ae4fc9c624d1d396cbdaa1ed877821d7c511',
+      '0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e',
+      '0xc897b98272aa23714464ea2a0bd5180f1b8c0025',
+      '0x9848482da3ee3076165ce6497eda906e66bb85c5',
+    ].map(lc),
   },
   polygon: {
     poolsBaseUrlOld: 'https://polygon.curve.fi/',
@@ -108,7 +115,7 @@ const configs = {
       '0x1197Ae7F43695Be80127365b494E8BF850f4752A', // Broken pool
       '0x40caB7C05fc1686e198C8d6d6aA4aaCF77BE8590', // Broken pool
       '0x64FFf0e27c223097c824f9d9278eFD5B55c3430e', // Broken pool
-    ].map((a) => a.toLowerCase()),
+    ].map(lc),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-matic',
   },
@@ -154,7 +161,7 @@ const configs = {
       ['0x5B5CFE992AdAC0C9D48E05854B2d91C73a003858', '0x2db0E83599a91b508Ac268a6197b8B14F5e72840'], // meta btc
       ['0x0fa949783947Bf6c1b171DB13AEACBB488845B3f', '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F'], // meta usd2
     ]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 95000, // https://ftmscan.com/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom'
   },
@@ -198,7 +205,7 @@ const configs = {
       ['0x7f90122bf0700f9e7e1f688fe926940e8839f353', '0xbF7E49483881C76487b0989CD7d9A8239B20CA41'], // meta usd
       ['0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb', '0xC2b1DF84112619D190193E48148000e3990Bf627'], // meta btc
     ]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum',
   },
   avalanche: {
@@ -243,7 +250,7 @@ const configs = {
     CRYPTO_POOLS_WITH_BASE_POOLS: new CaseInsensitiveMap([
       ['0xB755B949C126C04e0348DD881a5cF55d424742B2', '0x7f90122BF0700F9E7e1F688fe926940E8839F353'], // atricrypto<>aave
     ]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche',
     approxBlocksPerDay: 43000,
   },
@@ -282,7 +289,7 @@ const configs = {
     // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
     //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
     // ])
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism',
   },
@@ -298,7 +305,7 @@ const configs = {
     rpcUrl: 'https://rpc.gnosis.gateway.fm',
     multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
     multicall2Address: '0xFAa296891cA6CECAF2D86eF5F7590316d0A17dA0',
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 16900,
     getFactoryRegistryAddress: async () => '0xD19Baeadc667Cf2015e395f2B08668Ef120f41F5',
     getCryptoRegistryAddress: async () => '0x8A4694401bE8F8FCCbC542a3219aF1591f87CE17',
@@ -332,7 +339,7 @@ const configs = {
     rpcUrl: 'https://mainnet.aurora.dev',
     multicallAddress: '0xace58a26b8Db90498eF0330fDC9C2655db0C45E2',
     multicall2Address: '0xace58a26b8Db90498eF0330fDC9C2655db0C45E2',
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 72000, // https://aurorascan.dev/chart/blocks
     getFactoryRegistryAddress: async () => ZERO_ADDRESS,
     getCryptoRegistryAddress: async () => ZERO_ADDRESS,
@@ -350,7 +357,7 @@ const configs = {
     rpcUrl: 'https://rpc.s0.t.hmny.io',
     multicallAddress: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
     multicall2Address: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43200,
     getCryptoRegistryAddress: async () => '', // Has one crypto pool but no crypto registry
   },
@@ -382,7 +389,7 @@ const configs = {
       ['0xe8269B33E47761f552E1a3070119560d5fa8bBD6'.toLowerCase(), 'plain4optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-moonbeam',
   },
@@ -414,7 +421,7 @@ const configs = {
       ['0x509495DFEEc3a53aCb2F60669985d868131Ad9a5'.toLowerCase(), 'plain4optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 13500, // https://explorer.kava.io/
   },
   celo: {
@@ -446,7 +453,7 @@ const configs = {
       ['0xA73b02a97B45604cd9f0BBAA153eCfe01f409350'.toLowerCase(), 'plain4optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 17280, // https://celoscan.io/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-celo',
   },
@@ -479,7 +486,7 @@ const configs = {
       ['0x114C4042B11a2b16F58Fe1BFe847589a122F678a'.toLowerCase(), 'plain4optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 50000, // https://zkevm.polygonscan.com/chart/blocks
     graphEndpoint: undefined, // Not supported by TheGraph's hosted service
   },
@@ -512,7 +519,7 @@ const configs = {
       ['0xE80AeF1a4782eA7b7f9Ad9F0c2ed9343861934e3'.toLowerCase(), 'plain4optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 70000, // Very approx from list of blocks on https://explorer.zksync.io/blocks
     graphEndpoint: undefined, // Not supported by TheGraph's hosted service
   },

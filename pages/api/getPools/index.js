@@ -217,6 +217,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     multicall2Address,
     BASE_POOL_LP_TO_GAUGE_LP_MAP,
     DISABLED_POOLS_ADDRESSES,
+    BROKEN_POOLS_ADDRESSES,
   } = config;
 
   if (registryId !== 'factory' && registryId !== 'main' && registryId !== 'crypto' && registryId !== 'factory-crypto' && registryId !== 'factory-crvusd' && registryId !== 'factory-tricrypto' && registryId !== 'factory-eywa') {
@@ -312,6 +313,10 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       { networkSettings: { web3, multicall2Address } } :
       undefined
   );
+
+  const {
+    [allCoins.crv.coingeckoId]: crvPrice,
+  } = await getAssetsPrices([allCoins.crv.coingeckoId]);
 
   const poolCount = Number(await registry.methods.pool_count().call());
   if (poolCount === 0) return { poolData: [], tvlAll: 0, tvl: 0 };
@@ -985,7 +990,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
         return {
           ...mergedCoinData[key],
-          usdPrice: (mergedCoinData[key]?.usdPrice === 0 ? 0 : (mergedCoinData[key]?.usdPrice || null)),
+          usdPrice: (
+            mergedCoinData[key]?.usdPrice === 0 ? 0 :
+              (blockchainId === 'ethereum' && lc(coinAddress) === lc(allCoins.crv.address)) ? crvPrice : // Temp: use external crv price oracle
+                (mergedCoinData[key]?.usdPrice || null)
+          ),
         };
       });
 
@@ -1018,9 +1027,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
     const totalSupply = poolInfo.totalSupply / 1e18;
     const lpTokenPrice = totalSupply > 0 ? (usdTotal / totalSupply) : undefined;
-    const {
-      [allCoins.crv.coingeckoId]: crvPrice,
-    } = await getAssetsPrices([allCoins.crv.coingeckoId]);
 
     const relativeWeightRate = (
       blockchainId === 'ethereum' ?
