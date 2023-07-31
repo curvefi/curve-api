@@ -15,7 +15,7 @@ import getAllCurvePoolsData from 'utils/data/curve-pools-data';
 const lc = (str) => str.toLowerCase();
 
 // Pools for which volume data on the subgraph is incorrect, and needs
-// to be overriden with a manual calculation.
+// to be overridden with a manual calculation.
 const POOLS_WITH_INCORRECT_SUBGRAPH_USD_VOLUME = {
   ethereum: [
     '0x84997FAFC913f1613F51Bb0E2b5854222900514B',
