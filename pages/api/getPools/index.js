@@ -1035,7 +1035,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     );
 
     const gaugeCrvBaseApy = (
-      (gaugeData && typeof lpTokenPrice !== 'undefined') ? (
+      (gaugeData && !gaugeData.is_killed && typeof lpTokenPrice !== 'undefined') ? (
         (gaugeData.gauge_controller.inflation_rate / 1e18) * relativeWeightRate * 31536000 / (gaugeData.gauge_data.working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
       ) : undefined
     );
@@ -1180,12 +1180,12 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       usdTotalExcludingBasePool,
       gaugeAddress,
       gaugeRewards: (
-        gaugeAddress ?
+        (gaugeAddress && !gaugeData.is_killed) ?
           (gaugeRewards || []) :
           undefined
       ),
       gaugeCrvApy: (
-        gaugeAddress ?
+        (gaugeAddress && !gaugeData.is_killed) ?
           [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)] :
           undefined
       ),
