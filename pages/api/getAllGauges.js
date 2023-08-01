@@ -404,6 +404,8 @@ export default fn(async ({ blockchainId } = {}) => {
 
           const isSupersededByOtherGauge = blockchainFactoGauges.some((factoGauge) => (
             factoGauge.gauge !== gauge &&
+            factoGauge.blockchainId === blockchainId &&
+            factoGauge.swap === swap &&
             !factoGauge.isKilled &&
             factoGauge.hasCrv &&
             (isKilled || !hasCrv)
