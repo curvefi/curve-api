@@ -302,7 +302,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'xdai',
     platformCoingeckoId: 'xdai',
     nativeAssetErc20WrapperId: 'wxdai', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://rpc.gnosis.gateway.fm',
+    rpcUrl: 'https://rpc.ankr.com/gnosis',
     multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
     multicall2Address: '0xFAa296891cA6CECAF2D86eF5F7590316d0A17dA0',
     DISABLED_POOLS_ADDRESSES: [].map(lc),
