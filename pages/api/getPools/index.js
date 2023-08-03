@@ -693,29 +693,21 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     return accu;
   }, []);
 
-  const coinsFallbackPricesFromCgId = (
+  const coinAddressesAndPricesMapFallbackFromCgId = (
     COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
-      await getAssetsPrices(Array.from(Object.values(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))) :
+      await getTokensPrices(Array.from(Object.keys(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))) :
       {}
   );
 
-  const coinAddressesAndPricesMapFallbackFromCgId = (
-    COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
-      arrayToHashmap(
-        Array.from(Object.entries(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))
-          .map(([address, coingeckoId]) => [
-            address.toLowerCase(),
-            coinsFallbackPricesFromCgId[coingeckoId],
-          ])
-      ) :
-      {}
-  );
+  // console.log('coinAddressesAndPricesMapFallbackFromCgId', coinAddressesAndPricesMapFallbackFromCgId)
 
   const coinsFallbackPricesFromAddress = (
     EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
       await getTokensPrices(EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId]) :
       {}
   );
+
+  // console.log('coinsFallbackPricesFromAddress', coinsFallbackPricesFromAddress)
 
   const coinAddressesAndPricesMapFallbackFromAddress = (
     EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
@@ -730,6 +722,15 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
   const coinAddressesAndPricesMapFallback = {
     ...coinAddressesAndPricesMapFallbackFromCgId,
+    '0x6b175474e89094c44da98b954eedeac495271d0f': 1,
+    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 1,
+    '0xdac17f958d2ee523a2206206994597c13d831ec7': 1,
+    '0xc2cb1040220768554cf699b0d863a3cd4324ce32': 1,
+    '0x26ea744e5b887e5205727f55dfbe8685e3b21951': 1,
+    '0x04bc0ab673d88ae9dbc9da2380cb6b79c4bca9ae': 1,
+    '0x16de59092dae5ccf4a1e6439d611fd0653f0bd01': 1,
+    '0x8e870d67f660d95d5be530380d0ec0bd388289e1': 1,
+    '0xd6ad7a6750a7593e092a9b218d66c0a814a3436e': 1,
     ...coinAddressesAndPricesMapFallbackFromAddress,
   };
 
@@ -849,6 +850,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           null
         )
     );
+    console.log('coinPrice', coinPrice, coinAddress.toLowerCase())
 
     const hardcodedInfoForNativeEth = {
       decimals: 18,

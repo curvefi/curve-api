@@ -134,7 +134,6 @@ export default fn(async ({ blockchainId }) => {
     }
 
     totalVolume += parseFloat(rollingDaySummedVolume)
-    console.log('totalVolume', totalVolume, rollingDaySummedVolume, parseFloat(rollingDaySummedVolume), poolAddress)
     cryptoVolume += (poolList[i].type.includes('crypto')) ? parseFloat(rollingDaySummedVolume) : 0
 
 

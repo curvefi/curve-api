@@ -32,6 +32,7 @@ const getTokensPrices = memoize(async (addresses, platform = 'ethereum') => {
   ), MAX_ADDRESSES_PER_COINGECKO_REQUEST);
 
   const mergedPrices = Object.assign({}, ...pricesChunks);
+  console.log('mergedPrices', mergedPrices, addresses)
 
   const attachNativeEthPrice = addresses.some((address) => address.toLowerCase() === NATIVE_ETH_ADDRESS);
   if (attachNativeEthPrice) {
