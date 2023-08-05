@@ -224,39 +224,3 @@ NONE
       "rawFees": 23928.77840856761 //fees for the week in USD
     }
 ```
-
-### getApys
-
-*Note: deprecated on June 11, 2022; data is old and incomplete, please use other endpoints*
-
-```
-GET /api/getApys
-GET /api/getApys?address=0xADDRESS
-```
-Returns all types of APYs for all Curve pools (base APY from trading fees, CRV APY from CRV distribution, and any additional rewards the pool may have)
-
-**View**:
-[getApys](https://api.curve.fi/api/getApys)
-
-**Parameters:**
-- `address` (optional): address to use to calculate CRV boosts and APYs; if no address is provided, the baseline boost value (`1`) is used
-
-
-**Response :**
-
-```
-"data": {
-  "apys": {
-    "saave": {
-      "baseApy": "2.21",
-      "crvApy": 4.430468225441863,
-      "crvBoost":1,
-      "additionalRewards": [
-        { "name": "STKAAVE", "apy": 0.6132910288661984 }
-      ],
-      "crvPrice": 1.38
-    },
-    …
-  }
-}
-```
