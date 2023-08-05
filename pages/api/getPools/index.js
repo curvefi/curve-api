@@ -835,8 +835,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const coinInfo = accu[key];
 
     const coinPrice = (
-      (IGNORED_COINS[blockchainId] || []).includes(coinAddress.toLowerCase()) ?
-        0 :
+      (IGNORED_COINS[blockchainId] || []).includes(coinAddress.toLowerCase()) ? 0 :
         (
           crvusdTokenAddresseAndPriceMapFallback[coinAddress.toLowerCase()] ||
           otherRegistryTokensPricesMap[coinAddress.toLowerCase()] ||
@@ -1009,13 +1008,19 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       otherRegistryTokensPricesMap,
     });
 
-    const usdTotal = sum(augmentedCoins.map(({ usdPrice, poolBalance, decimals }) => (
-      poolBalance / (10 ** decimals) * usdPrice
-    )));
+    const usdTotal = (
+      (BROKEN_POOLS_ADDRESSES || []).includes(lc(poolInfo.address)) ? 0 :
+        sum(augmentedCoins.map(({ usdPrice, poolBalance, decimals }) => (
+          poolBalance / (10 ** decimals) * usdPrice
+        )))
+    );
 
-    const usdTotalExcludingBasePool = sum(augmentedCoins.filter(({ isBasePoolLpToken }) => !isBasePoolLpToken).map(({ usdPrice, poolBalance, decimals }) => (
-      poolBalance / (10 ** decimals) * usdPrice
-    )));
+    const usdTotalExcludingBasePool = (
+      (BROKEN_POOLS_ADDRESSES || []).includes(lc(poolInfo.address)) ? 0 :
+        sum(augmentedCoins.filter(({ isBasePoolLpToken }) => !isBasePoolLpToken).map(({ usdPrice, poolBalance, decimals }) => (
+          poolBalance / (10 ** decimals) * usdPrice
+        )))
+    );
 
     const gaugeData = typeof ethereumOnlyData !== 'undefined' ?
       ethereumOnlyData.gaugesDataArray.find(({ swap }) => (
