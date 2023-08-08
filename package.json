@@ -14,7 +14,7 @@
     "exponential-backoff": "^3.1.0",
     "form-urlencoded": "^6.0.4",
     "graphql": "^15.5.1",
-    "graphql-request": "^3.4.0",
+    "graphql-request": "^6.1.0",
     "lodash.groupby": "^4.6.0",
     "lodash.partition": "^4.6.0",
     "lodash.uniq": "^4.5.0",
