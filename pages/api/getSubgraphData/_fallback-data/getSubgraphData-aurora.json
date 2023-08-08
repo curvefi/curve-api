@@ -1,0 +1,17 @@
+{
+  "poolList": [
+    {
+      "type": "main",
+      "address": "0xbF7E49483881C76487b0989CD7d9A8239B20CA41",
+      "rawVolume": 777.0105287738036,
+      "volumeUSD": 777.1866322907638,
+      "latestDailyApy": 0.5196139350562623,
+      "latestWeeklyApy": 0.29471108784029365,
+      "virtualPrice": 1028593821776579000
+    }
+  ],
+  "totalVolume": 777.1866322907638,
+  "cryptoVolume": 0,
+  "cryptoShare": 0,
+  "subgraphHasErrors": false
+}

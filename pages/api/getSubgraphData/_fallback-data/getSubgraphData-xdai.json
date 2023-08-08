@@ -1,0 +1,458 @@
+{
+  "poolList": [
+    {
+      "type": "main",
+      "address": "0x7f90122BF0700F9E7e1F688fe926940E8839F353",
+      "rawVolume": 8590.338497613977,
+      "volumeUSD": 8588.921145753733,
+      "latestDailyApy": 0.3939477588874807,
+      "latestWeeklyApy": 0.4857658623022898,
+      "virtualPrice": 1005309027224664600
+    },
+    {
+      "type": "main",
+      "address": "0x85bA9Dfb4a3E4541420Fc75Be02E2B42042D7e46",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0.1165238874142327,
+      "latestWeeklyApy": 0.14364140603535525,
+      "virtualPrice": 1001521203482350600
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xBdF4488Dcf7165788D438b62B4C8A333879B7078",
+      "rawVolume": 2.179577323597409,
+      "volumeUSD": 241.4808974097881,
+      "latestDailyApy": 0.004514564858015824,
+      "latestWeeklyApy": 0.01280096297211486,
+      "virtualPrice": 1000573271755128800
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x5D7309a01B727d6769153fCB1dF5587858d53B9C",
+      "rawVolume": 0.02369454110720052,
+      "volumeUSD": 2.567644087412319,
+      "latestDailyApy": 0.012295491231095745,
+      "latestWeeklyApy": 0.06911674435736703,
+      "virtualPrice": 1002370244567189500
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xe5F32A099Eb90dDB97F3684fc6663dD253dfAe55",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 1000644686866300800
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xd7468E6c3C9259010D1148f79788bA631b94B506",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 1001327149147558100
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xA64D8025ddA09bCE94DA2cF2DC175d1831e2dF76",
+      "rawVolume": 141.81421625495673,
+      "volumeUSD": 141.4689278906518,
+      "latestDailyApy": 0.24277093932958405,
+      "latestWeeklyApy": 0.3373105203590132,
+      "virtualPrice": 1003132569511262500
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xe4194fe60c506abb447815e92fB10F3723C55E84",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xe50f2bA6141d6a26Beed62111D570F282060592D",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x990cD80Ef72e13A5Ac7658dCC9FD209599463b7c",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xAeD6a62dAB7514b6A644AB888cA6810c0327b82b",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x44349c1ec26b6Ba40bbe68d3c906762F0CC2eECB",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x79E81b7080fe56A936e550a71ebC66555Bd4b2f3",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x5a6795570cF56AB8Db01D6c5DB6e980470C563a4",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x149bF4A7e0561D38Db264B973225dAA7209A7d20",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xAf925280277E847201716A88054E5bddbF2Bbb4d",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x9a6a9F304232A8713F23188F9D6A0246df2504CB",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 1000000000000000000
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xc6F47235e30d0668505E6D4F3De002EBdFcd0283",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x5f4509E2280549E662859F7DBE8520bEaf0A9e5B",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x04e99f74951f2d5ebCA7e71AEE6B1BF9984eFBAc",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x207b94Ecb6550ebC89C8C9e5e430f071909A3050",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xd916Ee5879f15652426e342d087a94f699e2c777",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xd8883EeC56cB95F9bbdccaa9b453e3cC19a90e72",
+      "rawVolume": 12.753867588108665,
+      "volumeUSD": 0.07944437321886942,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 1005165798330236700
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xD1C1993f6A4bA35Fcbb241795E571Cc471F91e94",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x8370CeA1E9bB221295563fB2CC62d66D0Afabef3",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xEad043133aa7DbbebEAa986eEB9C85d61962cd91",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x50894fFd90F460aAf5a4aa0390c7567Cdf2812De",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x90767aaCa8445EA703D477bF95952ed893176a44",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xABf72f48277AE1C9cBEab7aD531DE037091B4f84",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x91eBCe7CF4F4ea0c740722b706DbB9AB311844B8",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xb30E4809Fb7Acab15cC0a1D74f54D5cbb287f2E0",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xc24F496463917EF2851D9ce889b07236d8D4C6B6",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x86c76231e0126e53c59D15447E244FE00F11CDfF",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xeac446da379001A8652387Cd899A1EA659CB027C",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xFaE41bB467ca29A5054e40D52AbDb54Eb7e1F3B0",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xdC1422eBFB14baaA25ba18Ba2C0aeaE36aAc5ceF",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xF3Be36DF5AAe8451f10fA2fc7aE1e6de8FfA1D88",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x8C720914Af9BB379fD7297DAB375c969d76e47D0",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xda203fbbC7D3767eF0db31D3bDbB4E3a3D04d4C2",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xBBc454ef207D5190debE534E392BBd7De14D89fc",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x29b963ad4CD578c41e1c5dDe5A8C6FDC4ec1257a",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x2EE47102AC82c4EE64B885B81d7f374e4fed783e",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xf7911B142a59a1DAB915d5886a708Eca5C90AF33",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x6cCd06ecD351d46d3B49f9cF5F2804189bb685C1",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xc683E8314Ea5Be1525eC218106EBE69c146c1Dc2",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 0
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xCD92002A5015288f95AC80D9772F3fbDeA4bB76B",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 1000077823612436000
+    },
+    {
+      "type": "stable-factory",
+      "address": "0x18a096234F7e008418Eb2603738c073d9045B0a4",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 1000001751318677500
+    },
+    {
+      "type": "stable-factory",
+      "address": "0xab033557743fbB4B9aF4C408B5267C0A4d28E15A",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 1000018395108167800
+    },
+    {
+      "type": "crypto",
+      "address": "0x5633E00994896D0F472926050eCb32E38bef3e65",
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0,
+      "virtualPrice": 1004266708361128300
+    },
+    {
+      "type": "crypto",
+      "address": "0x056C6C5e684CeC248635eD86033378Cc444459B0",
+      "rawVolume": 241703.2145109759,
+      "volumeUSD": 125215.9594089262,
+      "latestDailyApy": 0.0651430681659626,
+      "latestWeeklyApy": 0.1888332410462601,
+      "virtualPrice": 1004488954012929300
+    }
+  ],
+  "totalVolume": 134190.477468441,
+  "cryptoVolume": 125215.9594089262,
+  "cryptoShare": 93.31210512934835,
+  "subgraphHasErrors": false
+}
