@@ -1196,6 +1196,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ),
       oracleMethod: undefined, // Don't return this value, unneeded for api consumers
       usesRateOracle,
+      isBroken: (BROKEN_POOLS_ADDRESSES || []).includes(lc(poolInfo.address)),
     };
 
     // When retrieving pool data for a registry that isn't 'main', mainRegistryLpTokensPricesMap
