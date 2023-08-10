@@ -72,7 +72,7 @@ const IGNORED_COINS = {
 // Tokens for which to use Defillama as external price oracle
 const EXTERNAL_ORACLE_COINS_ADDRESSES = {
   ethereum: [
-    '0x95dfdc8161832e4ff7816ac4b6367ce201538253', // ibKRW (no curve crypto pool to act as oracle)
+    '0x269895a3df4d73b077fc823dd6da1b95f72aaf9b', // sKRW (no curve crypto pool to act as oracle)
     '0x5555f75e3d5278082200fb451d1b6ba946d8e13b', // ibJPY (no curve crypto pool to act as oracle)
     '0xF48e200EAF9906362BB1442fca31e0835773b8B4', // sAUD (no curve crypto pool to act as oracle)
     '0x97fe22E7341a0Cd8Db6F6C021A24Dc8f4DAD855F', // sGBP (no curve crypto pool to act as oracle)
