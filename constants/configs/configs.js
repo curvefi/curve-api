@@ -523,5 +523,40 @@ const configs = {
     approxBlocksPerDay: 70000, // Very approx from list of blocks on https://explorer.zksync.io/blocks
     graphEndpoint: undefined, // Not supported by TheGraph's hosted service
   },
+  base: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: null,
+    shortId: 'base',
+    nativeCurrencySymbol: 'ETH',
+    chainId: 8453,
+    nativeCurrencyCoingeckoId: 'ethereum',
+    platformCoingeckoId: 'base',
+    nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://mainnet.base.org/',
+    multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
+    multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
+    getFactoryRegistryAddress: async () => '0x114C4042B11a2b16F58Fe1BFe847589a122F678a',
+    getFactoryCryptoRegistryAddress: async () => '0x5EF72230578b3e399E6C6F4F6360edF95e83BBfd',
+    getFactoryTricryptoRegistryAddress: async () => '0xA5961898870943c68037F6848d2D866Ed2016bcB',
+    factoryImplementationAddressMap: new Map([
+      ['0x4244eB811D6e0Ef302326675207A95113dB4E1F8'.toLowerCase(), 'plain2basic'],
+      ['0x883feb1B9862e0c8559D26F53bf19264C5E0839F'.toLowerCase(), 'plain2balances'],
+      ['0x66B5792ED50a2a7405Ea75C4B6B1913eF4E46661'.toLowerCase(), 'plain2eth'],
+      ['0xcB4eB43E31C830e22baF764c64F11F32C280496c'.toLowerCase(), 'plain2optimized'],
+      ['0x0E2615ce69Cd3Dc3Ff6f66a975bEa0655F3bA7b9'.toLowerCase(), 'plain3basic'],
+      ['0x0E2615ce69Cd3Dc3Ff6f66a975bEa0655F3bA7b9'.toLowerCase(), 'plain3balances'],
+      ['0x7D6Cf519Bfe71EaFb21bC1787964559505AFF685'.toLowerCase(), 'plain3eth'],
+      ['0x94347E31BbA87C1004AF3b149cc8c1DE90ABE910'.toLowerCase(), 'plain3optimized'],
+      ['0xD2AcAe14ae2ee0f6557aC6C6D0e407a92C36214b'.toLowerCase(), 'plain4basic'],
+      ['0xB8bF7ABeb9b4E9AD35EAB77643aDb363E40a3b0B'.toLowerCase(), 'plain4balances'],
+      ['0x4A5bF7Ab9A8202692051c19B102d3eDD62aaBAE6'.toLowerCase(), 'plain4eth'],
+      ['0x0B4dc7A945695D11FD83e40B2DfC2B896A02395F'.toLowerCase(), 'plain4optimized'],
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    approxBlocksPerDay: 4300, // Very approx from list of blocks on https://basescan.org/blocks
+    graphEndpoint: undefined, // Not supported by TheGraph's hosted service https://thegraph.com/docs/en/developing/supported-networks/
+  },
 };
 export default configs;

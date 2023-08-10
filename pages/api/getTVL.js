@@ -40,6 +40,7 @@ export default fn(async () => {
     'getTVLCelo',
     'getTVLZkevm',
     'getTVLZksync',
+    'getTVLBase',
   ]
 
   let sideChainTVL = 0
