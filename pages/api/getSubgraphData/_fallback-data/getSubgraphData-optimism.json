@@ -3,47 +3,47 @@
     {
       "type": "main",
       "address": "0x1337BedC9D22ecbe766dF105c9623922A27963EC",
-      "rawVolume": 5109672.061048977,
-      "volumeUSD": 5109818.201102232,
-      "latestDailyApy": 1.3266871098569721,
-      "latestWeeklyApy": 1.179375014511841,
-      "virtualPrice": 1019643212215520800
+      "rawVolume": 2034699.4050282717,
+      "volumeUSD": 2034667.5662111195,
+      "latestDailyApy": 0.888379360584235,
+      "latestWeeklyApy": 1.1549074527386072,
+      "virtualPrice": 1019831624046260100
     },
     {
       "type": "stable-factory",
       "address": "0x29A3d66B30Bc4AD674A4FDAF27578B64f6afbFe7",
-      "rawVolume": 52.824255574222434,
-      "volumeUSD": 52.76944012864408,
-      "latestDailyApy": 1.1788880780209787,
-      "latestWeeklyApy": 1.2184872511874278,
-      "virtualPrice": 1004403158758359200
+      "rawVolume": 99.22038989673375,
+      "volumeUSD": 99.18263227518196,
+      "latestDailyApy": 0.8453699189757247,
+      "latestWeeklyApy": 2.3657159463766675,
+      "virtualPrice": 1004822826063019600
     },
     {
       "type": "main",
       "address": "0x66B5792ED50a2a7405Ea75C4B6B1913eF4E46661",
-      "rawVolume": 1.0170185,
-      "volumeUSD": 1.0171971789891605,
-      "latestDailyApy": 3.751718449561592,
-      "latestWeeklyApy": 2.907808015717128,
-      "virtualPrice": 1225243588556053500
+      "rawVolume": 0,
+      "volumeUSD": 0,
+      "latestDailyApy": 5.675123569511653,
+      "latestWeeklyApy": 3.9230619389138743,
+      "virtualPrice": 1226027572396842800
     },
     {
       "type": "main",
       "address": "0xB90B9B1F91a01Ea22A182CD84C1E22222e39B415",
-      "rawVolume": 1.235798888641354,
-      "volumeUSD": 2269.976984242507,
-      "latestDailyApy": 2.004551699063395,
-      "latestWeeklyApy": 1.8450588331833995,
-      "virtualPrice": 1033247180851749200
+      "rawVolume": 40.463151251677374,
+      "volumeUSD": 75021.59015746435,
+      "latestDailyApy": 1.948318629428547,
+      "latestWeeklyApy": 1.701085657490986,
+      "virtualPrice": 1033526308783305500
     },
     {
       "type": "stable-factory",
       "address": "0x061b87122Ed14b9526A813209C8a59a633257bAb",
-      "rawVolume": 214647.69432107112,
-      "volumeUSD": 213508.91575123402,
-      "latestDailyApy": 1.0020740868961209,
-      "latestWeeklyApy": 0.8441497761739303,
-      "virtualPrice": 1016816453902197500
+      "rawVolume": 168785.36029093576,
+      "volumeUSD": 167723.23543263797,
+      "latestDailyApy": 0.3981176880414772,
+      "latestWeeklyApy": 0.9911463884757721,
+      "virtualPrice": 1016981583273973900
     },
     {
       "type": "stable-factory",
@@ -51,8 +51,8 @@
       "rawVolume": 0,
       "volumeUSD": 0,
       "latestDailyApy": 0,
-      "latestWeeklyApy": 0,
-      "virtualPrice": 68231531718821890000
+      "latestWeeklyApy": 0.004491629167024946,
+      "virtualPrice": 68231590654255060000
     },
     {
       "type": "stable-factory",
@@ -75,11 +75,11 @@
     {
       "type": "stable-factory",
       "address": "0x6645237fb81fe7227AA2Fa2A244D23A5AC0DA1cd",
-      "rawVolume": 323.9026072283403,
-      "volumeUSD": 320.83688746694304,
-      "latestDailyApy": 0.43036244559278014,
-      "latestWeeklyApy": 0.37831593574164657,
-      "virtualPrice": 1029850858421794600
+      "rawVolume": 179.23193357787738,
+      "volumeUSD": 177.02676428872977,
+      "latestDailyApy": 0.1504205592264718,
+      "latestWeeklyApy": 0.8399972761060637,
+      "virtualPrice": 1030004445027484900
     },
     {
       "type": "stable-factory",
@@ -129,11 +129,11 @@
     {
       "type": "stable-factory",
       "address": "0x7Bc5728BC2b59B45a58d9A576E2Ffc5f0505B35E",
-      "rawVolume": 2.2337274215966456,
-      "volumeUSD": 4060.8287624425498,
-      "latestDailyApy": 0.15232332421637462,
-      "latestWeeklyApy": 0.10731170279267843,
-      "virtualPrice": 1005816990523177300
+      "rawVolume": 4.10411079023371,
+      "volumeUSD": 7609.207687818346,
+      "latestDailyApy": 0.031351306038329696,
+      "latestWeeklyApy": 0.2530670822221248,
+      "virtualPrice": 1005861687575720300
     },
     {
       "type": "stable-factory",
@@ -147,11 +147,11 @@
     {
       "type": "stable-factory",
       "address": "0x9F2fE3500B1a7E285FDc337acacE94c480e00130",
-      "rawVolume": 0.000003144441738935,
-      "volumeUSD": 0.09115409724556267,
-      "latestDailyApy": 0.008294417872622972,
-      "latestWeeklyApy": 0.13871907689348983,
-      "virtualPrice": 1003171798505278300
+      "rawVolume": 0.29981302358852174,
+      "volumeUSD": 8806.308882446952,
+      "latestDailyApy": 0.002862964543681734,
+      "latestWeeklyApy": 0.0047648273935108065,
+      "virtualPrice": 1003172489748135300
     },
     {
       "type": "stable-factory",
@@ -194,9 +194,9 @@
       "address": "0x54DCFE120d608551f9010d3b66620D230fD5c11B",
       "rawVolume": 0,
       "volumeUSD": 0,
-      "latestDailyApy": 0.6441735617183086,
-      "latestWeeklyApy": 0.6657927849036849,
-      "virtualPrice": 1655891524527072300
+      "latestDailyApy": 0.34676188590214707,
+      "latestWeeklyApy": 1.8183567378178056,
+      "virtualPrice": 1656436519911639800
     },
     {
       "type": "stable-factory",
@@ -365,18 +365,18 @@
       "address": "0xAE13DFf69D84d87aE50ad841377d5F9d33d857Cf",
       "rawVolume": 0,
       "volumeUSD": 0,
-      "latestDailyApy": 1.0891105424541747,
-      "latestWeeklyApy": 0.9683467987439354,
-      "virtualPrice": 1003275958394898000
+      "latestDailyApy": 0.7295701235112029,
+      "latestWeeklyApy": 0.9482703396572312,
+      "virtualPrice": 1003428323535510300
     },
     {
       "type": "stable-factory",
       "address": "0xa2f1E7E65bfdBD264D6e3cB4dA50eDF7fc77b861",
       "rawVolume": 0,
       "volumeUSD": 0,
-      "latestDailyApy": 0.3916220100909751,
-      "latestWeeklyApy": 0.3483727509333123,
-      "virtualPrice": 1003235059779289300
+      "latestDailyApy": 0.26263772734698154,
+      "latestWeeklyApy": 0.341170466487406,
+      "virtualPrice": 1003290032460211500
     },
     {
       "type": "stable-factory",
@@ -453,11 +453,11 @@
     {
       "type": "stable-factory",
       "address": "0x810D1AaA4Cd8F21c23bB648F2dfb9DC232A01F09",
-      "rawVolume": 27853.773022274196,
-      "volumeUSD": 27814.163408122,
-      "latestDailyApy": 0.6967203841191649,
-      "latestWeeklyApy": 1.338133932236829,
-      "virtualPrice": 1003896554702986200
+      "rawVolume": 25094.56320797222,
+      "volumeUSD": 24998.10970209165,
+      "latestDailyApy": 0.8641758800013388,
+      "latestWeeklyApy": 0.6661752034980539,
+      "virtualPrice": 1004005664155408400
     },
     {
       "type": "stable-factory",
@@ -570,11 +570,11 @@
     {
       "type": "stable-factory",
       "address": "0xBBaf6181FBf0C624699c7E56Ba109a53ECa846F2",
-      "rawVolume": 0.03981810821776807,
-      "volumeUSD": 0.03981810821776807,
+      "rawVolume": 0,
+      "volumeUSD": 0,
       "latestDailyApy": 0,
-      "latestWeeklyApy": 0,
-      "virtualPrice": 1000000000000000000
+      "latestWeeklyApy": 0.20822134527305192,
+      "virtualPrice": 1000040003335843800
     },
     {
       "type": "stable-factory",
@@ -597,11 +597,11 @@
     {
       "type": "stable-factory",
       "address": "0x1Dc5c0f8668a9F54ED922171d578011850ca0341",
-      "rawVolume": 0.000248164590088719,
-      "volumeUSD": 7.209910087740265,
-      "latestDailyApy": 0.00032893661190414036,
-      "latestWeeklyApy": 0.09429619732730377,
-      "virtualPrice": 1000206297730427800
+      "rawVolume": 0.010089413166776225,
+      "volumeUSD": 296.74527105218726,
+      "latestDailyApy": 0,
+      "latestWeeklyApy": 0.02732046036881819,
+      "virtualPrice": 1000211543058821500
     },
     {
       "type": "stable-factory",
@@ -653,9 +653,9 @@
       "address": "0x518D6ae98818C971B3fa1e4186CC573F1E3ebE68",
       "rawVolume": 0,
       "volumeUSD": 0,
-      "latestDailyApy": 4.364045968891039,
-      "latestWeeklyApy": 3.6092036318889242,
-      "virtualPrice": 1002445107354454300
+      "latestDailyApy": 4.872681697368986,
+      "latestWeeklyApy": 4.000267521370748,
+      "virtualPrice": 1003084706715047800
     },
     {
       "type": "stable-factory",
@@ -667,7 +667,7 @@
       "virtualPrice": 0
     }
   ],
-  "totalVolume": 5357854.050415341,
+  "totalVolume": 2319398.972741195,
   "cryptoVolume": 0,
   "cryptoShare": 0,
   "subgraphHasErrors": false

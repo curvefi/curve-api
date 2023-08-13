@@ -17,7 +17,7 @@ const USE_FALLBACK_THEGRAPH_DATA = false;
 // place that's querying thegraph will dump its output, prefixed with
 // "FALLBACK_THEGRAPH_DATA_POPULATE_MODE" and the filename where to store
 // this data, in order to update that filename easily.
-const FALLBACK_THEGRAPH_DATA_POPULATE_MODE = true;
+const FALLBACK_THEGRAPH_DATA_POPULATE_MODE = false;
 
 module.exports = {
   IS_DEV,

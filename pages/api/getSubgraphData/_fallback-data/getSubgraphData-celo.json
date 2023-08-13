@@ -12,11 +12,11 @@
     {
       "type": "main",
       "address": "0x32fD7e563c6521Ab4D59CE3277bcfBe3317CFd63",
-      "rawVolume": 14200.571426105269,
-      "volumeUSD": 14192.871872008627,
-      "latestDailyApy": 0.2583077597797079,
-      "latestWeeklyApy": 1.103695574606034,
-      "virtualPrice": 1002649605186608900
+      "rawVolume": 151.3205281454791,
+      "volumeUSD": 151.25961709689304,
+      "latestDailyApy": 0.03610999456928887,
+      "latestWeeklyApy": 0.21161896224470844,
+      "virtualPrice": 1002683281550895100
     },
     {
       "type": "main",
@@ -24,17 +24,17 @@
       "rawVolume": 0,
       "volumeUSD": 0,
       "latestDailyApy": 0,
-      "latestWeeklyApy": 122.47326212745926,
-      "virtualPrice": 17378027136750615000
+      "latestWeeklyApy": 0.010493880779427478,
+      "virtualPrice": 17378062204813908000
     },
     {
       "type": "main",
       "address": "0x9Be5da31c7A42d7e045189ac1822D1fA5838e635",
-      "rawVolume": 6721.011078895062,
-      "volumeUSD": 6717.889468744192,
-      "latestDailyApy": 5.656443738854833,
-      "latestWeeklyApy": 3.8630884361038564,
-      "virtualPrice": 1004140904008910700
+      "rawVolume": 14111.256695462997,
+      "volumeUSD": 14101.865920066075,
+      "latestDailyApy": 5.347140726448996,
+      "latestWeeklyApy": 3.4345477363228794,
+      "virtualPrice": 1004642171723468400
     },
     {
       "type": "main",
@@ -42,8 +42,8 @@
       "rawVolume": 0,
       "volumeUSD": 0,
       "latestDailyApy": 0,
-      "latestWeeklyApy": 0.04758712131596177,
-      "virtualPrice": 1000680898476842100
+      "latestWeeklyApy": 0.03423596999312384,
+      "virtualPrice": 1000687485737664500
     },
     {
       "type": "main",
@@ -318,11 +318,11 @@
     {
       "type": "main",
       "address": "0xf4cab10dC19695AaCe14b7A16d7705b600ad5F73",
-      "rawVolume": 23809.423923519695,
-      "volumeUSD": 23799.84101630818,
-      "latestDailyApy": 0.009314437669183384,
-      "latestWeeklyApy": 0.16150354362052255,
-      "virtualPrice": 1000423457885664400
+      "rawVolume": 824.446098807467,
+      "volumeUSD": 824.115762725089,
+      "latestDailyApy": 0.00201350348516538,
+      "latestWeeklyApy": 0.009034760846859946,
+      "virtualPrice": 1000424940714768400
     },
     {
       "type": "main",
@@ -343,7 +343,7 @@
       "virtualPrice": 1000000000000000000
     }
   ],
-  "totalVolume": 44710.602357061,
+  "totalVolume": 15077.241299888057,
   "cryptoVolume": 0,
   "cryptoShare": 0,
   "subgraphHasErrors": false
