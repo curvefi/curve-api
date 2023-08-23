@@ -126,7 +126,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
   const { networkSettings } = augmentedCallsConfig[0];
 
   const multicall = getContractInstance(networkSettings.multicall2Address, MULTICALL2_ABI, networkSettings.web3);
-  const chunkedCalls = getArrayChunks(calls, 400); // Keep each multicall size reasonable
+  const chunkedCalls = getArrayChunks(calls, 200); // Keep each multicall size reasonable
 
   let decodedData;
   try {
@@ -166,8 +166,8 @@ const multiCall = async (callsConfig, isDebugging = false) => {
             // Allow passing a custom fallback value for very specific cases; should rarely be used
             if (typeof superSettings.fallbackValue !== 'undefined') {
               data = superSettings.fallbackValue;
-            // Use fallback value if one exists (ideally we have fallback values for all types,
-            // add more when necessary as we encounter other failures)
+              // Use fallback value if one exists (ideally we have fallback values for all types,
+              // add more when necessary as we encounter other failures)
             } else if (typeof FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType] !== 'undefined') {
               data = FALLBACK_DECODED_PARAMETERS_VALUES[failedDecodedType];
             } else {
