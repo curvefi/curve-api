@@ -19,17 +19,18 @@ const attachFactoryTag = (poolData) => ({
   factory: true,
 });
 
-const getAllCurvePoolsData = memoize(async (blockchainIds, useOnlineVersion = false) => (
+const getAllCurvePoolsData = memoize(async (blockchainIds) => (
   flattenArray(await sequentialPromiseFlatMap(blockchainIds, async (blockchainId) => (
-    Promise.all(getPlatformRegistries(blockchainId).map(async (registryId) => (
-      (useOnlineVersion ?
-        Promise.resolve((await (await fetch(`https://api.curve.fi/api/getPools/${blockchainId}/${registryId}?preventQueryingFactoData=true`)).json()).data) :
-        (getPools.straightCall({ blockchainId, registryId, preventQueryingFactoData: true }))
-      ).then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('main', poolData)))
+    Promise.all(getPlatformRegistries(blockchainId).map((registryId) => (
+      (getPools.straightCall({ blockchainId, registryId, preventQueryingFactoData: true }))
+        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('main', poolData)).map((poolData) => (
+          registryId.startsWith('factory') ?
+            attachFactoryTag(poolData) :
+            poolData
+        )))
     )))
   )))
 ), {
-  length: 2,
   promise: true,
   maxAge: 60 * 1000, // 60s
 });

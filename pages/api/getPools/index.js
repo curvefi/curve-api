@@ -44,6 +44,7 @@ import getMainRegistryPoolsAndLpTokensFn from 'pages/api/getMainRegistryPoolsAnd
 import getMainPoolsGaugeRewards from 'pages/api/getMainPoolsGaugeRewards';
 import configs from 'constants/configs';
 import allCoins from 'constants/coins';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
 import POOLS_ZAPS from 'constants/pools-zaps';
 import COIN_ADDRESS_COINGECKO_ID_MAP from 'constants/CoinAddressCoingeckoIdMap';
 import { getHardcodedPoolId } from 'constants/PoolAddressInternalIdMap';
@@ -117,8 +118,15 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
         (await import('utils/data/getFactoryV2GaugeRewards')).default :
         (await import('utils/data/getFactoryV2SidechainGaugeRewards')).default
     );
-    const getGauges = (await import('pages/api/getAllGauges')).default;
-    gaugesData = await getGauges.straightCall({ blockchainId });
+    console.log('retrieve gaugesData...')
+    /**
+     * Here we want getGauges data (which itself calls getPools) to be available
+     * whether api edge caches are hot or cold. This makes sure data is called
+     * every time, but takes advantages of returning cached data very quickly once
+     * caches are hot.
+     */
+    gaugesData = (await (await fetch(BASE_API_DOMAIN + '/api/getAllGauges?blockchainId=' + blockchainId)).json()).data;
+    console.log('retrieved gaugesData!')
 
     if (blockchainId === 'ethereum') {
       const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => !side_chain);

@@ -83,6 +83,7 @@ const getPoolShortName = (pool) => {
 };
 
 export default fn(async ({ blockchainId } = {}) => {
+  console.log('getAllGauges CALL', blockchainId)
   const chainsToQuery = SIDECHAINS_WITH_FACTORY_GAUGES;
   const blockchainIds = [
     'ethereum',
@@ -93,7 +94,7 @@ export default fn(async ({ blockchainId } = {}) => {
     id === 'ethereum' // Always include ethereum
   ));
 
-  const allPools = await getAllCurvePoolsData(blockchainIds, true);
+  const allPools = await getAllCurvePoolsData(blockchainIds);
 
   const getPoolByLpTokenAddress = (lpTokenAddress, blockchainId) => (
     allPools.find((pool) => (
