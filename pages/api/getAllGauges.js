@@ -93,7 +93,7 @@ export default fn(async ({ blockchainId } = {}) => {
     id === 'ethereum' // Always include ethereum
   ));
 
-  const allPools = await getAllCurvePoolsData(blockchainIds);
+  const allPools = await getAllCurvePoolsData(blockchainIds, true);
 
   const getPoolByLpTokenAddress = (lpTokenAddress, blockchainId) => (
     allPools.find((pool) => (
