@@ -27,6 +27,7 @@ import factoryEywaPoolAbi from 'constants/abis/fantom/factory-eywa/pool.json';
 import erc20Abi from 'constants/abis/erc20.json';
 import erc20AbiMKR from 'constants/abis/erc20_mkr.json';
 import { multiCall } from 'utils/Calls';
+import getPlatformRegistries from 'utils/data/curve-platform-registries';
 import { ZERO_ADDRESS } from 'utils/Web3';
 import { flattenArray, sum, arrayToHashmap } from 'utils/Array';
 import { sequentialPromiseReduce, sequentialPromiseFlatMap, sequentialPromiseMap } from 'utils/Async';
@@ -225,33 +226,10 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'|\'factory-crvusd\'|\'factory-tricrypto\'|\'factory-eywa\'');
   }
 
-  if (registryId === 'factory' && typeof getFactoryRegistryAddress !== 'function') {
-    console.error(`No getFactoryRegistryAddress() config method found for blockchainId "${blockchainId}"`);
-    return { poolData: [] };
-  }
+  const platformRegistries = getPlatformRegistries(blockchainId);
 
-  if (registryId === 'crypto' && typeof getCryptoRegistryAddress !== 'function') {
-    console.error(`No getCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
-    return { poolData: [] };
-  }
-
-  if (registryId === 'factory-crypto' && typeof getFactoryCryptoRegistryAddress !== 'function') {
-    console.error(`No getFactoryCryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
-    return { poolData: [] };
-  }
-
-  if (registryId === 'factory-crvusd' && typeof getFactoryCrvusdRegistryAddress !== 'function') {
-    console.error(`No getFactoryCrvusdRegistryAddress() config method found for blockchainId "${blockchainId}"`);
-    return { poolData: [] };
-  }
-
-  if (registryId === 'factory-tricrypto' && typeof getFactoryTricryptoRegistryAddress !== 'function') {
-    console.error(`No getFactoryTricryptoRegistryAddress() config method found for blockchainId "${blockchainId}"`);
-    return { poolData: [] };
-  }
-
-  if (registryId === 'factory-eywa' && typeof getFactoryEywaRegistryAddress !== 'function') {
-    console.error(`No getFactoryEywaRegistryAddress() config method found for blockchainId "${blockchainId}"`);
+  if (!platformRegistries.includes(registryId)) {
+    console.error(`No registry "${registryId}" found for blockchainId "${blockchainId}"`);
     return { poolData: [] };
   }
 

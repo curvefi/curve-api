@@ -1,5 +1,6 @@
 ## Table of Contents
 
+  - [getPlatforms](#getplatforms)
   - [getPools](#getpools)
   - [getETHprice](#getethprice)
   - [getFactoryTVL](#getfactorytvl)
@@ -13,6 +14,18 @@
 **Base is always: https://api.curve.fi/**
 
 Last generation time of an endpoint can be found in the `generatedTimeMs` property.
+
+### getPlatforms
+
+Returns platforms that Curve is deployed on, and which pool registries are available on each platform.
+Useful to then query pools (see [`getPools`](#getpools) below)
+
+```
+GET /api/getPlatforms
+```
+
+**View**:
+[getPlatforms](https://api.curve.fi/api/getPlatforms)
 
 ### getPools
 
@@ -29,38 +42,12 @@ GET /api/getPools/<blockchainId>/<registryId>
 
 **View**:
 
-*This is the list of all deployed registries on all chains, as of June 14, 2023*
+Example endpoints available:
 
-- https://api.curve.fi/api/getPools/ethereum/main
-- https://api.curve.fi/api/getPools/ethereum/crypto
-- https://api.curve.fi/api/getPools/ethereum/factory
-- https://api.curve.fi/api/getPools/ethereum/factory-crypto
 - https://api.curve.fi/api/getPools/ethereum/factory-crvusd
-- https://api.curve.fi/api/getPools/ethereum/factory-tricrypto
-- https://api.curve.fi/api/getPools/polygon/main
-- https://api.curve.fi/api/getPools/polygon/crypto
-- https://api.curve.fi/api/getPools/polygon/factory
 - https://api.curve.fi/api/getPools/polygon/factory-crypto
-- https://api.curve.fi/api/getPools/fantom/main
-- https://api.curve.fi/api/getPools/fantom/crypto
-- https://api.curve.fi/api/getPools/fantom/factory
-- https://api.curve.fi/api/getPools/fantom/factory-crypto
-- https://api.curve.fi/api/getPools/fantom/factory-eywa
-- https://api.curve.fi/api/getPools/arbitrum/main
-- https://api.curve.fi/api/getPools/arbitrum/crypto
-- https://api.curve.fi/api/getPools/arbitrum/factory
-- https://api.curve.fi/api/getPools/avalanche/main
-- https://api.curve.fi/api/getPools/avalanche/crypto
-- https://api.curve.fi/api/getPools/avalanche/factory
-- https://api.curve.fi/api/getPools/optimism/main
-- https://api.curve.fi/api/getPools/optimism/crypto
-- https://api.curve.fi/api/getPools/optimism/factory
-- https://api.curve.fi/api/getPools/xdai/main
-- https://api.curve.fi/api/getPools/xdai/crypto
-- https://api.curve.fi/api/getPools/xdai/factory
 
-This endpoint returns *all* pools from all these registries, in exactly the same shape, except for the fact that each pool object will also contain a `blockchainId` prop.
-For each pool object in the endpoints above, the `id` prop is unique. For each pool object in this single "all pools" endpoint, the combination of props `blockchainId` and `id` is unique.
+For each pool object in the endpoints above, the `id` prop is unique.
 
 ### getETHprice
 ```
