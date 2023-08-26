@@ -129,7 +129,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'fantom',
     platformCoingeckoId: 'fantom',
     nativeAssetErc20WrapperId: 'wftm',
-    rpcUrl: 'https://fantom-mainnet.gateway.pokt.network/v1/lb/62759259ea1b320039c9e7ac',
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=fantom&dkey=${process.env.DRPC_API_KEY}`,
     multicallAddress: '0xb828c456600857abd4ed6c32facc607bd0464f4f',
     multicall2Address: '0xD98e3dBE5950Ca8Ce5a4b59630a5652110403E5c',
     getFactoryRegistryAddress: async () => '0x686d67265703d1f124c45e33d47d794c566889ba',
