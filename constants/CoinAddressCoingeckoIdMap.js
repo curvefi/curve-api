@@ -180,4 +180,12 @@ export default {
     '0x88eeC49252c8cbc039DCdB394c0c2BA2f1637EA0': 'tether',
     '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049': 'ageur',
   },
+  base: {
+    '0x4200000000000000000000000000000000000006': 'ethereum',
+    '0xeb466342c4d449bc9f53a865d5cb90586f405215': 'axlusdc',
+    '0x50c5725949a6f0c72e6c4a641f24049a917db0cb': 'dai',
+    '0x417Ac0e078398C154EdFadD9Ef675d30Be60Af93': 'crvusd',
+    '0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b': 'tbtc',
+    '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca': 'bridged-usd-coin-base',
+  },
 };
