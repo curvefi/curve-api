@@ -13,6 +13,7 @@ import { BASE_API_DOMAIN } from 'constants/AppConstants';
 import getPoolsFn from 'pages/api/getPools';
 import configs from 'constants/configs';
 import { fn } from 'utils/api';
+import getAllCurvePoolsData from 'utils/data/curve-pools-data';
 import registryAbi from 'constants/abis/factory_registry.json';
 import multicallAbi from 'constants/abis/multicall.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
@@ -27,16 +28,17 @@ export default fn(async (query) => {
   let multicallAddress = config.multicallAddress;
   let registry = new web3.eth.Contract(registryAbi, registryAddress);
   let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
-  let res = await getPoolsFn.straightCall({ blockchainId: 'base', registryId: 'factory' })
+  // let res = await getPoolsFn.straightCall({ blockchainId: 'base', registryId: 'factory' })
+  const poolData = await getAllCurvePoolsData(['base']);
   let poolDetails = [];
   let totalVolume = 0
 
   const latest = await web3.eth.getBlockNumber()
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
-  let DAY_BLOCKS = DAY_BLOCKS_24H
+  let DAY_BLOCKS = 2000
 
   await Promise.all(
-    res.poolData.map(async (pool, index) => {
+    poolData.map(async (pool, index) => {
 
       let poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
 
