@@ -720,11 +720,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     ...coinAddressesAndPricesMapFallbackFromAddress,
   };
 
-  const crvusdTokenAddresseAndPriceMapFallback = (
-    blockchainId === 'ethereum' ?
-      await getCrvusdPrice(networkSettingsParam) :
-      {}
-  );
+  const crvusdTokenAddresseAndPriceMapFallback = await getCrvusdPrice(blockchainId);
 
   const ycTokensAddressesAndPricesMapFallback = (
     (blockchainId === 'ethereum' || blockchainId === 'fantom') ?
