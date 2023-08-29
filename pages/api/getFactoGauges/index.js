@@ -11,7 +11,7 @@ import factorypool3Abi from 'constants/abis/factory_swap.json';
 import { multiCall } from 'utils/Calls';
 import { lc } from 'utils/String';
 import { arrayToHashmap, arrayOfIncrements, flattenArray } from 'utils/Array';
-import getPools from 'pages/api/getPools';
+import getAllCurvePoolsData from 'utils/data/curve-pools-data';
 import configs from 'constants/configs';
 import getFactoryV2SidechainGaugeRewards from 'utils/data/getFactoryV2SidechainGaugeRewards';
 
@@ -195,58 +195,15 @@ export default fn(async ({ blockchainId }) => {
     };
   });
 
-  const hasCryptoPools = !!config.getCryptoRegistryAddress;
-  const hasFactoPools = !!config.getFactoryRegistryAddress;
-  const hasFactoCryptoPools = !!config.getFactoryCryptoRegistryAddress;
-  const [
-    stablePools,
-    cryptoPools,
-    factoPools,
-    factoCryptoPools,
-  ] = await Promise.all([(
-    (await getPools.straightCall({ blockchainId, registryId: 'main', preventQueryingFactoData: true })).poolData
-  ), (
-    hasCryptoPools ?
-      (await getPools.straightCall({ blockchainId, registryId: 'crypto', preventQueryingFactoData: true })).poolData :
-      []
-  ), (
-    hasFactoPools ?
-      (await getPools.straightCall({ blockchainId, registryId: 'factory', preventQueryingFactoData: true })).poolData :
-      []
-  ), (
-    hasFactoCryptoPools ?
-      (await getPools.straightCall({ blockchainId, registryId: 'factory-crypto', preventQueryingFactoData: true })).poolData :
-      []
-  )]);
+  const allPools = await getAllCurvePoolsData([blockchainId]);
 
   const gaugesDataWithPoolAddressAndType = gaugesData.map((gaugeData) => {
-    const poolInMainRegistry = stablePools.find(({ lpTokenAddress, address }) => (
-      lpTokenAddress === gaugeData.lpTokenAddress ||
-      address === gaugeData.lpTokenAddress
-    ));
-    const poolInCryptoRegistry = cryptoPools.find(({ lpTokenAddress, address }) => (
-      lpTokenAddress === gaugeData.lpTokenAddress ||
-      address === gaugeData.lpTokenAddress
-    ));
-    const poolInCryptoFactoRegistry = factoCryptoPools.find(({ lpTokenAddress, address }) => (
-      lpTokenAddress === gaugeData.lpTokenAddress ||
-      address === gaugeData.lpTokenAddress
-    ));
-    const poolInStableFactoRegistry = factoPools.find(({ lpTokenAddress, address }) => (
-      lpTokenAddress === gaugeData.lpTokenAddress ||
-      address === gaugeData.lpTokenAddress
+    const pool = allPools.find(({ lpTokenAddress, address }) => (
+      lc(lpTokenAddress) === lc(gaugeData.lpTokenAddress) ||
+      lc(address) === lc(gaugeData.lpTokenAddress)
     ));
 
-    if (
-      typeof poolInMainRegistry === 'undefined' &&
-      typeof poolInCryptoRegistry === 'undefined' &&
-      typeof poolInCryptoFactoRegistry === 'undefined' &&
-      typeof poolInStableFactoRegistry === 'undefined'
-    ) {
-      return null;
-    }
-
-    const pool = (poolInMainRegistry || poolInCryptoRegistry || poolInCryptoFactoRegistry || poolInStableFactoRegistry);
+    if (typeof pool === 'undefined') return null;
 
     return {
       ...gaugeData,
@@ -255,7 +212,8 @@ export default fn(async ({ blockchainId }) => {
         pool.usdTotal /
         (pool.totalSupply / 1e18)
       ),
-      type: ((poolInCryptoFactoRegistry || poolInCryptoRegistry) ? 'crypto' : 'stable'),
+      type: ((pool.registryId === 'main' || pool.registryId === 'factory') ? 'stable' : 'crypto'),
+      registryId: pool.registryId,
     };
   }).filter((o) => o !== null);
 

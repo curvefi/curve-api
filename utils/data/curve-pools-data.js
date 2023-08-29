@@ -25,7 +25,7 @@ const getAllCurvePoolsData = memoize(async (blockchainIds) => (
   flattenArray(await sequentialPromiseFlatMap(blockchainIds, async (blockchainId) => (
     Promise.all(getPlatformRegistries(blockchainId).map((registryId) => (
       (getPools.straightCall({ blockchainId, registryId, preventQueryingFactoData: true }))
-        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('main', poolData)).map((poolData) => (
+        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId(registryId, poolData)).map((poolData) => (
           registryId.startsWith('factory') ?
             attachFactoryTag(poolData) :
             poolData
