@@ -40,6 +40,7 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'moonbeam',
   'kava',
   'celo',
+  'base',
 ];
 
 const lc = (str) => str.toLowerCase();
