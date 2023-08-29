@@ -89,6 +89,10 @@ const HIDDEN_POOLS_IDS = {
   xdai: [
     'factory-v2-12',
   ],
+  base: [
+    'factory-crypto-0',
+    'factory-tricrypto-0',
+  ],
 };
 
 export default fn(async () => HIDDEN_POOLS_IDS);
