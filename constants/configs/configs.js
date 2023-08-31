@@ -534,7 +534,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'base',
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://mainnet.base.org/',
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=base&dkey=${process.env.DRPC_API_KEY}`,
     multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
     multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
     getFactoryRegistryAddress: async () => '0x3093f9B57A428F3EB6285a589cb35bEA6e78c336',
@@ -556,7 +556,7 @@ const configs = {
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
-    approxBlocksPerDay: 4300, // Very approx from list of blocks on https://basescan.org/blocks
+    approxBlocksPerDay: 43000, // Very approx from list of blocks on https://basescan.org/blocks
     graphEndpoint: undefined, // Not supported by TheGraph's hosted service https://thegraph.com/docs/en/developing/supported-networks/
   },
 };

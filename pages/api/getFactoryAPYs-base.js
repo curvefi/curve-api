@@ -18,6 +18,7 @@ import registryAbi from 'constants/abis/factory_registry.json';
 import multicallAbi from 'constants/abis/multicall.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
 import factorypool3BaseTricryptoAbi from 'constants/abis/factory_tricrypto_swap.json';
+import factorypool3BaseCryptoAbi from 'constants/abis/factory_crypto_swap.json';
 
 const web3 = new Web3(configs.base.rpcUrl);
 
@@ -29,22 +30,22 @@ export default fn(async (query) => {
   let multicallAddress = config.multicallAddress;
   let registry = new web3.eth.Contract(registryAbi, registryAddress);
   let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
-  // let res = await getPoolsFn.straightCall({ blockchainId: 'base', registryId: 'factory' })
   const poolData = await getAllCurvePoolsData(['base']);
   let poolDetails = [];
   let totalVolume = 0
 
   const latest = await web3.eth.getBlockNumber()
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
-  let DAY_BLOCKS = 2000
+  let DAY_BLOCKS = DAY_BLOCKS_24H
 
   await Promise.all(
     poolData.map(async (pool, index) => {
 
       let poolContract = new web3.eth.Contract((
-        pool.registryId !== 'factory-tricrypto' ?
-          factorypool3Abi :
-          factorypool3BaseTricryptoAbi
+        pool.registryId === 'factory-tricrypto' ? factorypool3BaseTricryptoAbi :
+          pool.registryId === 'factory-crypto' ? factorypool3BaseCryptoAbi :
+            factorypool3Abi
+
       ), pool.address)
 
       let vPriceOldFetch;
@@ -76,7 +77,8 @@ export default fn(async (query) => {
       );
       let volume = 0;
 
-      if (pool.registryId !== 'factory-tricrypto') {
+      if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-crypto') {
+        console.log('pool.registryId', pool.registryId)
         let events = await poolContract.getPastEvents(eventName, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
           fromBlock: latest - DAY_BLOCKS,
@@ -104,7 +106,7 @@ export default fn(async (query) => {
         })
       }
 
-      if (version == '2' && pool.registryId !== 'factory-tricrypto') {
+      if (version == '2' && pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-crypto') {
         let events2 = await poolContract.getPastEvents(eventName2, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
           fromBlock: latest - DAY_BLOCKS,
@@ -142,6 +144,8 @@ export default fn(async (query) => {
         apy,
         'virtualPrice': vPriceFetch,
         volume: correctedVolume,
+        'pool.registryId': pool.registryId,
+        'pool.id': pool.id,
       }
       poolDetails.push(p)
     })
