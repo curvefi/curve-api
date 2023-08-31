@@ -33,6 +33,7 @@ export default fn(async (query) => {
   const poolData = await getAllCurvePoolsData(['base']);
   let poolDetails = [];
   let totalVolume = 0
+  let totalVolumeUsd = 0;
 
   const latest = await web3.eth.getBlockNumber()
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
@@ -40,6 +41,7 @@ export default fn(async (query) => {
 
   await Promise.all(
     poolData.map(async (pool, index) => {
+      const lpTokenUsdPrice = pool.usdTotal / (pool.totalSupply / 1e18);
 
       let poolContract = new web3.eth.Contract((
         pool.registryId === 'factory-tricrypto' ? factorypool3BaseTricryptoAbi :
@@ -76,6 +78,7 @@ export default fn(async (query) => {
             pool.decimals
       );
       let volume = 0;
+      let volumeUsd = 0;
 
       if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-crypto') {
         console.log('pool.registryId', pool.registryId)
@@ -88,7 +91,8 @@ export default fn(async (query) => {
         events.map((trade) => {
 
           let t = trade.returnValues['tokens_bought'] / 10 ** decimals[trade.returnValues['bought_id']]
-          volume += t
+          volume += t;
+          volumeUsd += (t * pool.coins[Number(trade.returnValues['bought_id'])].usdPrice);
 
         })
       } else {
@@ -101,7 +105,8 @@ export default fn(async (query) => {
         events.map((trade) => {
 
           let t = trade.returnValues['tokens_bought'] / 10 ** decimals[trade.returnValues['bought_id']]
-          volume += t
+          volume += t;
+          volumeUsd += (t * pool.coins[Number(trade.returnValues['bought_id'])].usdPrice);
 
         })
       }
@@ -115,13 +120,15 @@ export default fn(async (query) => {
 
         events2.map((trade) => {
           let t = trade.returnValues[2] / 10 ** decimals[trade.returnValues[1]]
-          volume += t
+          volume += t;
+          volumeUsd += (t * pool.coins[Number(trade.returnValues[1])].usdPrice);
         })
       }
 
       // Since we don't fetch blocks for the entirety of the past 24 hours,
       // we multiply the split volume accordingly
       const correctedVolume = volume * (DAY_BLOCKS_24H / DAY_BLOCKS);
+      const correctedVolumeUsd = volumeUsd * (DAY_BLOCKS_24H / DAY_BLOCKS);
 
       let vPriceFetch
       try {
@@ -135,6 +142,7 @@ export default fn(async (query) => {
       let apy = (vPriceNew - vPrice) / vPrice * 100 * 365
       let apyFormatted = `${apy.toFixed(2)}%`
       totalVolume += correctedVolume
+      totalVolumeUsd += correctedVolumeUsd
 
       let p = {
         index,
@@ -143,7 +151,8 @@ export default fn(async (query) => {
         apyFormatted,
         apy,
         'virtualPrice': vPriceFetch,
-        volume: correctedVolume,
+        volume: (correctedVolumeUsd / lpTokenUsdPrice) || 0, // lp volume
+        totalVolumeUsd: correctedVolumeUsd,
         'pool.registryId': pool.registryId,
         'pool.id': pool.id,
       }
@@ -153,7 +162,7 @@ export default fn(async (query) => {
 
   poolDetails.sort((a, b) => (a.index > b.index) ? 1 : ((b.index > a.index) ? -1 : 0))
 
-  return { poolDetails, totalVolume, latest };
+  return { poolDetails, totalVolumeUsd, latest };
 
 }, {
   maxAge: 30, // 30s
