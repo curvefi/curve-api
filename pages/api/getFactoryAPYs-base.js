@@ -17,6 +17,7 @@ import getAllCurvePoolsData from 'utils/data/curve-pools-data';
 import registryAbi from 'constants/abis/factory_registry.json';
 import multicallAbi from 'constants/abis/multicall.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
+import factorypool3BaseTricryptoAbi from 'constants/abis/factory_tricrypto_swap.json';
 
 const web3 = new Web3(configs.base.rpcUrl);
 
@@ -40,7 +41,11 @@ export default fn(async (query) => {
   await Promise.all(
     poolData.map(async (pool, index) => {
 
-      let poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
+      let poolContract = new web3.eth.Contract((
+        pool.registryId !== 'factory-tricrypto' ?
+          factorypool3Abi :
+          factorypool3BaseTricryptoAbi
+      ), pool.address)
 
       let vPriceOldFetch;
       let vPriceOldFetchFailed = false;
@@ -71,21 +76,35 @@ export default fn(async (query) => {
       );
       let volume = 0;
 
-      let events = await poolContract.getPastEvents(eventName, {
-        filter: {}, // Using an array means OR: e.g. 20 or 23
-        fromBlock: latest - DAY_BLOCKS,
-        toBlock: 'latest'
-      })
+      if (pool.registryId !== 'factory-tricrypto') {
+        let events = await poolContract.getPastEvents(eventName, {
+          filter: {}, // Using an array means OR: e.g. 20 or 23
+          fromBlock: latest - DAY_BLOCKS,
+          toBlock: 'latest'
+        })
 
-      events.map((trade) => {
+        events.map((trade) => {
 
-        let t = trade.returnValues['tokens_bought'] / 10 ** decimals[trade.returnValues['bought_id']]
-        volume += t
+          let t = trade.returnValues['tokens_bought'] / 10 ** decimals[trade.returnValues['bought_id']]
+          volume += t
 
-      })
+        })
+      } else {
+        let events = await poolContract.getPastEvents(eventName2, {
+          filter: {}, // Using an array means OR: e.g. 20 or 23
+          fromBlock: latest - DAY_BLOCKS,
+          toBlock: 'latest'
+        })
 
+        events.map((trade) => {
 
-      if (version == '2') {
+          let t = trade.returnValues['tokens_bought'] / 10 ** decimals[trade.returnValues['bought_id']]
+          volume += t
+
+        })
+      }
+
+      if (version == '2' && pool.registryId !== 'factory-tricrypto') {
         let events2 = await poolContract.getPastEvents(eventName2, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
           fromBlock: latest - DAY_BLOCKS,
@@ -96,8 +115,6 @@ export default fn(async (query) => {
           let t = trade.returnValues[2] / 10 ** decimals[trade.returnValues[1]]
           volume += t
         })
-
-
       }
 
       // Since we don't fetch blocks for the entirety of the past 24 hours,
