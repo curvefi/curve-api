@@ -19,8 +19,14 @@ import multicallAbi from 'constants/abis/multicall.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
 import factorypool3BaseTricryptoAbi from 'constants/abis/factory_tricrypto_swap.json';
 import factorypool3BaseCryptoAbi from 'constants/abis/factory_crypto_swap.json';
+import groupBy from 'lodash.groupby';
+import { multiCall } from 'utils/Calls';
 
 const web3 = new Web3(configs.base.rpcUrl);
+const networkSettings = {
+  web3,
+  multicall2Address: configs.base.multicall2Address,
+};
 
 export default fn(async (query) => {
   const config = configs.base;
@@ -43,28 +49,110 @@ export default fn(async (query) => {
     poolData.map(async (pool, index) => {
       const lpTokenUsdPrice = pool.usdTotal / (pool.totalSupply / 1e18);
 
-      let poolContract = new web3.eth.Contract((
+      const poolAbi = (
         pool.registryId === 'factory-tricrypto' ? factorypool3BaseTricryptoAbi :
           pool.registryId === 'factory-crypto' ? factorypool3BaseCryptoAbi :
             factorypool3Abi
+      );
+      let poolContract = new web3.eth.Contract(poolAbi, pool.address)
 
-      ), pool.address)
 
-      let vPriceOldFetch;
-      let vPriceOldFetchFailed = false;
-      try {
-        vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
-      } catch (e) {
-        console.error(`Couldn't fetch get_virtual_price for block ${latest - DAY_BLOCKS}: ${e.toString()}`);
-        vPriceOldFetchFailed = true;
-        vPriceOldFetch = 1 * (10 ** 18)
+
+      const isCryptoPool = (
+        pool.registryId === 'factory-tricrypto' ||
+        pool.registryId === 'factory-crypto'
+      );
+
+      let apy;
+      let vPriceFetch;
+
+      const oneDayOldBlockNumber = latest - DAY_BLOCKS;
+      if (isCryptoPool) {
+        const {
+          xcpProfit: [{ data: xcpProfitDayOld }],
+          xcpProfitA: [{ data: xcpProfitADayOld }],
+        } = groupBy(await multiCall([{
+          address: pool.address,
+          abi: poolAbi,
+          methodName: 'xcp_profit',
+          metaData: { type: 'xcpProfit' },
+          networkSettings: {
+            ...networkSettings,
+            blockNumber: oneDayOldBlockNumber,
+          },
+        }, {
+          address: pool.address,
+          abi: poolAbi,
+          methodName: 'xcp_profit_a',
+          metaData: { type: 'xcpProfitA' },
+          networkSettings: {
+            ...networkSettings,
+            blockNumber: oneDayOldBlockNumber,
+          },
+        }]), 'metaData.type');
+
+        const {
+          xcpProfit: [{ data: xcpProfit }],
+          xcpProfitA: [{ data: xcpProfitA }],
+          virtualPrice: [{ data: virtualPrice }],
+        } = groupBy(await multiCall([{
+          address: pool.address,
+          abi: poolAbi,
+          methodName: 'xcp_profit',
+          metaData: { type: 'xcpProfit' },
+          networkSettings,
+        }, {
+          address: pool.address,
+          abi: poolAbi,
+          methodName: 'xcp_profit_a',
+          metaData: { type: 'xcpProfitA' },
+          networkSettings,
+        }, {
+          address: pool.address,
+          abi: poolAbi,
+          methodName: 'get_virtual_price',
+          metaData: { type: 'virtualPrice' },
+          networkSettings,
+          superSettings: {
+            fallbackValue: 1e18,
+          },
+        }]), 'metaData.type');
+
+        const currentProfit = ((xcpProfit / 2) + (xcpProfitA / 2) + 1e18) / 2;
+        const dayOldProfit = ((xcpProfitDayOld / 2) + (xcpProfitADayOld / 2) + 1e18) / 2;
+        const rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
+
+        const latestDailyApy = ((rateDaily + 1) ** 365 - 1) * 100;
+        apy = latestDailyApy;
+
+        vPriceFetch = virtualPrice;
+      } else {
+        let vPriceOldFetch;
+        let vPriceOldFetchFailed = false;
+        try {
+          vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', oneDayOldBlockNumber)
+        } catch (e) {
+          console.error(`Couldn't fetch get_virtual_price for block ${oneDayOldBlockNumber}: ${e.toString()}`);
+          vPriceOldFetchFailed = true;
+          vPriceOldFetch = 1 * (10 ** 18)
+        }
+
+        try {
+          vPriceFetch = await poolContract.methods.get_virtual_price().call()
+        } catch (e) {
+          vPriceFetch = 1 * (10 ** 18)
+        }
+
+        let vPrice = vPriceOldFetchFailed ? vPriceFetch : vPriceOldFetch
+        let vPriceNew = vPriceFetch
+
+        apy = (vPriceNew - vPrice) / vPrice * 100 * 365
       }
-      const testPool = pool.address
+
+
       const eventName = 'TokenExchangeUnderlying';
       const eventName2 = 'TokenExchange';
 
-
-      console.log(latest - DAY_BLOCKS, latest, 'blocks')
       const isMetaPool = (
         pool.implementation?.startsWith('v1metausd') ||
         pool.implementation?.startsWith('metausd') ||
@@ -81,10 +169,9 @@ export default fn(async (query) => {
       let volumeUsd = 0;
 
       if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-crypto') {
-        console.log('pool.registryId', pool.registryId)
         let events = await poolContract.getPastEvents(eventName, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
-          fromBlock: latest - DAY_BLOCKS,
+          fromBlock: oneDayOldBlockNumber,
           toBlock: 'latest'
         })
 
@@ -98,7 +185,7 @@ export default fn(async (query) => {
       } else {
         let events = await poolContract.getPastEvents(eventName2, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
-          fromBlock: latest - DAY_BLOCKS,
+          fromBlock: oneDayOldBlockNumber,
           toBlock: 'latest'
         })
 
@@ -114,7 +201,7 @@ export default fn(async (query) => {
       if (version == '2' && pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-crypto') {
         let events2 = await poolContract.getPastEvents(eventName2, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
-          fromBlock: latest - DAY_BLOCKS,
+          fromBlock: oneDayOldBlockNumber,
           toBlock: 'latest'
         })
 
@@ -130,16 +217,6 @@ export default fn(async (query) => {
       const correctedVolume = volume * (DAY_BLOCKS_24H / DAY_BLOCKS);
       const correctedVolumeUsd = volumeUsd * (DAY_BLOCKS_24H / DAY_BLOCKS);
 
-      let vPriceFetch
-      try {
-        vPriceFetch = await poolContract.methods.get_virtual_price().call()
-      } catch (e) {
-        vPriceFetch = 1 * (10 ** 18)
-      }
-
-      let vPrice = vPriceOldFetchFailed ? vPriceFetch : vPriceOldFetch
-      let vPriceNew = vPriceFetch
-      let apy = (vPriceNew - vPrice) / vPrice * 100 * 365
       let apyFormatted = `${apy.toFixed(2)}%`
       totalVolume += correctedVolume
       totalVolumeUsd += correctedVolumeUsd

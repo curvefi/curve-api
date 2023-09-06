@@ -49,6 +49,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
     networkSettings: {
       web3,
       multicall2Address: configs.ethereum.multicall2Address,
+      blockNumber: undefined,
     },
     superSettings: {
       returnSuccessState: false, // If true, will return true if call succeeds, false if it reverts
@@ -132,7 +133,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
   try {
     const chunkedReturnData = await sequentialPromiseMap(chunkedCalls, async (callsChunk) => (
       Promise.all(callsChunk.map(async (chunk) => {
-        const aggregateReturnData = await multicall.methods.tryAggregate(false, chunk).call();
+        const aggregateReturnData = await multicall.methods.tryAggregate(false, chunk).call(undefined, networkSettings.blockNumber);
         const returnData = aggregateReturnData.map(({ success, returnData: hexData }) => ({ success, hexData }));
         return returnData;
       }))
