@@ -80,6 +80,9 @@ export default fn(async (query) => {
             ...networkSettings,
             blockNumber: oneDayOldBlockNumber,
           },
+          superSettings: {
+            fallbackValue: 1e18,
+          },
         }, {
           address: pool.address,
           abi: poolAbi,
@@ -88,6 +91,9 @@ export default fn(async (query) => {
           networkSettings: {
             ...networkSettings,
             blockNumber: oneDayOldBlockNumber,
+          },
+          superSettings: {
+            fallbackValue: 1e18,
           },
         }]), 'metaData.type');
 
@@ -101,12 +107,18 @@ export default fn(async (query) => {
           methodName: 'xcp_profit',
           metaData: { type: 'xcpProfit' },
           networkSettings,
+          superSettings: {
+            fallbackValue: 1e18,
+          },
         }, {
           address: pool.address,
           abi: poolAbi,
           methodName: 'xcp_profit_a',
           metaData: { type: 'xcpProfitA' },
           networkSettings,
+          superSettings: {
+            fallbackValue: 1e18,
+          },
         }, {
           address: pool.address,
           abi: poolAbi,
