@@ -160,12 +160,12 @@ export default memoize(async ({ blockchainId, gauges }) => {
       apyData: {
         isRewardStillActive,
         tokenPrice,
-        rate: effectiveRate / 1e18,
+        rate: effectiveRate / (10 ** tokenDecimals),
         totalSupply,
       },
       apy: (
         isRewardStillActive ?
-          (effectiveRate) / 1e18 * 86400 * 365 * tokenPrice / totalSupply / lpTokenPrice * 100 :
+          (effectiveRate) / (10 ** tokenDecimals) * 86400 * 365 * tokenPrice / totalSupply / lpTokenPrice * 100 :
           0
       ),
       metaData: {
