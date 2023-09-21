@@ -48,10 +48,6 @@
     }
   ],
   "functions": {
-    "api/**/*.js": {
-      "memory": 3008,
-      "maxDuration": 900
-    },
     "pages/api/**/*.js": {
       "memory": 3008,
       "maxDuration": 900
