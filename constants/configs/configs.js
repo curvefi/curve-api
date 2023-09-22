@@ -44,6 +44,8 @@ const configs = {
       ['0xAbc533EbCDdeD41215C46ee078C5818B5b0A252F'.toLowerCase(), 'metabtcbalances-sbtc2'],
       ['0x33bB0e62d5e8C688E645Dd46DFb48Cd613250067'.toLowerCase(), 'metausd-fraxusdc'],
       ['0x2EB24483Ef551dA247ab87Cf18e1Cc980073032D'.toLowerCase(), 'metausdbalances-fraxusdc'],
+      ['0xF9B62b61d108232Ef0C9DD143bb3c22c7D4A715a'.toLowerCase(), 'metausd-fraxusdp'],
+      ['0xB172AC2Fe440B5dA74Dc460e5E9d96bc2BF6261F'.toLowerCase(), 'metausdbalances-fraxusdp'],
       ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
       ['0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f'.toLowerCase(), 'tricrypto-1'],

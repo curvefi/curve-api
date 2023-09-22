@@ -1040,7 +1040,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ) : undefined
     );
 
-    // How much does that pool owns, in its balances, of the underlying pool
+    // How much does that pool own, in its balances, of the underlying pool
     const underlyingPoolLpOwnershipRate = (
       isMetaPool ? (
         (metaPoolBasePoolLpToken.poolBalance / 1e18) / (underlyingPool.totalSupply / 1e18)
@@ -1150,7 +1150,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       poolUrls: detailedPoolUrls,
       implementation,
       zapAddress: (
-        POOLS_ZAPS?.[blockchainId]?.pools?.[lc(poolInfo.addresss)] ||
+        POOLS_ZAPS?.[blockchainId]?.pools?.[lc(poolInfo.address)] ||
         POOLS_ZAPS?.[blockchainId]?.implementations?.[implementation] ||
         undefined
       ),

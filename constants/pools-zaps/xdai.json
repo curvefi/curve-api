@@ -1,11 +1,12 @@
 {
-    "implementations": {
-        "v1metausd": "0x87c067fac25f123554a0e76596bf28cfa37fd5e9",
-        "metausd": "0x87c067fac25f123554a0e76596bf28cfa37fd5e9",
-        "metausdbalances": "0x87c067fac25f123554a0e76596bf28cfa37fd5e9"
-    },
-    "pools": {
-        "0x85ba9dfb4a3e4541420fc75be02e2b42042d7e46": "0xdf6eb52c4a9d7d5964b918c50d47a643fd7d3d4c",
-        "0x056c6c5e684cec248635ed86033378cc444459b0": "0xe3fff29d4dc930ebb787fecd49ee5963dadf60b6"
-    }
+  "implementations": {
+    "v1metausd": "0x87c067fac25f123554a0e76596bf28cfa37fd5e9",
+    "metausd": "0x87c067fac25f123554a0e76596bf28cfa37fd5e9",
+    "metausdbalances": "0x87c067fac25f123554a0e76596bf28cfa37fd5e9"
+  },
+  "pools": {
+    "0x85ba9dfb4a3e4541420fc75be02e2b42042d7e46": "0xdf6eb52c4a9d7d5964b918c50d47a643fd7d3d4c",
+    "0x5633e00994896d0f472926050ecb32e38bef3e65": "0xF182926A64C0A19234E7E1FCDfE772aA7A1CA351",
+    "0x056c6c5e684cec248635ed86033378cc444459b0": "0xe3fff29d4dc930ebb787fecd49ee5963dadf60b6"
+  }
 }
