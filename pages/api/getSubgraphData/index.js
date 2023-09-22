@@ -42,15 +42,17 @@ export default fn(async ({ blockchainId }) => {
     return getFallbackData(fallbackDataFileName);
   }
 
+  const config = configs[blockchainId];
+  const GRAPH_ENDPOINT = config.graphEndpoint;
+  if (!GRAPH_ENDPOINT) throw new Error('No subgraph endpoint');
+
   try {
-    const config = configs[blockchainId];
     const web3 = new Web3(config.rpcUrl);
 
     if (typeof config === 'undefined') {
       throw new Error(`No factory data for blockchainId "${blockchainId}"`);
     }
 
-    const GRAPH_ENDPOINT = config.graphEndpoint;
     const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
     const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
 

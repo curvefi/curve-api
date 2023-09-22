@@ -81,6 +81,7 @@ const EXTERNAL_ORACLE_COINS_ADDRESSES = {
     '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d', // sCHF (no curve crypto pool to act as oracle)
     '0xc2544a32872a91f4a553b404c6950e89de901fdb', // FPIS (no liquid curve crypto pool to act as oracle)
     '0xa0d69e286b938e21cbf7e51d71f6a4c8918f482f', // eUSD (no curve crypto pool to act as oracle)
+    '0x530824da86689c9c17cdc2871ff29b058345b44a', // sTBT (curve crypto pool that has precedence has low liq)
   ].map(lc),
 };
 
