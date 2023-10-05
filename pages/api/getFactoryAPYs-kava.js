@@ -42,11 +42,16 @@ export default fn(async (query) => {
 
       let vPriceOldFetch;
       let vPriceOldFetchFailed = false;
+      let vPriceOldFetchFailedBecauseBlockPruned = false;
+
       try {
         vPriceOldFetch = await poolContractForVpriceFetching.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
       } catch (e) {
+        console.log('error', e, e.message)
         vPriceOldFetchFailed = true;
         vPriceOldFetch = 1 * (10 ** 18)
+
+        if (!e.message.includes('execution reverted')) vPriceOldFetchFailedBecauseBlockPruned = true;
       }
       const eventName = 'TokenExchangeUnderlying';
       const eventName2 = 'TokenExchange';
@@ -121,7 +126,7 @@ export default fn(async (query) => {
         apy,
         'virtualPrice': vPriceFetch,
         volume: correctedVolume,
-        failedFetching24hOldVprice: vPriceOldFetchFailed,
+        failedFetching24hOldVprice: vPriceOldFetchFailedBecauseBlockPruned,
       }
       poolDetails.push(p)
     })
