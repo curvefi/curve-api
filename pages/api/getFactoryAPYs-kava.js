@@ -7,26 +7,25 @@
  */
 
 import Web3 from 'web3';
-import BigNumber from 'big-number';
-import { BASE_API_DOMAIN } from 'constants/AppConstants';
 
 import getPoolsFn from 'pages/api/getPools';
 import configs from 'constants/configs';
 import { fn } from 'utils/api';
-import registryAbi from 'constants/abis/factory_registry.json';
-import multicallAbi from 'constants/abis/multicall.json';
 import factorypool3Abi from 'constants/abis/factory_swap.json';
 
+/**
+ * The official rpc url evm.kava.io has trouble retrieving past pool virtual prices,
+ * so we use another rpc for this specific purpose. The official rpc gives access
+ * to past logs though, which most other free rpcs do not, so we still use the
+ * official rpc for other purposes.
+ */
 const web3 = new Web3(configs.kava.rpcUrl);
+const web3NoArchival = new Web3(configs.kava.noArchivalAlternateRpcUrl);
 
 export default fn(async (query) => {
   const config = configs.kava;
   const version = 2
 
-  let registryAddress = await config.getFactoryRegistryAddress();
-  let multicallAddress = config.multicallAddress;
-	let registry = new web3.eth.Contract(registryAbi, registryAddress);
-	let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
   let res = await getPoolsFn.straightCall({ blockchainId: 'kava', registryId: 'factory' })
   let poolDetails = [];
   let totalVolume = 0
@@ -38,33 +37,33 @@ export default fn(async (query) => {
   await Promise.all(
     res.poolData.map(async (pool, index) => {
 
-      let poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
+      const poolContractForVpriceFetching = new web3NoArchival.eth.Contract(factorypool3Abi, pool.address)
+      const poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
 
       let vPriceOldFetch;
       let vPriceOldFetchFailed = false;
       try {
-      vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
+        vPriceOldFetch = await poolContractForVpriceFetching.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
       } catch (e) {
         vPriceOldFetchFailed = true;
-      vPriceOldFetch = 1 * (10 ** 18)
+        vPriceOldFetch = 1 * (10 ** 18)
       }
-      const testPool = pool.address
       const eventName = 'TokenExchangeUnderlying';
       const eventName2 = 'TokenExchange';
 
 
-      console.log(latest - DAY_BLOCKS, latest, 'blocks')
+      // console.log(latest - DAY_BLOCKS, latest, 'blocks')
       const isMetaPool = (
-      pool.implementation?.startsWith('v1metausd') ||
-      pool.implementation?.startsWith('metausd') ||
-      pool.implementation?.startsWith('v1metabtc') ||
-      pool.implementation?.startsWith('metabtc')
+        pool.implementation?.startsWith('v1metausd') ||
+        pool.implementation?.startsWith('metausd') ||
+        pool.implementation?.startsWith('v1metabtc') ||
+        pool.implementation?.startsWith('metabtc')
       );
 
       let decimals = (
-      version === 1 ? [pool.token.decimals, 18, 18, 18] :
-      (version === 2 && isMetaPool) ? pool.underlyingDecimals :
-      pool.decimals
+        version === 1 ? [pool.token.decimals, 18, 18, 18] :
+          (version === 2 && isMetaPool) ? pool.underlyingDecimals :
+            pool.decimals
       );
       let volume = 0;
 
@@ -83,16 +82,16 @@ export default fn(async (query) => {
 
 
       if (version == '2') {
-      let events2 = await poolContract.getPastEvents(eventName2, {
-        filter: {}, // Using an array means OR: e.g. 20 or 23
-        fromBlock: latest - DAY_BLOCKS,
-        toBlock: 'latest'
-      })
+        let events2 = await poolContract.getPastEvents(eventName2, {
+          filter: {}, // Using an array means OR: e.g. 20 or 23
+          fromBlock: latest - DAY_BLOCKS,
+          toBlock: 'latest'
+        })
 
-      events2.map((trade) => {
-        let t = trade.returnValues[2] / 10 ** decimals[trade.returnValues[1]]
-        volume += t
-      })
+        events2.map((trade) => {
+          let t = trade.returnValues[2] / 10 ** decimals[trade.returnValues[1]]
+          volume += t
+        })
 
 
       }
@@ -103,9 +102,9 @@ export default fn(async (query) => {
 
       let vPriceFetch
       try {
-      vPriceFetch = await poolContract.methods.get_virtual_price().call()
+        vPriceFetch = await poolContractForVpriceFetching.methods.get_virtual_price().call()
       } catch (e) {
-      vPriceFetch = 1 * (10 ** 18)
+        vPriceFetch = 1 * (10 ** 18)
       }
 
       let vPrice = vPriceOldFetchFailed ? vPriceFetch : vPriceOldFetch
@@ -115,19 +114,20 @@ export default fn(async (query) => {
       totalVolume += correctedVolume
 
       let p = {
-      index,
-      'poolAddress' : pool.address,
-      'poolSymbol' : version === 1 ? pool.token.symbol : pool.symbol,
-      apyFormatted,
-      apy,
-      'virtualPrice':vPriceFetch,
-      volume: correctedVolume,
+        index,
+        'poolAddress': pool.address,
+        'poolSymbol': version === 1 ? pool.token.symbol : pool.symbol,
+        apyFormatted,
+        apy,
+        'virtualPrice': vPriceFetch,
+        volume: correctedVolume,
+        failedFetching24hOldVprice: vPriceOldFetchFailed,
       }
       poolDetails.push(p)
     })
   )
 
-  poolDetails.sort((a,b) => (a.index > b.index) ? 1 : ((b.index > a.index) ? -1 : 0))
+  poolDetails.sort((a, b) => (a.index > b.index) ? 1 : ((b.index > a.index) ? -1 : 0))
 
   return { poolDetails, totalVolume, latest };
 
