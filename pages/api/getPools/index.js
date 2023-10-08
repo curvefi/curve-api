@@ -235,7 +235,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'|\'factory-crvusd\'|\'factory-tricrypto\'|\'factory-eywa\'');
   }
 
-  const platformRegistries = getPlatformRegistries(blockchainId);
+  const platformRegistries = (await getPlatformRegistries(blockchainId)).registryIds;
 
   if (!platformRegistries.includes(registryId)) {
     console.error(`No registry "${registryId}" found for blockchainId "${blockchainId}"`);

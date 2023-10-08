@@ -13,10 +13,10 @@ import getPlatformRegistries from 'utils/data/curve-platform-registries';
 const allBlockchainIds = Array.from(Object.keys(configs));
 
 export default fn(async () => ({
-  platforms: arrayToHashmap(allBlockchainIds.map((blockchainId) => [
+  platforms: arrayToHashmap(await Promise.all(allBlockchainIds.map(async (blockchainId) => [
     blockchainId,
-    getPlatformRegistries(blockchainId),
-  ])),
+    (await getPlatformRegistries(blockchainId)).registryIds,
+  ]))),
 }), {
   maxAge: 60 * 60, // 1h
   name: 'getPlatforms',

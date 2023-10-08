@@ -23,7 +23,7 @@ const attachFactoryTag = (poolData) => ({
 
 const getAllCurvePoolsData = memoize(async (blockchainIds) => (
   flattenArray(await sequentialPromiseFlatMap(blockchainIds, async (blockchainId) => (
-    Promise.all(getPlatformRegistries(blockchainId).map((registryId) => (
+    Promise.all((await getPlatformRegistries(blockchainId)).registryIds.map((registryId) => (
       (getPools.straightCall({ blockchainId, registryId, preventQueryingFactoData: true }))
         .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId(registryId, poolData)).map((poolData) => (
           registryId.startsWith('factory') ?
@@ -39,7 +39,7 @@ const getAllCurvePoolsData = memoize(async (blockchainIds) => (
 
 const fetchAllCurvePoolsDataEndpoints = async (blockchainIds) => (
   flattenArray(await sequentialPromiseFlatMap(blockchainIds, async (blockchainId) => (
-    Promise.all(getPlatformRegistries(blockchainId).map(async (registryId) => (
+    Promise.all((await getPlatformRegistries(blockchainId)).registryIds.map(async (registryId) => (
       Promise.resolve((await (await Request.get(`${BASE_API_DOMAIN}/api/getPools/${blockchainId}/${registryId}`)).json()).data)
         .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('main', poolData)).map((poolData) => (
           registryId.startsWith('factory') ?
