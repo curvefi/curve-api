@@ -7,6 +7,8 @@ import { BASE_API_DOMAIN } from 'constants/AppConstants';
 import { runConcurrentlyAtMost } from 'utils/Async';
 import { uintToBN } from 'utils/Web3';
 import getAllCurvePoolsData from 'utils/data/curve-pools-data';
+import getVolumes, { AVAILABLE_CHAIN_IDS as AVAILABLE_CHAIN_IDS_FOR_GET_VOLUMES }
+  from 'pages/api/getVolumes/[blockchainId]';
 import { sumBN } from 'utils/Array.js';
 
 const lc = (str) => str.toLowerCase();
@@ -38,6 +40,36 @@ const getFallbackData = async (fallbackDataFileName) => (
 
 export default fn(async ({ blockchainId }) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
+
+  // If the newest, more accurate method of retrieving volumes is available
+  // for this chain, return it instead with backward-compatible data structure
+  if (AVAILABLE_CHAIN_IDS_FOR_GET_VOLUMES.includes(blockchainId)) {
+    console.log('USE GETVOLUMES')
+    const data = await getVolumes.straightCall({ blockchainId });
+
+    return {
+      poolList: data.pools.map(({
+        address,
+        type,
+        volumeUSD,
+        latestDailyApyPcent,
+        latestWeeklyApyPcent,
+        virtualPrice,
+      }) => ({
+        address,
+        latestDailyApy: latestDailyApyPcent,
+        latestWeeklyApy: latestWeeklyApyPcent,
+        rawVolume: null, // Not available, and unused in all clients we know of
+        type,
+        virtualPrice,
+        volumeUSD,
+      })),
+      subgraphHasErrors: false,
+      cryptoShare: data.totalVolumes.cryptoVolumeSharePcent,
+      cryptoVolume: data.totalVolumes.totalCryptoVolume,
+      totalVolume: data.totalVolumes.totalVolume,
+    };
+  }
 
   const fallbackDataFileName = `getSubgraphData-${blockchainId}`;
 
