@@ -9,6 +9,7 @@ import getFactoGauges from 'pages/api/getFactoGauges';
 import getPools from 'pages/api/getPools';
 import configs from 'constants/configs';
 import { lc } from 'utils/String';
+import getAllCurvePoolsData from 'utils/data/curve-pools-data';
 
 const NON_STANDARD_OUTDATED_GAUGES = [
   'celo-0x4969e38b8d37fc42a1897295Ea6d7D0b55944497',
@@ -20,15 +21,7 @@ export default fn(async ({ blockchainId }) => {
   const config = configs[blockchainId];
 
   const { gauges } = await getFactoGauges.straightCall({ blockchainId });
-  const { poolData: mainPoolData } = await getPools.straightCall({ blockchainId, registryId: 'main' });
-  const { poolData: cryptoPoolData } = await getPools.straightCall({ blockchainId, registryId: 'crypto' });
-  const { poolData: factoStablePoolData } = await getPools.straightCall({ blockchainId, registryId: 'factory' });
-  const { poolData: factoCryptoPoolData } = (
-    config.getFactoryCryptoRegistryAddress ?
-      await getPools.straightCall({ blockchainId, registryId: 'factory-crypto' }) :
-      { poolData: [] }
-  );
-  const poolData = [...mainPoolData, ...cryptoPoolData, ...factoStablePoolData, ...factoCryptoPoolData];
+  const poolData = await getAllCurvePoolsData([blockchainId]);
 
   const sideChainGauges = gauges.filter(({
     side_chain: isSideChain,
@@ -68,7 +61,7 @@ export default fn(async ({ blockchainId }) => {
 
     const apy = (
       areCrvRewardsStuckInBridge ? 0 :
-      ((rate / 1e18) * (86400 * 365) / gaugeUsdValue * 0.4 * crvPrice * 100)
+        ((rate / 1e18) * (86400 * 365) / gaugeUsdValue * 0.4 * crvPrice * 100)
     );
 
     return {
