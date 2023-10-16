@@ -12,7 +12,7 @@
 import Web3 from 'web3';
 import BN from 'bignumber.js';
 import groupBy from 'lodash.groupby';
-import { fn } from 'utils/api';
+import { fn, ParamError } from 'utils/api';
 import factoryV2RegistryAbi from 'constants/abis/factory-v2-registry.json';
 import factoryPoolAbi from 'constants/abis/factory-v2/Plain2Balances.json';
 import factoryCryptoRegistryAbi from 'constants/abis/factory-crypto-registry.json';
@@ -119,7 +119,6 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
         (await import('utils/data/getFactoryV2GaugeRewards')).default :
         (await import('utils/data/getFactoryV2SidechainGaugeRewards')).default
     );
-    console.log('retrieve gaugesData...')
     /**
      * Here we want getGauges data (which itself calls getPools) to be available
      * whether api edge caches are hot or cold. This makes sure data is called
@@ -127,7 +126,6 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
      * caches are hot.
      */
     gaugesData = (await (await fetch(BASE_API_DOMAIN + '/api/getAllGauges?blockchainId=' + blockchainId)).json()).data;
-    console.log('retrieved gaugesData!')
 
     if (blockchainId === 'ethereum') {
       const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => !side_chain);
@@ -202,7 +200,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
   const config = configs[blockchainId];
   if (typeof config === 'undefined') {
-    throw new Error(`No config data for blockchainId "${blockchainId}"`);
+    throw new ParamError(`No config data for blockchainId "${blockchainId}"`);
   }
 
   if (config.hasNoMainRegistry && registryId === 'main') {
@@ -232,7 +230,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   } = config;
 
   if (registryId !== 'factory' && registryId !== 'main' && registryId !== 'crypto' && registryId !== 'factory-crypto' && registryId !== 'factory-crvusd' && registryId !== 'factory-tricrypto' && registryId !== 'factory-eywa') {
-    throw new Error('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'|\'factory-crvusd\'|\'factory-tricrypto\'|\'factory-eywa\'');
+    throw new ParamError('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'|\'factory-crvusd\'|\'factory-tricrypto\'|\'factory-eywa\'');
   }
 
   const platformRegistries = (await getPlatformRegistries(blockchainId)).registryIds;

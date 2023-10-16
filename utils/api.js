@@ -33,6 +33,13 @@ const logRuntime = async (fn, name, query, silenceParamsLog) => {
   return res;
 };
 
+class ParamError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
+
 const fn = (cb, options = {}) => {
   const {
     maxAge: maxAgeSec = null, // Caching duration, in seconds
@@ -61,10 +68,10 @@ const fn = (cb, options = {}) => {
       })
       .catch((err) => {
         if (IS_DEV) {
-          console.log('ERROR that would be caught and served with success=false on prod', err);
           throw err;
         } else {
-          res.status(500).json(formatJsonError(err));
+          const code = (err instanceof ParamError) ? 200 : 500;
+          res.status(code).json(formatJsonError(err));
         }
       })
   );
@@ -77,4 +84,5 @@ const fn = (cb, options = {}) => {
 export {
   fn,
   formatJsonError,
+  ParamError,
 };

@@ -44,7 +44,6 @@ export default fn(async ({ blockchainId }) => {
   // If the newest, more accurate method of retrieving volumes is available
   // for this chain, return it instead with backward-compatible data structure
   if (AVAILABLE_CHAIN_IDS_FOR_GET_VOLUMES.includes(blockchainId)) {
-    console.log('USE GETVOLUMES')
     const data = await getVolumes.straightCall({ blockchainId });
 
     return {
