@@ -1,5 +1,6 @@
 import WEB3_CONSTANTS from 'constants/Web3';
 import { CaseInsensitiveMap } from 'utils/Array';
+import { lc } from 'utils/String';
 import { ZERO_ADDRESS } from 'utils/Web3';
 
 const configs = {
@@ -43,6 +44,8 @@ const configs = {
       ['0xAbc533EbCDdeD41215C46ee078C5818B5b0A252F'.toLowerCase(), 'metabtcbalances-sbtc2'],
       ['0x33bB0e62d5e8C688E645Dd46DFb48Cd613250067'.toLowerCase(), 'metausd-fraxusdc'],
       ['0x2EB24483Ef551dA247ab87Cf18e1Cc980073032D'.toLowerCase(), 'metausdbalances-fraxusdc'],
+      ['0xF9B62b61d108232Ef0C9DD143bb3c22c7D4A715a'.toLowerCase(), 'metausd-fraxusdp'],
+      ['0xB172AC2Fe440B5dA74Dc460e5E9d96bc2BF6261F'.toLowerCase(), 'metausdbalances-fraxusdp'],
       ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
       ['0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f'.toLowerCase(), 'tricrypto-1'],
@@ -55,7 +58,13 @@ const configs = {
     getFactoryCrvusdRegistryAddress: async () => '0x4F8846Ae9380B90d2E71D5e3D042dff3E7ebb40d',
     getFactoryTricryptoRegistryAddress: async () => '0x0c0e5f2ff0ff18a3be9b835635039256dc4b4963',
     graphEndpoint: `https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet`,
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    BROKEN_POOLS_ADDRESSES: [
+      '0x8301ae4fc9c624d1d396cbdaa1ed877821d7c511',
+      '0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e',
+      '0xc897b98272aa23714464ea2a0bd5180f1b8c0025',
+      '0x9848482da3ee3076165ce6497eda906e66bb85c5',
+    ].map(lc),
   },
   polygon: {
     poolsBaseUrlOld: 'https://polygon.curve.fi/',
@@ -66,7 +75,8 @@ const configs = {
     nativeCurrencyCoingeckoId: 'matic-network',
     platformCoingeckoId: 'polygon-pos',
     nativeAssetErc20WrapperId: 'wmatic',
-    rpcUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_POLYGON}`,
+    // rpcUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_POLYGON}`,
+    rpcUrl: `https://polygon.llamarpc.com/rpc/${process.env.LLAMANODES_API_KEY}`,
     multicallAddress: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
     multicall2Address: '0x275617327c958bD06b5D6b871E7f491D76113dd8',
     getFactoryRegistryAddress: async () => '0x722272d36ef0da72ff51c5a65db7b870e2e8d4ee',
@@ -108,7 +118,7 @@ const configs = {
       '0x1197Ae7F43695Be80127365b494E8BF850f4752A', // Broken pool
       '0x40caB7C05fc1686e198C8d6d6aA4aaCF77BE8590', // Broken pool
       '0x64FFf0e27c223097c824f9d9278eFD5B55c3430e', // Broken pool
-    ].map((a) => a.toLowerCase()),
+    ].map(lc),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-matic',
   },
@@ -121,7 +131,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'fantom',
     platformCoingeckoId: 'fantom',
     nativeAssetErc20WrapperId: 'wftm',
-    rpcUrl: 'https://fantom-mainnet.gateway.pokt.network/v1/lb/62759259ea1b320039c9e7ac',
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=fantom&dkey=${process.env.DRPC_API_KEY}`,
     multicallAddress: '0xb828c456600857abd4ed6c32facc607bd0464f4f',
     multicall2Address: '0xD98e3dBE5950Ca8Ce5a4b59630a5652110403E5c',
     getFactoryRegistryAddress: async () => '0x686d67265703d1f124c45e33d47d794c566889ba',
@@ -154,7 +164,7 @@ const configs = {
       ['0x5B5CFE992AdAC0C9D48E05854B2d91C73a003858', '0x2db0E83599a91b508Ac268a6197b8B14F5e72840'], // meta btc
       ['0x0fa949783947Bf6c1b171DB13AEACBB488845B3f', '0xD02a30d33153877BC20e5721ee53DeDEE0422B2F'], // meta usd2
     ]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 95000, // https://ftmscan.com/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom'
   },
@@ -171,6 +181,7 @@ const configs = {
     multicallAddress: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     multicall2Address: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
+    getFactoryTricryptoRegistryAddress: async () => '0xbC0797015fcFc47d9C1856639CaE50D0e69FbEE8',
     getCryptoRegistryAddress: async () => '0x0E9fBb167DF83EdE3240D6a5fa5d40c6C6851e15',
     factoryImplementationAddressMap: new Map([
       ['0x54e8A25d0Ac0E4945b697C80b8372445FEA17A62'.toLowerCase(), 'plain2basic'],
@@ -191,12 +202,13 @@ const configs = {
       ['0x3edE9b145F82e9e46C03f8A8F67B77aEE847b632'.toLowerCase(), 'metausdbalances-factory-v2-41'],
       ['0x094d12e5b541784701FD8d65F11fc0598FBC6332'.toLowerCase(), 'metabtc'],
       ['0xF1f85a74AD6c64315F85af52d3d46bF715236ADc'.toLowerCase(), 'metabtcbalances'],
+      ['0xd7E72f3615aa65b92A4DBdC211E296a35512988B'.toLowerCase(), 'tricrypto-1'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x7f90122bf0700f9e7e1f688fe926940e8839f353', '0xbF7E49483881C76487b0989CD7d9A8239B20CA41'], // meta usd
       ['0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb', '0xC2b1DF84112619D190193E48148000e3990Bf627'], // meta btc
     ]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum',
   },
   avalanche: {
@@ -241,7 +253,7 @@ const configs = {
     CRYPTO_POOLS_WITH_BASE_POOLS: new CaseInsensitiveMap([
       ['0xB755B949C126C04e0348DD881a5cF55d424742B2', '0x7f90122BF0700F9E7e1F688fe926940E8839F353'], // atricrypto<>aave
     ]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-avalanche',
     approxBlocksPerDay: 43000,
   },
@@ -280,7 +292,7 @@ const configs = {
     // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
     //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
     // ])
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism',
   },
@@ -293,10 +305,10 @@ const configs = {
     nativeCurrencyCoingeckoId: 'xdai',
     platformCoingeckoId: 'xdai',
     nativeAssetErc20WrapperId: 'wxdai', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://rpc.gnosis.gateway.fm',
+    rpcUrl: 'https://rpc.ankr.com/gnosis',
     multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
     multicall2Address: '0xFAa296891cA6CECAF2D86eF5F7590316d0A17dA0',
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 16900,
     getFactoryRegistryAddress: async () => '0xD19Baeadc667Cf2015e395f2B08668Ef120f41F5',
     getCryptoRegistryAddress: async () => '0x8A4694401bE8F8FCCbC542a3219aF1591f87CE17',
@@ -330,7 +342,7 @@ const configs = {
     rpcUrl: 'https://mainnet.aurora.dev',
     multicallAddress: '0xace58a26b8Db90498eF0330fDC9C2655db0C45E2',
     multicall2Address: '0xace58a26b8Db90498eF0330fDC9C2655db0C45E2',
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 72000, // https://aurorascan.dev/chart/blocks
     getFactoryRegistryAddress: async () => ZERO_ADDRESS,
     getCryptoRegistryAddress: async () => ZERO_ADDRESS,
@@ -348,7 +360,7 @@ const configs = {
     rpcUrl: 'https://rpc.s0.t.hmny.io',
     multicallAddress: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
     multicall2Address: '0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb',
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43200,
     getCryptoRegistryAddress: async () => '', // Has one crypto pool but no crypto registry
   },
@@ -361,7 +373,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'moonbeam',
     platformCoingeckoId: 'moonbeam',
     nativeAssetErc20WrapperId: 'wGLMR', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://moonbeam.api.onfinality.io/public',
+    rpcUrl: 'https://moonbeam.public.blastapi.io',
     multicallAddress: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
     multicall2Address: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
     getFactoryRegistryAddress: async () => '0x4244eB811D6e0Ef302326675207A95113dB4E1F8',
@@ -380,7 +392,7 @@ const configs = {
       ['0xe8269B33E47761f552E1a3070119560d5fa8bBD6'.toLowerCase(), 'plain4optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-moonbeam',
   },
@@ -394,6 +406,7 @@ const configs = {
     platformCoingeckoId: 'kava',
     nativeAssetErc20WrapperId: 'wrapped-kava', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://evm.kava.io',
+    noArchivalAlternateRpcUrl: 'https://kava-rpc.gateway.pokt.network',
     multicallAddress: '0x7ED7bBd8C454a1B0D9EdD939c45a81A03c20131C',
     multicall2Address: '0x30A62aA52Fa099C4B227869EB6aeaDEda054d121',
     getFactoryRegistryAddress: async () => '0x40bc62805471eF53DdD5C5cF99ed3d9e5aa81b48',
@@ -412,7 +425,7 @@ const configs = {
       ['0x509495DFEEc3a53aCb2F60669985d868131Ad9a5'.toLowerCase(), 'plain4optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 13500, // https://explorer.kava.io/
   },
   celo: {
@@ -444,9 +457,110 @@ const configs = {
       ['0xA73b02a97B45604cd9f0BBAA153eCfe01f409350'.toLowerCase(), 'plain4optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
-    DISABLED_POOLS_ADDRESSES: [].map((a) => a.toLowerCase()),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 17280, // https://celoscan.io/chart/blocks
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-celo',
+  },
+  zkevm: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: null,
+    shortId: 'zkevm',
+    nativeCurrencySymbol: 'ETH',
+    chainId: 1101,
+    nativeCurrencyCoingeckoId: 'ethereum',
+    platformCoingeckoId: 'polygon-zkevm',
+    nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://zkevm-rpc.com',
+    multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    getFactoryRegistryAddress: async () => '0xCDC481031E23AEd8CbBe6e07A638298a790D445a',
+    factoryImplementationAddressMap: new Map([
+      ['0xDec8C0e31A66ed2eEf7ed54155647c9abcf49b9F'.toLowerCase(), 'plain2basic'],
+      ['0x6842E0412AC1c00464dc48961330156a07268d14'.toLowerCase(), 'plain2balances'],
+      ['0x9fAe78C4bBB649deB7b2295dDB8A03adA7eB660F'.toLowerCase(), 'plain2eth'],
+      ['0xfCE359115dFe1533a2458650123F86C454BC0213'.toLowerCase(), 'plain2optimized'],
+      ['0xD19Baeadc667Cf2015e395f2B08668Ef120f41F5'.toLowerCase(), 'plain3basic'],
+      ['0x04e39EF8332e979Cf8e4f8891E64934FF65F231b'.toLowerCase(), 'plain3balances'],
+      ['0xC9438d8928486bD9621D326002F4672bF684187A'.toLowerCase(), 'plain3eth'],
+      ['0x2b70A5B878665FfDB4A06Ba40a264d6c70f68F4B'.toLowerCase(), 'plain3optimized'],
+      ['0x7Bb707085905c9D80854652809A1ba8480C11789'.toLowerCase(), 'plain4basic'],
+      ['0xec9cEBE650E181079576C1b6d0d2e092B1EdfF13'.toLowerCase(), 'plain4balances'],
+      ['0xe8269B33E47761f552E1a3070119560d5fa8bBD6'.toLowerCase(), 'plain4eth'],
+      ['0x114C4042B11a2b16F58Fe1BFe847589a122F678a'.toLowerCase(), 'plain4optimized'],
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    approxBlocksPerDay: 50000, // https://zkevm.polygonscan.com/chart/blocks
+    graphEndpoint: undefined, // Not supported by TheGraph's hosted service
+  },
+  zksync: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: null,
+    shortId: 'zksync',
+    nativeCurrencySymbol: 'ETH',
+    chainId: 324,
+    nativeCurrencyCoingeckoId: 'ethereum',
+    platformCoingeckoId: 'zksync',
+    nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://mainnet.era.zksync.io',
+    multicallAddress: '0xF9cda624FBC7e059355ce98a31693d299FACd963',
+    multicall2Address: '0xF9cda624FBC7e059355ce98a31693d299FACd963',
+    getFactoryRegistryAddress: async () => '0xAF5261eD780fd5b80CF6E206b6BF90CbB97F511B',
+    factoryImplementationAddressMap: new Map([
+      ['0x7c2a205C52361410233540008f7095dEF5915843'.toLowerCase(), 'plain2basic'],
+      ['0xEF04fC6b95b1658AfdFd527aF9b947cd7BD46bde'.toLowerCase(), 'plain2balances'],
+      ['0x4887ef1a68f30364a25a8b0bAA13EeeA7eeBE574'.toLowerCase(), 'plain2eth'],
+      ['0x044f8F31078c0CB898f25fff3286cE905C18434e'.toLowerCase(), 'plain2optimized'],
+      ['0x2e6De7148Afc6e4B1ee766D070DDeff0C84831a5'.toLowerCase(), 'plain3basic'],
+      ['0x5D18b28C052Bb0C1573d90Ea055b13048026d83F'.toLowerCase(), 'plain3balances'],
+      ['0x9707Bbf96eBB136B67788aa7E46d771Ec18895f4'.toLowerCase(), 'plain3eth'],
+      ['0xb274f2cdCff70A0bac146e9Ca5a8a28f59a3f812'.toLowerCase(), 'plain3optimized'],
+      ['0x30eb3F0EF60993584e8dD231dF7539db31800555'.toLowerCase(), 'plain4basic'],
+      ['0x3D21E268d6A526948e978ad1595052c949927e54'.toLowerCase(), 'plain4balances'],
+      ['0xD46aed59fBd5eB6c134b1AFb364240bb62dA0451'.toLowerCase(), 'plain4eth'],
+      ['0xE80AeF1a4782eA7b7f9Ad9F0c2ed9343861934e3'.toLowerCase(), 'plain4optimized'],
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    approxBlocksPerDay: 70000, // Very approx from list of blocks on https://explorer.zksync.io/blocks
+    graphEndpoint: undefined, // Not supported by TheGraph's hosted service
+  },
+  base: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: null,
+    shortId: 'base',
+    nativeCurrencySymbol: 'ETH',
+    chainId: 8453,
+    nativeCurrencyCoingeckoId: 'ethereum',
+    platformCoingeckoId: 'base',
+    nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=base&dkey=${process.env.DRPC_API_KEY}`,
+    multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
+    multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
+    getFactoryRegistryAddress: async () => '0x3093f9B57A428F3EB6285a589cb35bEA6e78c336',
+    getFactoryCryptoRegistryAddress: async () => '0x5EF72230578b3e399E6C6F4F6360edF95e83BBfd',
+    getFactoryTricryptoRegistryAddress: async () => '0xA5961898870943c68037F6848d2D866Ed2016bcB',
+    factoryImplementationAddressMap: new Map([
+      ['0xD166EEdf272B860E991d331B71041799379185D5'.toLowerCase(), 'plain2basic'],
+      ['0x5C627d6925e448Ae418BC8a45d56B31fe5009Bea'.toLowerCase(), 'plain2balances'],
+      ['0x22D710931F01c1681Ca1570Ff016eD42EB7b7c2a'.toLowerCase(), 'plain2eth'],
+      ['0xA50d9a424A14aF0b9e7e9243dc1597d977f6cB09'.toLowerCase(), 'plain2optimized'],
+      ['0xeD49979026DC44DC7E83b1471794ec9b2a365Ea2'.toLowerCase(), 'plain3basic'],
+      ['0x0Cc51c9786f3777a6d50961CEBb2BB6E69ec5e07'.toLowerCase(), 'plain3balances'],
+      ['0x0a31527a8dE2Ee97BBD8cCE14Db8E8826a0b6C4f'.toLowerCase(), 'plain3eth'],
+      ['0x1086F023146f9026A9Bb22983CE866813C59518A'.toLowerCase(), 'plain3optimized'],
+      ['0x1621E58d36EB5Ef26F9768Ebe9DB77181b1f5a02'.toLowerCase(), 'plain4basic'],
+      ['0x2FdDeDF2D842f23da2B81b9144e75cEcb691Bf19'.toLowerCase(), 'plain4balances'],
+      ['0x50E09Ee7080b32aef3e92346891dD2DD389B5fAf'.toLowerCase(), 'plain4eth'],
+      ['0x44d9B3f4EE15AC81FEb918501fca0ddc9d83C976'.toLowerCase(), 'plain4optimized'],
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    approxBlocksPerDay: 43000, // Very approx from list of blocks on https://basescan.org/blocks
+    graphEndpoint: undefined, // Not supported by TheGraph's hosted service https://thegraph.com/docs/en/developing/supported-networks/
   },
 };
 export default configs;

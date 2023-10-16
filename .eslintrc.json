@@ -4,29 +4,64 @@
   },
   "extends": "airbnb",
   "parser": "@babel/eslint-parser",
+  "requireconfigfile": false,
   "plugins": [
     "@babel"
   ],
   "rules": {
     "func-names": 0,
     "no-nested-ternary": 0,
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
     "max-len": 0,
-    "arrow-parens": ["error", "always"],
+    "arrow-parens": [
+      "error",
+      "always"
+    ],
     "no-underscore-dangle": 0,
     "operator-linebreak": 0,
-    "comma-dangle": ["error", {
-      "arrays": "always-multiline",
-      "objects": "always-multiline",
-      "imports": "always-multiline",
-      "exports": "always-multiline",
-      "functions": "never"
-    }],
-    "no-use-before-define": ["error", "nofunc"],
-    "no-empty": ["error", { "allowEmptyCatch": true }],
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "never"
+      }
+    ],
+    "no-use-before-define": [
+      "error",
+      "nofunc"
+    ],
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
     "react/forbid-prop-types": 0,
-    "no-mixed-operators": ["error", { "allowSamePrecedence": true }],
-    "indent": ["error", 2, { "flatTernaryExpressions": true, "SwitchCase": 1 }]
+    "no-mixed-operators": [
+      "error",
+      {
+        "allowSamePrecedence": true
+      }
+    ],
+    "indent": [
+      "error",
+      2,
+      {
+        "flatTernaryExpressions": false,
+        "SwitchCase": 1
+      }
+    ]
   },
   "settings": {
     "import/resolver": {

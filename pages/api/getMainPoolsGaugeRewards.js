@@ -60,17 +60,17 @@ const FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES_REF_ASSET_PRICE = {
 };
 
 // eslint-disable-next-line
-const GAUGES_PARTIAL_ABI = [{"name":"reward_contract","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2051},{"name":"totalSupply","outputs":[{"type":"uint256","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":1691},{"stateMutability":"view","type":"function","name":"reward_tokens","inputs":[{"name":"arg0","type":"uint256"}],"outputs":[{"name":"","type":"address"}],"gas":3787},{"name":"rewarded_token","outputs":[{"type":"address","name":""}],"inputs":[],"stateMutability":"view","type":"function","gas":2201}];
+const GAUGES_PARTIAL_ABI = [{ "name": "reward_contract", "outputs": [{ "type": "address", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function", "gas": 2051 }, { "name": "totalSupply", "outputs": [{ "type": "uint256", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function", "gas": 1691 }, { "stateMutability": "view", "type": "function", "name": "reward_tokens", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3787 }, { "name": "rewarded_token", "outputs": [{ "type": "address", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function", "gas": 2201 }];
 
 export default fn(async (gauges) => {
   if (typeof gauges === 'undefined') {
     throw new Error('gauges is undefined in getMainPoolsGaugeRewards()');
   }
-  // const gauges = (await (await Request.get('https://api.curve.fi/api/getAllGauges')).json()).data;
+  // gauges = (await (await Request.get('https://api.curve.fi/api/getAllGauges')).json()).data;
 
   //empty gauges cause reverts
   const remove = [
-     'eurtusd', // Todo adapt script to this new type of gauges
+    'eurtusd', // Todo adapt script to this new type of gauges
     'eursusd', // Todo adapt script to this new type of gauges
     'crveth', // Todo adapt script to this new type of gauges
     'cvxeth', // Todo adapt script to this new type of gauges
@@ -89,10 +89,10 @@ export default fn(async (gauges) => {
     address: gauge,
     version: (
       V0_GAUGES_ADDRESSES.includes(gauge) ? null :
-      FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES.includes(gauge.toLowerCase()) ? 'factory' :
-      name === 'ankreth' ? 'v-rewarddata' : // Uses the rewardData implementation
-      i < 18 ? 'v1' :
-      'v2'
+        FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES.includes(gauge.toLowerCase()) ? 'factory' :
+          name === 'ankreth' ? 'v-rewarddata' : // Uses the rewardData implementation
+            i < 18 ? 'v1' :
+              'v2'
     ),
   }));
 
@@ -119,13 +119,13 @@ export default fn(async (gauges) => {
           methodName: 'rewarded_token',
           metaData: { address, type: 'rewardToken' },
         }] :
-        [...Array(Number(REWARDS_CONFIG[version].maxRewardCount)).keys()].map((rewardIndex) => ({
-          address,
-          abi: GAUGES_PARTIAL_ABI,
-          methodName: 'reward_tokens',
-          params: [rewardIndex],
-          metaData: { address, type: 'rewardToken' },
-        }))
+          [...Array(Number(REWARDS_CONFIG[version].maxRewardCount)).keys()].map((rewardIndex) => ({
+            address,
+            abi: GAUGES_PARTIAL_ABI,
+            methodName: 'reward_tokens',
+            params: [rewardIndex],
+            metaData: { address, type: 'rewardToken', rewardIndex },
+          }))
       )])
   ));
 
@@ -153,10 +153,10 @@ export default fn(async (gauges) => {
       rewardContract: rewardContract === ZERO_ADDRESS ? null : rewardContract,
       totalSupply: gaugesData.find(({ metaData }) => metaData.address === address && metaData.type === 'totalSupply').data / 1e18,
       rewardTokens: (
-        version !== 'v-rewarddata' ?
-          // Onward staking for non-factory gauges means there's only ever one active reward token at a time
-          rewardTokens.length === 0 ? null : rewardTokens.slice(-1) :
-          rewardTokens
+        version === 'v-rewarddata' ? rewardTokens :
+          rewardTokens.length === 0 ? null :
+            version === 'v1' ? rewardTokens.slice(-1) : // Onward staking for non-factory gauges means there's only ever one active reward token at a time
+              rewardTokens
       ),
     };
   });
@@ -198,7 +198,7 @@ export default fn(async (gauges) => {
         const rewardContractVersion = V2_GAUGES_USING_V1_REWARD_CONTRACT.includes(address) ? 'v1' : version;
 
         return (
-          rewardContractVersion === 'v-rewarddata' ?
+          rewardContractVersion === 'v-rewarddata' ? (
             flattenArray(rewardTokens.map((rewardToken) => [{
               address: rewardContract,
               abi: REWARDS_CONFIG[rewardContractVersion].rewardContractAbi,
@@ -220,7 +220,8 @@ export default fn(async (gauges) => {
               abi: ERC20_ABI,
               methodName: 'decimals',
               metaData: { address, rewardContract, rewardToken, type: 'decimals', metaType: 'token' },
-            }])) :
+            }]))
+          ) : rewardContractVersion === 'v1' ? (
             [{
               address: rewardContract,
               abi: REWARDS_CONFIG[rewardContractVersion].rewardContractAbi,
@@ -252,6 +253,43 @@ export default fn(async (gauges) => {
               methodName: 'decimals',
               metaData: { address, rewardContract, rewardToken: rewardTokens[0], type: 'decimals', metaType: 'token' },
             }]
+          ) : (
+            flattenArray(rewardTokens.map((rewardToken, i) => {
+              const isLatestRewardToken = (i === (rewardTokens.length - 1));
+
+              return [{
+                address: rewardContract,
+                abi: REWARDS_CONFIG[rewardContractVersion].rewardContractAbi,
+                methodName: rewardContractVersion !== 'v1' ? 'rewardsDuration' : 'DURATION',
+                metaData: { address, rewardContract, rewardToken: rewardToken, type: 'duration', metaType: 'reward', isLatestRewardToken },
+              }, {
+                address: rewardContract,
+                abi: REWARDS_CONFIG[rewardContractVersion].rewardContractAbi,
+                methodName: 'rewardRate',
+                metaData: { address, rewardContract, rewardToken: rewardToken, type: 'rewardRate', metaType: 'reward', isLatestRewardToken },
+              }, {
+                address: rewardContract,
+                abi: REWARDS_CONFIG[rewardContractVersion].rewardContractAbi,
+                methodName: 'periodFinish',
+                metaData: { address, rewardContract, rewardToken: rewardToken, type: 'periodFinish', metaType: 'reward', isLatestRewardToken },
+              }, {
+                address: rewardToken,
+                abi: ERC20_ABI,
+                methodName: 'name',
+                metaData: { address, rewardContract, rewardToken: rewardToken, type: 'name', metaType: 'token', isLatestRewardToken },
+              }, {
+                address: rewardToken,
+                abi: ERC20_ABI,
+                methodName: 'symbol',
+                metaData: { address, rewardContract, rewardToken: rewardToken, type: 'symbol', metaType: 'token', isLatestRewardToken },
+              }, {
+                address: rewardToken,
+                abi: ERC20_ABI,
+                methodName: 'decimals',
+                metaData: { address, rewardContract, rewardToken: rewardToken, type: 'decimals', metaType: 'token', isLatestRewardToken },
+              }]
+            }))
+          )
         );
       })
   ));
@@ -265,7 +303,7 @@ export default fn(async (gauges) => {
 
   const nowTimestamp = getNowTimestamp();
   const rewardsInfo = Array.from(Object.values(rewardDataPerRewardContractAndToken)).map((rewardDataForContractToken) => {
-    const { metaData: { address, rewardToken } } = rewardDataForContractToken[0];
+    const { metaData: { address, rewardToken, isLatestRewardToken } } = rewardDataForContractToken[0];
     const usesRewardData = rewardDataForContractToken.length === 1;
 
     let rate;
@@ -283,12 +321,19 @@ export default fn(async (gauges) => {
         rewardRate,
         periodFinish,
       ] = [
-        rewardDataForContractToken.find(({ metaData: { type } }) => type === 'rewardRate').data,
-        rewardDataForContractToken.find(({ metaData: { type } }) => type === 'periodFinish').data,
-      ];
+          rewardDataForContractToken.find(({ metaData: { type } }) => type === 'rewardRate').data,
+          rewardDataForContractToken.find(({ metaData: { type } }) => type === 'periodFinish').data,
+        ];
 
       rate = rewardRate / 1e18;
       rewardPeriodFinish = periodFinish;
+    }
+
+    // isLatestRewardToken is either true, false or undefined if this doesn't matter for the tokens at hand
+    // When it's not undefined, only the last reward token can be active,
+    // so we force periodFinish to 0 to mark any tokens except for the last as inactive.
+    if (isLatestRewardToken === false) {
+      rewardPeriodFinish = 0;
     }
 
     const { totalSupply } = gaugesRewardData.find((gaugeRewardData) => gaugeRewardData.address === address);
@@ -348,5 +393,7 @@ export default fn(async (gauges) => {
 
   return { mainPoolsGaugeRewards: groupBy(mergedRewardsInfo, 'gaugeAddress') };
 }, {
+  name: 'getMainPoolsGaugeRewards',
+  silenceParamsLog: true,
   maxAge: 5 * 60, // 5 min
 });

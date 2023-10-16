@@ -17,5 +17,5 @@ export default fn(async () => {
   };
 }, {
   maxAge: 60 * 60, // 1h
-  name: 'getAllGauges',
+  name: 'getCrvCircSupply',
 });

@@ -26,8 +26,8 @@ import GAUGE_ABI from '../../constants/abis/example_gauge_2.json';
 import META_REGISTRY_ABI from '../../constants/abis/meta-registry.json';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
-const GAUGE_IS_ROOT_GAUGE_ABI = [{"stateMutability":"view","type":"function","name":"bridger","inputs":[],"outputs":[{"name":"","type":"address"}]}];
-const GAUGE_IS_ROOT_GAUGE_2_ABI = [{"stateMutability":"view","type":"function","name":"emissions","inputs":[],"outputs":[{"name":"","type":"uint256"}],"gas":2778}];
+const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
+const GAUGE_IS_ROOT_GAUGE_2_ABI = [{ "stateMutability": "view", "type": "function", "name": "emissions", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 2778 }];
 /* eslint-enable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 
 const SIDECHAINS_WITH_FACTORY_GAUGES = [
@@ -40,6 +40,7 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'moonbeam',
   'kava',
   'celo',
+  'base',
 ];
 
 const lc = (str) => str.toLowerCase();
@@ -83,6 +84,7 @@ const getPoolShortName = (pool) => {
 };
 
 export default fn(async ({ blockchainId } = {}) => {
+  console.log('getAllGauges CALL', blockchainId)
   const chainsToQuery = SIDECHAINS_WITH_FACTORY_GAUGES;
   const blockchainIds = [
     'ethereum',
@@ -396,10 +398,21 @@ export default fn(async ({ blockchainId } = {}) => {
           hasCrv,
           areCrvRewardsStuckInBridge,
           rewardsNeedNudging,
+          isKilled,
         }) => {
           const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
           const name = getPoolName(pool);
           const shortName = getPoolShortName(pool);
+
+          const isSupersededByOtherGauge = blockchainFactoGauges.some((factoGauge) => (
+            factoGauge.gauge !== gauge &&
+            factoGauge.blockchainId === blockchainId &&
+            factoGauge.swap === swap &&
+            !factoGauge.isKilled &&
+            factoGauge.hasCrv &&
+            (isKilled || !hasCrv)
+          ));
+          if (isSupersededByOtherGauge) return null; // Ignore this gauge, a prefered one exists
 
           return [
             name, {
@@ -422,6 +435,7 @@ export default fn(async ({ blockchainId } = {}) => {
                 inflation_rate,
               },
               hasNoCrv: !hasCrv,
+              is_killed: isKilled,
               lpTokenPrice,
               ...(blockchainId !== 'ethereum' ? {
                 gaugeStatus: {
@@ -431,7 +445,7 @@ export default fn(async ({ blockchainId } = {}) => {
               } : {}),
             },
           ];
-        })
+        }).filter((o) => o !== null)
     )))),
   };
 

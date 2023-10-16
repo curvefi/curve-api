@@ -80,7 +80,7 @@ const deriveMissingCoinPricesSinglePass = async ({
    * of obscureUsd to fill in its usdPrice in the currently iterated-on pool)
    */
   const otherPoolsCoinsAddressesAndPricesMap = arrayToHashmap(flattenArray(otherPools.map((pool) => (
-    pool.coins ?
+    (pool.coins && pool.usdTotal > 5000) ?
       pool.coins.filter(({ usdPrice }) => usdPrice !== null) :
       [] // Pools at higher indices do not have a coins prop yet
   ).map(({ address, usdPrice }) => [address, usdPrice]))));

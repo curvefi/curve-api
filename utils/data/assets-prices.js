@@ -2,7 +2,7 @@ import memoize from 'memoizee';
 import Request from 'utils/Request';
 import { arrayToHashmap } from 'utils/Array';
 
-const getAssetsPrices = memoize((assetCoingeckoIds) => {
+const getAssetsPrices = memoize(async (assetCoingeckoIds) => {
   if (assetCoingeckoIds.length === 0) return {};
 
   // https://defillama.com/docs/api

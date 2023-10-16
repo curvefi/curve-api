@@ -23,6 +23,7 @@ const HIDDEN_POOLS_IDS = {
     'factory-crypto-1', // price borked
     'factory-crypto-2', // price borked
     'factory-crypto-49', // broken
+    'factory-crypto-265', // broken
   ],
   fantom: [
     'factory-v2-2', // Exact duplicate of another facto pool, with 0 liquidity
@@ -87,6 +88,10 @@ const HIDDEN_POOLS_IDS = {
   ],
   xdai: [
     'factory-v2-12',
+  ],
+  base: [
+    'factory-crypto-0',
+    'factory-tricrypto-0',
   ],
 };
 

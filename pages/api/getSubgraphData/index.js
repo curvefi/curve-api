@@ -1,16 +1,15 @@
-import axios from 'axios';
 import Web3 from 'web3';
 import BN from 'bignumber.js';
-import WEB3_CONSTANTS from 'constants/Web3';
 import { fn } from 'utils/api';
-import { getFeeDistributor } from 'utils/getters';
-import { getThursdayUTCTimestamp } from 'utils/helpers';
-import distributorAbi from 'constants/abis/distributor.json';
-import tripoolSwapAbi from 'constants/abis/tripool_swap.json';
+import { USE_FALLBACK_THEGRAPH_DATA } from 'constants/AppConstants';
 import configs from 'constants/configs';
 import { BASE_API_DOMAIN } from 'constants/AppConstants';
 import { runConcurrentlyAtMost } from 'utils/Async';
+import { uintToBN } from 'utils/Web3';
 import getAllCurvePoolsData from 'utils/data/curve-pools-data';
+import getVolumes, { AVAILABLE_CHAIN_IDS as AVAILABLE_CHAIN_IDS_FOR_GET_VOLUMES }
+  from 'pages/api/getVolumes/[blockchainId]';
+import { sumBN } from 'utils/Array.js';
 
 const lc = (str) => str.toLowerCase();
 
@@ -20,6 +19,11 @@ const POOLS_WITH_INCORRECT_SUBGRAPH_USD_VOLUME = {
   ethereum: [
     '0x84997FAFC913f1613F51Bb0E2b5854222900514B',
     '0x2863a328a0b7fc6040f11614fa0728587db8e353',
+    '0xb7ecb2aa52aa64a717180e030241bc75cd946726',
+    '0xf95aaa7ebb1620e46221b73588502960ef63dba0',
+    '0xc15f285679a1ef2d25f53d4cbd0265e1d02f2a92',
+    '0x1062fd8ed633c1f080754c19317cb3912810b5e5',
+    '0x28ca243dc0ac075dd012fcf9375c25d18a844d96',
   ].map(lc),
   polygon: [
     '0x7c1aa4989df27970381196d3ef32a7410e3f2748',
@@ -30,59 +34,101 @@ const POOLS_WITH_INCORRECT_SUBGRAPH_USD_VOLUME = {
   ].map(lc),
 };
 
-export default fn(async ( {blockchainId} ) => {
+const getFallbackData = async (fallbackDataFileName) => (
+  (await import(`./_fallback-data/${fallbackDataFileName}.json`)).default
+);
+
+export default fn(async ({ blockchainId }) => {
   if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
 
-  const config = configs[blockchainId];
-  const web3 = new Web3(config.rpcUrl);
+  // If the newest, more accurate method of retrieving volumes is available
+  // for this chain, return it instead with backward-compatible data structure
+  if (AVAILABLE_CHAIN_IDS_FOR_GET_VOLUMES.includes(blockchainId)) {
+    const data = await getVolumes.straightCall({ blockchainId });
 
-  if (typeof config === 'undefined') {
-    throw new Error(`No factory data for blockchainId "${blockchainId}"`);
+    return {
+      poolList: data.pools.map(({
+        address,
+        type,
+        volumeUSD,
+        latestDailyApyPcent,
+        latestWeeklyApyPcent,
+        virtualPrice,
+      }) => ({
+        address,
+        latestDailyApy: latestDailyApyPcent,
+        latestWeeklyApy: latestWeeklyApyPcent,
+        rawVolume: null, // Not available, and unused in all clients we know of
+        type,
+        virtualPrice,
+        volumeUSD,
+      })),
+      subgraphHasErrors: false,
+      cryptoShare: data.totalVolumes.cryptoVolumeSharePcent,
+      cryptoVolume: data.totalVolumes.totalCryptoVolume,
+      totalVolume: data.totalVolumes.totalVolume,
+    };
   }
 
+  const fallbackDataFileName = `getSubgraphData-${blockchainId}`;
+
+  if (USE_FALLBACK_THEGRAPH_DATA && typeof fallbackDataFileName !== 'undefined') {
+    return getFallbackData(fallbackDataFileName);
+  }
+
+  const config = configs[blockchainId];
   const GRAPH_ENDPOINT = config.graphEndpoint;
-  const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
-  const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
+  if (!GRAPH_ENDPOINT) throw new Error('No subgraph endpoint');
 
-  let subgraphHasErrors = false;
+  try {
+    const web3 = new Web3(config.rpcUrl);
 
-  const allPools = await getAllCurvePoolsData([blockchainId]);
-  const getPoolByAddress = (address) => (
-    allPools.find((pool) => (lc(pool.address) === lc(address)))
-  );
+    if (typeof config === 'undefined') {
+      throw new Error(`No factory data for blockchainId "${blockchainId}"`);
+    }
 
-  const poolListData = await (await fetch(`${BASE_API_DOMAIN}/api/getPoolList/${blockchainId}`)).json()
-  let poolList = poolListData.data.poolList
-  let totalVolume = 0
-  let cryptoVolume = 0
+    const CURRENT_TIMESTAMP = Math.round(new Date().getTime() / 1000);
+    const TIMESTAMP_24H_AGO = CURRENT_TIMESTAMP - (25 * 3600);
 
-  await runConcurrentlyAtMost(poolList.map((_, i) => async () => {
-    const poolAddress = lc(poolList[i].address);
+    let subgraphHasErrors = false;
+
+    const allPools = await getAllCurvePoolsData([blockchainId]);
+    const getPoolByAddress = (address) => (
+      allPools.find((pool) => (lc(pool.address) === lc(address)))
+    );
+
+    const poolListData = await (await fetch(`${BASE_API_DOMAIN}/api/getPoolList/${blockchainId}`)).json()
+    let poolList = poolListData.data.poolList
+    let totalVolume = 0
+    let cryptoVolume = 0
+
+    await runConcurrentlyAtMost(poolList.map((_, i) => async () => {
+      const poolAddress = lc(poolList[i].address);
 
       let POOL_QUERY = `
-      {
-        swapVolumeSnapshots(
-          first: 1000,
-          orderBy: timestamp,
-          orderDirection: desc,
-          where: {
-            pool: "${poolAddress}"
-            timestamp_gt: ${TIMESTAMP_24H_AGO}
-            period: 3600
-          }
-        )
         {
-          volume
-          volumeUSD
-          timestamp
-          count
+          swapVolumeSnapshots(
+            first: 1000,
+            orderBy: timestamp,
+            orderDirection: desc,
+            where: {
+              pool: "${poolAddress}"
+              timestamp_gt: ${TIMESTAMP_24H_AGO}
+              period: 3600
+            }
+          )
+          {
+            volume
+            volumeUSD
+            timestamp
+            count
+          }
         }
-      }
-      `
+        `
       const res = await fetch(GRAPH_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: POOL_QUERY })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: POOL_QUERY })
       })
 
       let data = await res.json()
@@ -91,12 +137,12 @@ export default fn(async ( {blockchainId} ) => {
 
       subgraphHasErrors = data.errors?.length > 0;
       if (!subgraphHasErrors) {
-        for (let i = 0; i < data.data.swapVolumeSnapshots.length; i ++) {
-            const hourlyVolUSD = parseFloat(data.data.swapVolumeSnapshots[i].volumeUSD)
-            rollingDaySummedVolume =  rollingDaySummedVolume + hourlyVolUSD
+        for (let i = 0; i < data.data.swapVolumeSnapshots.length; i++) {
+          const hourlyVolUSD = parseFloat(data.data.swapVolumeSnapshots[i].volumeUSD)
+          rollingDaySummedVolume = rollingDaySummedVolume + hourlyVolUSD
 
-            const hourlyVol = parseFloat(data.data.swapVolumeSnapshots[i].volume)
-            rollingRawVolume =  rollingRawVolume + hourlyVol
+          const hourlyVol = parseFloat(data.data.swapVolumeSnapshots[i].volume)
+          rollingRawVolume = rollingRawVolume + hourlyVol
         }
       }
 
@@ -136,100 +182,147 @@ export default fn(async ( {blockchainId} ) => {
 
 
       const APY_QUERY = `
-     {
-       dailyPoolSnapshots(first: 7,
-                        orderBy: timestamp,
-                        orderDirection: desc,
-                        where:
-                        {pool: "${poolList[i].address.toLowerCase()}"})
-       {
-         baseApr
-         xcpProfit
-         xcpProfitA
-         virtualPrice
-         timestamp
-       }
-     }
-     `;
-
-       const resAPY = await fetch(GRAPH_ENDPOINT, {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({ query: APY_QUERY }),
-       });
-
-       let dataAPY = await resAPY.json();
-
-       const snapshots = dataAPY?.data?.dailyPoolSnapshots?.map((a) => ({
-         baseApr: +a.baseApr,
-         virtualPrice: +a.virtualPrice,
-         xcpProfit: a.xcpProfit ? +a.xcpProfit : undefined,
-         xcpProfitA: a.xcpProfitA ? +a.xcpProfitA : undefined,
-         timestamp: a.timestamp,
-       })) || [];
-
-       let latestDailyApy = 0
-       let latestWeeklyApy = 0
-       if (snapshots.length >= 2) {
-         const isCryptoPool = snapshots[0].xcpProfit > 0;
-
-         if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined' && snapshots[1].xcpProfit !== 0) {
-           const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
-           const dayOldProfit = ((snapshots[1].xcpProfit / 2) + (snapshots[1].xcpProfitA / 2) + 1e18) / 2;
-           const rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
-           latestDailyApy = ((rateDaily + 1) ** 365 - 1) * 100;
-         } else if (snapshots[1].virtualPrice !== 0) {
-           latestDailyApy = ((snapshots[0].baseApr + 1) ** 365 - 1) * 100;
-         }
-       }
-       if (snapshots.length > 6) {
-         const isCryptoPool = snapshots[0].xcpProfit > 0;
-
-         if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined' && snapshots[6].xcpProfit !== 0) {
-            const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
-            const weekOldProfit = ((snapshots[6].xcpProfit / 2) + (snapshots[6].xcpProfitA / 2) + 1e18) / 2;
-            const rateWeekly = (currentProfit - weekOldProfit) / weekOldProfit;
-            latestWeeklyApy = ((rateWeekly + 1) ** 52 - 1) * 100;
-          } else if (snapshots[6].virtualPrice !== 0) {
-            const latestWeeklyRate =
-            (snapshots[0].virtualPrice - snapshots[6].virtualPrice) /
-            snapshots[0].virtualPrice;
-            latestWeeklyApy = ((latestWeeklyRate + 1) ** 52 - 1) * 100;
-          }
-        }
-       poolList[i].latestDailyApy = Math.min(latestDailyApy, 1e6);
-       poolList[i].latestWeeklyApy = Math.min(latestWeeklyApy, 1e6);
-       poolList[i].virtualPrice = snapshots[0] ? snapshots[0].virtualPrice : undefined;
-
-  }), 10);
-
-  // When a crypto pool uses a base pool lp as one of its underlying assets, apy calculations
-  // using xcp_profit need to add up 1/3rd of the underlying pool's base volume
-  if (config.CRYPTO_POOLS_WITH_BASE_POOLS) {
-    poolList = poolList.map((pool) => {
-      if (config.CRYPTO_POOLS_WITH_BASE_POOLS.has(pool.address)) {
-        const { latestDailyApy, latestWeeklyApy } = pool;
-        const underlyingPoolAddress = config.CRYPTO_POOLS_WITH_BASE_POOLS.get(pool.address);
-        const underlyingPool = poolList.find(({ address }) => address.toLowerCase() === underlyingPoolAddress.toLowerCase());
-        if (!underlyingPool) {
-          console.error(`Couldn't find underlying pool for crypto pool ${pool.address}, hence couldn't add up its base apy`);
-          return pool;
-        }
-
-        return {
-          ...pool,
-          latestDailyApy: BN(latestDailyApy).plus(BN(underlyingPool.latestDailyApy).div(3)).toFixed(),
-          latestWeeklyApy: BN(latestWeeklyApy).plus(BN(underlyingPool.latestWeeklyApy).div(3)).toFixed(),
+      {
+        dailyPoolSnapshots(first: 7,
+                          orderBy: timestamp,
+                          orderDirection: desc,
+                          where:
+                          {pool: "${poolList[i].address.toLowerCase()}"})
+        {
+          baseApr
+          xcpProfit
+          xcpProfitA
+          virtualPrice
+          timestamp
         }
       }
+      `;
 
-      return pool;
-    })
+      const resAPY = await fetch(GRAPH_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: APY_QUERY }),
+      });
+
+      let dataAPY = await resAPY.json();
+
+      const snapshots = dataAPY?.data?.dailyPoolSnapshots?.map((a) => ({
+        baseApr: +a.baseApr,
+        virtualPrice: +a.virtualPrice,
+        xcpProfit: a.xcpProfit ? +a.xcpProfit : undefined,
+        xcpProfitA: a.xcpProfitA ? +a.xcpProfitA : undefined,
+        timestamp: a.timestamp,
+      })) || [];
+
+      let latestDailyApy = 0
+      let latestWeeklyApy = 0
+      if (snapshots.length >= 2) {
+        const isCryptoPool = snapshots[0].xcpProfit > 0;
+
+        if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined' && snapshots[1].xcpProfit !== 0) {
+          const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
+          const dayOldProfit = ((snapshots[1].xcpProfit / 2) + (snapshots[1].xcpProfitA / 2) + 1e18) / 2;
+          const rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
+          latestDailyApy = ((rateDaily + 1) ** 365 - 1) * 100;
+        } else if (snapshots[1].virtualPrice !== 0) {
+          latestDailyApy = ((snapshots[0].baseApr + 1) ** 365 - 1) * 100;
+        }
+      }
+      if (snapshots.length > 6) {
+        const isCryptoPool = snapshots[0].xcpProfit > 0;
+
+        if (isCryptoPool && typeof snapshots[0].xcpProfit !== 'undefined' && snapshots[6].xcpProfit !== 0) {
+          const currentProfit = ((snapshots[0].xcpProfit / 2) + (snapshots[0].xcpProfitA / 2) + 1e18) / 2;
+          const weekOldProfit = ((snapshots[6].xcpProfit / 2) + (snapshots[6].xcpProfitA / 2) + 1e18) / 2;
+          const rateWeekly = (currentProfit - weekOldProfit) / weekOldProfit;
+          latestWeeklyApy = ((rateWeekly + 1) ** 52 - 1) * 100;
+        } else if (snapshots[6].virtualPrice !== 0) {
+          const latestWeeklyRate =
+            (snapshots[0].virtualPrice - snapshots[6].virtualPrice) /
+            snapshots[0].virtualPrice;
+          latestWeeklyApy = ((latestWeeklyRate + 1) ** 52 - 1) * 100;
+        }
+      }
+      poolList[i].latestDailyApy = Math.min(latestDailyApy, 1e6);
+      poolList[i].latestWeeklyApy = Math.min(latestWeeklyApy, 1e6);
+      poolList[i].virtualPrice = snapshots[0] ? snapshots[0].virtualPrice : undefined;
+
+    }), 10);
+
+    // When a crypto pool uses a base pool lp as one of its underlying assets, apy calculations
+    // using xcp_profit need to add up 1/3rd of the underlying pool's base volume
+    if (config.CRYPTO_POOLS_WITH_BASE_POOLS) {
+      poolList = poolList.map((pool) => {
+        if (config.CRYPTO_POOLS_WITH_BASE_POOLS.has(pool.address)) {
+          const { latestDailyApy, latestWeeklyApy } = pool;
+          const underlyingPoolAddress = config.CRYPTO_POOLS_WITH_BASE_POOLS.get(pool.address);
+          const underlyingPool = poolList.find(({ address }) => address.toLowerCase() === underlyingPoolAddress.toLowerCase());
+          if (!underlyingPool) {
+            console.error(`Couldn't find underlying pool for crypto pool ${pool.address}, hence couldn't add up its base apy`);
+            return pool;
+          }
+
+          return {
+            ...pool,
+            latestDailyApy: BN(latestDailyApy).plus(BN(underlyingPool.latestDailyApy).div(3)).toNumber(),
+            latestWeeklyApy: BN(latestWeeklyApy).plus(BN(underlyingPool.latestWeeklyApy).div(3)).toNumber(),
+          }
+        }
+
+        return pool;
+      })
+    }
+
+    /**
+    * Add additional ETH staking APY to pools containing ETH LSDs
+    */
+    poolList = poolList.map((pool) => {
+      const poolData = getPoolByAddress(pool.address);
+      if (!poolData) return pool; // Some broken/ignored pools might still be picked up by the subgraph
+
+      const { usesRateOracle, coins, usdTotal } = poolData;
+      const needsAdditionalLsdAssetApy = (
+        !usesRateOracle &&
+        coins.some(({ ethLsdApy }) => typeof ethLsdApy !== 'undefined')
+      );
+
+      if (!needsAdditionalLsdAssetApy || usdTotal === 0) return pool;
+
+      const additionalApysPcentFromLsds = coins.map(({
+        ethLsdApy,
+        poolBalance,
+        decimals,
+        usdPrice,
+      }) => {
+        if (typeof ethLsdApy === 'undefined' || usdPrice === null || usdPrice === 0) return 0;
+
+        const assetUsdTotal = uintToBN(poolBalance, decimals).times(usdPrice);
+        const assetProportionInPool = assetUsdTotal.div(usdTotal);
+
+        return assetProportionInPool.times(ethLsdApy).times(100);
+      });
+
+      return {
+        ...pool,
+        latestDailyApy: BN(pool.latestDailyApy).plus(sumBN(additionalApysPcentFromLsds)).toNumber(),
+        latestWeeklyApy: BN(pool.latestWeeklyApy).plus(sumBN(additionalApysPcentFromLsds)).toNumber(),
+      }
+    });
+
+
+    const cryptoShare = (cryptoVolume / totalVolume) * 100
+
+    return { poolList, totalVolume, cryptoVolume, cryptoShare, subgraphHasErrors }
+  } catch (err) {
+    if (typeof fallbackDataFileName !== 'undefined') {
+      console.log(`CAUGHT AND HANDLED GRAPHQL ERROR: "getSubgraphData/${blockchainId}". Fallback data was returned instead of fresh data. The caught error is logged below ↓`);
+      console.log(err);
+
+      return getFallbackData(fallbackDataFileName);
+    } else {
+      throw err;
+    }
   }
-
-  const cryptoShare = (cryptoVolume / totalVolume) * 100
-
-  return { poolList, totalVolume, cryptoVolume, cryptoShare, subgraphHasErrors }
 }, {
-  maxAge: 5 * 60, // 15 min
+  maxAge: 5 * 60, // 5 min
 });

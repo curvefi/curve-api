@@ -2,6 +2,9 @@ import memoize from 'memoizee';
 import { flattenArray } from 'utils/Array';
 import { sequentialPromiseFlatMap } from 'utils/Async';
 import getPools from 'pages/api/getPools';
+import { BASE_API_DOMAIN } from 'constants/AppConstants';
+import getPlatformRegistries from './curve-platform-registries';
+import Request from 'utils/Request';
 
 const attachBlockchainId = (blockchainId, poolData) => ({
   ...poolData,
@@ -20,26 +23,32 @@ const attachFactoryTag = (poolData) => ({
 
 const getAllCurvePoolsData = memoize(async (blockchainIds) => (
   flattenArray(await sequentialPromiseFlatMap(blockchainIds, async (blockchainId) => (
-    Promise.all([
-      (getPools.straightCall({ blockchainId, registryId: 'main', preventQueryingFactoData: true }))
-        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('main', poolData))),
-      (getPools.straightCall({ blockchainId, registryId: 'crypto', preventQueryingFactoData: true }))
-        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('crypto', poolData))),
-      (getPools.straightCall({ blockchainId, registryId: 'factory', preventQueryingFactoData: true }))
-        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory', poolData)).map(attachFactoryTag)),
-      (getPools.straightCall({ blockchainId, registryId: 'factory-crypto', preventQueryingFactoData: true }))
-        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory-crypto', poolData)).map(attachFactoryTag)),
-      (getPools.straightCall({ blockchainId, registryId: 'factory-crvusd', preventQueryingFactoData: true }))
-        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory-crvusd', poolData)).map(attachFactoryTag)),
-      (getPools.straightCall({ blockchainId, registryId: 'factory-tricrypto', preventQueryingFactoData: true }))
-        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory-tricrypto', poolData)).map(attachFactoryTag)),
-      (getPools.straightCall({ blockchainId, registryId: 'factory-eywa', preventQueryingFactoData: true }))
-        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('factory-eywa', poolData)).map(attachFactoryTag)),
-    ])
+    Promise.all((await getPlatformRegistries(blockchainId)).registryIds.map((registryId) => (
+      (getPools.straightCall({ blockchainId, registryId, preventQueryingFactoData: true }))
+        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId(registryId, poolData)).map((poolData) => (
+          registryId.startsWith('factory') ?
+            attachFactoryTag(poolData) :
+            poolData
+        )))
+    )))
   )))
 ), {
   promise: true,
   maxAge: 60 * 1000, // 60s
 });
 
+const fetchAllCurvePoolsDataEndpoints = async (blockchainIds) => (
+  flattenArray(await sequentialPromiseFlatMap(blockchainIds, async (blockchainId) => (
+    Promise.all((await getPlatformRegistries(blockchainId)).registryIds.map(async (registryId) => (
+      Promise.resolve((await (await Request.get(`${BASE_API_DOMAIN}/api/getPools/${blockchainId}/${registryId}`)).json()).data)
+        .then((res) => res.poolData.map((poolData) => attachBlockchainId(blockchainId, poolData)).map((poolData) => attachRegistryId('main', poolData)).map((poolData) => (
+          registryId.startsWith('factory') ?
+            attachFactoryTag(poolData) :
+            poolData
+        )))
+    )))
+  )))
+);
+
 export default getAllCurvePoolsData;
+export { fetchAllCurvePoolsDataEndpoints };

@@ -79,6 +79,7 @@ export default {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'ethereum', // Native ETH
     '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1': 'dai',
     '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8': 'usd-coin',
+    '0xaf88d065e77c8cC2239327C5EDb3A432268e5831': 'usd-coin',
     '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9': 'tether',
     '0x82e64f49ed5ec1bc6e43dad4fc8af9bb3a2312ee': 'dai',
     '0x625e7708f30ca75bfd92586e17077590c60eb4cd': 'usd-coin',
@@ -130,6 +131,10 @@ export default {
     '0x049d68029688eabf473097a2fc38ef61633a3c7a': 'tether', // fUSDT
     '0x1e4f97b9f9f913c46f1632781732927b9019c68b': 'curve-dao-token', // CRV
     '0xC931f61B1534EB21D8c11B24f3f5Ab2471d4aB50': 'binance-usd', // BUSD
+    '0x0ac7e2f9f78de2ccc467139d43b6f32473454dd9': 'tether', // sUSDT_BSC, base price for price inferences on eywa facto pools
+    '0xE35177E61d09bFDb61Ea29db92d19B5E05EdDa8f': 'usd-coin', // sUSDC_BSC, base price for price inferences on eywa facto pools
+    '0x88486E058865611c939D1077725F293378E7bD75': 'dai', // sDAI_BSC, base price for price inferences on eywa facto pools
+    '0xC4417bE9c9b3f682fd03224A4B29e01CE34602fE': 'true-usd', // sTUSD_BSC, base price for price inferences on eywa facto pools
   },
   optimism: {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'ethereum', // Native ETH
@@ -174,5 +179,13 @@ export default {
     '0x90Ca507a5D4458a4C6C6249d186b6dCb02a5BCCd': 'dai',
     '0x88eeC49252c8cbc039DCdB394c0c2BA2f1637EA0': 'tether',
     '0xC16B81Af351BA9e64C1a069E3Ab18c244A1E3049': 'ageur',
+  },
+  base: {
+    '0x4200000000000000000000000000000000000006': 'ethereum',
+    '0xeb466342c4d449bc9f53a865d5cb90586f405215': 'axlusdc',
+    '0x50c5725949a6f0c72e6c4a641f24049a917db0cb': 'dai',
+    '0x417Ac0e078398C154EdFadD9Ef675d30Be60Af93': 'crvusd',
+    '0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b': 'tbtc',
+    '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca': 'bridged-usd-coin-base',
   },
 };
