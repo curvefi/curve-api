@@ -1,41 +1,69 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+/**
+ * Module dependencies.
+ */
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var express = require('express'),
+  session = require('express-session'),
+  bodyParser = require('body-parser'),
+  methodOverride = require('method-override'),
+  cookieParser = require('cookie-parser'),
+  fs = require('fs'),
+  filename = '/var/nodelist',
+  app = module.exports = express();
 
-var app = module.exports = express();
+var MemcachedStore = require('connect-memcached')(session);
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+function setup(cacheNodes) {
+  app.use(bodyParser.raw());
+  app.use(methodOverride());
+  if (cacheNodes) {
+    app.use(cookieParser());
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+    console.log('Using memcached store nodes:');
+    console.log(cacheNodes);
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+    app.use(session({
+      secret: 'your secret here',
+      resave: false,
+      saveUninitialized: false,
+      store: new MemcachedStore({ 'hosts': cacheNodes })
+    }));
+  } else {
+    console.log('Not using memcached store.');
+    app.use(cookieParser('your secret here'));
+    app.use(session());
+  }
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+  app.get('/', function(req, resp) {
+    if (req.session.views) {
+      req.session.views++
+      resp.setHeader('Content-Type', 'text/html')
+      resp.write('Views: ' + req.session.views)
+      resp.end()
+    } else {
+      req.session.views = 1
+      resp.end('Refresh the page!')
+    }
+  });
+
+  if (!module.parent) {
+    console.log('Running express without cluster.');
+    app.listen(process.env.PORT || 5000);
+  }
+}
+
+// Load elasticache configuration.
+fs.readFile(filename, 'UTF8', function(err, data) {
+  if (err) throw err;
+
+  var cacheNodes = [];
+  if (data) {
+    var lines = data.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].length > 0) {
+        cacheNodes.push(lines[i]);
+      }
+    }
+  }
+  setup(cacheNodes);
 });
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-module.exports = app;

@@ -1,0 +1,44 @@
+{
+  "name": "hashring",
+  "version": "3.2.0",
+  "author": "Arnout Kazemier",
+  "description": "A consistent hashring compatible with ketama hashing and python's hash_ring",
+  "main": "./index.js",
+  "keywords": [
+    "hashring",
+    "hash ring",
+    "hashing",
+    "hashvalue",
+    "ketama",
+    "hash_ring",
+    "hash",
+    "consistent hashing",
+    "libketama"
+  ],
+  "license": "MIT",
+  "bugs": "http://github.com/3rd-Eden/node-hashring/issues",
+  "homepage": "http://github.com/3rd-Eden/node-hashring/",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/3rd-Eden/node-hashring.git"
+  },
+  "dependencies": {
+    "connection-parse": "0.0.x",
+    "simple-lru-cache": "0.0.x"
+  },
+  "devDependencies": {
+    "assume": "1.2.x",
+    "benchmark": "1.0.x",
+    "devnull": "0.0.x",
+    "istanbul": "0.3.x",
+    "mocha": "2.2.x",
+    "pre-commit": "1.1.x"
+  },
+  "scripts": {
+    "100%": "istanbul check-coverage --statements 100 --functions 100 --lines 100 --branches 100",
+    "test": "mocha tests/api.test.js tests/distribution.test.js",
+    "watch": "mocha --watch tests/api.test.js tests/distribution.test.js",
+    "coverage": "istanbul cover ./node_modules/.bin/_mocha -- tests/api.test.js tests/distribution.test.js",
+    "test-travis": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- tests/api.test.js tests/distribution.test.js"
+  }
+}
