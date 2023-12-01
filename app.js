@@ -2,20 +2,19 @@
  * Module dependencies.
  */
 
-import express from 'express';
-import session from 'express-session';
-import { raw } from 'body-parser';
-import methodOverride from 'method-override';
-import cookieParser from 'cookie-parser';
-import { readFile } from 'fs';
-
-const filename = '/var/nodelist';
-const app = express();
+const express = require('express'),
+  session = require('express-session'),
+  bodyParser = require('body-parser'),
+  methodOverride = require('method-override'),
+  cookieParser = require('cookie-parser'),
+  fs = require('fs'),
+  filename = '/var/nodelist',
+  app = express();
 
 let MemcachedStore = require('connect-memcached')(session);
 
 function setup(cacheNodes) {
-  app.use(raw());
+  app.use(bodyParser.raw());
   app.use(methodOverride());
   if (cacheNodes.length > 0) {
     app.use(cookieParser());
@@ -56,7 +55,7 @@ function setup(cacheNodes) {
 
 console.log("Reading elastic cache configuration")
 // Load elasticache configuration.
-readFile(filename, 'UTF8', function(err, data) {
+fs.readFile(filename, 'UTF8', function(err, data) {
   if (err) throw err;
 
   let cacheNodes = []
@@ -72,4 +71,4 @@ readFile(filename, 'UTF8', function(err, data) {
   setup(cacheNodes)
 });
 
-export default app;
+module.exports = app;
