@@ -9,7 +9,8 @@ const express = require('express'),
   cookieParser = require('cookie-parser'),
   fs = require('fs'),
   filename = '/var/nodelist',
-  app = express();
+  app = express(),
+  memjs = require('memjs');
 
 let MemcachedStore = require('connect-memcached')(session);
 
@@ -36,15 +37,26 @@ function setup(cacheNodes) {
     }));
   }
 
-  app.get('/', function(req, resp) {
-    if (req.session.views) {
-      req.session.views++
-      resp.setHeader('Content-Type', 'text/html')
-      resp.send(`You are session: ${req.session.id}. Views: ${req.session.views}`)
-    } else {
-      req.session.views = 1
-      resp.send(`You are session: ${req.session.id}. No views yet, refresh the page!`)
+  app.get('/', async function(req, resp) {
+    if (cacheNodes.length > 0) {
+      const client = memjs.Client.create(cacheNodes.join(',')); // memjs takes a comma-separated list of hosts
+      const { value } = await client.get('test');
+      if (value === null) {
+        await client.set('test', JSON.stringify(Math.random()), { expires: 10 })
+        resp.send('no value found: set a random value that youll see on next refresh and that will last for 10s!')
+      } else {
+        resp.send(`value found: ${value} - ${JSON.stringify(value)} - ${JSON.parse(value)}`)
+      }
     }
+
+    // if (req.session.views) {
+    //   req.session.views++
+    //   resp.setHeader('Content-Type', 'text/html')
+    //   resp.send(`You are session: ${req.session.id}. Views: ${req.session.views}`)
+    // } else {
+    //   req.session.views = 1
+    //   resp.send(`You are session: ${req.session.id}. No views yet, refresh the page!`)
+    // }
   });
 
   if (!module.parent) {
