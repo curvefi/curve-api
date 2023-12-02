@@ -23,7 +23,7 @@ const getCacheNodes = async () => {
       }
     }
 
-    return cacheNodes.join(',');
+    return cacheNodes;
   }
 }
 
