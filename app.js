@@ -2,19 +2,20 @@
  * Module dependencies.
  */
 
+const { IS_DEV } = require('./constants/AppConstants');
+const getCacheNodes = require('./utils/getCacheNodes');
+
 const express = require('express'),
   session = require('express-session'),
   bodyParser = require('body-parser'),
   methodOverride = require('method-override'),
   cookieParser = require('cookie-parser'),
-  fs = require('fs'),
-  filename = '/var/nodelist',
   app = express(),
   memjs = require('memjs');
 
 let MemcachedStore = require('connect-memcached')(session);
 
-function setup(cacheNodes) {
+getCacheNodes().then((cacheNodes) => {
   app.use(bodyParser.raw());
   app.use(methodOverride());
   if (cacheNodes.length > 0) {
@@ -63,24 +64,6 @@ function setup(cacheNodes) {
     console.log('Running express without cluster. Listening on port %d', process.env.PORT || 5000)
     app.listen(process.env.PORT || 5000)
   }
-}
-
-console.log("Reading elastic cache configuration")
-// Load elasticache configuration.
-fs.readFile(filename, 'UTF8', function(err, data) {
-  if (err) throw err;
-
-  let cacheNodes = []
-  if (data) {
-    let lines = data.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].length > 0) {
-        cacheNodes.push(lines[i])
-      }
-    }
-  }
-
-  setup(cacheNodes)
 });
 
 module.exports = app;
