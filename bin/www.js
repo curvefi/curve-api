@@ -1,22 +1,20 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
+import app from '../app.js';
+import cluster from 'cluster';
+import Debug from 'debug';
+import http from 'http';
+import os from 'os';
 
-const app = require('../app');
-const cluster = require('cluster');
-const debug = require('debug')('nodejs-example-express-elasticache:server');
-const http = require('http');
-const workers = {},
-  count = require('os').cpus().length;
+const debug = Debug('nodejs-example-express-elasticache:server');
+const cpuCount = os.cpus().length;
+const workers = {};
 
 function spawn() {
   const worker = cluster.fork();
   workers[worker.pid] = worker;
   return worker;
 }
-
 
 /**
  * Get port from environment and store in Express.
@@ -25,8 +23,8 @@ function spawn() {
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-if (cluster.isMaster) {
-  for (let i = 0; i < count; i++) {
+if (cluster.isPrimary) {
+  for (let i = 0; i < cpuCount; i++) {
     spawn();
   }
 

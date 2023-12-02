@@ -1,16 +1,17 @@
-const { IS_DEV } = require("../constants/AppConstants");
-const fs = require('fs/promises');
+/**
+ * Returns an array of memcached hosts
+ */
+
+import { IS_DEV } from '../constants/AppConstants.js';
+import fs from 'fs/promises';
 
 // Matches `NodeListPath` in elasticache_settings.config
 const ELASTICACHE_NODE_LIST_PATH = '/var/nodelist';
 
-// Returns an array of memcached hosts
 const getCacheNodes = async () => {
   if (IS_DEV) {
     return [process.env.DEV_MEMCACHED_HOST];
   } else {
-    console.log("Reading elastic cache configuration")
-    // Load elasticache configuration.
     const data = await fs.readFile(ELASTICACHE_NODE_LIST_PATH, 'UTF8');
     let cacheNodes = []
     if (data) {
@@ -26,4 +27,4 @@ const getCacheNodes = async () => {
   }
 }
 
-module.exports = getCacheNodes;
+export default getCacheNodes;

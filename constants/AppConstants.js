@@ -1,7 +1,7 @@
-const dotenvSafe = require('dotenv-safer');
+import { config } from 'dotenv-safer';
 
 // Ensure all required env variables are defined
-dotenvSafe.config({
+config({
   example: './.env.default',
 });
 
@@ -28,7 +28,7 @@ const FALLBACK_THEGRAPH_DATA_POPULATE_MODE = false;
 
 const SMALL_POOLS_USDTOTAL_THRESHOLD = 10000;
 
-module.exports = {
+export {
   IS_DEV,
   REWARD_TOKENS_REPLACE_MAP,
   BASE_API_DOMAIN,

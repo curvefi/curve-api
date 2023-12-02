@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./bin/www"
   },
+  "type": "module",
   "dependencies": {
     "body-parser": "^1.20.2",
     "connect-memcached": "*",
