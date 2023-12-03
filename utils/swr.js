@@ -43,6 +43,6 @@ const swrPromise = new Promise(async (resolve, reject) => {
 
 // Wrapper that exposes the same intuitive api as naked swr, while
 // making up for the async nature of memcached nodes retrieval
-const swr = async (key, fn) => (await swrPromise)(key, fn);
+const swr = async (key, fn, configOverrides) => (await swrPromise)(key, fn, configOverrides);
 
 export default swr;
