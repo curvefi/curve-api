@@ -1,7 +1,4 @@
-import { Router } from 'express';
 import { fn } from '../../utils/api.js';
-
-const router = Router();
 
 const blocknativeApiFetchOptions = {
   method: 'GET',
@@ -25,7 +22,7 @@ const CACHE_PROPS = {
   cacheKey: 'getGas',
 };
 
-router.get('/getGas', fn(async () => {
+export default fn(async () => {
   const [
     baseFee,
     fastestGasInfo,
@@ -59,6 +56,4 @@ router.get('/getGas', fn(async () => {
     },
     eip1559Gas,
   };
-}, CACHE_PROPS));
-
-export default router;
+}, CACHE_PROPS);
