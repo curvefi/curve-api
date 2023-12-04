@@ -51,7 +51,6 @@ const fn = (cb, options = {}) => {
   const {
     maxAge: maxAgeSec = null, // Caching duration, in seconds
     cacheKey, // Either a function that's passed the call's params and returns a string, or a static string
-    name = null, // Name, used for logging purposes
     returnFlatData = false,
     silenceParamsLog = false, // Don't log params (can be used because the fn is passed a huge object that creates noise)
   } = options;
@@ -73,7 +72,10 @@ const fn = (cb, options = {}) => {
   );
 
   const apiCall = async (req, res) => (
-    Promise.resolve(callback(req.query))
+    Promise.resolve(callback({
+      ...req.query,
+      ...req.params,
+    }))
       .then((data) => {
         if (maxAgeSec !== null) res.setHeader('Cache-Control', `max-age=0, s-maxage=${maxAgeSec}, stale-while-revalidate`);
         res.status(200).json(
