@@ -1,5 +1,5 @@
-import swr from './swr.js';
-import { IS_DEV } from '../constants/AppConstants.js';
+import swr from '#root/utils/swr.js';
+import { IS_DEV } from '#root/constants/AppConstants.js';
 
 const getNowMs = () => Number(Date.now());
 

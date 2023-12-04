@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import app from '../app.js';
+import app from '#root/app.js';
 import cluster from 'cluster';
 import Debug from 'debug';
 import http from 'http';

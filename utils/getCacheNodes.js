@@ -2,7 +2,7 @@
  * Returns an array of memcached hosts
  */
 
-import { IS_DEV } from '../constants/AppConstants.js';
+import { IS_DEV } from '#root/constants/AppConstants.js';
 import fs from 'fs/promises';
 
 // Matches `NodeListPath` in elasticache_settings.config

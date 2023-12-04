@@ -6,8 +6,8 @@
 
 import { createStaleWhileRevalidateCache } from 'stale-while-revalidate-cache';
 import { Client } from 'memjs';
-import getCacheNodes from './getCacheNodes.js';
-import CACHE_SETTINGS from '../constants/CacheSettings.js';
+import getCacheNodes from '#root/utils/getCacheNodes.js';
+import CACHE_SETTINGS from '#root/constants/CacheSettings.js';
 
 const swrPromise = new Promise(async (resolve, reject) => {
   const cacheNodes = await getCacheNodes();

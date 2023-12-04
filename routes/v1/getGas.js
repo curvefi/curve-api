@@ -1,4 +1,4 @@
-import { fn } from '../../utils/api.js';
+import { fn } from '#root/utils/api.js';
 
 const blocknativeApiFetchOptions = {
   method: 'GET',
