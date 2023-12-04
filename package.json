@@ -6,6 +6,9 @@
     "start": "node ./bin/www"
   },
   "type": "module",
+  "imports": {
+    "#root/*.js": "./*.js"
+  },
   "dependencies": {
     "body-parser": "^1.20.2",
     "debug": "~2.6.9",
