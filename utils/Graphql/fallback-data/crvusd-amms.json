@@ -1,0 +1,58 @@
+{
+  "amms": [
+    {
+      "id": "0x136e783846ef68c8bd00a3369f787df8d683a696",
+      "volumeSnapshots": [
+        {
+          "swapVolumeUSD": "0",
+          "timestamp": "1699049639"
+        }
+      ]
+    },
+    {
+      "id": "0x1681195c176239ac5e72d9aebacf5b2492e0c4ee",
+      "volumeSnapshots": [
+        {
+          "swapVolumeUSD": "1396.885567672216437411657842756729",
+          "timestamp": "1699207211"
+        }
+      ]
+    },
+    {
+      "id": "0x37417b2238aa52d0dd2d6252d989e728e8f706e4",
+      "volumeSnapshots": [
+        {
+          "swapVolumeUSD": "0",
+          "timestamp": "1699217567"
+        }
+      ]
+    },
+    {
+      "id": "0xe0438eb3703bf871e31ce639bd351109c88666ea",
+      "volumeSnapshots": [
+        {
+          "swapVolumeUSD": "42329.26015253124127545573033088",
+          "timestamp": "1699207235"
+        }
+      ]
+    },
+    {
+      "id": "0xf9bd9da2427a50908c4c6d1599d8e62837c2bcb0",
+      "volumeSnapshots": [
+        {
+          "swapVolumeUSD": "8047.1470819062095393620061180449",
+          "timestamp": "1699209515"
+        }
+      ]
+    },
+    {
+      "id": "0xfa96ad0a9e64261db86950e2da362f5572c5c6fd",
+      "volumeSnapshots": [
+        {
+          "swapVolumeUSD": "0",
+          "timestamp": "1699216679"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+    "implementations": {
+        "v1metausd": "0x167e42a1c7ab4be03764a2222aac57f5f6754411",
+        "metausd": "0x167e42a1c7ab4be03764a2222aac57f5f6754411",
+        "metausdbalances": "0x167e42a1c7ab4be03764a2222aac57f5f6754411",
+        "metausd-factory-v2-16": "0x4244eb811d6e0ef302326675207a95113db4e1f8",
+        "metausdbalances-factory-v2-16": "0x4244eb811d6e0ef302326675207a95113db4e1f8"
+    }
+}
