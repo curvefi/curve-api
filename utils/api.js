@@ -64,11 +64,11 @@ const fn = (cb, options = {}) => {
     maxAgeSec !== null ? (
       async (query) => (await swr(
         cacheKey,
-        async () => logRuntime(() => addGeneratedTime(cb(query)), (name ?? cacheKey), query, silenceParamsLog),
+        async () => logRuntime(() => addGeneratedTime(cb(query)), cacheKey, query, silenceParamsLog),
         { minTimeToStale: maxAgeSec * 1000 } // See CacheSettings.js
       )).value
     ) : (
-      async (query) => logRuntime(() => addGeneratedTime(cb(query)), (name ?? cacheKey), query, silenceParamsLog)
+      async (query) => logRuntime(() => addGeneratedTime(cb(query)), cacheKey, query, silenceParamsLog)
     )
   );
 
