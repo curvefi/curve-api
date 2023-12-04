@@ -1,5 +1,5 @@
-import { BTC, EUR, ETH, LINK, CRYPTO, SPELL, T } from '../reference-assets.json'  assert { type: 'json' };
-import coins from '../coins.js';
+import REFERENCE_ASSETS from '../reference-assets.json'  assert { type: 'json' };
+import coins from '../coins/index.js';
 
 const pools = [{
   dataIndex: 0,
@@ -229,7 +229,7 @@ const pools = [{
     coins.renbtc,
     coins.wbtc,
   ],
-  referenceAsset: BTC,
+  referenceAsset: REFERENCE_ASSETS.BTC,
   addresses: {
     swap: '0x93054188d876f558f4a66B2EF1d97d16eDf0895B',
     lpToken: '0x49849C98ae39Fff122806C06791Fa73784FB3675',
@@ -256,7 +256,7 @@ const pools = [{
     coins.wbtc,
     coins.sbtc,
   ],
-  referenceAsset: BTC,
+  referenceAsset: REFERENCE_ASSETS.BTC,
   addresses: {
     swap: '0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714',
     lpToken: '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3',
@@ -283,7 +283,7 @@ const pools = [{
     coins.hbtc,
     coins.wbtc,
   ],
-  referenceAsset: BTC,
+  referenceAsset: REFERENCE_ASSETS.BTC,
   addresses: {
     swap: '0x4CA9b3063Ec5866A4B82E437059D2C43d1be596F',
     lpToken: '0xb19059ebb43466C323583928285a49f558E572Fd',
@@ -539,7 +539,7 @@ const pools = [{
     coins.wbtc,
     coins.sbtc,
   ],
-  referenceAsset: BTC,
+  referenceAsset: REFERENCE_ASSETS.BTC,
   addresses: {
     swap: '0xC25099792E9349C7DD09759744ea681C7de2cb66',
     lpToken: '0x64eda51d3Ad40D56b9dFc5554E06F94e1Dd786Fd',
@@ -599,7 +599,7 @@ const pools = [{
     coins.wbtc,
     coins.sbtc,
   ],
-  referenceAsset: BTC,
+  referenceAsset: REFERENCE_ASSETS.BTC,
   addresses: {
     swap: '0x7F55DDe206dbAD629C080068923b36fe9D6bDBeF',
     lpToken: '0xDE5331AC4B3630f94853Ff322B66407e0D6331E8',
@@ -631,7 +631,7 @@ const pools = [{
     coins.wbtc,
     coins.sbtc,
   ],
-  referenceAsset: BTC,
+  referenceAsset: REFERENCE_ASSETS.BTC,
   addresses: {
     swap: '0x071c661B4DeefB59E2a3DdB20Db036821eeE8F4b',
     lpToken: '0x410e3E86ef427e30B9235497143881f717d93c2A',
@@ -663,7 +663,7 @@ const pools = [{
     coins.wbtc,
     coins.sbtc,
   ],
-  referenceAsset: BTC,
+  referenceAsset: REFERENCE_ASSETS.BTC,
   addresses: {
     swap: '0xd81dA8D904b52208541Bade1bD6595D8a251F8dd',
     lpToken: '0x2fE94ea3d5d4a175184081439753DE15AeF9d614',
@@ -719,7 +719,7 @@ const pools = [{
     coins.eurs,
     coins.seur,
   ],
-  referenceAsset: EUR,
+  referenceAsset: REFERENCE_ASSETS.EUR,
   addresses: {
     swap: '0x0Ce6a5fF5217e38315f87032CF90686C96627CAA',
     lpToken: '0x194eBd173F6cDacE046C53eACcE9B953F28411d1',
@@ -744,7 +744,7 @@ const pools = [{
     coins.eth,
     coins.seth,
   ],
-  referenceAsset: ETH,
+  referenceAsset: REFERENCE_ASSETS.ETH,
   addresses: {
     swap: '0xc5424b857f758e906013f3555dad202e4bdb4567',
     lpToken: '0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c',
@@ -800,7 +800,7 @@ const pools = [{
     coins.eth,
     coins.steth,
   ],
-  referenceAsset: ETH,
+  referenceAsset: REFERENCE_ASSETS.ETH,
   addresses: {
     swap: '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022',
     lpToken: '0x06325440D014e39736583c165C2963BA99fAf14E',
@@ -854,7 +854,7 @@ const pools = [{
     coins.eth,
     coins.ankreth,
   ],
-  referenceAsset: ETH,
+  referenceAsset: REFERENCE_ASSETS.ETH,
   addresses: {
     swap: '0xA96A65c051bF88B4095Ee1f2451C2A9d43F53Ae2',
     lpToken: '0xaA17A236F2bAdc98DDc0Cf999AbB47D47Fc0A6Cf',
@@ -935,7 +935,7 @@ const pools = [{
     symbol: 'LINK',
     referenceAssetId: 'chainlink',
   },
-  referenceAsset: LINK,
+  referenceAsset: REFERENCE_ASSETS.LINK,
   assets: 'LINK+sLINK',
   coins: [
     coins.link,
@@ -1088,7 +1088,7 @@ const pools = [{
     coins.eth,
     coins.reth,
   ],
-  referenceAsset: ETH,
+  referenceAsset: REFERENCE_ASSETS.ETH,
   addresses: {
     swap: '0xF9440930043eb3997fc70e1339dBb11F341de7A8',
     lpToken: '0x53a901d48795C58f485cBB38df08FA96a24669D5',
@@ -1148,7 +1148,7 @@ const pools = [{
   },
   gaugeVersion: 4,
   cryptoPool: true,
-  referenceAsset: CRYPTO,
+  referenceAsset: REFERENCE_ASSETS.CRYPTO,
 }, {
   dataIndex: 40,
   id: 'tricrypto2',
@@ -1171,7 +1171,7 @@ const pools = [{
   gaugeVersion: 4,
   hasNoGauge: true,
   cryptoPool: true,
-  referenceAsset: CRYPTO,
+  referenceAsset: REFERENCE_ASSETS.CRYPTO,
 }, {
   dataIndex: 38,
   id: 'mim',
@@ -1233,7 +1233,7 @@ const pools = [{
   },
   gaugeVersion: 4,
   cryptoPool: true,
-  referenceAsset: CRYPTO,
+  referenceAsset: REFERENCE_ASSETS.CRYPTO,
 },
 {
   dataIndex: 40,
@@ -1253,7 +1253,7 @@ const pools = [{
     coins.eurt,
     coins.seur,
   ],
-  referenceAsset: EUR,
+  referenceAsset: REFERENCE_ASSETS.EUR,
   addresses: {
     swap: '0xfd5db7463a3ab53fd211b4af195c5bccc1a03890',
     lpToken: '0xfd5db7463a3ab53fd211b4af195c5bccc1a03890',
@@ -1266,7 +1266,7 @@ const pools = [{
   dataIndex: 41,
   id: 'eurtusd',
   name: 'eurtusd',
-  referenceAsset: CRYPTO,
+  referenceAsset: REFERENCE_ASSETS.CRYPTO,
   isForexMetaPool: true,
   lpTokenInfo: {
     name: 'eurUsdCurve',
@@ -1301,7 +1301,7 @@ const pools = [{
   dataIndex: 42,
   id: 'eursusd',
   name: 'eursusd',
-  referenceAsset: CRYPTO,
+  referenceAsset: REFERENCE_ASSETS.CRYPTO,
   cryptoPool: true,
   isPlainCryptoPool: true,
   lpTokenInfo: {
@@ -1328,7 +1328,7 @@ const pools = [{
   dataIndex: 43,
   id: 'crveth',
   name: 'crveth',
-  referenceAsset: CRYPTO,
+  referenceAsset: REFERENCE_ASSETS.CRYPTO,
   cryptoPool: true,
   isPlainCryptoPool: true,
   lpTokenInfo: {
@@ -1394,7 +1394,7 @@ const pools = [{
   dataIndex: 45,
   id: 'cvxeth',
   name: 'cvxeth',
-  referenceAsset: CRYPTO,
+  referenceAsset: REFERENCE_ASSETS.CRYPTO,
   cryptoPool: true,
   isPlainCryptoPool: true,
   lpTokenInfo: {
@@ -1425,7 +1425,7 @@ const pools = [{
   dataIndex: 46,
   id: 'xautusd',
   name: 'xautusd',
-  referenceAsset: CRYPTO,
+  referenceAsset: REFERENCE_ASSETS.CRYPTO,
   isForexMetaPool: true,
   lpTokenInfo: {
     name: 'xautUsdCurve',
@@ -1460,7 +1460,7 @@ const pools = [{
   dataIndex: 47,
   id: 'spelleth',
   name: 'spelleth',
-  referenceAsset: SPELL,
+  referenceAsset: REFERENCE_ASSETS.SPELL,
   cryptoPool: true,
   isPlainCryptoPool: true,
   lpTokenInfo: {
@@ -1492,7 +1492,7 @@ const pools = [{
   dataIndex: 48,
   id: 'teth',
   name: 'teth',
-  referenceAsset: T,
+  referenceAsset: REFERENCE_ASSETS.T,
   cryptoPool: true,
   isPlainCryptoPool: true,
   lpTokenInfo: {

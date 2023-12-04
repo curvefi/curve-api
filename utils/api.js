@@ -50,7 +50,7 @@ class NotFoundError extends Error {
 const fn = (cb, options = {}) => {
   const {
     maxAge: maxAgeSec = null, // Caching duration, in seconds
-    cacheKey,
+    cacheKey, // Either a function that's passed the call's params and returns a string, or a static string
     name = null, // Name, used for logging purposes
     returnFlatData = false,
     silenceParamsLog = false, // Don't log params (can be used because the fn is passed a huge object that creates noise)
@@ -63,12 +63,12 @@ const fn = (cb, options = {}) => {
   const callback = (
     maxAgeSec !== null ? (
       async (query) => (await swr(
-        cacheKey,
-        async () => logRuntime(() => addGeneratedTime(cb(query)), cacheKey, query, silenceParamsLog),
+        (typeof cacheKey === 'function' ? cacheKey(query) : cacheKey),
+        async () => logRuntime(() => addGeneratedTime(cb(query)), (typeof cacheKey === 'function' ? cacheKey(query) : cacheKey), query, silenceParamsLog),
         { minTimeToStale: maxAgeSec * 1000 } // See CacheSettings.js
       )).value
     ) : (
-      async (query) => logRuntime(() => addGeneratedTime(cb(query)), cacheKey, query, silenceParamsLog)
+      async (query) => logRuntime(() => addGeneratedTime(cb(query)), (typeof cacheKey === 'function' ? cacheKey(query) : cacheKey), query, silenceParamsLog)
     )
   );
 

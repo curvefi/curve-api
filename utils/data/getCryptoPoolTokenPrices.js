@@ -3,7 +3,7 @@ import { arrayToHashmap, flattenArray } from '#root/utils/Array.js';
 import { multiCall } from '#root/utils/Web3/index.js';
 import ERC20ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
 import getRefAssetPrice from '#root/utils/data/getRefAssetPrice.js';
-import pools from '#root/constants/pools.js';
+import pools from '#root/constants/pools/index.js';
 
 const getCryptoPoolTokenPrices = memoize(async (account, library, chainId) => {
   const cryptoPools = pools.filter(({ cryptoPool }) => cryptoPool);

@@ -4,7 +4,7 @@ import { multiCall } from '#root/utils/Calls.js';
 import { flattenArray, sum } from '#root/utils/Array.js';
 import Request from '#root/utils/Request.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
-import pools from '#root/constants/pools.js';
+import pools from '#root/constants/pools/index.js';
 import coins from '#root/constants/coins/index.js';
 
 const AAVE_SWAP_PARTIAL_ABI = [{ "name": "balances", "outputs": [{ "type": "uint256", "name": "" }], "inputs": [{ "type": "uint256", "name": "i" }], "stateMutability": "view", "type": "function", "gas": 2731 }];

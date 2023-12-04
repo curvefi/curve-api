@@ -1,6 +1,6 @@
 import { flatMap } from '#root/utils/Array.js';
-import { map } from './pools.js';
-import { USD } from '#root/constants/reference-assets.json' assert { type: 'json' };
+import pools from './pools.js';
+import REFERENCE_ASSETS from '#root/constants/reference-assets.json' assert { type: 'json' };
 import validatePoolConfigs from './init-validation.js';
 
 const defaultPoolTemplate = {
@@ -21,7 +21,7 @@ const defaultPoolTemplate = {
   coins: undefined,
   underlyingCoins: undefined, // Must be set when isLendingPool=true
   metaCoins: undefined, // Must be set when isMetaPool=true
-  referenceAsset: USD, // Pool type, from the enum REFERENCE_ASSETS
+  referenceAsset: REFERENCE_ASSETS.USD, // Pool type, from the enum REFERENCE_ASSETS
   isLendingPool: false, // True when underlying assets are lent on Compound/Aave/else
   isModernLendingPool: false, // aave, saave, ib, and future lending pools
   isMetaPool: false,
@@ -49,7 +49,7 @@ const poolContractNameResolver = (name) => (
         name
 );
 
-const augmentedPools = map((pool) => ({
+const augmentedPools = pools.map((pool) => ({
   ...defaultPoolTemplate,
   ...pool,
   // Default to 1 for pools with gauges

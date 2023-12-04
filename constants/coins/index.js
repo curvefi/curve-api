@@ -1,11 +1,11 @@
-import coins from '#root/constants/coins/index.js';
+import coins from '#root/constants/coins/coins.js';
 import { arrayToHashmap } from '#root/utils/Array.js';
-import { USD, EUR } from '../reference-assets.json' assert { type: 'json' };
+import REFERENCE_ASSETS from '../reference-assets.json' assert { type: 'json' };
 import validateCoinConfigs from './init-validation.js';
 
 const FIAT_ASSET_TYPES = [
-  USD,
-  EUR,
+  REFERENCE_ASSETS.USD,
+  REFERENCE_ASSETS.EUR,
 ];
 
 const defaultCoinTemplate = {

@@ -1,7 +1,7 @@
 import memoize from 'memoizee';
 import { uniq } from '#root/utils/Array.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
-import pools from '#root/constants/pools.js';
+import pools from '#root/constants/pools/index.js';
 
 const poolsReferenceAssetsCoingeckoIds = uniq(pools.map(({ coingeckoInfo: { referenceAssetId } }) => referenceAssetId));
 

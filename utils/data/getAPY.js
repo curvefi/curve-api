@@ -2,7 +2,7 @@
 
 import memoize from 'memoizee';
 import getPoolUsdFigure from '#root/utils/data/getPoolUsdFigure.js';
-import pools, { poolIds } from '#root/constants/pools.js';
+import pools, { poolIds } from '#root/constants/pools/index.js';
 import { arrayToHashmap } from '#root/utils/Array.js';
 import Web3 from 'web3';
 import * as WEB3_CONSTANTS from '#root/constants/Web3.js';

@@ -18,6 +18,7 @@
     "dotenv-safer": "1.0.0",
     "exponential-backoff": "^3.1.1",
     "express": "~4.16.1",
+    "form-urlencoded": "^6.1.4",
     "graphql-request": "^6.1.0",
     "lodash.groupby": "^4.6.0",
     "lodash.partition": "^4.6.0",
