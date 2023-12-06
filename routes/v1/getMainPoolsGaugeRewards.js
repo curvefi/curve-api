@@ -65,7 +65,6 @@ export default fn(async (gauges) => {
   if (typeof gauges === 'undefined') {
     throw new Error('gauges is undefined in getMainPoolsGaugeRewards()');
   }
-  // gauges = (await (await Request.get('https://api.curve.fi/api/getAllGauges')).json()).data;
 
   //empty gauges cause reverts
   const remove = [
@@ -393,6 +392,5 @@ export default fn(async (gauges) => {
   return { mainPoolsGaugeRewards: groupBy(mergedRewardsInfo, 'gaugeAddress') };
 }, {
   cacheKey: 'getMainPoolsGaugeRewards',
-  silenceParamsLog: true,
   maxAge: 5 * 60, // 5 min
 });

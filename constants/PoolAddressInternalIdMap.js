@@ -128,7 +128,7 @@ const PoolAddressInternalIdMap = {
 };
 
 const getHardcodedPoolId = (blockchainId, poolAddress) => (
-  map[blockchainId]?.[lc(poolAddress)]
+  PoolAddressInternalIdMap[blockchainId]?.[lc(poolAddress)]
 );
 
 export default PoolAddressInternalIdMap;

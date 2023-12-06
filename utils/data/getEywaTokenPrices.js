@@ -16,10 +16,7 @@ const getEywaTokenPrices = memoize(async (
   allCoinAddresses
 ) => {
   const firstTokenOfEachEywaPool = Array.from(Object.values(groupBy(allCoinAddresses, 'poolId'))).map(([{ address }]) => address);
-  console.log('firstTokenOfEachEywaPool', firstTokenOfEachEywaPool)
-
   const prices = await Promise.all(firstTokenOfEachEywaPool.map(getEywaTokenPrice))
-  console.log('prices', prices)
 
   const EywaTokensPrices = arrayToHashmap(firstTokenOfEachEywaPool.map((address, i) => [address.toLowerCase(), prices[i]]));
 

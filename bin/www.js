@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import app from '#root/app.js';
+import { IS_DEV } from '#root/constants/AppConstants.js';
 import cluster from 'cluster';
 import Debug from 'debug';
 import http from 'http';
@@ -16,15 +17,13 @@ function spawn() {
   return worker;
 }
 
-/**
- * Get port from environment and store in Express.
- */
-
+// Get port from environment and store in Express.
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 if (cluster.isPrimary) {
-  for (let i = 0; i < cpuCount; i++) {
+  const workerCount = IS_DEV ? 1 : cpuCount;
+  for (let i = 0; i < workerCount; i++) {
     spawn();
   }
 
@@ -40,15 +39,7 @@ if (cluster.isPrimary) {
   });
 
 } else {
-  /**
-   * Create HTTP server.
-   */
-
   let server = http.createServer(app);
-
-  /**
-   * Event listener for HTTP server "error" event.
-   */
 
   function onError(error) {
     if (error.syscall !== 'listen') {
@@ -74,10 +65,6 @@ if (cluster.isPrimary) {
     }
   }
 
-  /**
-   * Event listener for HTTP server "listening" event.
-   */
-
   function onListening() {
     const addr = server.address();
     const bind = typeof addr === 'string'
@@ -86,19 +73,12 @@ if (cluster.isPrimary) {
     debug('Listening on ' + bind);
   }
 
-  /**
-   * Listen on provided port, on all network interfaces.
-   */
-
   server.listen(port);
   server.on('error', onError);
   server.on('listening', onListening);
 }
 
-/**
- * Normalize a port into a number, string, or false.
- */
-
+// Normalize a port into a number, string, or false.
 function normalizePort(val) {
   const port = parseInt(val, 10);
 

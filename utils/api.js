@@ -19,16 +19,13 @@ const addGeneratedTime = async (res) => ({
   generatedTimeMs: getNowMs(),
 });
 
-const logRuntime = async (fn, name, query, silenceParamsLog) => {
+const logRuntime = async (fn, cacheKey) => {
   const startMs = getNowMs();
 
   const res = await fn();
 
   const endMs = getNowMs();
-  if (IS_DEV) {
-    const queryText = silenceParamsLog ? 'QUERY_LOGGING_SILENCED' : query;
-    console.log('Run time (ms):', endMs - startMs, name, queryText);
-  }
+  console.log('Run time (ms):', endMs - startMs, cacheKey);
 
   return res;
 };
@@ -49,10 +46,10 @@ class NotFoundError extends Error {
 
 const fn = (cb, options = {}) => {
   const {
-    maxAge: maxAgeSec = null, // Caching duration, in seconds
+    maxAge: maxAgeSec = null, // Caching duration for both redis and CDN, in seconds
     cacheKey, // Either a function that's passed the call's params and returns a string, or a static string
+    maxAgeCDN = null, // Caching duration for CDN only, in seconds
     returnFlatData = false,
-    silenceParamsLog = false, // Don't log params (can be used because the fn is passed a huge object that creates noise)
   } = options;
 
   if (maxAgeSec !== null && !cacheKey) {
@@ -63,11 +60,11 @@ const fn = (cb, options = {}) => {
     maxAgeSec !== null ? (
       async (query) => (await swr(
         (typeof cacheKey === 'function' ? cacheKey(query) : cacheKey),
-        async () => logRuntime(() => addGeneratedTime(cb(query)), (typeof cacheKey === 'function' ? cacheKey(query) : cacheKey), query, silenceParamsLog),
+        async () => logRuntime(() => addGeneratedTime(cb(query)), (typeof cacheKey === 'function' ? cacheKey(query) : cacheKey)),
         { minTimeToStale: maxAgeSec * 1000 } // See CacheSettings.js
       )).value
     ) : (
-      async (query) => logRuntime(() => addGeneratedTime(cb(query)), (typeof cacheKey === 'function' ? cacheKey(query) : cacheKey), query, silenceParamsLog)
+      async (query) => logRuntime(() => addGeneratedTime(cb(query)), (typeof cacheKey === 'function' ? cacheKey(query) : cacheKey))
     )
   );
 
@@ -77,7 +74,8 @@ const fn = (cb, options = {}) => {
       ...req.params,
     }))
       .then((data) => {
-        if (maxAgeSec !== null) res.setHeader('Cache-Control', `max-age=0, s-maxage=${maxAgeSec}, stale-while-revalidate`);
+        // max-age is browser caching, s-maxage is cdn caching
+        if (maxAgeSec !== null) res.setHeader('Cache-Control', `max-age=${IS_DEV ? '0' : '30'}, s-maxage=${maxAgeCDN ?? maxAgeSec}, stale-while-revalidate`);
         res.status(200).json(
           returnFlatData ?
             data :

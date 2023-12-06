@@ -12,7 +12,10 @@ export default async function(app) {
    */
   const v1Router = Router();
   const v1Files = await fs.readdir(path.resolve(process.cwd(), './routes/v1'), { recursive: true });
-  const v1RouteFiles = v1Files.filter((name) => name.endsWith('.js'));
+  const v1RouteFiles = v1Files.filter((name) => (
+    name.endsWith('.js') &&
+    !name.includes('/_') // Exclude folders or files marked internal with an underscore prefix
+  ));
 
   for (const name of v1RouteFiles) {
     // e.g. 'getPlatforms.js' -> 'getPlatforms'

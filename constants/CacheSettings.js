@@ -9,7 +9,7 @@
  * Our node-side swr utility bases its behavior on both those props. They can both be
  * overridden in individual swr calls (in practice, `minTimeToStale` is most overridden
  * the most often).
- * Memcached only uses maxTimeToLive as its `expiry` prop.
+ * Redis only uses `maxTimeToLive` as its `expiry` prop.
  */
 
 const CACHE_SETTINGS = {
