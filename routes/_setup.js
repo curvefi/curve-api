@@ -2,6 +2,7 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import fs from 'fs/promises';
 import { Router } from 'express';
+import v1Redirects from '#root/routes/v1/_redirects.json' assert { type: 'json' };
 
 export default async function(app) {
   app.use(bodyParser.json());
@@ -26,6 +27,13 @@ export default async function(app) {
     const routeWithExpressParams = routeWithoutFileExtension.replace(/\[([^\]]+)\]/g, ":$1?");
 
     v1Router.get(`/${routeWithExpressParams}`, (await import(`./v1/${name}`)).default);
+  }
+
+  /**
+   * Setup redirects as defined in simple config file
+   */
+  for (const [from, to] of v1Redirects) {
+    v1Router.get(`/${from}`, (_, res) => res.redirect(301, `/v1/${to}`));
   }
 
   app.use('/v1', v1Router);

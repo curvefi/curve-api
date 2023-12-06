@@ -1,0 +1,34 @@
+[
+  [
+    "getFactoryV2Pools-arbitrum",
+    "getFactoryV2Pools/arbitrum"
+  ],
+  [
+    "getFactoryV2Pools-avalance",
+    "getFactoryV2Pools/avalance"
+  ],
+  [
+    "getFactoryV2Pools-celo",
+    "getFactoryV2Pools/celo"
+  ],
+  [
+    "getFactoryV2Pools-fantom",
+    "getFactoryV2Pools/fantom"
+  ],
+  [
+    "getFactoryV2Pools-kava",
+    "getFactoryV2Pools/kava"
+  ],
+  [
+    "getFactoryV2Pools-moonbeam",
+    "getFactoryV2Pools/moonbeam"
+  ],
+  [
+    "getFactoryV2Pools-optimism",
+    "getFactoryV2Pools/optimism"
+  ],
+  [
+    "getFactoryV2Pools-polygon",
+    "getFactoryV2Pools/polygon"
+  ]
+]
