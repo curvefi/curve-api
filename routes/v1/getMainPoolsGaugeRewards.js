@@ -1,5 +1,3 @@
-/* eslint-disable camelcase, object-curly-newline */
-
 import partition from 'lodash.partition';
 import groupBy from 'lodash.groupby';
 import { fn } from '#root/utils/api.js';
@@ -61,11 +59,7 @@ const FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES_REF_ASSET_PRICE = {
 // eslint-disable-next-line
 const GAUGES_PARTIAL_ABI = [{ "name": "reward_contract", "outputs": [{ "type": "address", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function", "gas": 2051 }, { "name": "totalSupply", "outputs": [{ "type": "uint256", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function", "gas": 1691 }, { "stateMutability": "view", "type": "function", "name": "reward_tokens", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3787 }, { "name": "rewarded_token", "outputs": [{ "type": "address", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function", "gas": 2201 }];
 
-export default fn(async (gauges) => {
-  if (typeof gauges === 'undefined') {
-    throw new Error('gauges is undefined in getMainPoolsGaugeRewards()');
-  }
-
+export default fn(async ({ gauges }) => {
   //empty gauges cause reverts
   const remove = [
     'eurtusd', // Todo adapt script to this new type of gauges
@@ -393,4 +387,9 @@ export default fn(async (gauges) => {
 }, {
   cacheKey: 'getMainPoolsGaugeRewards',
   maxAge: 5 * 60, // 5 min
+  paramSanitizers: {
+    gauges: ({ gauges }) => ({
+      isValid: (typeof gauges !== 'undefined'),
+    }),
+  },
 });

@@ -6,9 +6,7 @@ import { fn } from '#root/utils/api.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
 import POOL_SWAP_ABI from '#root/utils/data/abis/json/aave/swap.json' assert { type: 'json' };
 
-export default fn(async ({ blockchainId } = {}) => {
-  if (typeof blockchainId === 'undefined') blockchainId = 'ethereum';
-
+export default fn(async ({ blockchainId }) => {
   const { poolList: mainRegistryPools } = await getMainRegistryPoolsFn.straightCall({ blockchainId });
 
   const config = configs[blockchainId];

@@ -6,8 +6,6 @@ import configs from '#root/constants/configs/index.js'
 import getPlatformRegistries from '#root/utils/data/curve-platform-registries.js';
 
 const getPoolList = fn(async ({ blockchainId }) => {
-  if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
-
   const config = configs[blockchainId];
   const web3 = new Web3(config.rpcUrl);
 

@@ -164,7 +164,7 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
   const { poolList: mainRegistryPoolList } = await getMainRegistryPoolsFn.straightCall({ blockchainId });
   const mainRegistryPoolGaugesRewards = (
     blockchainId === 'ethereum' ?
-      (await getMainPoolsGaugeRewardsFn.straightCall(gaugesData)).mainPoolsGaugeRewards :
+      (await getMainPoolsGaugeRewardsFn.straightCall({ gauges: gaugesData })).mainPoolsGaugeRewards :
       {}
   );
 
@@ -220,17 +220,6 @@ const isDefinedCoin = (address) => address !== '0x000000000000000000000000000000
  * 'factory-crvusd', 'factory-tricrypto' and 'factory-eywa' are custom factories that aren't meant to be found on all chains
  */
 const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) => {
-  /* eslint-disable no-param-reassign */
-  if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
-  if (typeof registryId === 'undefined') registryId = 'main'; // Default value
-  /**
-   * Set to true to prevent circular dependencies when calling getPools() in an area of the code that getPools()
-   * itself calls, e.g. getFactoGauges sets this setting to true because it's interested in the pool list, and
-   * the pool list only.
-   */
-  if (typeof preventQueryingFactoData === 'undefined') preventQueryingFactoData = false; // Default value
-  /* eslint-enable no-param-reassign */
-
   const config = configs[blockchainId];
   if (typeof config === 'undefined') {
     throw new ParamError(`No config data for blockchainId "${blockchainId}"`);
@@ -265,14 +254,10 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     BROKEN_POOLS_ADDRESSES,
   } = config;
 
-  if (registryId !== 'factory' && registryId !== 'main' && registryId !== 'crypto' && registryId !== 'factory-crypto' && registryId !== 'factory-crvusd' && registryId !== 'factory-tricrypto' && registryId !== 'factory-eywa' && registryId !== 'factory-stable-ng') {
-    throw new ParamError('registryId must be \'factory\'|\'main\'|\'crypto\'|\'factory-crypto\'|\'factory-crvusd\'|\'factory-tricrypto\'|\'factory-eywa\'|\'factory-stable-ng\'');
-  }
-
   const platformRegistries = (await getPlatformRegistries(blockchainId)).registryIds;
 
   if (!platformRegistries.includes(registryId)) {
-    console.error(`No registry "${registryId}" found for blockchainId "${blockchainId}"`);
+    if (IS_DEV) console.error(`No registry "${registryId}" found for blockchainId "${blockchainId}"`);
     return { poolData: [] };
   }
 
@@ -1360,6 +1345,17 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 const getPoolsFn = fn(getPools, {
   maxAge: MAX_AGE,
   cacheKey: ({ blockchainId, registryId, preventQueryingFactoData }) => `getPools-${blockchainId}-${registryId}-${preventQueryingFactoData}`,
+  paramSanitizers: {
+    /**
+     * Set to true to prevent circular dependencies when calling getPools() in an area of the code that getPools()
+     * itself calls, e.g. getFactoGauges sets this setting to true because it's interested in the pool list, and
+     * the pool list only.
+     */
+    preventQueryingFactoData: ({ preventQueryingFactoData }) => ({
+      isValid: (typeof preventQueryingFactoData === 'boolean'),
+      defaultValue: false,
+    }),
+  }
 });
 
 export default getPoolsFn;

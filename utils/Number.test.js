@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 import BN from 'bignumber.js';
 import { truncWithoutZeroDecimals, formatLargeNumber } from './Number.js';
 

@@ -80,7 +80,7 @@ const getPoolShortName = (pool) => {
   return `${prefix}${pool.coins.map((coin) => coin.symbol).join('+')} (${pool.address.slice(0, 6)}…)`;
 };
 
-export default fn(async ({ blockchainId } = {}) => {
+export default fn(async ({ blockchainId }) => {
   const chainsToQuery = SIDECHAINS_WITH_FACTORY_GAUGES;
   const blockchainIds = [
     'ethereum',

@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "jest ./utils/*.test.js",
+    "test:Number": "jest ./utils/Number.test.js",
+    "test:Function": "jest ./utils/Function.test.js"
   },
   "type": "module",
   "imports": {
@@ -28,5 +31,8 @@
     "memoizee": "^0.4.15",
     "stale-while-revalidate-cache": "^3.2.1",
     "web3": "^1.3.4"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
