@@ -380,7 +380,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'moonbeam',
     platformCoingeckoId: 'moonbeam',
     nativeAssetErc20WrapperId: 'wGLMR', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://moonbeam.public.blastapi.io',
+    rpcUrl: 'https://moonbeam.drpc.org',
     multicallAddress: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
     multicall2Address: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
     getFactoryRegistryAddress: async () => '0x4244eB811D6e0Ef302326675207A95113dB4E1F8',

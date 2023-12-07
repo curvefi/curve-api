@@ -94,3 +94,11 @@ function normalizePort(val) {
 
   return false;
 }
+
+process.on('SIGINT', () => {
+  Object.values(workers).forEach((worker) => {
+    worker.disconnect();
+  });
+
+  process.exit(0);
+});
