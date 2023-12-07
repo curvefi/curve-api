@@ -413,7 +413,7 @@ const configs = {
     platformCoingeckoId: 'kava',
     nativeAssetErc20WrapperId: 'wrapped-kava', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://evm.kava.io',
-    noArchivalAlternateRpcUrl: 'https://kava-rpc.gateway.pokt.network',
+    noArchivalAlternateRpcUrl: 'https://kava-pokt.nodies.app',
     multicallAddress: '0x7ED7bBd8C454a1B0D9EdD939c45a81A03c20131C',
     multicall2Address: '0x30A62aA52Fa099C4B227869EB6aeaDEda054d121',
     getFactoryRegistryAddress: async () => '0x40bc62805471eF53DdD5C5cF99ed3d9e5aa81b48',

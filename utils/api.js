@@ -33,6 +33,7 @@ const addGeneratedTime = async (res) => ({
   generatedTimeMs: getNowMs(),
 });
 
+// cacheKey is undefined for pass-through functions that are deliberately not cached
 const logRuntime = async (fn, cacheKey) => {
   const startMs = getNowMs();
 
@@ -69,7 +70,6 @@ class NotFoundError extends Error {
  */
 const sanitizeParams = (cb, query, paramSanitizers) => {
   const fnParamKeys = getFunctionParamObjectKeys(cb);
-  console.log('fnParamKeys', fnParamKeys)
 
   // Run sanitizers
   const sanitizedParams = arrayToHashmap(fnParamKeys.reduce((sanitizedParamsAccu, key) => {
@@ -102,11 +102,6 @@ const sanitizeParams = (cb, query, paramSanitizers) => {
       throw new ParamError(`Invalid value for param "${key}": "${partlySanitizedQuery[key]}"`);
     }
   }, []));
-
-  console.log('sanitizedParams', arrayToHashmap(Object.entries(sanitizedParams).map(([k, v]) => [
-    k,
-    (k === 'gauges' ? 'amended for shortness' : v)
-  ])))
 
   return sanitizedParams;
 };
@@ -158,7 +153,6 @@ const fn = (cb, options = {}) => {
   const callback = (
     maxAgeSec !== null ? (
       async (query) => {
-        console.log('oh', query)
         const params = sanitizeParams(cb, query, paramSanitizers);
         const cacheKeyStr = (typeof cacheKey === 'function' ? cacheKey(params) : cacheKey);
 

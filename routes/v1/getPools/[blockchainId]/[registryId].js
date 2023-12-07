@@ -52,6 +52,7 @@ import { getHardcodedPoolId } from '#root/constants/PoolAddressInternalIdMap.js'
 import { deriveMissingCoinPrices, getImplementation } from '#root/routes/v1/getPools/_utils.js';
 import { lc } from '#root/utils/String.js';
 import getCurvePrices from '#root/utils/data/curve-prices.js';
+import { IS_DEV } from '#root/constants/AppConstants.js';
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [{ "name": "arg0", "type": "uint256" }], "name": "balances", "outputs": [{ "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
