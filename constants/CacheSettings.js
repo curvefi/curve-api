@@ -10,11 +10,18 @@
  * overridden in individual swr calls (in practice, `minTimeToStale` is most overridden
  * the most often).
  * Redis only uses `maxTimeToLive` as its `expiry` prop.
+ *
+ * `maxTimeToLive` is set to a very long period to prevent outtages at all costs. With
+ * monitoring in place, any broken script or stale data would get caught rapidly, but
+ * we never want a situation where the fix would take too long to ship, and the cache
+ * entries would get deleted, and nothing could be served anymore by the api: so an
+ * absurdly high value is used to minimize the risk of downtime, while still allowing
+ * unused cache entries to be deleted in a reasonable timeframe.
  */
 
 const CACHE_SETTINGS = {
   minTimeToStale: 30 * 1000, // 30s
-  maxTimeToLive: 24 * 60 * 60 * 1000, // 1d
+  maxTimeToLive: 7 * 24 * 60 * 60 * 1000, // 7d
   serialize: JSON.stringify, // serialize product object to string
   deserialize: JSON.parse, // deserialize cached product string to object
 };

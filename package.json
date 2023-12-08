@@ -1,5 +1,5 @@
 {
-  "name": "nodejs-example-express-elasticache-redis",
+  "name": "curve-api",
   "version": "0.0.0",
   "private": true,
   "scripts": {
