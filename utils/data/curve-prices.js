@@ -43,8 +43,12 @@ const getCurvePrices = memoize(async (blockchainId) => {
   );
 }, {
   promise: true,
-  maxAge: 5 * 60 * 1000, // 2 min
+  maxAge: 5 * 60 * 1000, // 5 min
   primitive: true,
+  // The preFetch option makes this in-memory cache behave kind of like a stale-while-revalidate strategy,
+  // except it refreshes the value *ahead of its expiration time*, not *once it's stale*. Iow it keeps the
+  // value fresh and minimizes the chances of having to wait for a fresh value.
+  preFetch: true,
 });
 
 export default getCurvePrices;

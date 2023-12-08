@@ -17,7 +17,7 @@ import {
 } from '#root/constants/AppConstants.js'
 
 const getFallbackData = async (fallbackDataFileName) => (
-  (await import(`./fallback-data/${fallbackDataFileName}.json`)).default
+  (await import(`./_fallback-data/${fallbackDataFileName}.json`, { assert: { type: 'json' } })).default
 );
 
 const wrappedRequest = async (endpoint, queryString, variables, fallbackDataFileName) => {

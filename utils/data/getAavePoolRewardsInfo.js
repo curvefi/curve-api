@@ -14,6 +14,7 @@ const getAaveMarketData = memoize(async () => (
 ), {
   promise: true,
   maxAge: 10 * 60 * 1000, // 10 min
+  preFetch: true,
 });
 
 const getAavePoolRewardsInfo = memoize(async (gaugesRewardData, CUSTOM_LOGIC_REWARD_CONTRACTS) => {

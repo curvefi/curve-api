@@ -38,6 +38,7 @@ const getETHLSDAPYs = memoize(async () => {
 }, {
   promise: true,
   maxAge: 30 * 60 * 1000, // 30 min
+  preFetch: true,
 });
 
 export default getETHLSDAPYs;

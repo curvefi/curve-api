@@ -16,8 +16,6 @@ import configs from '#root/constants/configs/index.js'
 import getFactoryV2SidechainGaugeRewards from '#root/utils/data/getFactoryV2SidechainGaugeRewards.js';
 
 export default fn(async ({ blockchainId }) => {
-  if (typeof blockchainId === 'undefined') blockchainId = 'ethereum'; // Default value
-
   if (blockchainId === 'ethereum') {
     return {
       gauges: [],

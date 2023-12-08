@@ -83,7 +83,8 @@ const getTempleTokenPrices = memoize(async (
   return templeLpTokensPrices;
 }, {
   promise: true,
-  maxAge: 10 * 60 * 1000, // 10 min
+  maxAge: 15 * 60 * 1000,
+  preFetch: true,
 });
 
 export default getTempleTokenPrices;
