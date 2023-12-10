@@ -37,4 +37,5 @@ export default async function(app) {
   }
 
   app.use('/v1', v1Router);
+  app.use('/api', v1Router); // /api is a legacy alias for /v1 routes
 };
