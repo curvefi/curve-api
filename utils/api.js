@@ -178,8 +178,11 @@ const fn = (cb, options = {}) => {
       ...req.params,
     }))
       .then((data) => {
-        // max-age is browser caching, s-maxage is cdn caching
-        if (maxAgeSec !== null) res.setHeader('Cache-Control', `max-age=${IS_DEV ? '0' : '30'}, s-maxage=${maxAgeCDN ?? maxAgeSec}, stale-while-revalidate`);
+        // maxAgeSec is halved so that the two swr caches don't add up to twice the caching time
+        const maxAgeCdnValue = maxAgeCDN ?? (maxAgeSec / 2);
+        const maxAgeBrowserValue = IS_DEV ? 0 : 30;
+
+        if (maxAgeSec !== null) res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate`);
         res.status(200).json(
           returnFlatData ?
             data :
