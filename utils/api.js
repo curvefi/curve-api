@@ -205,7 +205,7 @@ const fn = (cb, options = {}) => {
         } else {
           const code = (
             (err instanceof ParamError) ? 400 :
-              (err instanceof NotFoundError) ? 404 :
+              (err instanceof NotFoundError) ? 400 :
                 500
           );
           res.status(code).json(formatJsonError(err));
