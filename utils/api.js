@@ -17,7 +17,7 @@ const allRegistryIds = [
   'factory-stable-ng',
 ];
 
-const formatJsonSuccess = ({ generatedTimeMs, ...data }) => ({
+const formatJsonSuccess = ({ generatedTimeMs, ...data }, success = true) => ({
   success: true,
   data,
   generatedTimeMs,
@@ -180,36 +180,42 @@ const fn = (cb, options = {}) => {
       ...req.query,
       ...req.params,
     }))
+      .catch((err) => {
+        const code = (
+          (err instanceof ParamError) ? 400 :
+            (err instanceof NotFoundError) ? 400 :
+              500
+        );
+
+        if (code === 500) throw err;
+        else return err;
+      })
       .then((data) => {
         // maxAgeSec is halved so that the two swr caches don't add up to twice the caching time
         const maxAgeCdnValue = maxAgeCDN ?? (maxAgeSec / 2);
         const maxAgeBrowserValue = IS_DEV ? 0 : 30;
 
+        // Send a 200 response for expected errors
+        const isSoftError = (
+          (data instanceof ParamError) ||
+          (data instanceof NotFoundError)
+        );
+        if (isSoftError) {
+          data = {
+            err: data.toString(),
+          };
+        }
+
         if (maxAgeSec !== null) res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate`);
+        const success = !isSoftError;
         res.status(200).json(
           returnFlatData ?
             data :
-            formatJsonSuccess(data)
+            formatJsonSuccess(data, success)
         );
       })
       .catch((err) => {
-        if (IS_DEV) {
-          if (
-            (err instanceof ParamError) ||
-            (err instanceof NotFoundError)
-          ) {
-            console.log('Note: In production, the error below would be caught and return a 4xx response instead')
-          }
-
-          throw err;
-        } else {
-          const code = (
-            (err instanceof ParamError) ? 400 :
-              (err instanceof NotFoundError) ? 400 :
-                500
-          );
-          res.status(code).json(formatJsonError(err));
-        }
+        res.status(500).json(formatJsonError(err));
       })
   );
 
