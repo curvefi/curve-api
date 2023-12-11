@@ -21,6 +21,7 @@ const formatJsonSuccess = ({ generatedTimeMs, ...data }) => ({
   success: true,
   data,
   generatedTimeMs,
+  servedFrom: 'aws',
 });
 
 const formatJsonError = (err) => ({
@@ -40,6 +41,8 @@ const logRuntime = async (fn, cacheKey) => {
   const res = await fn();
 
   const endMs = getNowMs();
+
+  // Important: do not alter this log statement, it's used for analytics and alarms
   console.log('Run time (ms):', endMs - startMs, cacheKey);
 
   return res;
