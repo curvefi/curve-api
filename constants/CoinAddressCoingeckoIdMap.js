@@ -74,6 +74,7 @@ const CoinAddressCoingeckoIdMap = {
     '0x431d5dff03120afa4bdf332c61a6e1766ef37bdb': 'jpy-coin', // JPYC
     '0xeCDCB5B88F8e3C15f95c720C51c71c9E2080525d': 'binancecoin', // wBNB
     '0xc3c7d422809852031b44ab29eec9f1eff2a58756': 'lido-dao',
+    '0x59d9356e565ab3a36dd77763fc0d87feaf85508c': 'mountain-protocol-usdm',
   },
   arbitrum: {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'ethereum', // Native ETH
