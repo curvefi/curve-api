@@ -206,7 +206,9 @@ const fn = (cb, options = {}) => {
           };
         }
 
-        if (maxAgeSec !== null) res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate`);
+        if (maxAgeSec !== null || maxAgeCDN !== null) {
+          res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate`);
+        }
         const success = !isSoftError;
         res.status(200).json(
           returnFlatData ?
