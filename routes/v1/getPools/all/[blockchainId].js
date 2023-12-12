@@ -17,6 +17,7 @@
 import configs from '#root/constants/configs/index.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 import { fn } from '#root/utils/api.js';
+import { sum } from '#root/utils/Array.js';
 
 export default fn(async ({ blockchainId }) => {
   if (typeof blockchainId === 'undefined') {
@@ -26,8 +27,11 @@ export default fn(async ({ blockchainId }) => {
     // return data for historical reasons, it's the only one of the getPools family
     return getAllCurvePoolsData(allBlockchainIds);
   } else {
+    const poolData = await getAllCurvePoolsData([blockchainId]);
+
     return {
-      poolData: (await getAllCurvePoolsData([blockchainId])),
+      poolData,
+      tvl: sum(poolData.map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)),
     };
   }
 }, {
