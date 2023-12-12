@@ -19,22 +19,29 @@ import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 import { fn } from '#root/utils/api.js';
 import { sum } from '#root/utils/Array.js';
 
+const allBlockchainIds = Array.from(Object.keys(configs));
+
 export default fn(async ({ blockchainId }) => {
-  if (typeof blockchainId === 'undefined') {
-    const allBlockchainIds = Array.from(Object.keys(configs));
+  const blockchainIds = (
+    blockchainId === 'all' ?
+      allBlockchainIds :
+      [blockchainId]
+  );
 
-    // Unfortunately the endpoint `getPools/all` is stuck with object keys as
-    // return data for historical reasons, it's the only one of the getPools family
-    return getAllCurvePoolsData(allBlockchainIds);
-  } else {
-    const poolData = await getAllCurvePoolsData([blockchainId]);
+  const poolData = await getAllCurvePoolsData(blockchainIds);
 
-    return {
-      poolData,
-      tvl: sum(poolData.map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)),
-    };
-  }
+  return {
+    poolData,
+    tvl: sum(poolData.map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)),
+  };
 }, {
   maxAgeCDN: 5 * 60,
   cacheKey: ({ blockchainId }) => `getAllPools-${blockchainId}`,
+  paramSanitizers: {
+    // Override default blockchainId sanitizer for this endpoint
+    blockchainId: ({ blockchainId }) => ({
+      isValid: allBlockchainIds.includes(blockchainId),
+      defaultValue: 'all',
+    }),
+  },
 });

@@ -17,23 +17,34 @@
 import configs from '#root/constants/configs/index.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 import { fn } from '#root/utils/api.js';
+import { sum } from '#root/utils/Array.js';
 
 const allBlockchainIds = Array.from(Object.keys(configs));
 
 export default fn(async ({ blockchainId }) => {
   const blockchainIds = (
-    typeof blockchainId === 'undefined' ?
+    blockchainId === 'all' ?
       allBlockchainIds :
       [blockchainId]
   );
 
+  const poolData = (
+    (await getAllCurvePoolsData(blockchainIds))
+      .filter(({ usdTotal }) => (usdTotal === 0))
+  );
+
   return {
-    poolData: (
-      (await getAllCurvePoolsData(blockchainIds))
-        .filter(({ usdTotal }) => (usdTotal === 0))
-    ),
+    poolData,
+    tvl: sum(poolData.map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)),
   };
 }, {
   maxAgeCDN: 5 * 60,
   cacheKey: ({ blockchainId }) => `getAllEmptyPools-${blockchainId}`,
+  paramSanitizers: {
+    // Override default blockchainId sanitizer for this endpoint
+    blockchainId: ({ blockchainId }) => ({
+      isValid: allBlockchainIds.includes(blockchainId),
+      defaultValue: 'all',
+    }),
+  },
 });
