@@ -2,6 +2,7 @@ import configs from '#root/constants/configs/index.js';
 import swr from '#root/utils/swr.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
 import { arrayToHashmap } from '#root/utils/Array.js';
+import { addTtlRandomness } from '#root/utils/Number.js';
 import { getFunctionParamObjectKeys } from '#root/utils/Function.js';
 
 const getNowMs = () => Number(Date.now());
@@ -149,12 +150,15 @@ const fn = (cb, options = {}) => {
     },
   };
 
-  if (maxAgeSec !== null && !cacheKey) {
+  const rMaxAgeSec = maxAgeSec !== null ? addTtlRandomness(maxAgeSec) : null;
+  const rMaxAgeCDN = maxAgeCDN !== null ? addTtlRandomness(maxAgeCDN) : null;
+
+  if (rMaxAgeSec !== null && !cacheKey) {
     throw new Error('cacheKey not defined: a cacheKey must be set when using maxAge');
   }
 
   const callback = (
-    maxAgeSec !== null ? (
+    rMaxAgeSec !== null ? (
       async (query) => {
         const params = sanitizeParams(cb, query, paramSanitizers);
         const cacheKeyStr = (typeof cacheKey === 'function' ? cacheKey(params) : cacheKey);
@@ -162,7 +166,7 @@ const fn = (cb, options = {}) => {
         return (await swr(
           cacheKeyStr,
           async () => logRuntime(() => addGeneratedTime(cb(params)), cacheKeyStr),
-          { minTimeToStale: maxAgeSec * 1000 } // See CacheSettings.js
+          { minTimeToStale: rMaxAgeSec * 1000 } // See CacheSettings.js
         )).value;
       }
     ) : (
@@ -191,9 +195,9 @@ const fn = (cb, options = {}) => {
         else return err;
       })
       .then((data) => {
-        // maxAgeSec is halved so that the two swr caches don't add up to twice the caching time
-        const maxAgeCdnValue = maxAgeCDN ?? (maxAgeSec / 2);
-        const maxAgeBrowserValue = IS_DEV ? 0 : 30;
+        // rMaxAgeSec is halved so that the two swr caches don't add up to twice the caching time
+        const maxAgeCdnValue = rMaxAgeCDN ?? (rMaxAgeSec / 2);
+        const maxAgeBrowserValue = IS_DEV ? 0 : 60;
 
         // Send a 200 response for expected errors
         const isSoftError = (
@@ -206,7 +210,7 @@ const fn = (cb, options = {}) => {
           };
         }
 
-        if (maxAgeSec !== null || maxAgeCDN !== null) {
+        if (rMaxAgeSec !== null || rMaxAgeCDN !== null) {
           res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate`);
         }
         const success = !isSoftError;

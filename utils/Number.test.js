@@ -1,5 +1,9 @@
 import BN from 'bignumber.js';
-import { truncWithoutZeroDecimals, formatLargeNumber } from './Number.js';
+import {
+  truncWithoutZeroDecimals,
+  formatLargeNumber,
+  addTtlRandomness,
+} from './Number.js';
 
 describe('Number utils', () => {
   test('truncWithoutZeroDecimals()', () => {
@@ -28,5 +32,22 @@ describe('Number utils', () => {
     expect(formatLargeNumber(BN(0.000067))).toBe('0.000067');
     expect(formatLargeNumber(BN(3509.4303209777585), 0)).toBe('3,509');
     expect(formatLargeNumber(BN(3510), 0)).toBe('3,510');
+  });
+
+  test('addTtlRandomness()', () => {
+    for (let i = 0; i < 50; i++) {
+      const r10 = addTtlRandomness(10);
+      const r30 = addTtlRandomness(30);
+      const r60 = addTtlRandomness(60);
+      const r120 = addTtlRandomness(120);
+
+      expect(r10).toBe(10);
+      expect(r30).toBeGreaterThanOrEqual(20);
+      expect(r30).toBeLessThanOrEqual(60);
+      expect(r60).toBeGreaterThanOrEqual(40);
+      expect(r60).toBeLessThanOrEqual(120);
+      expect(r120).toBeGreaterThanOrEqual(90);
+      expect(r120).toBeLessThanOrEqual(210);
+    }
   });
 });
