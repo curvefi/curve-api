@@ -21,6 +21,7 @@ import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
 import GAUGE_CONTROLLER_ABI from '#root/constants/abis/gauge_controller.json' assert { type: 'json' };
 import GAUGE_ABI from '#root/constants/abis/example_gauge_2.json' assert { type: 'json' };
 import META_REGISTRY_ABI from '#root/constants/abis/meta-registry.json' assert { type: 'json' };
+import { IS_DEV } from '#root/constants/AppConstants.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
@@ -214,7 +215,7 @@ export default fn(async ({ blockchainId }) => {
   })).map((gaugeData) => {
     const pool = getPoolByLpTokenAddress(gaugeData.lpTokenAddress, 'ethereum');
     if (!pool) {
-      console.log('MISSING POOL:', gaugeData.lpTokenAddress)
+      if (IS_DEV && gaugeData.lpTokenAddress !== ZERO_ADDRESS) console.log('MISSING POOL:', gaugeData.lpTokenAddress)
       return null;
     }
 

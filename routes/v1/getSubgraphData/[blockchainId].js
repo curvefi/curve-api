@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import BN from 'bignumber.js';
 import { fn, NotFoundError } from '#root/utils/api.js';
-import { USE_FALLBACK_THEGRAPH_DATA } from '#root/constants/AppConstants.js';
+import { IS_DEV, USE_FALLBACK_THEGRAPH_DATA } from '#root/constants/AppConstants.js';
 import configs from '#root/constants/configs/index.js';
 import { runConcurrentlyAtMost } from '#root/utils/Async.js';
 import { uintToBN } from '#root/utils/Web3/index.js';
@@ -162,7 +162,7 @@ export default fn(async ({ blockchainId }) => {
         if (usdVolumeRectified > 0 || poolData.usdTotal <= ILLIQUID_THRESHOLD) {
           rollingDaySummedVolume = usdVolumeRectified;
 
-          console.log(`Missing usd volume from subgraph: derived using lp token price from getPools endpoint for pool ${poolAddress} (derived rolling day usd volume: ${usdVolumeRectified})`);
+          if (IS_DEV) console.log(`Missing usd volume from subgraph: derived using lp token price from getPools endpoint for pool ${poolAddress} (derived rolling day usd volume: ${usdVolumeRectified})`);
         }
       }
 
