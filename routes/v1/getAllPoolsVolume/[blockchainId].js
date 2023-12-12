@@ -1,6 +1,6 @@
 import { NotFoundError, fn } from '#root/utils/api.js';
 import getSubgraphDataFn from '#root/routes/v1/getSubgraphData/[blockchainId].js';
-import getFactoryAPYsFn from '#root/routes/v1/getFactoryAPYs/[blockchainId].js';
+import getFactoryAPYsFn from '#root/routes/v1/getFactoryAPYs/[blockchainId]/[version].js';
 
 export default fn(async ({ blockchainId }) => {
   try {
@@ -10,14 +10,16 @@ export default fn(async ({ blockchainId }) => {
       cryptoShare
     };
   } catch (err) {
-    // Fallback for chains without subgraph available; this won't be necessary anymore once we've moved
-    // to curve-prices for all chains
+    // Fallback for chains without subgraph available; inaccurate because misses facto-crypto
+    // this won't be necessary anymore once we've moved to curve-prices for all chains
     if (err instanceof NotFoundError) {
-      const data = await getFactoryAPYsFn.straightCall({ blockchainId });
+      const dataStable = await getFactoryAPYsFn.straightCall({ blockchainId, version: 'stable' });
+      const dataCrypto = await getFactoryAPYsFn.straightCall({ blockchainId, version: 'crypto' });
+      const totalVolume = dataStable.totalVolume + dataCrypto.totalVolume;
 
       return {
-        totalVolume: data.totalVolume,
-        cryptoShare: undefined,
+        totalVolume,
+        cryptoShare: dataCrypto.totalVolume / totalVolume * 100,
       };
     }
 

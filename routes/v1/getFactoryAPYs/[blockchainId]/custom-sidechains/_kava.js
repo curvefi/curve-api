@@ -7,50 +7,58 @@
  */
 
 import Web3 from 'web3';
-import getPoolsFn from '#root/routes/v1/getPools/[blockchainId]/[registryId].js';
 import configs from '#root/constants/configs/index.js';
-import registryAbi from '#root/constants/abis/factory_registry.json' assert { type: 'json' };
-import multicallAbi from '#root/constants/abis/multicall.json' assert { type: 'json' };
 import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
 
-const web3 = new Web3(configs.zksync.rpcUrl);
+/**
+ * The official rpc url evm.kava.io has trouble retrieving past pool virtual prices,
+ * so we use another rpc for this specific purpose. The official rpc gives access
+ * to past logs though, which most other free rpcs do not, so we still use the
+ * official rpc for other purposes.
+ */
+const web3 = new Web3(configs.kava.rpcUrl);
+const web3NoArchival = new Web3(configs.kava.noArchivalAlternateRpcUrl);
 
-export default async (query) => {
-  const config = configs.zksync;
+export default async ({ version }) => {
+  const config = configs.kava;
   const version = 2
 
-  let registryAddress = await config.getFactoryRegistryAddress();
-  let multicallAddress = config.multicallAddress;
-  let registry = new web3.eth.Contract(registryAbi, registryAddress);
-  let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
-  let res = await getPoolsFn.straightCall({ blockchainId: 'zksync', registryId: 'factory' })
+  const poolData = await getAllCurvePoolsData(['kava']).filter(({ registryId }) => (
+    version === 'crypto' ?
+      registryId.endsWith('crypto') :
+      !registryId.endsWith('crypto')
+  ));
   let poolDetails = [];
   let totalVolume = 0
 
   const latest = await web3.eth.getBlockNumber()
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
-  let DAY_BLOCKS = DAY_BLOCKS_24H
+  let DAY_BLOCKS = 50
 
   await Promise.all(
-    res.poolData.map(async (pool, index) => {
+    poolData.map(async (pool, index) => {
 
-      let poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
+      const poolContractForVpriceFetching = new web3NoArchival.eth.Contract(factorypool3Abi, pool.address)
+      const poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
 
       let vPriceOldFetch;
       let vPriceOldFetchFailed = false;
+      let vPriceOldFetchFailedBecauseBlockPruned = false;
+
       try {
-        vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
+        vPriceOldFetch = await poolContractForVpriceFetching.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
       } catch (e) {
-        console.error(`Couldn't fetch get_virtual_price for block ${latest - DAY_BLOCKS}: ${e.toString()}`);
+        console.log('error', e, e.message)
         vPriceOldFetchFailed = true;
         vPriceOldFetch = 1 * (10 ** 18)
+
+        if (!e.message.includes('execution reverted')) vPriceOldFetchFailedBecauseBlockPruned = true;
       }
-      const testPool = pool.address
       const eventName = 'TokenExchangeUnderlying';
       const eventName2 = 'TokenExchange';
 
 
-      console.log(latest - DAY_BLOCKS, latest, 'blocks')
+      // console.log(latest - DAY_BLOCKS, latest, 'blocks')
       const isMetaPool = (
         pool.implementation?.startsWith('v1metausd') ||
         pool.implementation?.startsWith('metausd') ||
@@ -100,7 +108,7 @@ export default async (query) => {
 
       let vPriceFetch
       try {
-        vPriceFetch = await poolContract.methods.get_virtual_price().call()
+        vPriceFetch = await poolContractForVpriceFetching.methods.get_virtual_price().call()
       } catch (e) {
         vPriceFetch = 1 * (10 ** 18)
       }
@@ -119,6 +127,7 @@ export default async (query) => {
         apy,
         'virtualPrice': vPriceFetch,
         volume: correctedVolume,
+        failedFetching24hOldVprice: vPriceOldFetchFailedBecauseBlockPruned,
       }
       poolDetails.push(p)
     })

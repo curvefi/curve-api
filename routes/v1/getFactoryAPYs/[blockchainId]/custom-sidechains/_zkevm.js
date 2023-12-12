@@ -7,23 +7,20 @@
  */
 
 import Web3 from 'web3';
-import getPoolsFn from '#root/routes/v1/getPools/[blockchainId]/[registryId].js';
 import configs from '#root/constants/configs/index.js';
-import registryAbi from '#root/constants/abis/factory_registry.json' assert { type: 'json' };
-import multicallAbi from '#root/constants/abis/multicall.json' assert { type: 'json' };
 import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
 
 const web3 = new Web3(configs.zkevm.rpcUrl);
 
-export default async () => {
+export default async ({ version }) => {
   const config = configs.zkevm;
   const version = 2
 
-  let registryAddress = await config.getFactoryRegistryAddress();
-  let multicallAddress = config.multicallAddress;
-  let registry = new web3.eth.Contract(registryAbi, registryAddress);
-  let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
-  let res = await getPoolsFn.straightCall({ blockchainId: 'zkevm', registryId: 'factory' })
+  const poolData = await getAllCurvePoolsData(['zkevm']).filter(({ registryId }) => (
+    version === 'crypto' ?
+      registryId.endsWith('crypto') :
+      !registryId.endsWith('crypto')
+  ));
   let poolDetails = [];
   let totalVolume = 0
 
@@ -32,7 +29,7 @@ export default async () => {
   let DAY_BLOCKS = DAY_BLOCKS_24H
 
   await Promise.all(
-    res.poolData.map(async (pool, index) => {
+    poolData.map(async (pool, index) => {
 
       let poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
 

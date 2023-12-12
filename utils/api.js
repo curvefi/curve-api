@@ -94,7 +94,7 @@ const sanitizeParams = (cb, query, paramSanitizers) => {
           [key, defaultValue],
         ];
       } else {
-        throw new ParamError(`Value for param "${key}" is undefined, but no defaultValue was returned by sanitizer function`);
+        throw new ParamError(`Param "${key}" must not be undefined`);
       }
     } else if (isValid === true) {
       return [

@@ -7,16 +7,14 @@ const paramSanitizers = {
     isValid: (
       (blockchainId !== 'ethereum') ?
         ['stable', 'crypto'].includes(version) :
-        ['crypto', '1', '2', 1, 2].includes(version)
+        ['crypto', '1', '2'].includes(version)
     ),
-    defaultValue: (blockchainId !== 'ethereum' ? 'stable' : 1),
   }),
 };
 
 const SIDECHAINS_WITH_CUSTOM_SUPPORT = [
   'base',
   'bsc',
-  'celo',
   'kava',
   'zkevm',
   'zksync',
@@ -26,7 +24,7 @@ export default fn(async ({ blockchainId, version }) => {
   if (blockchainId === 'ethereum') {
     return getEthereumFactoryAPYs({ version });
   } else if (SIDECHAINS_WITH_CUSTOM_SUPPORT.includes(blockchainId)) {
-    return (await import(`./custom-sidechains/_${blockchainId}.js`)).default();
+    return (await import(`./custom-sidechains/_${blockchainId}.js`)).default({ version });
   } else {
     return getSidechainFactoryAPYs({ blockchainId, version });
   }

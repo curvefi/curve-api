@@ -23,7 +23,8 @@ const networkSettings = {
   multicall2Address: configs.base.multicall2Address,
 };
 
-export default async () => {
+export default async ({ version }) => {
+  console.log('running base')
   const config = configs.base;
   const version = 2
 
@@ -31,7 +32,11 @@ export default async () => {
   let multicallAddress = config.multicallAddress;
   let registry = new web3.eth.Contract(registryAbi, registryAddress);
   let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
-  const poolData = await getAllCurvePoolsData(['base']);
+  const poolData = (await getAllCurvePoolsData(['base'])).filter(({ registryId }) => (
+    version === 'crypto' ?
+      registryId.endsWith('crypto') :
+      !registryId.endsWith('crypto')
+  ));
   let poolDetails = [];
   let totalVolume = 0
   let totalVolumeUsd = 0;
