@@ -22,7 +22,6 @@ const formatJsonSuccess = ({ generatedTimeMs, ...data }, success = true) => ({
   success: true,
   data,
   generatedTimeMs,
-  servedFrom: 'aws',
 });
 
 const formatJsonError = (err) => ({
@@ -195,8 +194,8 @@ const fn = (cb, options = {}) => {
         else return err;
       })
       .then((data) => {
-        // rMaxAgeSec is halved so that the two swr caches don't add up to twice the caching time
-        const maxAgeCdnValue = rMaxAgeCDN ?? (rMaxAgeSec / 2);
+        // rMaxAgeSec is reduced so that the two swr caches don't add up to twice the caching time
+        const maxAgeCdnValue = rMaxAgeCDN ?? Math.trunc(rMaxAgeSec / 1.2);
         const maxAgeBrowserValue = IS_DEV ? 0 : 60;
 
         // Send a 200 response for expected errors
