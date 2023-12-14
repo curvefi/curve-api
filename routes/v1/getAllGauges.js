@@ -87,7 +87,7 @@ export default fn(async ({ blockchainId }) => {
     'ethereum',
     ...chainsToQuery,
   ].filter((id) => (
-    typeof blockchainId === 'undefined' ||
+    blockchainId === 'all' ||
     id === blockchainId ||
     id === 'ethereum' // Always include ethereum
   ));
@@ -454,4 +454,14 @@ export default fn(async ({ blockchainId }) => {
 }, {
   maxAge: 5 * 60,
   cacheKey: ({ blockchainId }) => `getAllGauges-${blockchainId}`,
+  paramSanitizers: {
+    // Override default blockchainId sanitizer for this endpoint
+    blockchainId: ({ blockchainId }) => ({
+      isValid: (
+        blockchainId === 'ethereum' ||
+        SIDECHAINS_WITH_FACTORY_GAUGES.includes(blockchainId)
+      ),
+      defaultValue: 'all',
+    }),
+  },
 });
