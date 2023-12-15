@@ -3,11 +3,14 @@ import path from 'path';
 import fs from 'fs/promises';
 import { Router } from 'express';
 import v1Redirects from '#root/routes/v1/_redirects.json' assert { type: 'json' };
+import rootRouteHandler from '#root/routes/root.js';
 
 const REDIRECT_PARAM_REGEX = /(\[[a-zA-Z0-9]+(?:=[a-zA-Z0-9]+)?\])/g;
 
 export default async function(app) {
   app.use(bodyParser.json());
+  app.get('/', rootRouteHandler);
+
   const v1Router = Router();
 
   /**
