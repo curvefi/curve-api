@@ -1,10 +1,19 @@
 /**
- * This endpoint returns all volume and base apy data for curve pools on each chain.
- * It relies on the [Curve Prices API](https://prices.curve.fi/feeds-docs), and is meant
- * as a more reliable replacement to the `getSubgraphData/[blockchainId]` endpoints
- * which rely on subgraphs.
+ * @openapi
+ * /getVolumes/{blockchainId}:
+ *   get:
+ *     tags:
+ *       - Volumes and APYs
+ *     description: |
+ *       Returns all 24h volume and base APY data for Curve pools on each chain.
+ *       It relies on the [Curve Prices API](https://prices.curve.fi/feeds-docs), and is meant as a more reliable replacement to the [`getSubgraphData/[blockchainId]`](#/default/get_getSubgraphData__blockchainId_) endpoints.
  *
- * Note: currently, only Ethereum is available.
+ *       Note: Not all chains are currently available on the Curve Prices API. Currently available chains: `ethereum`
+ *     parameters:
+ *       - $ref: '#/components/parameters/blockchainId'
+ *     responses:
+ *       200:
+ *         description:
  */
 
 import { NotFoundError, fn } from '#root/utils/api.js';
@@ -15,6 +24,7 @@ import getBaseApysFn from '#root/routes/v1/getBaseApys/[blockchainId].js';
 import { lc } from '#root/utils/String.js';
 import { sumBN } from '#root/utils/Array.js';
 
+// Note: keep the openapi description up to date when editing this array
 const AVAILABLE_CHAIN_IDS = [
   'ethereum',
 ];

@@ -1,3 +1,19 @@
+/**
+ * @openapi
+ * /getSubgraphData/{blockchainId}:
+ *   get:
+ *     tags:
+ *       - Volumes and APYs
+ *     description: |
+ *       Returns all 24h volume and base APY data for Curve pools on each chain.
+ *       It relies on [Curve subgraphs](https://github.com/curvefi/volume-subgraphs), and is being slowly transitioned to the more reliable [`/getVolumes/{blockchainId}`](#/default/get_getVolumes__blockchainId_) endpoint (where support for more chains is being added). When this transition is done, this endpoint will however remain available as simple proxy for [`/getVolumes/{blockchainId}`](#/default/get_getVolumes__blockchainId_).
+ *     parameters:
+ *       - $ref: '#/components/parameters/blockchainId'
+ *     responses:
+ *       200:
+ *         description:
+ */
+
 import Web3 from 'web3';
 import BN from 'bignumber.js';
 import { fn, NotFoundError } from '#root/utils/api.js';

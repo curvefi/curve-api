@@ -1,11 +1,15 @@
-/* eslint-disable camelcase */
-
 /**
- * This endpoint returns *all* Curve gauges.
- *
- * The only exception are sidechain non-facto gauges, which aren’t indexed by any registry,
- * and have been discontinued for a long time now. On sidechains, only facto gauges
- * exist; on Ethereum, both "main" (non-facto) and facto gauges exist.
+ * @openapi
+ * /getAllGauges:
+ *   get:
+ *     tags:
+ *       - Gauges
+ *     description: |
+ *       Returns all Curve gauges, on all chains, in all registries. If any Curve pool, anywhere, has a gauge, then it’ll be returned by this endpoint.
+ *       The only exception are sidechain non-factory gauges, which aren’t indexed by any registry, and have been discontinued for a long time now. On sidechains, only factory gauges exist; on Ethereum, both "main" (non-factory) and factory gauges exist.
+ *     responses:
+ *       200:
+ *         description:
  */
 
 import Web3 from 'web3';

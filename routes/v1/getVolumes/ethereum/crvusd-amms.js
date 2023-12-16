@@ -1,3 +1,17 @@
+/**
+ * @openapi
+ * /getVolumes/ethereum/crvusd-amms:
+ *   get:
+ *     tags:
+ *       - Volumes and APYs
+ *       - crvUSD
+ *     description: |
+ *       Returns last daily volume for each [crvUSD AMM](https://docs.curve.fi/crvUSD/amm/)
+ *     responses:
+ *       200:
+ *         description:
+ */
+
 import { fn } from '#root/utils/api.js';
 import { sum } from '#root/utils/Array.js';
 import { request } from '#root/utils/Graphql/index.js';
@@ -9,7 +23,12 @@ export default fn(async () => {
     {
       amms{
         id
-        volumeSnapshots(orderBy:timestamp orderDirection:desc first:1) {
+        volumeSnapshots(
+          orderBy:timestamp
+          orderDirection:desc
+          where: { period: "86400"}
+          first: 1
+        ) {
           swapVolumeUSD
           timestamp
         }
@@ -29,6 +48,6 @@ export default fn(async () => {
     totalVolume: sum(amms.map(({ volumeUSD }) => volumeUSD)),
   };
 }, {
-  maxAge: 5 * 60, // 5 min
+  maxAge: 60 * 60,
   cacheKey: 'getVolumes/ethereum/crvusd-amms',
 });

@@ -1,10 +1,21 @@
 /**
- * Fetches all sorts of pool information. Works for all pools, in all registries, on all chains.
+ * @openapi
+ * /getPools/{blockchainId}/{registryId}:
+ *   get:
+ *     tags:
+ *       - Pools
+ *     description: |
+ *       Returns information on all pools, in a specific registry, on a specific chain.
  *
- * Note:
- * - Doesn't work for Harmony: its 3pool isn't in the main registry, and Harmony is lacking a
- *   crypto registry
- * - Doesn't work for Moonbeam: it's lacking a main registry
+ *       Note:
+ *       - Doesn't work for Harmony: its 3pool isn't in the main registry, and Harmony is lacking a crypto registry
+ *       - Doesn't work for Moonbeam: it's lacking a main registry
+ *     parameters:
+ *       - $ref: '#/components/parameters/blockchainId'
+ *       - $ref: '#/components/parameters/registryId'
+ *     responses:
+ *       200:
+ *         description:
  */
 
 import Web3 from 'web3';

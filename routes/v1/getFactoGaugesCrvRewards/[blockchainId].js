@@ -1,5 +1,15 @@
 /**
- * Returns unboosted CRV APRs for sidechain facto gauges.
+ * @openapi
+ * /getFactoGaugesCrvRewards/{blockchainId}:
+ *   get:
+ *     tags:
+ *       - Volumes and APYs
+ *     description: Returns unboosted CRV APRs for sidechain facto gauges
+ *     parameters:
+ *       - $ref: '#/components/parameters/blockchainId'
+ *     responses:
+ *       200:
+ *         description:
  */
 
 import { fn } from '#root/utils/api.js';

@@ -1,3 +1,17 @@
+/**
+ * @openapi
+ * /getAllPoolsVolume/{blockchainId}:
+ *   get:
+ *     tags:
+ *       - Volumes and APYs
+ *     description: Returns total 24h volume for a chain.
+ *     parameters:
+ *       - $ref: '#/components/parameters/blockchainId'
+ *     responses:
+ *       200:
+ *         description:
+ */
+
 import { NotFoundError, fn } from '#root/utils/api.js';
 import getSubgraphDataFn from '#root/routes/v1/getSubgraphData/[blockchainId].js';
 import getFactoryAPYsFn from '#root/routes/v1/getFactoryAPYs/[blockchainId]/[version].js';

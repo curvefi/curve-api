@@ -9,6 +9,7 @@
 import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js';
 import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
+import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 
 /**
  * The official rpc url evm.kava.io has trouble retrieving past pool virtual prices,
@@ -21,9 +22,8 @@ const web3NoArchival = new Web3(configs.kava.noArchivalAlternateRpcUrl);
 
 export default async ({ version }) => {
   const config = configs.kava;
-  const version = 2
 
-  const poolData = await getAllCurvePoolsData(['kava']).filter(({ registryId }) => (
+  const poolData = (await getAllCurvePoolsData(['kava'])).filter(({ registryId }) => (
     version === 'crypto' ?
       registryId.endsWith('crypto') :
       !registryId.endsWith('crypto')

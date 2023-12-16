@@ -1,4 +1,16 @@
-// Deprecated legacy endpoint
+/**
+ * @openapi
+ * /getFactoryTVL:
+ *   get:
+ *     deprecated: true
+ *     tags:
+ *       - Deprecated
+ *     description: |
+ *       <i>Deprecated: please use `getPools/ethereum/factory` instead</i>
+ *     responses:
+ *       200:
+ *         description:
+ */
 
 import getPoolsFn from '#root/routes/v1/getPools/[blockchainId]/[registryId].js';
 import { fn } from '#root/utils/api.js';

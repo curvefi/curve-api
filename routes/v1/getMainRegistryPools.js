@@ -1,3 +1,23 @@
+/**
+ * @openapi
+ * /getMainRegistryPools:
+ *   get:
+ *     deprecated: true
+ *     tags:
+ *       - Deprecated
+ *     description: |
+ *       Returns Ethereum main registry pools addresses as an array
+ *       <i>Deprecated: please use `getPools/ethereum/main` instead</i>
+ *     responses:
+ *       200:
+ *         description:
+ */
+
+/**
+ * Note: this method is exposed as an API endpoint, but is mostly meant as an internal utility
+ * that can retrieve data for all chains, not just Ethereum.
+ */
+
 import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js'
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';

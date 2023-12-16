@@ -1,8 +1,15 @@
 /**
- * Returns platforms that Curve is deployed on, and which pool registries
- * are available on each platform.
- *
- * Useful to then query e.g. `/api/getPools/PLATFORM/REGISTRY`
+ * @openapi
+ * /getPlatforms:
+ *   get:
+ *     tags:
+ *       - Misc
+ *     description: |
+ *       Returns platforms (also known as `blockchainId` in other API endpoints) that Curve is deployed on, and which pool registries are available on each platform.
+ *       Useful to then query e.g. [`/api/getPools/{blockchainId}/{registryId}`](#/default/get_getPools__blockchainId___registryId_)
+ *     responses:
+ *       200:
+ *         description:
  */
 
 import configs from '#root/constants/configs/index.js'

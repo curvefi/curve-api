@@ -1,3 +1,16 @@
+/**
+ * @openapi
+ * /getETHprice:
+ *   get:
+ *     deprecated: true
+ *     tags:
+ *       - Deprecated
+ *     description: Returns the current Ethereum USD price
+ *     responses:
+ *       200:
+ *         description:
+ */
+
 import Web3 from 'web3';
 import * as WEB3_CONSTANTS from '#root/constants/Web3.js'
 import { fn } from '#root/utils/api.js';

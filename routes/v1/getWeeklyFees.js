@@ -1,3 +1,15 @@
+/**
+ * @openapi
+ * /getWeeklyFees:
+ *   get:
+ *     tags:
+ *       - Misc
+ *     description: Returns weekly fees
+ *     responses:
+ *       200:
+ *         description:
+ */
+
 import Web3 from 'web3';
 import * as WEB3_CONSTANTS from '#root/constants/Web3.js';
 import { fn } from '#root/utils/api.js';

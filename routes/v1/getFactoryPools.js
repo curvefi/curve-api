@@ -1,3 +1,18 @@
+/**
+ * @openapi
+ * /getFactoryPools:
+ *   get:
+ *     deprecated: true
+ *     tags:
+ *       - Deprecated
+ *     description: |
+ *       Returns pools in Curve’s legacy Ethereum factory, which has been superseded for years now
+ *       <i>Legacy: in most situations, you’ll want to focus on newer pools with `getPools/all/ethereum`</i>
+ *     responses:
+ *       200:
+ *         description:
+ */
+
 import Web3 from 'web3';
 import * as WEB3_CONSTANTS from '#root/constants/Web3.js';
 import { fn } from '#root/utils/api.js';

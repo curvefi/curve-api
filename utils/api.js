@@ -234,4 +234,6 @@ export {
   formatJsonError,
   ParamError,
   NotFoundError,
+  allBlockchainIds,
+  allRegistryIds,
 };

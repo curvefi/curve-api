@@ -1,3 +1,15 @@
+/**
+ * @openapi
+ * /getCrvCircSupply:
+ *   get:
+ *     tags:
+ *       - crvUSD
+ *     description: Returns the circulating supply of crvUSD
+ *     responses:
+ *       200:
+ *         description:
+ */
+
 import { fn } from '#root/utils/api.js';
 import { multiCall } from '#root/utils/Calls.js';
 import { trunc } from '#root/utils/Number.js';

@@ -1,3 +1,15 @@
+/**
+ * @openapi
+ * /getGas:
+ *   get:
+ *     tags:
+ *       - Misc
+ *     description: Returns Ethereum gas prices (in gwei) (uses Blocknative API)
+ *     responses:
+ *       200:
+ *         description:
+ */
+
 import { fn } from '#root/utils/api.js';
 
 const blocknativeApiFetchOptions = {

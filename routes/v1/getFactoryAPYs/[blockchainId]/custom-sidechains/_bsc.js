@@ -23,9 +23,8 @@ const networkSettings = {
 
 export default async ({ version }) => {
   const config = configs.bsc;
-  const version = 2
 
-  const poolData = await getAllCurvePoolsData(['bsc']).filter(({ registryId }) => (
+  const poolData = (await getAllCurvePoolsData(['bsc'])).filter(({ registryId }) => (
     version === 'crypto' ?
       registryId.endsWith('crypto') :
       !registryId.endsWith('crypto')

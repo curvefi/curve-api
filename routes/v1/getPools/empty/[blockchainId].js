@@ -1,4 +1,28 @@
 /**
+ * @openapi
+ * /getPools/empty/{blockchainId}:
+ *   get:
+ *     tags:
+ *       - Pools
+ *     description: |
+ *       Returns all pools whose TVL is $0, in all registries, on a specific chain.
+ *     parameters:
+ *       - $ref: '#/components/parameters/blockchainId'
+ *     responses:
+ *       200:
+ *         description:
+ * /getPools/empty:
+ *   get:
+ *     tags:
+ *       - Pools
+ *     description: |
+ *       Returns all pools whose TVL is $0, in all registries, on all chains.
+ *     responses:
+ *       200:
+ *         description:
+ */
+
+/**
  * This endpoint, along with all bulk getPools endpoints, is only cached at the CDN level:
  * it uses the `maxAgeCDN` prop only.
  *

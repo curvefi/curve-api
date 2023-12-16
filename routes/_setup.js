@@ -2,8 +2,11 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import fs from 'fs/promises';
 import { Router } from 'express';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 import v1Redirects from '#root/routes/v1/_redirects.json' assert { type: 'json' };
 import rootRouteHandler from '#root/routes/root.js';
+import { allBlockchainIds, allRegistryIds } from '#root/utils/api.js';
 
 const REDIRECT_PARAM_REGEX = /(\[[a-zA-Z0-9]+(?:=[a-zA-Z0-9]+)?\])/g;
 
@@ -62,4 +65,64 @@ export default async function(app) {
 
   app.use('/v1', v1Router);
   app.use('/api', v1Router); // /api is a legacy alias for /v1 routes
+
+  /**
+   * 3. Setup documentation
+   */
+  const swaggerDoc = swaggerJsdoc({
+    failOnErrors: true,
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Curve.fi API',
+        version: '1.0.0',
+      },
+      servers: [{ url: 'https://api.curve.fi/v1' }],
+      components: {
+        parameters: {
+          blockchainId: {
+            in: 'path',
+            name: 'blockchainId',
+            required: true,
+            schema: {
+              type: 'string',
+              enum: allBlockchainIds.sort((a, b) => (
+                a === 'ethereum' ? -1 :
+                  b === 'ethereum' ? 1 :
+                    (a < b) ? -1 :
+                      (a > b) ? 1 : 0
+              )),
+            },
+          },
+          registryId: {
+            in: 'path',
+            name: 'registryId',
+            required: true,
+            schema: {
+              type: 'string',
+              enum: allRegistryIds,
+            },
+          },
+        },
+      },
+    },
+    apis: ['./routes/v1/**/*.js'],
+  });
+  app.use('/v1/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDoc, {
+    customCssUrl: [
+      '/css/swaggerui.css',
+    ],
+    customSiteTitle: 'Curve API Documentation',
+    swaggerOptions: {
+      tryItOutEnabled: true,
+      tagsSorter: (a, b) => (
+        a === 'Deprecated' ? 1 :
+          b === 'Deprecated' ? -1 :
+            a === 'Misc' ? 1 :
+              b === 'Misc' ? -1 :
+                (a.toLowerCase() < b.toLowerCase()) ? -1 :
+                  (a.toLowerCase() > b.toLowerCase()) ? 1 : 0
+      ),
+    },
+  }));
 };

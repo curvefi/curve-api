@@ -9,8 +9,6 @@
 import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
-import registryAbi from '#root/constants/abis/factory_registry.json' assert { type: 'json' };
-import multicallAbi from '#root/constants/abis/multicall.json' assert { type: 'json' };
 import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
 import factorypool3BaseTricryptoAbi from '#root/constants/abis/factory_tricrypto_swap.json' assert { type: 'json' };
 import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.json' assert { type: 'json' };
@@ -24,14 +22,8 @@ const networkSettings = {
 };
 
 export default async ({ version }) => {
-  console.log('running base')
   const config = configs.base;
-  const version = 2
 
-  let registryAddress = await config.getFactoryRegistryAddress();
-  let multicallAddress = config.multicallAddress;
-  let registry = new web3.eth.Contract(registryAbi, registryAddress);
-  let multicall = new web3.eth.Contract(multicallAbi, multicallAddress)
   const poolData = (await getAllCurvePoolsData(['base'])).filter(({ registryId }) => (
     version === 'crypto' ?
       registryId.endsWith('crypto') :

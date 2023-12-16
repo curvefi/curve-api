@@ -1,3 +1,22 @@
+/**
+ * @openapi
+ * /getMainPoolsGaugeRewards:
+ *   get:
+ *     deprecated: true
+ *     tags:
+ *       - Deprecated
+ *     description: |
+ *       Returns Ethereum main registry pools gauge rewards
+ *       <i>Deprecated: please use `getPools/ethereum/main` instead</i>
+ *     responses:
+ *       200:
+ *         description:
+ */
+
+/**
+ * Note: this method is exposed as an API endpoint, but is mostly meant as an internal utility.
+ */
+
 import partition from 'lodash.partition';
 import groupBy from 'lodash.groupby';
 import { fn } from '#root/utils/api.js';

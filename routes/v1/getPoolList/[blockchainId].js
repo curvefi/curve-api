@@ -1,3 +1,22 @@
+/**
+ * @openapi
+ * /getPoolList/{blockchainId}:
+ *   get:
+ *     tags:
+ *       - Pools
+ *     description: |
+ *       Returns addresses of all pools, in all registries, on a specific chain.
+ *
+ *       Note: For backward compatibility, in this endpoint the "factory" registry is renamed to "stable-factory"
+ *     parameters:
+ *       - $ref: '#/components/parameters/blockchainId'
+ *     responses:
+ *       200:
+ *         description:
+ */
+
+// Note: this endpoint's code is old, it works but can be made cleaner using `multiCall` from `utils/Calls.js`
+
 import Web3 from 'web3';
 import { NotFoundError, fn } from '#root/utils/api.js';
 import REGISTRY_ABI from '#root/constants/abis/registry.json' assert { type: 'json' };
@@ -22,7 +41,6 @@ const getPoolList = fn(async ({ blockchainId }) => {
     registryAddresses: registries,
   } = await getPlatformRegistries(blockchainId);
 
-  // For backward compatibility, in this endpoint the "factory" registry is named "stable-factory"
   registries_name = registries_name.map((registryId) => (registryId === 'factory' ? 'stable-factory' : registryId));
 
   for (var i = 0; i < registries.length; i++) {

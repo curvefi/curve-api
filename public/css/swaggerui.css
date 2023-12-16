@@ -1,0 +1,52 @@
+.topbar,
+.curl-command,
+.response-col_links,
+/* .opblock-tag, */
+.try-out__btn,
+.copy-to-clipboard {
+    display: none !important;
+}
+
+.opblock-description {
+    white-space: pre-line;
+}
+
+.swagger-ui .markdown code,
+.swagger-ui .renderedMarkdown code {
+    color: inherit;
+    padding: 2px;
+    font-weight: inherit;
+    font-size: 0.9em;
+}
+
+.renderedMarkdown p:not(:first-child) {
+    margin-top: 0;
+}
+
+.renderedMarkdown p:not(:last-child) {
+    margin-bottom: 0;
+}
+
+.opblock-summary-path__deprecated {
+    text-decoration: none !important;
+}
+
+.opblock-summary-path__deprecated::after {
+    content: "(deprecated)";
+    margin-left: 5px;
+    font-weight: normal;
+}
+
+.opblock-description a {
+    text-decoration: underline !important;
+    color: #3b4151 !important;
+}
+
+.swagger-ui ul {
+    margin: 0;
+    margin-top: -5px;
+    padding-left: 20px;
+    font-size: 14px;
+    line-height: 1.5em;
+    white-space: normal;
+}

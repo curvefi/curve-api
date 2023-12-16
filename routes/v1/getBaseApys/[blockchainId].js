@@ -1,7 +1,19 @@
 /**
- * This endpoint returns all base apy data for curve pools on each chain.
+ * @openapi
+ * /getBaseApys/{blockchainId}:
+ *   get:
+ *     tags:
+ *       - Volumes and APYs
+ *     description: |
+ *       Returns all base APY data for Curve pools on each chain.
+ *
+ *       Note: [`/getVolumes/{blockchainId}`](#/default/get_getVolumes__blockchainId_) and [`getSubgraphData/[blockchainId]`](#/default/get_getSubgraphData__blockchainId_) also return base APY data for Curve pools (in addition to their 24h volume). However, they do not include underlying LSTs' own APYs (when a pool contains an LST) into their base APYs, which is often a desirable information to display in front-ends, hence the existence of `/getBaseApys/{blockchainId}`.
+ *     parameters:
+ *       - $ref: '#/components/parameters/blockchainId'
+ *     responses:
+ *       200:
+ *         description:
  */
-const lc = (str) => str.toLowerCase();
 
 import { fn } from '#root/utils/api.js';
 import Web3 from 'web3';
@@ -17,6 +29,7 @@ import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { ty
 import factorypool3BaseTricryptoAbi from '#root/constants/abis/factory_tricrypto_swap.json' assert { type: 'json' };
 import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.json' assert { type: 'json' };
 import { uintToBN } from '#root/utils/Web3/index.js';
+import { lc } from '#root/utils/String.js';
 
 const isCryptoPool = ({ registryId }) => registryId.includes('crypto');
 
@@ -194,6 +207,6 @@ export default fn(async ({ blockchainId }) => {
 
   return { baseApys };
 }, {
-  maxAge: 2 * 60,
+  maxAge: 5 * 60,
   cacheKey: ({ blockchainId }) => `getBaseApys-${blockchainId}`,
 });

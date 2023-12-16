@@ -1,3 +1,15 @@
+/**
+ * @openapi
+ * /getCrvusdTotalSupply:
+ *   get:
+ *     tags:
+ *       - crvUSD
+ *     description: Returns the total supply of crvUSD
+ *     responses:
+ *       200:
+ *         description:
+ */
+
 import { fn } from '#root/utils/api.js';
 import crvusd from "@curvefi/stablecoin-api";
 import configs from '#root/constants/configs/index.js'

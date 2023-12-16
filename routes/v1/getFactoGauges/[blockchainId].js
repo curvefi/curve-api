@@ -1,3 +1,23 @@
+/**
+ * @openapi
+ * /getFactoGauges/{blockchainId}:
+ *   get:
+ *     deprecated: true
+ *     tags:
+ *       - Deprecated
+ *     description: |
+ *       <i>Deprecated: please use `getAllGauges` instead</i>
+ *     parameters:
+ *       - $ref: '#/components/parameters/blockchainId'
+ *     responses:
+ *       200:
+ *         description:
+ */
+
+/**
+ * Note: this method is exposed as an API endpoint, but is mostly meant as an internal utility.
+ */
+
 import Web3 from 'web3';
 import uniq from 'lodash.uniq';
 import { NotFoundError, fn } from '#root/utils/api.js';
