@@ -194,7 +194,7 @@ export default fn(async ({ blockchainId }) => {
       address: GAUGE_CONTROLLER_ADDRESS,
       abi: GAUGE_CONTROLLER_ABI,
       web3Data,
-      methodName: 'gauge_relative_weight',
+      methodName: 'gauge_relative_weight_write',
       params: [gaugeAddress],
       metaData: { gaugeAddress, type: 'gaugeRelativeWeight' },
     }, {
