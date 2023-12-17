@@ -32,7 +32,8 @@ import { multiCall } from '#root/utils/Calls.js';
 import { lc } from '#root/utils/String.js';
 import { arrayToHashmap, arrayOfIncrements, flattenArray } from '#root/utils/Array.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
-import configs from '#root/constants/configs/index.js'
+import configs from '#root/constants/configs/index.js';
+import { getNowTimestamp } from '#root/utils/Date.js';
 import getFactoryV2SidechainGaugeRewards from '#root/utils/data/getFactoryV2SidechainGaugeRewards.js';
 
 export default fn(async ({ blockchainId }) => {
@@ -190,6 +191,11 @@ export default fn(async ({ blockchainId }) => {
       metaData: { gaugeAddress, type: 'gaugeRelativeWeight' },
     }, {
       ...baseConfigData,
+      methodName: 'gauge_relative_weight',
+      params: [gaugeAddress, getNowTimestamp() + (7 * 86400)],
+      metaData: { gaugeAddress, type: 'gaugeFutureRelativeWeight' },
+    }, {
+      ...baseConfigData,
       methodName: 'get_gauge_weight',
       params: [gaugeAddress],
       metaData: { gaugeAddress, type: 'getGaugeWeight' },
@@ -258,6 +264,7 @@ export default fn(async ({ blockchainId }) => {
     inflationRate,
     hasCrv,
     gaugeRelativeWeight,
+    gaugeFutureRelativeWeight,
     getGaugeWeight,
     poolAddress,
     type,
@@ -286,6 +293,7 @@ export default fn(async ({ blockchainId }) => {
         working_supply: workingSupply,
         totalSupply,
         gauge_relative_weight: gaugeRelativeWeight,
+        gauge_future_relative_weight: gaugeFutureRelativeWeight,
         get_gauge_weight: getGaugeWeight,
         inflation_rate: effectiveInflationRate,
       },

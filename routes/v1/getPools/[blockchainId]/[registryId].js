@@ -1132,34 +1132,12 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       )) :
       undefined;
     const gaugeAddress = typeof gaugeData !== 'undefined' ? gaugeData.gauge?.toLowerCase() : undefined;
+    const gaugeCrvApy = gaugeData?.gaugeCrvApy;
+    const gaugeFutureCrvApy = gaugeData?.gaugeFutureCrvApy;
     const gaugeRewardsInfo = gaugeAddress ? ethereumOnlyData.gaugeRewards[gaugeAddress] : undefined;
 
     const totalSupply = poolInfo.totalSupply / 1e18;
     const lpTokenPrice = totalSupply > 0 ? (usdTotal / totalSupply) : undefined;
-
-    const relativeWeightRate = (
-      blockchainId === 'ethereum' ?
-        (gaugeData?.gauge_controller?.gauge_relative_weight / 1e18) :
-        1
-    );
-
-    const gaugeCrvBaseApy = (
-      (gaugeData && !gaugeData.is_killed && typeof lpTokenPrice !== 'undefined') ? (
-        (gaugeData.gauge_controller.inflation_rate / 1e18) * relativeWeightRate * 31536000 / (gaugeData.gauge_data.working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
-      ) : undefined
-    );
-
-    const futureRelativeWeightRate = (
-      blockchainId === 'ethereum' ?
-        (gaugeData?.gauge_controller?.gauge_future_relative_weight / 1e18) :
-        1
-    );
-
-    const gaugeFutureCrvBaseApy = (
-      (gaugeData && !gaugeData.is_killed && typeof lpTokenPrice !== 'undefined') ? (
-        (gaugeData.gauge_controller.inflation_rate / 1e18) * futureRelativeWeightRate * 31536000 / (gaugeData.gauge_data.working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
-      ) : undefined
-    );
 
     const metaPoolBasePoolLpToken = augmentedCoins.find(({ isBasePoolLpToken }) => isBasePoolLpToken);
     const isMetaPool = typeof metaPoolBasePoolLpToken !== 'undefined';
@@ -1318,16 +1296,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           (gaugeRewards || []) :
           undefined
       ),
-      gaugeCrvApy: (
-        (gaugeAddress && !gaugeData.is_killed) ?
-          [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)] :
-          undefined
-      ),
-      gaugeFutureCrvApy: (
-        (gaugeAddress && !gaugeData.is_killed) ?
-          [gaugeFutureCrvBaseApy, (gaugeFutureCrvBaseApy * 2.5)] :
-          undefined
-      ),
+      gaugeCrvApy,
+      gaugeFutureCrvApy,
       oracleMethod: undefined, // Don't return this value, unneeded for api consumers
       usesRateOracle,
       isBroken: (BROKEN_POOLS_ADDRESSES || []).includes(lc(poolInfo.address)),

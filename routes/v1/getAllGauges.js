@@ -28,6 +28,8 @@ import GAUGE_ABI from '#root/constants/abis/example_gauge_2.json' assert { type:
 import META_REGISTRY_ABI from '#root/constants/abis/meta-registry.json' assert { type: 'json' };
 import { IS_DEV } from '#root/constants/AppConstants.js';
 import { getNowTimestamp } from '#root/utils/Date.js';
+import allCoins from '#root/constants/coins/index.js'
+import getAssetsPrices from '#root/utils/data/assets-prices.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
@@ -117,6 +119,10 @@ export default fn(async ({ blockchainId }) => {
   const { rpcUrl, backuprpcUrl, chainId } = configs.ethereum;
   const web3 = new Web3(rpcUrl);
   const web3Data = { account: '', library: web3, chainId };
+
+  const {
+    [allCoins.crv.coingeckoId]: crvPrice,
+  } = await getAssetsPrices([allCoins.crv.coingeckoId]);
 
   /**
    * Step 1: Retrieve mainnet gauges that are in the gauge registry (dao vote has passed)
@@ -232,6 +238,20 @@ export default fn(async ({ blockchainId }) => {
       return null;
     }
 
+    const lpTokenPrice = pool.usdTotal / (pool.totalSupply / 1e18);
+
+    const gaugeCrvBaseApy = (
+      !gaugeData.isKilled ? (
+        (gaugeData.inflationRate / 1e18) * gaugeData.gaugeRelativeWeight / 1e18 * 31536000 / (gaugeData.workingSupply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
+      ) : undefined
+    );
+
+    const gaugeFutureCrvBaseApy = (
+      !gaugeData.isKilled ? (
+        (gaugeData.inflationRate / 1e18) * gaugeData.gaugeFutureRelativeWeight / 1e18 * 31536000 / (gaugeData.workingSupply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
+      ) : undefined
+    );
+
     return {
       ...gaugeData,
       poolAddress: pool.address,
@@ -240,7 +260,17 @@ export default fn(async ({ blockchainId }) => {
       virtualPrice: pool.virtualPrice,
       factory: pool.factory || false,
       type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
-      lpTokenPrice: (pool.usdTotal / (pool.totalSupply / 1e18)),
+      lpTokenPrice,
+      gaugeCrvApy: (
+        !gaugeData.isKilled ?
+          [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)] :
+          undefined
+      ),
+      gaugeFutureCrvApy: (
+        !gaugeData.isKilled ?
+          [gaugeFutureCrvBaseApy, (gaugeFutureCrvBaseApy * 2.5)] :
+          undefined
+      ),
     };
   }).filter((o) => o !== null);
 
@@ -260,6 +290,8 @@ export default fn(async ({ blockchainId }) => {
     factory,
     type,
     lpTokenPrice,
+    gaugeCrvApy,
+    gaugeFutureCrvApy,
   }) => [name, {
     poolUrls: getPoolByLpTokenAddress(lpTokenAddress, 'ethereum').poolUrls,
     swap: lc(poolAddress),
@@ -286,6 +318,8 @@ export default fn(async ({ blockchainId }) => {
     hasNoCrv: (LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY.includes(lc(address)) && !CRVUSD_POOLS_GAUGES.includes(lc(address))),
     type,
     lpTokenPrice,
+    gaugeCrvApy,
+    gaugeFutureCrvApy,
   }]));
 
   /**
@@ -368,6 +402,8 @@ export default fn(async ({ blockchainId }) => {
         get_gauge_weight: '0',
         inflation_rate: rawData.inflationRate,
       },
+      gaugeCrvApy: [0, 0],
+      gaugeFutureCrvApy: [0, 0],
       factory: true,
       side_chain: false,
       is_killed: rawData.isKilled,
@@ -432,6 +468,12 @@ export default fn(async ({ blockchainId }) => {
           ));
           if (isSupersededByOtherGauge) return null; // Ignore this gauge, a prefered one exists
 
+          const gaugeCrvBaseApy = (
+            !isKilled ? (
+              (inflation_rate / 1e18) * 1 * 31536000 / (working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
+            ) : undefined
+          );
+
           return [
             name, {
               poolUrls: pool.poolUrls,
@@ -456,6 +498,11 @@ export default fn(async ({ blockchainId }) => {
               hasNoCrv: !hasCrv,
               is_killed: isKilled,
               lpTokenPrice,
+              gaugeCrvApy: (
+                !isKilled ?
+                  [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)] :
+                  undefined
+              ),
               ...(blockchainId !== 'ethereum' ? {
                 gaugeStatus: {
                   areCrvRewardsStuckInBridge,
