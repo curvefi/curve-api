@@ -4,6 +4,7 @@
  *   get:
  *     tags:
  *       - Gauges
+ *       - Volumes and APYs
  *     description: |
  *       Returns all Curve gauges, on all chains, in all registries. If any Curve pool, anywhere, has a gauge, then it’ll be returned by this endpoint.
  *       The only exception are sidechain non-factory gauges, which aren’t indexed by any registry, and have been discontinued for a long time now. On sidechains, only factory gauges exist; on Ethereum, both "main" (non-factory) and factory gauges exist.
@@ -26,6 +27,7 @@ import GAUGE_CONTROLLER_ABI from '#root/constants/abis/gauge_controller.json' as
 import GAUGE_ABI from '#root/constants/abis/example_gauge_2.json' assert { type: 'json' };
 import META_REGISTRY_ABI from '#root/constants/abis/meta-registry.json' assert { type: 'json' };
 import { IS_DEV } from '#root/constants/AppConstants.js';
+import { getNowTimestamp } from '#root/utils/Date.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
@@ -201,6 +203,13 @@ export default fn(async ({ blockchainId }) => {
       address: GAUGE_CONTROLLER_ADDRESS,
       abi: GAUGE_CONTROLLER_ABI,
       web3Data,
+      methodName: 'gauge_relative_weight_write',
+      params: [gaugeAddress, getNowTimestamp() + (7 * 86400)],
+      metaData: { gaugeAddress, type: 'gaugeFutureRelativeWeight' },
+    }, {
+      address: GAUGE_CONTROLLER_ADDRESS,
+      abi: GAUGE_CONTROLLER_ABI,
+      web3Data,
       methodName: 'get_gauge_weight',
       params: [gaugeAddress],
       metaData: { gaugeAddress, type: 'getGaugeWeight' },
@@ -243,6 +252,7 @@ export default fn(async ({ blockchainId }) => {
     workingSupply,
     inflationRate,
     gaugeRelativeWeight,
+    gaugeFutureRelativeWeight,
     getGaugeWeight,
     virtualPrice,
     poolAddress,
@@ -266,6 +276,7 @@ export default fn(async ({ blockchainId }) => {
     },
     gauge_controller: {
       gauge_relative_weight: gaugeRelativeWeight,
+      gauge_future_relative_weight: gaugeFutureRelativeWeight,
       get_gauge_weight: getGaugeWeight,
       inflation_rate: inflationRate,
     },
@@ -353,6 +364,7 @@ export default fn(async ({ blockchainId }) => {
       },
       gauge_controller: {
         gauge_relative_weight: '0',
+        gauge_future_relative_weight: '0',
         get_gauge_weight: '0',
         inflation_rate: rawData.inflationRate,
       },
@@ -392,6 +404,7 @@ export default fn(async ({ blockchainId }) => {
           gauge,
           gauge_data: {
             gauge_relative_weight,
+            gauge_future_relative_weight,
             get_gauge_weight,
             inflation_rate,
             working_supply,
@@ -436,6 +449,7 @@ export default fn(async ({ blockchainId }) => {
               },
               gauge_controller: {
                 gauge_relative_weight,
+                gauge_future_relative_weight,
                 get_gauge_weight,
                 inflation_rate,
               },
