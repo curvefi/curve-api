@@ -50,6 +50,8 @@ const configs = {
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
       ['0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f'.toLowerCase(), 'tricrypto-1'],
       ['0x1f7C86AffE5bCF7a1D74a8c8E2ef9E03BF31c1BD'.toLowerCase(), 'metausdstableng'],
+      ['0xDCc91f930b42619377C200BA05b7513f2958b202'.toLowerCase(), 'plainstableng'],
+      ['0xede71F77d7c900dCA5892720E76316C6E575F0F7'.toLowerCase(), 'metausdstableng2'],
     ]),
     factoryCryptoMetaBasePoolLpTokenAddressMap: new Map([
       ['0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC'.toLowerCase(), 'metacrypto'],
@@ -104,6 +106,8 @@ const configs = {
       ['0xC05EB760A135d3D0c839f1141423002681157a17'.toLowerCase(), 'metabtc'],
       ['0xD8336532f6ED7b94282fAF724fe41d6145E07Cfc'.toLowerCase(), 'metabtcbalances'],
       ['0x5bcA7dDF1bcccB2eE8e46c56bfc9d3CDC77262bC'.toLowerCase(), 'crypto'],
+      ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
+      ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
     ]),
     factoryCryptoMetaBasePoolLpTokenAddressMap: new Map([
       ['0xdAD97F7713Ae9437fa9249920eC8507e5FbB23d3'.toLowerCase(), 'metacrypto'],
@@ -142,6 +146,7 @@ const configs = {
     getCryptoRegistryAddress: async () => '0x4fb93D7d320E8A263F22f62C2059dFC2A8bCbC4c',
     getFactoryCryptoRegistryAddress: async () => '0xE5De15A9C9bBedb4F5EC13B131E61245f2983A69',
     getFactoryEywaRegistryAddress: async () => '0x37f22a0b028f2152e6cacef210e0c4d3b875f367',
+    getFactoryStableswapNgRegistryAddress: async () => '0xe61Fb97Ef6eBFBa12B36Ffd7be785c1F5A2DE66b',
     factoryImplementationAddressMap: new Map([
       ['0x61E10659fe3aa93d036d099405224E4Ac24996d0'.toLowerCase(), 'plain2basic'],
       ['0xd9Acb0BAeeD77C99305017821167674Cc7e82f7a'.toLowerCase(), 'plain2balances'],
@@ -161,7 +166,8 @@ const configs = {
       ['0x2b70A5B878665FfDB4A06Ba40a264d6c70f68F4B'.toLowerCase(), 'metabtcbalances'],
       ['0x210c806f6ae850279f7e298de749ec4b427d00dd'.toLowerCase(), 'metausd-geist'],
       ['0xf82162bb68ad5a168345bb7efb2faa0edcca5177'.toLowerCase(), 'metausdbalances-geist'],
-
+      ['0x5702BDB1Ec244704E3cBBaAE11a0275aE5b07499'.toLowerCase(), 'plainstableng'],
+      ['0x046207cB759F527b6c10C2D61DBaca45513685CC'.toLowerCase(), 'metausdstableng'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x27e611fd27b276acbd5ffd632e5eaebec9761e40', '0x8866414733F22295b7563f9C5299715D2D76CAf4'], // meta usd
@@ -208,6 +214,8 @@ const configs = {
       ['0x094d12e5b541784701FD8d65F11fc0598FBC6332'.toLowerCase(), 'metabtc'],
       ['0xF1f85a74AD6c64315F85af52d3d46bF715236ADc'.toLowerCase(), 'metabtcbalances'],
       ['0xd7E72f3615aa65b92A4DBdC211E296a35512988B'.toLowerCase(), 'tricrypto-1'],
+      ['0xf6841C27fe35ED7069189aFD5b81513578AFD7FF'.toLowerCase(), 'plainstableng'],
+      ['0xFf02cBD91F57A778Bab7218DA562594a680B8B61'.toLowerCase(), 'metausdstableng'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x7f90122bf0700f9e7e1f688fe926940e8839f353', '0xbF7E49483881C76487b0989CD7d9A8239B20CA41'], // meta usd
@@ -230,6 +238,7 @@ const configs = {
     multicall2Address: '0x29b6603D17B9D8f021EcB8845B6FD06E1Adf89DE',
     getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
     getCryptoRegistryAddress: async () => '0x90f421832199e93d01b64DaF378b183809EB0988',
+    getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
     factoryImplementationAddressMap: new Map([
       ['0x697434ca761d4f86b553784b69f4f37f5edf54df'.toLowerCase(), 'plain2basic'],
       ['0xbdff0c27dd073c119ebcb1299a68a6a92ae607f0'.toLowerCase(), 'plain2balances'],
@@ -247,6 +256,8 @@ const configs = {
       ['0xc50c05ca1f8c2346664bd0d4a1eb6ac1da38414f'.toLowerCase(), 'metausdbalances'],
       ['0xa27f39E9C21b3376F43266E13Ad5A5d6E9BdB320'.toLowerCase(), 'metabtc'],
       ['0x505C34ED8dBE96d2D5C7D83158aA844887770970'.toLowerCase(), 'metabtcbalances'],
+      ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
+      ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // meta usd
@@ -294,6 +305,8 @@ const configs = {
       ['0xADf698e4d8Df08b3E2c79682891636eF00F6e205'.toLowerCase(), 'metausdbalances'],
       ['0xe8269B33E47761f552E1a3070119560d5fa8bBD6'.toLowerCase(), 'metausd-factory-v2-16'],
       ['0x114C4042B11a2b16F58Fe1BFe847589a122F678a'.toLowerCase(), 'metausdbalances-factory-v2-16'],
+      ['0x635742dCC8313DCf8c904206037d962c042EAfBd'.toLowerCase(), 'plainstableng'],
+      ['0x5702BDB1Ec244704E3cBBaAE11a0275aE5b07499'.toLowerCase(), 'metausdstableng'],
     ]),
     // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
     //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
@@ -334,6 +347,8 @@ const configs = {
       ['0x0E2615ce69Cd3Dc3Ff6f66a975bEa0655F3bA7b9'.toLowerCase(), 'plain4optimized'],
       ['0x4A5bF7Ab9A8202692051c19B102d3eDD62aaBAE6'.toLowerCase(), 'metausd'],
       ['0x0B4dc7A945695D11FD83e40B2DfC2B896A02395F'.toLowerCase(), 'metausdbalances'],
+      ['0x3d6cb2f6dcf47cdd9c13e4e3beae9af041d8796a'.toLowerCase(), 'plainstableng'],
+      ['0xC1b393EfEF38140662b91441C6710Aa704973228'.toLowerCase(), 'metausdstableng'],
     ]),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-xdai',
   },
@@ -353,6 +368,11 @@ const configs = {
     approxBlocksPerDay: 72000, // https://aurorascan.dev/chart/blocks
     getFactoryRegistryAddress: async () => ZERO_ADDRESS,
     getCryptoRegistryAddress: async () => ZERO_ADDRESS,
+    getFactoryStableswapNgRegistryAddress: async () => '0x5eeE3091f747E60a045a2E715a4c71e600e31F6E',
+    factoryImplementationAddressMap: new Map([
+      ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
+      ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
+    ]),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-aurora',
   },
   harmony: {
@@ -417,6 +437,7 @@ const configs = {
     multicallAddress: '0x7ED7bBd8C454a1B0D9EdD939c45a81A03c20131C',
     multicall2Address: '0x30A62aA52Fa099C4B227869EB6aeaDEda054d121',
     getFactoryRegistryAddress: async () => '0x40bc62805471eF53DdD5C5cF99ed3d9e5aa81b48',
+    getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
     factoryImplementationAddressMap: new Map([
       ['0x2632679f5CA396a1bd2647092d9dBf7eC5d7B263'.toLowerCase(), 'plain2basic'],
       ['0x12f196251EfcaCA0fd73D5b58132B16760ba96A8'.toLowerCase(), 'plain2balances'],
@@ -430,6 +451,8 @@ const configs = {
       ['0xd59C875DcCb6cDCb3a75B91b58A363b5e4B0ca9A'.toLowerCase(), 'plain4balances'],
       ['0x6378dD741B24BD884f3590d7bc7555FdB2f5b003'.toLowerCase(), 'plain4eth'],
       ['0x509495DFEEc3a53aCb2F60669985d868131Ad9a5'.toLowerCase(), 'plain4optimized'],
+      ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
+      ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
@@ -449,6 +472,7 @@ const configs = {
     multicallAddress: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
     multicall2Address: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
     getFactoryRegistryAddress: async () => '0x5277A0226d10392295E8D383E9724D6E416d6e6C',
+    getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
     factoryImplementationAddressMap: new Map([
       ['0xfEE7166C32Bdf6356Ef60636f43400AA55551A96'.toLowerCase(), 'plain2basic'],
       ['0x183Bb362aAa53f24BDF76a5E0FE11eEEce21F44d'.toLowerCase(), 'plain2balances'],
@@ -462,6 +486,8 @@ const configs = {
       ['0x3730D8B82BF3fF6Cc6dFDBe2Fd7B2A655e74eAae'.toLowerCase(), 'plain4balances'],
       ['0x0F5390AB4C5456a769056C96E4D7C71770b52319'.toLowerCase(), 'plain4eth'],
       ['0xA73b02a97B45604cd9f0BBAA153eCfe01f409350'.toLowerCase(), 'plain4optimized'],
+      ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
+      ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
@@ -482,6 +508,7 @@ const configs = {
     multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
     multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
     getFactoryRegistryAddress: async () => '0xCDC481031E23AEd8CbBe6e07A638298a790D445a',
+    getFactoryStableswapNgRegistryAddress: async () => '0xd2002373543Ce3527023C75e7518C274A51ce712',
     factoryImplementationAddressMap: new Map([
       ['0xDec8C0e31A66ed2eEf7ed54155647c9abcf49b9F'.toLowerCase(), 'plain2basic'],
       ['0x6842E0412AC1c00464dc48961330156a07268d14'.toLowerCase(), 'plain2balances'],
@@ -495,6 +522,8 @@ const configs = {
       ['0xec9cEBE650E181079576C1b6d0d2e092B1EdfF13'.toLowerCase(), 'plain4balances'],
       ['0xe8269B33E47761f552E1a3070119560d5fa8bBD6'.toLowerCase(), 'plain4eth'],
       ['0x114C4042B11a2b16F58Fe1BFe847589a122F678a'.toLowerCase(), 'plain4optimized'],
+      ['0xf3A6aa40cf048a3960E9664847E9a7be025a390a'.toLowerCase(), 'plainstableng'],
+      ['0x635742dCC8313DCf8c904206037d962c042EAfBd'.toLowerCase(), 'metausdstableng'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
@@ -564,6 +593,8 @@ const configs = {
       ['0x2FdDeDF2D842f23da2B81b9144e75cEcb691Bf19'.toLowerCase(), 'plain4balances'],
       ['0x50E09Ee7080b32aef3e92346891dD2DD389B5fAf'.toLowerCase(), 'plain4eth'],
       ['0x44d9B3f4EE15AC81FEb918501fca0ddc9d83C976'.toLowerCase(), 'plain4optimized'],
+      ['0xf3A6aa40cf048a3960E9664847E9a7be025a390a'.toLowerCase(), 'plainstableng'],
+      ['0x635742dCC8313DCf8c904206037d962c042EAfBd'.toLowerCase(), 'metausdstableng'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
@@ -586,6 +617,7 @@ const configs = {
     getFactoryRegistryAddress: async () => '0xEfDE221f306152971D8e9f181bFe998447975810',
     getFactoryCryptoRegistryAddress: async () => '0xBd5fBd2FA58cB15228a9Abdac9ec994f79E3483C',
     getFactoryTricryptoRegistryAddress: async () => '0xc55837710bc500F1E3c7bb9dd1d51F7c5647E657',
+    getFactoryStableswapNgRegistryAddress: async () => '0xd7E72f3615aa65b92A4DBdC211E296a35512988B',
     factoryImplementationAddressMap: new Map([
       ['0xB90B9B1F91a01Ea22A182CD84C1E22222e39B415'.toLowerCase(), 'plain2basic'],
       ['0x7CDE88e96E9445D986537074B1bFD32c5623c71f'.toLowerCase(), 'plain2balances'],
@@ -599,6 +631,8 @@ const configs = {
       ['0x0Cc51c9786f3777a6d50961CEBb2BB6E69ec5e07'.toLowerCase(), 'plain4balances'],
       ['0x0a31527a8dE2Ee97BBD8cCE14Db8E8826a0b6C4f'.toLowerCase(), 'plain4eth'],
       ['0x1086F023146f9026A9Bb22983CE866813C59518A'.toLowerCase(), 'plain4optimized'],
+      ['0x505d666E4DD174DcDD7FA090ed95554486d2Be44'.toLowerCase(), 'plainstableng'],
+      ['0x5a8C93EE12a8Df4455BA111647AdA41f29D5CfcC'.toLowerCase(), 'metausdstableng'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),

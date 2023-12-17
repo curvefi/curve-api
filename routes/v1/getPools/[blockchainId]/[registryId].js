@@ -658,9 +658,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           const isMetaPool = (
             implementation === 'metausd' ||
             implementation === 'metausdbalances' ||
-            implementation === 'metausdbalances' ||
             implementation === 'metabtc' ||
-            implementation === 'metabtcbalances'
+            implementation === 'metabtcbalances' ||
+            implementation.startsWith('metausdstableng')
           );
 
           const isUsdMetaPool = isMetaPool && implementation.startsWith('metausd');
