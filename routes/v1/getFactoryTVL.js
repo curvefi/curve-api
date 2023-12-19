@@ -21,4 +21,5 @@ export default fn(async () => {
   return { factoryBalances };
 }, {
   maxAgeCDN: 5 * 60, // Don't cache in redis since it's just a pass-through endpoint
+  cacheKeyCDN: 'getFactoryTVL',
 });

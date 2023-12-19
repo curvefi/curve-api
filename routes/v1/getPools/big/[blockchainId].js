@@ -64,7 +64,7 @@ export default fn(async ({ blockchainId }) => {
   };
 }, {
   maxAgeCDN: 5 * 60,
-  cacheKey: ({ blockchainId }) => `getAllBigPools-${blockchainId}`,
+  cacheKeyCDN: ({ blockchainId }) => `getAllBigPools-${blockchainId}`,
   paramSanitizers: {
     // Override default blockchainId sanitizer for this endpoint
     blockchainId: ({ blockchainId }) => ({

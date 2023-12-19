@@ -137,6 +137,7 @@ const fn = (cb, options = {}) => {
   const {
     maxAge: maxAgeSec = null, // Caching duration for both redis and CDN, in seconds
     cacheKey, // Either a function that's passed the call's params and returns a string, or a static string
+    cacheKeyCDN = null, // Either a function that's passed the call's params and returns a string, or a static string. Note: Cloudfront doesn't use this as a cache key, but our internal logging and monitoring system uses it to identify endpoints usage.
     maxAgeCDN = null, // Caching duration for CDN only, in seconds
     returnFlatData = false,
     paramSanitizers,
@@ -152,8 +153,16 @@ const fn = (cb, options = {}) => {
   const rMaxAgeSec = maxAgeSec !== null ? addTtlRandomness(maxAgeSec) : null;
   const rMaxAgeCDN = maxAgeCDN !== null ? addTtlRandomness(maxAgeCDN) : null;
 
+  if (rMaxAgeSec !== null && rMaxAgeCDN !== null) {
+    throw new Error('cacheKey and cacheKeyCDN cannot be both defined: cacheKey applies to both Redis and CDN, while cacheKeyCDN applies only to CDN. Use cacheKey if the entry must be cached in both caches, or cacheKeyCDN if it must be cached only at the CDN level.');
+  }
+
   if (rMaxAgeSec !== null && !cacheKey) {
     throw new Error('cacheKey not defined: a cacheKey must be set when using maxAge');
+  }
+
+  if (rMaxAgeCDN !== null && cacheKeyCDN === null) {
+    throw new Error('cacheKeyCDN not defined: cacheKeyCDN must be set when using maxAgeCDN');
   }
 
   const callback = (
@@ -171,7 +180,7 @@ const fn = (cb, options = {}) => {
     ) : (
       async (query) => {
         const params = sanitizeParams(cb, query, paramSanitizers);
-        const cacheKeyStr = (typeof cacheKey === 'function' ? cacheKey(params) : cacheKey);
+        const cacheKeyStr = (typeof cacheKeyCDN === 'function' ? cacheKeyCDN(params) : cacheKeyCDN);
 
         return logRuntime(() => addGeneratedTime(cb(params)), cacheKeyStr);
       }
