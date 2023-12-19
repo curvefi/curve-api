@@ -11,7 +11,9 @@ const MulticallContract = new web3.eth.Contract(Multicall, '0xeefBa1e63905eF1D7A
 // Contract instances cache store
 const getContractInstance = memoize((address, abi, account, library, chainId) => (
   new library.eth.Contract(abi, address)
-));
+), {
+  maxAge: 60 * 1000,
+});
 
 const getEncodedCalls = (callsConfig) => {
   const defaultCallConfig = {

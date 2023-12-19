@@ -22,7 +22,9 @@ const FALLBACK_DECODED_PARAMETERS_VALUES = {
 // Contract instances cache store
 const getContractInstance = memoize((address, abi, library) => (
   new library.eth.Contract(abi, address)
-));
+), {
+  maxAge: 60 * 1000,
+});
 
 /**
  * @param {Array<{contract: Object, methodName: String, params: Array}>} callsConfig

@@ -78,6 +78,8 @@ const memoedGetNextThursdayTimestamp = memoize((tsNow) => {
   }
 
   return date.getTime() / 1000;
+}, {
+  maxAge: 60 * 1000,
 });
 
 const getNextThursdayTimestamp = (tsNow = getNowTimestamp()) => memoedGetNextThursdayTimestamp(tsNow);
