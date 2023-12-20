@@ -54,7 +54,7 @@ import getEywaTokenPrices from '#root/utils/data/getEywaTokenPrices.js';
 import getMainRegistryPoolsFn from '#root/routes/v1/getMainRegistryPools.js';
 import getMainRegistryPoolsAndLpTokensFn from '#root/routes/v1/getMainRegistryPoolsAndLpTokens.js';
 import getMainPoolsGaugeRewardsFn from '#root/routes/v1/getMainPoolsGaugeRewards.js';
-import getAllGaugesFn from '#root/routes/v1/getAllGauges.js';
+import getAllGaugesFn, { SIDECHAINS_WITH_FACTORY_GAUGES } from '#root/routes/v1/getAllGauges.js';
 import configs from '#root/constants/configs/index.js'
 import allCoins from '#root/constants/coins/index.js'
 import POOLS_ZAPS from '#root/constants/pools-zaps/index.js';
@@ -64,6 +64,7 @@ import { deriveMissingCoinPrices, getImplementation } from '#root/routes/v1/getP
 import { lc } from '#root/utils/String.js';
 import getCurvePrices from '#root/utils/data/curve-prices.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
+import { getAugmentedCoinsFirstPass, getAugmentedCoinsSecondPass } from '../_augmentedCoinsUtils.js';
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [{ "name": "arg0", "type": "uint256" }], "name": "balances", "outputs": [{ "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
@@ -153,13 +154,11 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
         (await import('#root/utils/data/getFactoryV2SidechainGaugeRewards.js')).default
     );
 
-    /**
-     * Here we want getGauges data (which itself calls getPools) to be available
-     * whether api edge caches are hot or cold. This makes sure data is called
-     * every time, but takes advantages of returning cached data very quickly once
-     * caches are hot.
-     */
-    gaugesData = await getAllGaugesFn.straightCall({ blockchainId });
+    gaugesData = (
+      (blockchainId === 'ethereum' || SIDECHAINS_WITH_FACTORY_GAUGES.includes(blockchainId)) ?
+        await getAllGaugesFn.straightCall({ blockchainId }) :
+        {}
+    );
 
     if (blockchainId === 'ethereum') {
       const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => !side_chain);
@@ -1020,19 +1019,27 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     return { rate, poolId, i, j };
   }), 'poolId');
 
-  let missingCoinPrices;
+  /**
+   * missingCoinPrices plays two different roles:
+   * - if USE_CURVE_PRICES_DATA === true: it contains tokens missing from curve-prices, and that'll be passed
+   *   to deriveMissingCoinPrices to fill in the blanks
+   * - if USE_CURVE_PRICES_DATA === false: deriveMissingCoinPrices will be called first to give priority to
+   *   deriving prices using curve pools data; then any token still missing a price will be given a second
+   *   chance to have one with missingCoinPrices which will be passed a second time to deriveMissingCoinPrices
+   */
+  let missingCoinPrices = {};
   if (USE_CURVE_PRICES_DATA) {
     const coinsAddressesWithMissingPrices = uniq(Array.from(Object.values(mergedCoinData)).filter(({
       address,
       usdPrice,
     }) => (
-      !IGNORED_COINS[blockchainId].includes(lc(address)) &&
+      !(IGNORED_COINS[blockchainId] || []).includes(lc(address)) &&
       usdPrice === null
     )).map(({ address }) => lc(address)));
     missingCoinPrices = await getTokensPrices(coinsAddressesWithMissingPrices, blockchainId);
   }
 
-  const augmentedData = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
+  const augmentedDataPart1 = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
     const implementation = getImplementation({
       registryId,
       config,
@@ -1057,60 +1064,62 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
               (assetTypeMap.get(poolInfo.assetType) || 'unknown')
     );
 
-    let augmentedCoins;
-    if (!USE_CURVE_PRICES_DATA) {
-      const coins = poolInfo.coinsAddresses
-        .filter(isDefinedCoin)
-        .map((coinAddress) => {
-          const key = `${poolInfo.id}-${coinAddress}`;
+    const augmentedCoins = await getAugmentedCoinsFirstPass({
+      USE_CURVE_PRICES_DATA,
+      poolInfo,
+      mergedCoinData,
+      blockchainId,
+      registryId,
+      wipMergedPoolData,
+      internalPoolsPrices,
+      mainRegistryLpTokensPricesMap,
+      otherRegistryTokensPricesMap,
+      missingCoinPrices,
+      crvPrice,
+    });
 
-          return {
-            ...mergedCoinData[key],
-            usdPrice: (
-              mergedCoinData[key]?.usdPrice === 0 ? 0 :
-                (blockchainId === 'ethereum' && lc(coinAddress) === lc(allCoins.crv.address)) ? crvPrice : // Temp: use external crv price oracle
-                  (mergedCoinData[key]?.usdPrice || null)
-            ),
-          };
-        });
+    return {
+      ...poolInfo,
+      implementation,
+      zapAddress: (
+        POOLS_ZAPS?.[blockchainId]?.pools?.[lc(poolInfo.address)] ||
+        POOLS_ZAPS?.[blockchainId]?.implementations?.[implementation] ||
+        undefined
+      ),
+      assetTypeName,
+      coins: augmentedCoins,
+    };
+  });
 
-      augmentedCoins = await deriveMissingCoinPrices({
-        blockchainId,
-        registryId,
-        coins,
-        poolInfo,
-        otherPools: wipMergedPoolData,
-        internalPoolPrices: internalPoolsPrices[poolInfo.id] || [], //
-        mainRegistryLpTokensPricesMap, //
-        otherRegistryTokensPricesMap, //
-      });
-    } else {
-      const coins = poolInfo.coinsAddresses
-        .filter(isDefinedCoin)
-        .map((coinAddress) => {
-          const key = `${poolInfo.id}-${coinAddress}`;
-
-          return {
-            ...mergedCoinData[key],
-            usdPrice: (
-              mergedCoinData[key]?.usdPrice !== null ? mergedCoinData[key]?.usdPrice :
-                typeof missingCoinPrices[lc(coinAddress)] !== 'undefined' ? missingCoinPrices[lc(coinAddress)] :
-                  null
-            ),
-          };
-        });
-
-      augmentedCoins = await deriveMissingCoinPrices({
-        blockchainId,
-        registryId,
-        coins,
-        poolInfo,
-        otherPools: wipMergedPoolData,
-        internalPoolPrices: internalPoolsPrices[poolInfo.id] || [],
-        mainRegistryLpTokensPricesMap: {}, // Sunset
-        otherRegistryTokensPricesMap: {}, // Sunset
-      });
+  if (!USE_CURVE_PRICES_DATA) {
+    const coinsAddressesWithMissingPrices = uniq(flattenArray(augmentedDataPart1.map(({ coins }) => coins)).filter(({
+      address,
+      usdPrice,
+    }) => (
+      !(IGNORED_COINS[blockchainId] || []).includes(lc(address)) &&
+      usdPrice === null
+    )).map(({ address }) => lc(address)));
+    if (coinsAddressesWithMissingPrices.length > 0) {
+      missingCoinPrices = await getTokensPrices(coinsAddressesWithMissingPrices, blockchainId);
     }
+  }
+
+  const augmentedDataPart2 = await sequentialPromiseReduce(augmentedDataPart1, async (poolInfo, i, wipMergedPoolData) => {
+    const augmentedCoins = (
+      Object.values(missingCoinPrices).length > 0 ? (
+        await getAugmentedCoinsSecondPass({
+          USE_CURVE_PRICES_DATA,
+          poolInfo,
+          blockchainId,
+          registryId,
+          wipMergedPoolData,
+          internalPoolsPrices,
+          mainRegistryLpTokensPricesMap,
+          otherRegistryTokensPricesMap,
+          missingCoinPrices,
+        })
+      ) : poolInfo.coins
+    );
 
     const usdTotal = (
       (BROKEN_POOLS_ADDRESSES || []).includes(lc(poolInfo.address)) ? 0 :
@@ -1270,14 +1279,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const augmentedPool = {
       ...poolInfo,
       poolUrls: detailedPoolUrls,
-      implementation,
-      zapAddress: (
-        POOLS_ZAPS?.[blockchainId]?.pools?.[lc(poolInfo.address)] ||
-        POOLS_ZAPS?.[blockchainId]?.implementations?.[implementation] ||
-        undefined
-      ),
       lpTokenAddress: (poolInfo.lpTokenAddress || poolInfo.address),
-      assetTypeName,
       coins: augmentedCoins.map((coin) => ({
         ...overrideSymbol(coin, blockchainId),
         ...(typeof ethereumLSDAPYs[lc(coin.address)] !== 'undefined' ? {
@@ -1321,6 +1323,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
     return augmentedPool;
   });
+
+  const augmentedData = augmentedDataPart2;
 
   // The distinction between tvlAll and tvl is useful when facto pools are added to the main
   // registry, in order to avoid double-counting tvl.

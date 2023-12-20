@@ -5,6 +5,9 @@
  *    themselves and the price that assets are trading at in them
  *
  * Hence the list below represents the only tokens that the app queries Coingecko for.
+ * (Note: Before a Dec 2023 improvement, all token pairs with no link to other pools to
+ * derive a price from had to manually listed here to have a reference price. This is not
+ * the case anymore, so most of the addresses listed here are now likely not needed anymore.)
  * See the context surrounding `REGISTRIES_DEPENDENCIES` in `getPools/index.js`, and
  * `deriveMissingCoinPricesSinglePass` in `getPools/_utils.js` to dig deeper into how this works.
  */
@@ -46,8 +49,6 @@ const CoinAddressCoingeckoIdMap = {
     '0x0ec9f76202a7061eb9b3a7d6b59d36215a7e37da': 'blackpool-token',
     '0x865377367054516e17014ccded1e7d814edc9ce4': 'dola-usd',
     '0x808507121b80c02388fad14726482e061b8da827': 'pendle',
-    '0x8c543aed163909142695f2d2acd0d55791a9edb9': 'velas',
-    '0x826180541412d574cf1336d22c0c0a287822678a': 'chainflip',
   },
   polygon: {
     '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063': 'dai', // DAI
