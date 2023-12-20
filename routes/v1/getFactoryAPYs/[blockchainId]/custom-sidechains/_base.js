@@ -35,7 +35,7 @@ export default async ({ version }) => {
 
   const latest = await web3.eth.getBlockNumber()
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
-  let DAY_BLOCKS = 9999
+  let DAY_BLOCKS = DAY_BLOCKS_24H
 
   await Promise.all(
     poolData.map(async (pool, index) => {
@@ -165,9 +165,8 @@ export default async ({ version }) => {
       );
 
       let decimals = (
-        version === 1 ? [pool.token.decimals, 18, 18, 18] :
-          (version === 2 && isMetaPool) ? pool.underlyingDecimals :
-            pool.decimals
+        (isMetaPool) ? pool.underlyingDecimals :
+          pool.decimals
       );
       let volume = 0;
       let volumeUsd = 0;
@@ -202,7 +201,7 @@ export default async ({ version }) => {
         })
       }
 
-      if (version == '2' && pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-crypto') {
+      if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-crypto') {
         let events2 = await poolContract.getPastEvents(eventName2, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
           fromBlock: oneDayOldBlockNumber,
@@ -228,7 +227,7 @@ export default async ({ version }) => {
       let p = {
         index,
         'poolAddress': pool.address,
-        'poolSymbol': version === 1 ? pool.token.symbol : pool.symbol,
+        'poolSymbol': pool.symbol,
         apyFormatted,
         apy,
         'virtualPrice': vPriceFetch,

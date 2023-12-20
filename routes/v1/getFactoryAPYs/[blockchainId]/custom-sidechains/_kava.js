@@ -67,9 +67,8 @@ export default async ({ version }) => {
       );
 
       let decimals = (
-        version === 1 ? [pool.token.decimals, 18, 18, 18] :
-          (version === 2 && isMetaPool) ? pool.underlyingDecimals :
-            pool.decimals
+        (isMetaPool) ? pool.underlyingDecimals :
+          pool.decimals
       );
       let volume = 0;
 
@@ -87,20 +86,16 @@ export default async ({ version }) => {
       })
 
 
-      if (version == '2') {
-        let events2 = await poolContract.getPastEvents(eventName2, {
-          filter: {}, // Using an array means OR: e.g. 20 or 23
-          fromBlock: latest - DAY_BLOCKS,
-          toBlock: 'latest'
-        })
+      let events2 = await poolContract.getPastEvents(eventName2, {
+        filter: {}, // Using an array means OR: e.g. 20 or 23
+        fromBlock: latest - DAY_BLOCKS,
+        toBlock: 'latest'
+      })
 
-        events2.map((trade) => {
-          let t = trade.returnValues[2] / 10 ** decimals[trade.returnValues[1]]
-          volume += t
-        })
-
-
-      }
+      events2.map((trade) => {
+        let t = trade.returnValues[2] / 10 ** decimals[trade.returnValues[1]]
+        volume += t
+      })
 
       // Since we don't fetch blocks for the entirety of the past 24 hours,
       // we multiply the split volume accordingly
@@ -122,7 +117,7 @@ export default async ({ version }) => {
       let p = {
         index,
         'poolAddress': pool.address,
-        'poolSymbol': version === 1 ? pool.token.symbol : pool.symbol,
+        'poolSymbol': pool.symbol,
         apyFormatted,
         apy,
         'virtualPrice': vPriceFetch,
