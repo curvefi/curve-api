@@ -4,42 +4,50 @@
  * memcached hosts as cache storage.
  */
 
-import { createStaleWhileRevalidateCache } from 'stale-while-revalidate-cache';
+import { createStaleWhileRevalidateCache, EmitterEvents } from 'stale-while-revalidate-cache';
 import { Redis } from 'ioredis';
 import CACHE_SETTINGS from '#root/constants/CacheSettings.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
 
-const swrPromise = new Promise(async (resolve, reject) => {
-  const cacheNode = IS_DEV ? process.env.DEV_REDIS_HOST : process.env.PROD_REDIS_HOST
+const cacheNode = IS_DEV ? process.env.DEV_REDIS_HOST : process.env.PROD_REDIS_HOST
+console.log('Using Redis node:', cacheNode);
 
-  console.log('Using memcached store nodes:');
-  console.log(cacheNode);
+const redis = new Redis(cacheNode); // To update prod redis server
 
-  const redis = new Redis(cacheNode); // To update prod redis server
+const storage = {
+  async getItem(key) {
+    return redis.get(key);
+  },
+  async setItem(key, value) {
+    await redis.set(key, value, 'EX', (CACHE_SETTINGS.maxTimeToLive / 1000));
+  },
+  async removeItem(key) {
+    await redis.del(key);
+  },
+};
 
-  const storage = {
-    async getItem(key) {
-      return redis.get(key);
-    },
-    async setItem(key, value) {
-      // update using PR
-      await redis.set(key, value, 'EX', (CACHE_SETTINGS.maxTimeToLive / 1000));
-    },
-    async removeItem(key) {
-      await redis.del(key);
-    },
-  };
-
-  const swr = createStaleWhileRevalidateCache({
-    storage,
-    ...CACHE_SETTINGS,
-  });
-
-  resolve(swr);
+const swr = createStaleWhileRevalidateCache({
+  storage,
+  ...CACHE_SETTINGS,
 });
 
-// Wrapper that exposes the same intuitive api as naked swr, while
-// making up for the async nature of memcached nodes retrieval
-const swr = async (key, fn, configOverrides) => (await swrPromise)(key, fn, configOverrides);
+swr.onAny((event, payload) => {
+  switch (event) {
+    case EmitterEvents.cacheGetFailed:
+      console.log('Error: cacheGetFailed', payload);
+      break
+
+    case EmitterEvents.cacheSetFailed:
+      console.log('Error: cacheSetFailed', payload);
+      break
+
+    case EmitterEvents.revalidateFailed:
+      console.log(payload);
+      if (IS_DEV) throw new Error('Error: revalidateFailed ↑');
+      else console.log('Error: revalidateFailed', payload.cacheKey);
+      break;
+  }
+});
+
 
 export default swr;
