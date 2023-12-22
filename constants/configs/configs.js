@@ -207,6 +207,7 @@ const configs = {
       ['0x2ac56cEBc2D27c9bB51a11773355E44371Eb88D3'.toLowerCase(), 'plain4balances'],
       ['0x89287c32c2CAC1C76227F6d300B2DBbab6b75C08'.toLowerCase(), 'plain4eth'],
       ['0x06e3C4da96fd076b97b7ca3Ae23527314b6140dF'.toLowerCase(), 'plain4optimized'],
+      ['0x73Ec37618683C274D0bBf5f5726aA856B2BDAB81'.toLowerCase(), 'plain2basicema'],
       ['0x09672362833d8f703D5395ef3252D4Bfa51c15ca'.toLowerCase(), 'metausd'],
       ['0xBE175115BF33E12348ff77CcfEE4726866A0Fbd5'.toLowerCase(), 'metausdbalances'],
       ['0x8DEb66a4A40E370355bEe35f12E55Fe9c755d686'.toLowerCase(), 'metausd-factory-v2-41'],
