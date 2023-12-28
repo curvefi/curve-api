@@ -54,7 +54,7 @@ export default fn(async ({ blockchainId }) => {
   );
 
   const poolData = (
-    (await getAllCurvePoolsData(blockchainIds))
+    (await getAllCurvePoolsData(blockchainIds, false))
       .filter(({ usdTotal }) => usdTotal >= SMALL_POOLS_USDTOTAL_THRESHOLD)
   );
 

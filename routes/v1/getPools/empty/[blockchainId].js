@@ -53,7 +53,7 @@ export default fn(async ({ blockchainId }) => {
   );
 
   const poolData = (
-    (await getAllCurvePoolsData(blockchainIds))
+    (await getAllCurvePoolsData(blockchainIds, false))
       .filter(({ usdTotal }) => (usdTotal === 0))
   );
 

@@ -52,7 +52,7 @@ export default fn(async ({ blockchainId }) => {
       [blockchainId]
   );
 
-  const poolData = await getAllCurvePoolsData(blockchainIds);
+  const poolData = await getAllCurvePoolsData(blockchainIds, false);
 
   return {
     poolData,
