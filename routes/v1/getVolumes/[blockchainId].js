@@ -27,6 +27,8 @@ import { sumBN } from '#root/utils/Array.js';
 // Note: keep the openapi description up to date when editing this array
 const AVAILABLE_CHAIN_IDS = [
   'ethereum',
+  'polygon',
+  'arbitrum',
 ];
 
 const DEFAULT_VOLUME_DATA = {
@@ -66,8 +68,8 @@ export default fn(async ({ blockchainId }) => {
     // However this doesn't mean that their APR is null, as e.g. their deposits can be in deposit pools for
     // lending pools. This falls back to freshly-fetched APYs for these pools.
     const poolBaseApys = baseApys.find((pool) => lc(address) === lc(pool.address));
-    const latestDailyApy = BN(poolBaseApys.latestDailyApyPcent).div(100);
-    const latestWeeklyApy = BN(poolBaseApys.latestWeeklyApyPcent).div(100);
+    const latestDailyApy = typeof poolBaseApys === 'undefined' ? BN(0) : BN(poolBaseApys.latestDailyApyPcent).div(100);
+    const latestWeeklyApy = typeof poolBaseApys === 'undefined' ? BN(0) : BN(poolBaseApys.latestWeeklyApyPcent).div(100);
 
     return {
       address,
