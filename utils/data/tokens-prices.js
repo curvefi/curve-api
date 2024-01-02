@@ -4,6 +4,7 @@ import Request from '#root/utils/Request.js';
 import { arrayToHashmap } from '#root/utils/Array.js';
 import { sequentialPromiseMap } from '#root/utils/Async.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
+import getCrvusdPriceForBlockchainId from '#root/utils/data/getCrvusdPrice.js';
 
 const MAX_ADDRESSES_PER_COINGECKO_REQUEST = 30;
 const NATIVE_ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
@@ -31,7 +32,8 @@ const getTokensPrices = memoize(async (addresses, platform = 'ethereum') => {
       ])))
   ), MAX_ADDRESSES_PER_COINGECKO_REQUEST);
 
-  const mergedPrices = Object.assign({}, ...pricesChunks);
+  const crvUsdPrice = await getCrvusdPriceForBlockchainId(platform);
+  const mergedPrices = Object.assign({}, ...pricesChunks, crvUsdPrice);
 
   const attachNativeEthPrice = addresses.some((address) => address.toLowerCase() === NATIVE_ETH_ADDRESS);
   if (attachNativeEthPrice) {

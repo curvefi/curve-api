@@ -42,3 +42,4 @@ const getCrvusdPriceForBlockchainId = async (blockchainId) => {
 };
 
 export default getCrvusdPriceForBlockchainId;
+export { CRVUSD_ADDRESSES };
