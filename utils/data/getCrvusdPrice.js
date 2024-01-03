@@ -9,6 +9,7 @@ const CRVUSD_ADDRESSES = {
   ethereum: lc('0xf939e0a03fb07f59a73314e73794be0e57ac1b4e'),
   base: lc('0x417ac0e078398c154edfadd9ef675d30be60af93'),
   arbitrum: lc('0x498bf2b1e120fed3ad3d42ea2165e9b73f99c1e5'),
+  xdai: lc('0xaBEf652195F98A91E490f047A5006B71c85f058d'),
 };
 
 const AGGREGATOR_STABLE_PRICE_ADDRESS = '0x18672b1b0c623a30089A280Ed9256379fb0E4E62';
