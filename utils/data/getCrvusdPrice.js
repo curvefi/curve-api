@@ -10,6 +10,7 @@ const CRVUSD_ADDRESSES = {
   base: lc('0x417ac0e078398c154edfadd9ef675d30be60af93'),
   arbitrum: lc('0x498bf2b1e120fed3ad3d42ea2165e9b73f99c1e5'),
   xdai: lc('0xaBEf652195F98A91E490f047A5006B71c85f058d'),
+  optimism: lc('0xc52d7f23a2e460248db6ee192cb23dd12bddcbf6'),
 };
 
 const AGGREGATOR_STABLE_PRICE_ADDRESS = '0x18672b1b0c623a30089A280Ed9256379fb0E4E62';
