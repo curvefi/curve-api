@@ -68,13 +68,21 @@ export default fn(async ({ blockchainId }) => {
     // However this doesn't mean that their APR is null, as e.g. their deposits can be in deposit pools for
     // lending pools. This falls back to freshly-fetched APYs for these pools.
     const poolBaseApys = baseApys.find((pool) => lc(address) === lc(pool.address));
-    const latestDailyApy = typeof poolBaseApys === 'undefined' ? BN(0) : BN(poolBaseApys.latestDailyApyPcent).div(100);
-    const latestWeeklyApy = typeof poolBaseApys === 'undefined' ? BN(0) : BN(poolBaseApys.latestWeeklyApyPcent).div(100);
+    const latestDailyApy = (
+      (typeof poolBaseApys === 'undefined' || poolBaseApys.latestDailyApyPcent === null) ?
+        BN(0) :
+        BN(poolBaseApys.latestDailyApyPcent).div(100)
+    );
+    const latestWeeklyApy = (
+      (typeof poolBaseApys === 'undefined' || poolBaseApys.latestWeeklyApyPcent === null) ?
+        BN(0) :
+        BN(poolBaseApys.latestWeeklyApyPcent).div(100)
+    );
 
     return {
       address,
       type,
-      volumeUSD: BN(tradingVolume).dp(2).toNumber(), // Excluding liquidityVolume for consistency for now, may add it later
+      volumeUSD: BN(tradingVolume).dp(2).toNumber() ?? 0, // Excluding liquidityVolume for consistency for now, may add it later
       latestDailyApyPcent: BN(latestDailyApy).times(100).dp(2).toNumber(),
       latestWeeklyApyPcent: BN(latestWeeklyApy).times(100).dp(2).toNumber(),
       virtualPrice,
