@@ -109,7 +109,7 @@ export default async ({ version }) => {
       }
 
       let vPrice = vPriceOldFetchFailed ? vPriceFetch : vPriceOldFetch
-      let vPriceNew = vPriceFetch
+      let vPriceNew = Math.max(vPriceFetch, vPrice) // since this legacy script makes individual calls and kava rpcs fail a lot, this protects against failures that can lead to negative apys
       let apy = (vPriceNew - vPrice) / vPrice * 100 * 365
       let apyFormatted = `${apy.toFixed(2)}%`
       totalVolume += correctedVolume
