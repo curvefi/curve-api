@@ -14,7 +14,7 @@
  *         required: true
  *         schema:
  *           type: string
- *           enum: [base, bsc, kava, zkevm, zksync]
+ *           enum: [bsc, kava, zkevm, zksync]
  *       - in: path
  *         name: version
  *         required: true
@@ -44,7 +44,6 @@ const paramSanitizers = {
 
 // Note: keep the openapi parameter definition up to date with this array
 const SIDECHAINS_WITH_CUSTOM_SUPPORT = [
-  'base',
   'bsc',
   'kava',
   'zkevm',
