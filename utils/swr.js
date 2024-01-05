@@ -8,6 +8,7 @@ import { createStaleWhileRevalidateCache, EmitterEvents } from 'stale-while-reva
 import { Redis } from 'ioredis';
 import CACHE_SETTINGS from '#root/constants/CacheSettings.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
+import { NotFoundError, ParamError } from '#root/utils/api.js';
 
 const cacheNode = IS_DEV ? process.env.DEV_REDIS_HOST : process.env.PROD_REDIS_HOST
 console.log('Using Redis node:', cacheNode);
@@ -42,9 +43,12 @@ swr.onAny((event, payload) => {
       break
 
     case EmitterEvents.revalidateFailed:
-      console.log(payload);
-      if (IS_DEV) throw new Error('Error: revalidateFailed ↑');
-      else console.log('Error: revalidateFailed', payload.cacheKey);
+      if (IS_DEV) {
+        console.log(payload);
+        throw new Error('Error: revalidateFailed ↑');
+      } else if (!(payload.error instanceof ParamError) && !(payload.error instanceof NotFoundError)) {
+        console.log('Error: revalidateFailed', payload.cacheKey);
+      }
       break;
   }
 });

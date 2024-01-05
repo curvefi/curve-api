@@ -48,5 +48,9 @@ export default async ({ blockchainId, version }) => {
 
   poolDetails.sort((a, b) => (a.index > b.index) ? 1 : ((b.index > a.index) ? -1 : 0))
 
-  return { poolDetails, totalVolume };
+  return {
+    poolDetails,
+    totalVolume,
+    totalVolumeUsd: totalVolume, // Alias for legacy endpoints
+  };
 };
