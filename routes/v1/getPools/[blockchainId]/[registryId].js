@@ -1270,7 +1270,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     * call returns default value of zero) and non-zero
     */
     const usesRateOracle = Number(poolInfo.oracleMethod) !== 0;
-    const ethereumLSTAPYs = (blockchainId === 'ethereum') ? (await getETHLSTAPYs()) : {};
+    const ethereumLSTAPYs = await getETHLSTAPYs();
 
     if (isMetaPool && typeof underlyingPool === 'undefined') {
       throw new Error(`Pool ${poolInfo.address} is a meta pool, yet we couldn’t retrieve its underlying pool. Please check METAPOOL_REGISTRIES_DEPENDENCIES, its base pool’s registry is likely missing.`)
@@ -1280,12 +1280,17 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ...poolInfo,
       poolUrls: detailedPoolUrls,
       lpTokenAddress: (poolInfo.lpTokenAddress || poolInfo.address),
-      coins: augmentedCoins.map((coin) => ({
-        ...overrideSymbol(coin, blockchainId),
-        ...(typeof ethereumLSTAPYs[lc(coin.address)] !== 'undefined' ? {
-          ethLsdApy: ethereumLSTAPYs[lc(coin.address)],
-        } : {}),
-      })),
+      coins: augmentedCoins.map((coin) => {
+        const ethLsdApyData = ethereumLSTAPYs.find(({ lstAddress, blockchainId: lstBlockchainId }) => (
+          lstBlockchainId === blockchainId &&
+          lstAddress === lc(coin.address)
+        ));
+
+        return ({
+          ...overrideSymbol(coin, blockchainId),
+          ...(typeof ethLsdApyData !== 'undefined' ? { ethLsdApy: ethLsdApyData.stakingApy } : {}),
+        });
+      }),
       usdTotal,
       isMetaPool,
       basePoolAddress: (isMetaPool ? underlyingPool.address : undefined),

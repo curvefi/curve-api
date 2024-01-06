@@ -23,6 +23,8 @@ import getPoolListFn from '#root/routes/v1/getPoolList/[blockchainId].js';
 import getBaseApysFn from '#root/routes/v1/getBaseApys/[blockchainId].js';
 import { lc } from '#root/utils/String.js';
 import { sumBN } from '#root/utils/Array.js';
+import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
+import { uintToBN } from '#root/utils/Web3/index.js';
 
 // Note: keep the openapi description up to date when editing this array
 const AVAILABLE_CHAIN_IDS = [
@@ -49,13 +51,19 @@ export default fn(async ({ blockchainId }) => {
     { poolList: poolAddressesAndTypes },
     { data: poolData },
     { baseApys },
+    allPools,
   ] = await Promise.all([
     getPoolListFn.straightCall({ blockchainId }),
     (await fetch(`https://prices.curve.fi/v1/chains/${blockchainId}`)).json(),
     getBaseApysFn.straightCall({ blockchainId }),
+    getAllCurvePoolsData([blockchainId]),
   ]);
 
-  const pools = poolAddressesAndTypes.map(({ address, type }) => {
+  const getPoolByAddress = (address) => (
+    allPools.find((pool) => (lc(pool.address) === lc(address)))
+  );
+
+  const poolsWithoutLstApy = poolAddressesAndTypes.map(({ address, type }) => {
     const lcAddress = lc(address)
     const volumeData = poolData.find((data) => lc(data.address) === lcAddress);
 
@@ -89,6 +97,42 @@ export default fn(async ({ blockchainId }) => {
       virtualPrice,
     }
   }).filter((o) => o !== null);
+
+  /**
+  * Add additional ETH staking APY to pools containing ETH LSTs
+  */
+  const pools = poolsWithoutLstApy.map((pool) => {
+    const poolData = getPoolByAddress(pool.address);
+    if (!poolData) return pool; // Some broken/ignored pools might still be picked up
+
+    const { usesRateOracle, coins, usdTotal } = poolData;
+    const needsAdditionalLsdAssetApy = (
+      !usesRateOracle &&
+      coins.some(({ ethLsdApy }) => typeof ethLsdApy !== 'undefined')
+    );
+
+    if (!needsAdditionalLsdAssetApy || usdTotal === 0) return pool;
+
+    const additionalApysPcentFromLsds = coins.map(({
+      ethLsdApy,
+      poolBalance,
+      decimals,
+      usdPrice,
+    }) => {
+      if (typeof ethLsdApy === 'undefined' || usdPrice === null || usdPrice === 0) return 0;
+
+      const assetUsdTotal = uintToBN(poolBalance, decimals).times(usdPrice);
+      const assetProportionInPool = assetUsdTotal.div(usdTotal);
+
+      return assetProportionInPool.times(ethLsdApy).times(100);
+    });
+
+    return {
+      ...pool,
+      latestDailyApyPcent: BN(pool.latestDailyApyPcent).plus(sumBN(additionalApysPcentFromLsds)).toNumber(),
+      latestWeeklyApyPcent: BN(pool.latestWeeklyApyPcent).plus(sumBN(additionalApysPcentFromLsds)).toNumber(),
+    };
+  });
 
   const totalStableVolume = sumBN(pools.filter(({ type }) => !type.includes('crypto')).map(({ volumeUSD }) => volumeUSD));
   const totalCryptoVolume = sumBN(pools.filter(({ type }) => type.includes('crypto')).map(({ volumeUSD }) => volumeUSD));
