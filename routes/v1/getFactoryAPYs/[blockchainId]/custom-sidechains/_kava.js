@@ -10,6 +10,7 @@ import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js';
 import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
+import { multiCall } from '#root/utils/Calls.js';
 
 /**
  * The official rpc url evm.kava.io has trouble retrieving past pool virtual prices,
@@ -35,30 +36,29 @@ export default async ({ version }) => {
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
   let DAY_BLOCKS = 50
 
+  const currentVirtualPrices = await multiCall(poolData.map((pool) => ({
+    address: pool.address,
+    abi: factorypool3Abi,
+    methodName: 'get_virtual_price',
+    networkSettings: { web3, multicall2Address: config.multicall2Address },
+    superSettings: { fallbackValue: 1e18 },
+  })));
+  const oldVirtualPrices = await multiCall(poolData.map((pool) => ({
+    address: pool.address,
+    abi: factorypool3Abi,
+    methodName: 'get_virtual_price',
+    networkSettings: { web3, multicall2Address: config.multicall2Address, blockNumber: (latest - DAY_BLOCKS) },
+    superSettings: { fallbackValue: 1e18 },
+  })));
+
   await Promise.all(
     poolData.map(async (pool, index) => {
-
-      const poolContractForVpriceFetching = new web3NoArchival.eth.Contract(factorypool3Abi, pool.address)
       const poolContract = new web3.eth.Contract(factorypool3Abi, pool.address)
 
-      let vPriceOldFetch;
-      let vPriceOldFetchFailed = false;
-      let vPriceOldFetchFailedBecauseBlockPruned = false;
-
-      try {
-        vPriceOldFetch = await poolContractForVpriceFetching.methods.get_virtual_price().call('', latest - DAY_BLOCKS)
-      } catch (e) {
-        console.log('error', e, e.message)
-        vPriceOldFetchFailed = true;
-        vPriceOldFetch = 1 * (10 ** 18)
-
-        if (!e.message.includes('execution reverted')) vPriceOldFetchFailedBecauseBlockPruned = true;
-      }
       const eventName = 'TokenExchangeUnderlying';
       const eventName2 = 'TokenExchange';
 
 
-      // console.log(latest - DAY_BLOCKS, latest, 'blocks')
       const isMetaPool = (
         pool.implementation?.startsWith('v1metausd') ||
         pool.implementation?.startsWith('metausd') ||
@@ -101,15 +101,8 @@ export default async ({ version }) => {
       // we multiply the split volume accordingly
       const correctedVolume = volume * (DAY_BLOCKS_24H / DAY_BLOCKS);
 
-      let vPriceFetch
-      try {
-        vPriceFetch = await poolContractForVpriceFetching.methods.get_virtual_price().call()
-      } catch (e) {
-        vPriceFetch = 1 * (10 ** 18)
-      }
-
-      let vPrice = vPriceOldFetchFailed ? vPriceFetch : vPriceOldFetch
-      let vPriceNew = Math.max(vPriceFetch, vPrice) // since this legacy script makes individual calls and kava rpcs fail a lot, this protects against failures that can lead to negative apys
+      const vPriceNew = currentVirtualPrices[index];
+      const vPrice = oldVirtualPrices[index];
       let apy = (vPriceNew - vPrice) / vPrice * 100 * 365
       let apyFormatted = `${apy.toFixed(2)}%`
       totalVolume += correctedVolume
@@ -120,9 +113,9 @@ export default async ({ version }) => {
         'poolSymbol': pool.symbol,
         apyFormatted,
         apy,
-        'virtualPrice': vPriceFetch,
+        'virtualPrice': vPriceNew,
         volume: correctedVolume,
-        failedFetching24hOldVprice: vPriceOldFetchFailedBecauseBlockPruned,
+        failedFetching24hOldVprice: typeof oldVirtualPrices === 'undefined',
       }
       poolDetails.push(p)
     })
