@@ -1239,7 +1239,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
               poolInfo: { id: poolInfo.id }, // Passing a subset of poolInfo to avoid hitting other derivation methods for this very specific use-case
               otherPools: (
                 wipMergedPoolData
-                  .concat({ coins: augmentedCoins }) // Attach this pool's own augmented coins
+                  .concat({ coins: augmentedCoins, usdTotal }) // Attach this pool's own augmented coins
               ),
               internalPoolPrices: internalPoolsPrices[poolInfo.id] || [], //
               mainRegistryLpTokensPricesMap, //

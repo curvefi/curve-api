@@ -378,6 +378,11 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     metaData: { poolAddress },
   }) => {
     const pool = getPoolByAddress(poolAddress, 'ethereum');
+    if (!pool) {
+      if (IS_DEV) console.log('MISSING POOL:', poolAddress)
+      return null;
+    }
+
     const name = getPoolName(pool);
     const shortName = getPoolShortName(pool);
     const rawData = arrayToHashmap(nonVotedGaugesEthereumDataRaw.filter(({ metaData }) => lc(metaData.gaugeAddress) === lc(address)).map(({ data, metaData: { type } }) => [
@@ -411,7 +416,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
       type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
       lpTokenPrice: (pool.usdTotal / (pool.totalSupply / 1e18)),
     }];
-  }));
+  }).filter((o) => o !== null));
 
   /**
    * Step 3: Retrieve sidechain factory gauges
@@ -456,6 +461,11 @@ const getAllGauges = fn(async ({ blockchainId }) => {
         }) => {
           const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
           const name = getPoolName(pool);
+          if (!pool) {
+            if (IS_DEV) console.log('MISSING POOL:', poolAddress)
+            return null;
+          }
+
           const shortName = getPoolShortName(pool);
 
           const isSupersededByOtherGauge = blockchainFactoGauges.some((factoGauge) => (
