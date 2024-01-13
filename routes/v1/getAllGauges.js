@@ -327,7 +327,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
    * but have been deployed (they're in the metaregistry).
    */
   const META_REGISTRY_ADDRESS = '0xF98B45FA17DE75FB1aD0e7aFD971b0ca00e379fC';
-  const allGaugesEthereum = await multiCall(allPools.map(({ address }) => ({
+  const allGaugesEthereumMetaregistry = await multiCall(allPools.map(({ address }) => ({
     address: META_REGISTRY_ADDRESS,
     abi: META_REGISTRY_ABI,
     methodName: 'get_gauge',
@@ -336,7 +336,17 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     web3Data,
   })));
 
-  const nonVotedGaugesEthereum = allGaugesEthereum.filter(({ data }) => (
+  const stableNgFactoAddress = await configs.ethereum.getFactoryStableswapNgRegistryAddress();
+  const allGaugesEthereumStableNgFacto = await multiCall(allPools.map(({ address }) => ({
+    address: stableNgFactoAddress,
+    abi: META_REGISTRY_ABI,
+    methodName: 'get_gauge',
+    params: [address],
+    metaData: { poolAddress: address },
+    web3Data,
+  })));
+
+  const nonVotedGaugesEthereum = [...allGaugesEthereumMetaregistry, ...allGaugesEthereumStableNgFacto].filter(({ data }) => (
     data !== ZERO_ADDRESS &&
     !gaugesData.some(({ address }) => lc(address) === lc(data))
   ));
