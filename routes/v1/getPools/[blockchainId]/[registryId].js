@@ -806,8 +806,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     );
 
     eywaTokensAddressesAndPricesMapFallback = (
-      (blockchainId === 'fantom' && registryId === 'factory-eywa') ?
-        await getEywaTokenPrices(networkSettingsParam, blockchainId, coinAddressesAndPricesMapFallback, allCoinAddresses) :
+      (blockchainId === 'fantom' && (registryId === 'factory-eywa' || registryId === 'factory-stable-ng')) ?
+        await getEywaTokenPrices(allCoinAddresses, registryId) :
         {}
     );
   } else {
