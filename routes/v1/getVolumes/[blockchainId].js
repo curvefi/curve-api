@@ -8,7 +8,7 @@
  *       Returns all 24h volume and base APY data for Curve pools on each chain.
  *       It relies on the [Curve Prices API](https://prices.curve.fi/feeds-docs), and is meant as a more reliable replacement to the [`getSubgraphData/[blockchainId]`](#/default/get_getSubgraphData__blockchainId_) endpoints.
  *
- *       Note: Not all chains are currently available on the Curve Prices API. Currently available chains: `ethereum | polygon | arbitrum | base`
+ *       Note: Not all chains are currently available on the Curve Prices API. Currently available chains: `ethereum | polygon | arbitrum | base | optimism | fantom`
  *     parameters:
  *       - $ref: '#/components/parameters/blockchainId'
  *     responses:
@@ -23,8 +23,6 @@ import getPoolListFn from '#root/routes/v1/getPoolList/[blockchainId].js';
 import getBaseApysFn from '#root/routes/v1/getBaseApys/[blockchainId].js';
 import { lc } from '#root/utils/String.js';
 import { sumBN } from '#root/utils/Array.js';
-import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
-import { uintToBN } from '#root/utils/Web3/index.js';
 
 // Note: keep the openapi description up to date when editing this array
 const AVAILABLE_CHAIN_IDS = [
@@ -32,6 +30,8 @@ const AVAILABLE_CHAIN_IDS = [
   'polygon',
   'arbitrum',
   'base',
+  'optimism',
+  'fantom',
 ];
 
 const DEFAULT_VOLUME_DATA = {
