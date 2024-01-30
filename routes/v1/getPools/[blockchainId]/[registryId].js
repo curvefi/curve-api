@@ -50,6 +50,7 @@ import getYcTokenPrices from '#root/utils/data/getYcTokenPrices.js';
 import getCrvusdPrice from '#root/utils/data/getCrvusdPrice.js';
 import getETHLSTAPYs from '#root/utils/data/getETHLSTAPYs.js';
 import getTempleTokenPrices from '#root/utils/data/getTempleTokenPrices.js';
+import getSynthetixTokenPrices from '#root/utils/data/getSynthetixTokenPrices.js';
 import getEywaTokenPrices from '#root/utils/data/getEywaTokenPrices.js';
 import getMainRegistryPoolsFn from '#root/routes/v1/getMainRegistryPools.js';
 import getMainRegistryPoolsAndLpTokensFn from '#root/routes/v1/getMainRegistryPoolsAndLpTokens.js';
@@ -99,12 +100,6 @@ const IGNORED_COINS = {
 // Tokens for which to use Defillama as external price oracle
 const EXTERNAL_ORACLE_COINS_ADDRESSES = {
   ethereum: [
-    '0x269895a3df4d73b077fc823dd6da1b95f72aaf9b', // sKRW (no curve crypto pool to act as oracle)
-    '0x5555f75e3d5278082200fb451d1b6ba946d8e13b', // ibJPY (no curve crypto pool to act as oracle)
-    '0xF6b1C627e95BFc3c1b4c9B825a032Ff0fBf3e07d', // sJPY (no curve crypto pool to act as oracle)
-    '0xF48e200EAF9906362BB1442fca31e0835773b8B4', // sAUD (no curve crypto pool to act as oracle)
-    '0x97fe22E7341a0Cd8Db6F6C021A24Dc8f4DAD855F', // sGBP (no curve crypto pool to act as oracle)
-    '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d', // sCHF (no curve crypto pool to act as oracle)
     '0xc2544a32872a91f4a553b404c6950e89de901fdb', // FPIS (no liquid curve crypto pool to act as oracle)
     '0xa0d69e286b938e21cbf7e51d71f6a4c8918f482f', // eUSD (no curve crypto pool to act as oracle)
     '0x530824da86689c9c17cdc2871ff29b058345b44a', // sTBT (curve crypto pool that has precedence has low liq)
@@ -748,6 +743,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   let crvusdTokenAddresseAndPriceMapFallback;
   let ycTokensAddressesAndPricesMapFallback;
   let templeTokensAddressesAndPricesMapFallback;
+  let synthetixTokensAddressesAndPricesMapFallback;
   let eywaTokensAddressesAndPricesMapFallback;
   let curvePrices;
   if (!USE_CURVE_PRICES_DATA) {
@@ -802,6 +798,12 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     templeTokensAddressesAndPricesMapFallback = (
       (blockchainId === 'ethereum' && registryId === 'factory') ?
         await getTempleTokenPrices(networkSettingsParam, blockchainId, coinAddressesAndPricesMapFallback) :
+        {}
+    );
+
+    synthetixTokensAddressesAndPricesMapFallback = (
+      (blockchainId === 'ethereum') ?
+        await getSynthetixTokenPrices(networkSettingsParam) :
         {}
     );
 
@@ -904,6 +906,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
             coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
             ycTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
             templeTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
+            synthetixTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
             eywaTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
             (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) || //
             null
