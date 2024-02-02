@@ -49,6 +49,7 @@ import getTokensPrices from '#root/utils/data/tokens-prices.js';
 import getYcTokenPrices from '#root/utils/data/getYcTokenPrices.js';
 import getCrvusdPrice from '#root/utils/data/getCrvusdPrice.js';
 import getETHLSTAPYs from '#root/utils/data/getETHLSTAPYs.js';
+import getDaiAPYs from '#root/utils/data/getDaiAPYs.js';
 import getTempleTokenPrices from '#root/utils/data/getTempleTokenPrices.js';
 import getSynthetixTokenPrices from '#root/utils/data/getSynthetixTokenPrices.js';
 import getEywaTokenPrices from '#root/utils/data/getEywaTokenPrices.js';
@@ -1273,7 +1274,13 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     * call returns default value of zero) and non-zero
     */
     const usesRateOracle = Number(poolInfo.oracleMethod) !== 0;
-    const ethereumLSTAPYs = await getETHLSTAPYs();
+    const [
+      ethereumLSTAPYs,
+      ethereumDaiAPYs,
+    ] = await Promise.all([
+      getETHLSTAPYs(),
+      getDaiAPYs(),
+    ]);
 
     if (isMetaPool && typeof underlyingPool === 'undefined') {
       throw new Error(`Pool ${poolInfo.address} is a meta pool, yet we couldn’t retrieve its underlying pool. Please check METAPOOL_REGISTRIES_DEPENDENCIES, its base pool’s registry is likely missing.`)
@@ -1288,10 +1295,12 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           lstBlockchainId === blockchainId &&
           lstAddress === lc(coin.address)
         ));
+        const ethDaiApyData = ethereumDaiAPYs.find(({ address }) => address === lc(coin.address));
 
         return ({
           ...overrideSymbol(coin, blockchainId),
           ...(typeof ethLsdApyData !== 'undefined' ? { ethLsdApy: ethLsdApyData.stakingApy } : {}),
+          ...(typeof ethDaiApyData !== 'undefined' ? { ethLsdApy: ethDaiApyData.apy } : {}), // Stuffed in the same prop as LSTs apys
         });
       }),
       usdTotal,
