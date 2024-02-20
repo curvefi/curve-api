@@ -13,7 +13,8 @@
     "metabtc-sbtc2": "0xa2d40edbf76c6c0701ba8899e2d059798eba628e",
     "metabtcbalances-sbtc2": "0xa2d40edbf76c6c0701ba8899e2d059798eba628e",
     "metacrypto": "0x5de4ef4879f4fe3bbadf2227d2ac5d0e2d76c895",
-    "metacrypto-3pool": "0x97adc08fa1d849d2c48c5dcc1dab568b169b0267"
+    "metacrypto-3pool": "0x97adc08fa1d849d2c48c5dcc1dab568b169b0267",
+    "metausdstableng2": "0xe07a16358aa878cbda2d49a88e5106871e0db307"
   },
   "pools": {
     "0xa2b47e3d5c44877cca798226b7b8118f9bfb7a56": "0xeb21209ae4c2c9ff2a86aca31e123764a3b6bc06",

@@ -38,6 +38,8 @@ const DEFAULT_VOLUME_DATA = {
   trading_volume_24h: 0,
   liquidity_volume_24h: 0,
   virtual_price: null, // The fact that this pool isn't indexed by curve-prices doesn't imply its vprice is 1e18, so there's no accurate fallback data available
+  base_daily_apr: undefined,
+  base_weekly_apr: undefined,
 };
 
 export default fn(async ({ blockchainId }) => {
@@ -66,29 +68,37 @@ export default fn(async ({ blockchainId }) => {
       trading_volume_24h: tradingVolume,
       // liquidity_volume_24h: liquidityVolume, // Unused atm
       virtual_price: virtualPrice,
+      base_daily_apr: dailyApyWithoutLSTApr, // Named "apr" but it's an apy (and it's a rate, not pcent)
+      base_weekly_apr: weeklyApyWithoutLSTApr, // Named "apr" but it's an apy (and it's a rate, not pcent)
     } = (volumeData || DEFAULT_VOLUME_DATA);
 
     // Some pools aren't indexed by curve-prices, simply because they haven’t registered any trades recently.
     // However this doesn't mean that their APR is null, as e.g. their deposits can be in deposit pools for
     // lending pools. This falls back to freshly-fetched APYs for these pools.
     const poolBaseApys = baseApys.find((pool) => lc(address) === lc(pool.address));
-    const latestDailyApy = (
+    const additionalApyFromLsts = (
+      (typeof poolBaseApys === 'undefined' || !poolBaseApys.additionalApyPcentFromLsts) ?
+        BN(0) :
+        BN(poolBaseApys.additionalApyPcentFromLsts).div(100)
+    );
+    const latestDailyApyFromApi = (
       (typeof poolBaseApys === 'undefined' || poolBaseApys.latestDailyApyPcent === null) ?
         BN(0) :
-        BN(poolBaseApys.latestDailyApyPcent).div(100)
+        BN(poolBaseApys.latestDailyApyPcent).div(100).minus(additionalApyFromLsts) // Already included, normalize by removing it
     );
-    const latestWeeklyApy = (
+    const latestWeeklyApyFromApi = (
       (typeof poolBaseApys === 'undefined' || poolBaseApys.latestWeeklyApyPcent === null) ?
         BN(0) :
-        BN(poolBaseApys.latestWeeklyApyPcent).div(100)
+        BN(poolBaseApys.latestWeeklyApyPcent).div(100).minus(additionalApyFromLsts) // Already included, normalize by removing it
     );
 
     return {
       address,
       type,
       volumeUSD: BN(tradingVolume).dp(2).toNumber() ?? 0, // Excluding liquidityVolume for consistency for now, may add it later
-      latestDailyApyPcent: BN(latestDailyApy).times(100).dp(2).toNumber(),
-      latestWeeklyApyPcent: BN(latestWeeklyApy).times(100).dp(2).toNumber(),
+      latestDailyApyPcent: BN(dailyApyWithoutLSTApr ?? latestDailyApyFromApi).plus(additionalApyFromLsts).times(100).dp(2).toNumber(),
+      latestWeeklyApyPcent: BN(weeklyApyWithoutLSTApr ?? latestWeeklyApyFromApi).plus(additionalApyFromLsts).times(100).dp(2).toNumber(),
+      includedApyPcentFromLsts: additionalApyFromLsts.times(100).dp(2).toNumber(),
       virtualPrice,
     }
   }).filter((o) => o !== null);

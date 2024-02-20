@@ -126,6 +126,7 @@ export default fn(async ({ blockchainId }) => {
 
     let latestDailyApyPcent;
     let latestWeeklyApyPcent;
+    let additionalApyPcentFromLsts;
 
     /**
     * Calculate base daily and weekly apys
@@ -180,7 +181,7 @@ export default fn(async ({ blockchainId }) => {
     );
 
     if (needsAdditionalLsdAssetApy && usdTotal > 0) {
-      const additionalApysPcentFromLsds = coins.map(({
+      additionalApyPcentFromLsts = sumBN(coins.map(({
         ethLsdApy,
         poolBalance,
         decimals,
@@ -192,16 +193,17 @@ export default fn(async ({ blockchainId }) => {
         const assetProportionInPool = assetUsdTotal.div(usdTotal);
 
         return assetProportionInPool.times(ethLsdApy).times(100);
-      });
+      }));
 
-      latestDailyApyPcent = BN(latestDailyApyPcent).plus(sumBN(additionalApysPcentFromLsds));
-      latestWeeklyApyPcent = BN(latestWeeklyApyPcent).plus(sumBN(additionalApysPcentFromLsds));
+      latestDailyApyPcent = BN(latestDailyApyPcent).plus(additionalApyPcentFromLsts);
+      latestWeeklyApyPcent = BN(latestWeeklyApyPcent).plus(additionalApyPcentFromLsts);
     }
 
     return {
       address: pool.address,
       latestDailyApyPcent: BN(latestDailyApyPcent).dp(2).toNumber(),
       latestWeeklyApyPcent: BN(latestWeeklyApyPcent).dp(2).toNumber(),
+      additionalApyPcentFromLsts: BN(additionalApyPcentFromLsts).dp(2).toNumber(),
     };
   }).filter((o) => o !== null);
 
