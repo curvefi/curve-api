@@ -937,9 +937,14 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
                 { [type]: data }
       ),
       ...(isNativeEth ? hardcodedInfoForNativeEth : {}),
-      isBasePoolLpToken: mainRegistryPoolsAndLpTokens.some(({ lpTokenAddress }) => (
-        lpTokenAddress.toLowerCase() === coinAddress.toLowerCase()
-      )),
+      isBasePoolLpToken: (
+        mainRegistryPoolsAndLpTokens.some(({ lpTokenAddress }) => (
+          lpTokenAddress.toLowerCase() === coinAddress.toLowerCase()
+        )) ||
+        // Find lp tokens in same registry (for pools with separate lp token and not)
+        poolAddresses.some((poolAddress) => lc(poolAddress) === lc(coinAddress)) ||
+        lpTokensWithMetadata.some(({ data: lpTokenAddress }) => lc(lpTokenAddress) === lc(coinAddress))
+      ),
     };
 
     return accu;
