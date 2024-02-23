@@ -11,6 +11,7 @@ const CRVUSD_ADDRESSES = {
   arbitrum: lc('0x498bf2b1e120fed3ad3d42ea2165e9b73f99c1e5'),
   xdai: lc('0xaBEf652195F98A91E490f047A5006B71c85f058d'),
   optimism: lc('0xc52d7f23a2e460248db6ee192cb23dd12bddcbf6'),
+  polygon: lc('0xc4ce1d6f5d98d65ee25cf85e9f2e9dcfee6cb5d6'),
 };
 
 const AGGREGATOR_STABLE_PRICE_ADDRESS = '0x18672b1b0c623a30089A280Ed9256379fb0E4E62';
