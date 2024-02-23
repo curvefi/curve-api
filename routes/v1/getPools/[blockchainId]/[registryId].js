@@ -41,7 +41,7 @@ import erc20AbiMKR from '#root/constants/abis/erc20_mkr.json' assert { type: 'js
 import { multiCall } from '#root/utils/Calls.js';
 import getPlatformRegistries from '#root/utils/data/curve-platform-registries.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
-import { flattenArray, sum, arrayToHashmap, uniq } from '#root/utils/Array.js';
+import { flattenArray, sum, arrayToHashmap, uniq, arrayOfIncrements } from '#root/utils/Array.js';
 import { sequentialPromiseReduce, sequentialPromiseFlatMap, sequentialPromiseMap } from '#root/utils/Async.js';
 import { getRegistry } from '#root/utils/getters.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
@@ -331,6 +331,28 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       { networkSettings: { web3, multicall2Address } } :
       undefined
   );
+
+  // Retrieve base pools if any
+  let basePoolAddresses = [];
+  const registrySupportsBasePools = REGISTRY_ABI.some(({ name }) => name === 'base_pool_count');
+
+  if (registrySupportsBasePools) {
+    const [basePoolCount] = await multiCall([{
+      contract: registry,
+      methodName: 'base_pool_count',
+      ...networkSettingsParam,
+    }]);
+
+    if (basePoolCount > 0) {
+      const basePoolIds = arrayOfIncrements(basePoolCount);
+      basePoolAddresses = (await multiCall(basePoolIds.map((id) => ({
+        contract: registry,
+        methodName: 'base_pool_list',
+        params: [id],
+        ...networkSettingsParam,
+      })))).map(lc);
+    }
+  }
 
   const {
     [allCoins.crv.coingeckoId]: crvPrice,
@@ -941,9 +963,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         mainRegistryPoolsAndLpTokens.some(({ lpTokenAddress }) => (
           lpTokenAddress.toLowerCase() === coinAddress.toLowerCase()
         )) ||
-        // Find lp tokens in same registry (for pools with separate lp token and not)
-        poolAddresses.some((poolAddress) => lc(poolAddress) === lc(coinAddress)) ||
-        lpTokensWithMetadata.some(({ data: lpTokenAddress }) => lc(lpTokenAddress) === lc(coinAddress))
+        basePoolAddresses.includes(lc(coinAddress))
       ),
     };
 
