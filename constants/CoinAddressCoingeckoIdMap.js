@@ -52,7 +52,8 @@ const CoinAddressCoingeckoIdMap = {
   },
   polygon: {
     '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063': 'dai', // DAI
-    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174': 'usd-coin', // USDC
+    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174': 'usd-coin', // USDC.e
+    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359': 'usd-coin', // USDC
     '0xc2132D05D31c914a87C6611C10748AEb04B58e8F': 'tether', // USDT
     '0x1a13F4Ca1d028320A707D99520AbFefca3998b7F': 'usd-coin', // amUSDC
     '0x9719d867a500ef117cc201206b8ab51e794d3f82': 'matic-aave-usdc', // maUSDC
