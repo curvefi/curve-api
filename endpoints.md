@@ -38,7 +38,20 @@ GET /api/getPools/<blockchainId>/<registryId>
 **Parameters:**
 
 - `blockchainId`: blockchain id where Curve pools are deployed
-- `registryId`: registry id where Curve pools are deployed (`'main'|'crypto'|'factory'|'factory-crypto'`)
+- `registryId`: registry id where Curve pools are deployed
+
+Possible values for `registryId` are:
+
+| value               | description                    |
+|---------------------|--------------------------------|
+| `main`              | non-factory stableswap pools   |
+| `crypto`            | non-factory cryptoswap pools   |
+| `factory`           | stableswap factory pools       |
+| `factory-crypto`    | 2coin cryptoswap factory pools |
+| `factory-crvusd`    | crvUSD stableswap factory pools|
+| `factory-tricrypto` | tricrypto factory pools        |
+| `factory-stable-ng` | stableswap-NG factory pools    |
+
 
 **View**:
 
