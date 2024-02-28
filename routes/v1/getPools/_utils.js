@@ -16,7 +16,7 @@ const getImplementation = ({
     // zap to ease interactions with underlyings.
     config.factoryCryptoMetaBasePoolLpTokenAddressMap?.get(poolInfo.coinsAddresses.find((address) => config.factoryCryptoMetaBasePoolLpTokenAddressMap?.has(address.toLowerCase()))?.toLowerCase()) || ''
   ) : (registryId === 'factory' || registryId === 'factory-tricrypto' || registryId === 'factory-twocrypto' || registryId === 'factory-stable-ng') ? (
-    (implementationAddressMap.get(poolInfo.implementationAddress.toLowerCase()) || '')
+    (implementationAddressMap.get(poolInfo.implementationAddress?.toLowerCase()) || '')
   ) : ''
 );
 
