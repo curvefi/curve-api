@@ -626,6 +626,33 @@ const configs = {
     approxBlocksPerDay: 43000, // Very approx from list of blocks on https://basescan.org/blocks
     graphEndpoint: undefined, // Not supported by TheGraph's hosted service https://thegraph.com/docs/en/developing/supported-networks/
   },
+  fraxtal: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: 'https://curve.fi/#/fraxtal/pools/',
+    shortId: 'fraxtal',
+    nativeCurrencySymbol: 'frxETH',
+    chainId: 252,
+    nativeCurrencyCoingeckoId: 'frax-ether',
+    platformCoingeckoId: 'fraxtal', // Not on Coingecko yet, but likely to be this id
+    nativeAssetErc20WrapperId: 'frax-ether', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://rpc.frax.com',
+    multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
+    multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
+    getFactoryTricryptoRegistryAddress: async () => '0xc9Fe0C63Af9A39402e8a5514f9c43Af0322b665F',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    getFactoryStableswapNgRegistryAddress: async () => '0xd2002373543Ce3527023C75e7518C274A51ce712',
+    factoryImplementationAddressMap: new Map([
+      ['0x1764ee18e8B3ccA4787249Ceb249356192594585'.toLowerCase(), 'plainstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
+      ['0xd3B17f862956464ae4403cCF829CE69199856e1e'.toLowerCase(), 'tricrypto-optimized-weth'],
+      ['0x1A83348F9cCFD3Fe1A8C0adBa580Ac4e267Fe495'.toLowerCase(), 'tricrypto-optimized'],
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    approxBlocksPerDay: 43000, // Very approx from list of blocks on https://fraxscan.com/blocks
+    graphEndpoint: undefined, // Not supported by TheGraph's hosted service https://thegraph.com/docs/en/developing/supported-networks/
+  },
   bsc: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,

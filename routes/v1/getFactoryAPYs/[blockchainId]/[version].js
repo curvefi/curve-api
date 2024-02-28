@@ -14,7 +14,7 @@
  *         required: true
  *         schema:
  *           type: string
- *           enum: [bsc, kava, zkevm, zksync]
+ *           enum: [bsc, kava, zkevm, zksync, fraxtal]
  *       - in: path
  *         name: version
  *         required: true
@@ -48,6 +48,7 @@ const SIDECHAINS_WITH_CUSTOM_SUPPORT = [
   'kava',
   'zkevm',
   'zksync',
+  'fraxtal',
 ];
 
 export default fn(async ({ blockchainId, version }) => {

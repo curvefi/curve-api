@@ -7,7 +7,7 @@
  *     description: |
  *       Returns all base APY data for Curve pools on each chain.
  *
- *       Note: [`/getVolumes/{blockchainId}`](#/default/get_getVolumes__blockchainId_) and [`getSubgraphData/[blockchainId]`](#/default/get_getSubgraphData__blockchainId_) also return base APY data for Curve pools (in addition to their 24h volume). However, they do not include underlying LSTs' own APYs (when a pool contains an LST) into their base APYs, which is often a desirable information to display in front-ends, hence the existence of `/getBaseApys/{blockchainId}`.
+ *       Note: [`/getVolumes/{blockchainId}`](#/default/get_getVolumes__blockchainId_) is preferred
  *     parameters:
  *       - $ref: '#/components/parameters/blockchainId'
  *     responses:

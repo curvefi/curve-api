@@ -11,12 +11,12 @@ import configs from '#root/constants/configs/index.js';
 import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 
-const web3 = new Web3(configs.zksync.rpcUrl);
+const web3 = new Web3(configs.fraxtal.rpcUrl);
 
 export default async ({ version }) => {
-  const config = configs.zksync;
+  const config = configs.fraxtal;
 
-  const poolData = (await getAllCurvePoolsData(['zksync'])).filter(({ registryId }) => (
+  const poolData = (await getAllCurvePoolsData(['fraxtal'])).filter(({ registryId }) => (
     version === 'crypto' ?
       registryId.endsWith('crypto') :
       !registryId.endsWith('crypto')
