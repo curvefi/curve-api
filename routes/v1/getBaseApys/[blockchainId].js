@@ -27,6 +27,7 @@ import { getNowTimestamp } from '#root/utils/Date.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
 import factorypool3BaseTricryptoAbi from '#root/constants/abis/factory_tricrypto_swap.json' assert { type: 'json' };
+import factorypool3BaseTwocryptoAbi from '#root/constants/abis/factory-twocrypto/pool.json' assert { type: 'json' };
 import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.json' assert { type: 'json' };
 import { uintToBN } from '#root/utils/Web3/index.js';
 import { lc } from '#root/utils/String.js';
@@ -71,8 +72,9 @@ export default fn(async ({ blockchainId }) => {
     groupBy(await multiCall(flattenArray(allPools.map((pool) => {
       const poolAbi = (
         pool.registryId === 'factory-tricrypto' ? factorypool3BaseTricryptoAbi :
-          pool.registryId.includes('crypto') ? factorypool3BaseCryptoAbi :
-            factorypool3Abi
+          pool.registryId === 'factory-twocrypto' ? factorypool3BaseTwocryptoAbi :
+            pool.registryId.includes('crypto') ? factorypool3BaseCryptoAbi :
+              factorypool3Abi
       );
 
       return [

@@ -11,6 +11,7 @@ import configs from '#root/constants/configs/index.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
 import factorypool3BaseTricryptoAbi from '#root/constants/abis/factory_tricrypto_swap.json' assert { type: 'json' };
+import factorypool3BaseTwocryptoAbi from '#root/constants/abis/factory-twocrypto/pool.json' assert { type: 'json' };
 import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.json' assert { type: 'json' };
 import groupBy from 'lodash.groupby';
 import { multiCall } from '#root/utils/Calls.js';
@@ -43,8 +44,9 @@ export default async ({ version }) => {
 
       const poolAbi = (
         pool.registryId === 'factory-tricrypto' ? factorypool3BaseTricryptoAbi :
-          pool.registryId === 'factory-crypto' ? factorypool3BaseCryptoAbi :
-            factorypool3Abi
+          pool.registryId === 'factory-twocrypto' ? factorypool3BaseTwocryptoAbi :
+            pool.registryId === 'factory-crypto' ? factorypool3BaseCryptoAbi :
+              factorypool3Abi
       );
       let poolContract = new web3.eth.Contract(poolAbi, pool.address)
 
@@ -52,6 +54,7 @@ export default async ({ version }) => {
 
       const isCryptoPool = (
         pool.registryId === 'factory-tricrypto' ||
+        pool.registryId === 'factory-twocrypto' ||
         pool.registryId === 'factory-crypto'
       );
 
@@ -171,7 +174,7 @@ export default async ({ version }) => {
       let volume = 0;
       let volumeUsd = 0;
 
-      if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-crypto') {
+      if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-twocrypto' && pool.registryId !== 'factory-crypto') {
         let events = await poolContract.getPastEvents(eventName, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
           fromBlock: oneDayOldBlockNumber,
@@ -201,7 +204,7 @@ export default async ({ version }) => {
         })
       }
 
-      if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-crypto') {
+      if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-twocrypto' && pool.registryId !== 'factory-crypto') {
         let events2 = await poolContract.getPastEvents(eventName2, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
           fromBlock: oneDayOldBlockNumber,

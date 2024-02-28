@@ -13,6 +13,7 @@ const allRegistryIds = [
   'crypto',
   'factory-crypto',
   'factory-crvusd',
+  'factory-twocrypto',
   'factory-tricrypto',
   'factory-eywa',
   'factory-stable-ng',

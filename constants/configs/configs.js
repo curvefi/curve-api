@@ -49,6 +49,7 @@ const configs = {
       ['0x5F890841f657d90E081bAbdB532A05996Af79Fe6'.toLowerCase(), 'v1metausd'],
       ['0x2f956eee002b0debd468cf2e0490d1aec65e027f'.toLowerCase(), 'v1metabtc'],
       ['0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f'.toLowerCase(), 'tricrypto-1'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
       ['0x1f7C86AffE5bCF7a1D74a8c8E2ef9E03BF31c1BD'.toLowerCase(), 'metausdstableng'],
       ['0xDCc91f930b42619377C200BA05b7513f2958b202'.toLowerCase(), 'plainstableng'],
       ['0xede71F77d7c900dCA5892720E76316C6E575F0F7'.toLowerCase(), 'metausdstableng2'],
@@ -61,6 +62,7 @@ const configs = {
     getFactoryCrvusdRegistryAddress: async () => '0x4F8846Ae9380B90d2E71D5e3D042dff3E7ebb40d',
     getFactoryTricryptoRegistryAddress: async () => '0x0c0e5f2ff0ff18a3be9b835635039256dc4b4963',
     getFactoryStableswapNgRegistryAddress: async () => '0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     graphEndpoint: `https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet`,
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     BROKEN_POOLS_ADDRESSES: [
@@ -88,6 +90,7 @@ const configs = {
     getCryptoRegistryAddress: async () => '0x47bB542B9dE58b970bA50c9dae444DDB4c16751a',
     getFactoryCryptoRegistryAddress: async () => '0xE5De15A9C9bBedb4F5EC13B131E61245f2983A69',
     getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
       ['0x571FF5b7b346F706aa48d696a9a4a288e9Bb4091'.toLowerCase(), 'plain2basic'],
       ['0x8925D9d9B4569D737a48499DeF3f67BaA5a144b9'.toLowerCase(), 'plain2balances'],
@@ -108,6 +111,7 @@ const configs = {
       ['0x5bcA7dDF1bcccB2eE8e46c56bfc9d3CDC77262bC'.toLowerCase(), 'crypto'],
       ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
       ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     factoryCryptoMetaBasePoolLpTokenAddressMap: new Map([
       ['0xdAD97F7713Ae9437fa9249920eC8507e5FbB23d3'.toLowerCase(), 'metacrypto'],
@@ -147,6 +151,7 @@ const configs = {
     getFactoryCryptoRegistryAddress: async () => '0xE5De15A9C9bBedb4F5EC13B131E61245f2983A69',
     getFactoryEywaRegistryAddress: async () => '0x37f22a0b028f2152e6cacef210e0c4d3b875f367',
     getFactoryStableswapNgRegistryAddress: async () => '0xe61Fb97Ef6eBFBa12B36Ffd7be785c1F5A2DE66b',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
       ['0x61E10659fe3aa93d036d099405224E4Ac24996d0'.toLowerCase(), 'plain2basic'],
       ['0xd9Acb0BAeeD77C99305017821167674Cc7e82f7a'.toLowerCase(), 'plain2balances'],
@@ -168,6 +173,7 @@ const configs = {
       ['0xf82162bb68ad5a168345bb7efb2faa0edcca5177'.toLowerCase(), 'metausdbalances-geist'],
       ['0x5702BDB1Ec244704E3cBBaAE11a0275aE5b07499'.toLowerCase(), 'plainstableng'],
       ['0x046207cB759F527b6c10C2D61DBaca45513685CC'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x27e611fd27b276acbd5ffd632e5eaebec9761e40', '0x8866414733F22295b7563f9C5299715D2D76CAf4'], // meta usd
@@ -191,6 +197,7 @@ const configs = {
     multicallAddress: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     multicall2Address: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     getFactoryTricryptoRegistryAddress: async () => '0xbC0797015fcFc47d9C1856639CaE50D0e69FbEE8',
     getCryptoRegistryAddress: async () => '0x0E9fBb167DF83EdE3240D6a5fa5d40c6C6851e15',
     getFactoryStableswapNgRegistryAddress: async () => '0x9AF14D26075f142eb3F292D5065EB3faa646167b',
@@ -217,6 +224,7 @@ const configs = {
       ['0xd7E72f3615aa65b92A4DBdC211E296a35512988B'.toLowerCase(), 'tricrypto-1'],
       ['0xf6841C27fe35ED7069189aFD5b81513578AFD7FF'.toLowerCase(), 'plainstableng'],
       ['0xFf02cBD91F57A778Bab7218DA562594a680B8B61'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x7f90122bf0700f9e7e1f688fe926940e8839f353', '0xbF7E49483881C76487b0989CD7d9A8239B20CA41'], // meta usd
@@ -240,6 +248,7 @@ const configs = {
     getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
     getCryptoRegistryAddress: async () => '0x90f421832199e93d01b64DaF378b183809EB0988',
     getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
       ['0x697434ca761d4f86b553784b69f4f37f5edf54df'.toLowerCase(), 'plain2basic'],
       ['0xbdff0c27dd073c119ebcb1299a68a6a92ae607f0'.toLowerCase(), 'plain2balances'],
@@ -259,6 +268,7 @@ const configs = {
       ['0x505C34ED8dBE96d2D5C7D83158aA844887770970'.toLowerCase(), 'metabtcbalances'],
       ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
       ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
       ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // meta usd
@@ -289,6 +299,7 @@ const configs = {
     getFactoryRegistryAddress: async () => '0x2db0E83599a91b508Ac268a6197b8B14F5e72840',
     getCryptoRegistryAddress: async () => '0x7DA64233Fefb352f8F501B357c018158ED8aA455',
     getFactoryStableswapNgRegistryAddress: async () => '0x5eeE3091f747E60a045a2E715a4c71e600e31F6E',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
       ['0xC2b1DF84112619D190193E48148000e3990Bf627'.toLowerCase(), 'plain2basic'],
       ['0x16a7DA911A4DD1d83F3fF066fE28F3C792C50d90'.toLowerCase(), 'plain2balances'],
@@ -308,6 +319,7 @@ const configs = {
       ['0x114C4042B11a2b16F58Fe1BFe847589a122F678a'.toLowerCase(), 'metausdbalances-factory-v2-16'],
       ['0x635742dCC8313DCf8c904206037d962c042EAfBd'.toLowerCase(), 'plainstableng'],
       ['0x5702BDB1Ec244704E3cBBaAE11a0275aE5b07499'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([
     //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
@@ -333,6 +345,7 @@ const configs = {
     getFactoryRegistryAddress: async () => '0xD19Baeadc667Cf2015e395f2B08668Ef120f41F5',
     getCryptoRegistryAddress: async () => '0x8A4694401bE8F8FCCbC542a3219aF1591f87CE17',
     getFactoryStableswapNgRegistryAddress: async () => '0xbC0797015fcFc47d9C1856639CaE50D0e69FbEE8',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
       ['0x04e39EF8332e979Cf8e4f8891E64934FF65F231b'.toLowerCase(), 'plain2basic'],
       ['0xC9438d8928486bD9621D326002F4672bF684187A'.toLowerCase(), 'plain2balances'],
@@ -350,6 +363,7 @@ const configs = {
       ['0x0B4dc7A945695D11FD83e40B2DfC2B896A02395F'.toLowerCase(), 'metausdbalances'],
       ['0x3d6cb2f6dcf47cdd9c13e4e3beae9af041d8796a'.toLowerCase(), 'plainstableng'],
       ['0xC1b393EfEF38140662b91441C6710Aa704973228'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-xdai',
   },
@@ -370,9 +384,11 @@ const configs = {
     getFactoryRegistryAddress: async () => ZERO_ADDRESS,
     getCryptoRegistryAddress: async () => ZERO_ADDRESS,
     getFactoryStableswapNgRegistryAddress: async () => '0x5eeE3091f747E60a045a2E715a4c71e600e31F6E',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
       ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
       ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-aurora',
   },
@@ -439,6 +455,7 @@ const configs = {
     multicall2Address: '0x30A62aA52Fa099C4B227869EB6aeaDEda054d121',
     getFactoryRegistryAddress: async () => '0x40bc62805471eF53DdD5C5cF99ed3d9e5aa81b48',
     getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
+    getFactoryTwocryptoRegistryAddress: async () => '0xd3B17f862956464ae4403cCF829CE69199856e1e',
     factoryImplementationAddressMap: new Map([
       ['0x2632679f5CA396a1bd2647092d9dBf7eC5d7B263'.toLowerCase(), 'plain2basic'],
       ['0x12f196251EfcaCA0fd73D5b58132B16760ba96A8'.toLowerCase(), 'plain2balances'],
@@ -454,6 +471,7 @@ const configs = {
       ['0x509495DFEEc3a53aCb2F60669985d868131Ad9a5'.toLowerCase(), 'plain4optimized'],
       ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
       ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
+      ['0x64379C265Fc6595065D7d835AAaa731c0584dB80'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
@@ -474,6 +492,7 @@ const configs = {
     multicall2Address: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
     getFactoryRegistryAddress: async () => '0x5277A0226d10392295E8D383E9724D6E416d6e6C',
     getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
       ['0xfEE7166C32Bdf6356Ef60636f43400AA55551A96'.toLowerCase(), 'plain2basic'],
       ['0x183Bb362aAa53f24BDF76a5E0FE11eEEce21F44d'.toLowerCase(), 'plain2balances'],
@@ -489,6 +508,7 @@ const configs = {
       ['0xA73b02a97B45604cd9f0BBAA153eCfe01f409350'.toLowerCase(), 'plain4optimized'],
       ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
       ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
@@ -510,6 +530,7 @@ const configs = {
     multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
     getFactoryRegistryAddress: async () => '0xCDC481031E23AEd8CbBe6e07A638298a790D445a',
     getFactoryStableswapNgRegistryAddress: async () => '0xd2002373543Ce3527023C75e7518C274A51ce712',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
       ['0xDec8C0e31A66ed2eEf7ed54155647c9abcf49b9F'.toLowerCase(), 'plain2basic'],
       ['0x6842E0412AC1c00464dc48961330156a07268d14'.toLowerCase(), 'plain2balances'],
@@ -525,6 +546,7 @@ const configs = {
       ['0x114C4042B11a2b16F58Fe1BFe847589a122F678a'.toLowerCase(), 'plain4optimized'],
       ['0xf3A6aa40cf048a3960E9664847E9a7be025a390a'.toLowerCase(), 'plainstableng'],
       ['0x635742dCC8313DCf8c904206037d962c042EAfBd'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
@@ -581,6 +603,7 @@ const configs = {
     getFactoryCryptoRegistryAddress: async () => '0x5EF72230578b3e399E6C6F4F6360edF95e83BBfd',
     getFactoryTricryptoRegistryAddress: async () => '0xA5961898870943c68037F6848d2D866Ed2016bcB',
     getFactoryStableswapNgRegistryAddress: async () => '0xd2002373543Ce3527023C75e7518C274A51ce712',
+    getFactoryTwocryptoRegistryAddress: async () => '0xc9Fe0C63Af9A39402e8a5514f9c43Af0322b665F',
     factoryImplementationAddressMap: new Map([
       ['0xD166EEdf272B860E991d331B71041799379185D5'.toLowerCase(), 'plain2basic'],
       ['0x5C627d6925e448Ae418BC8a45d56B31fe5009Bea'.toLowerCase(), 'plain2balances'],
@@ -596,6 +619,7 @@ const configs = {
       ['0x44d9B3f4EE15AC81FEb918501fca0ddc9d83C976'.toLowerCase(), 'plain4optimized'],
       ['0xf3A6aa40cf048a3960E9664847E9a7be025a390a'.toLowerCase(), 'plainstableng'],
       ['0x635742dCC8313DCf8c904206037d962c042EAfBd'.toLowerCase(), 'metausdstableng'],
+      ['0x1A83348F9cCFD3Fe1A8C0adBa580Ac4e267Fe495'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
@@ -619,6 +643,7 @@ const configs = {
     getFactoryCryptoRegistryAddress: async () => '0xBd5fBd2FA58cB15228a9Abdac9ec994f79E3483C',
     getFactoryTricryptoRegistryAddress: async () => '0xc55837710bc500F1E3c7bb9dd1d51F7c5647E657',
     getFactoryStableswapNgRegistryAddress: async () => '0xd7E72f3615aa65b92A4DBdC211E296a35512988B',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
       ['0xB90B9B1F91a01Ea22A182CD84C1E22222e39B415'.toLowerCase(), 'plain2basic'],
       ['0x7CDE88e96E9445D986537074B1bFD32c5623c71f'.toLowerCase(), 'plain2balances'],
@@ -634,6 +659,7 @@ const configs = {
       ['0x1086F023146f9026A9Bb22983CE866813C59518A'.toLowerCase(), 'plain4optimized'],
       ['0x505d666E4DD174DcDD7FA090ed95554486d2Be44'.toLowerCase(), 'plainstableng'],
       ['0x5a8C93EE12a8Df4455BA111647AdA41f29D5CfcC'.toLowerCase(), 'metausdstableng'],
+      ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),

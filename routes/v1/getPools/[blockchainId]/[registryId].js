@@ -27,11 +27,13 @@ import factoryV2RegistryAbi from '#root/constants/abis/factory-v2-registry.json'
 import factoryPoolAbi from '#root/constants/abis/factory-v2/Plain2Balances.json' assert { type: 'json' };
 import factoryCryptoRegistryAbi from '#root/constants/abis/factory-crypto-registry.json' assert { type: 'json' };
 import factoryCrvusdRegistryAbi from '#root/constants/abis/factory-crvusd/registry.json' assert { type: 'json' };
+import factoryTwocryptoRegistryAbi from '#root/constants/abis/factory-twocrypto/registry.json' assert { type: 'json' };
 import factoryTricryptoRegistryAbi from '#root/constants/abis/factory-tricrypto/registry.json' assert { type: 'json' };
 import factoryStableswapNgRegistryAbi from '#root/constants/abis/factory-stableswap-ng/registry.json' assert { type: 'json' };
 import factoryEywaRegistryAbi from '#root/constants/abis/fantom/factory-eywa/registry.json' assert { type: 'json' };
 import cryptoRegistryAbi from '#root/constants/abis/crypto-registry.json' assert { type: 'json' };
 import factoryCryptoPoolAbi from '#root/constants/abis/factory-crypto/factory-crypto-pool-2.json' assert { type: 'json' };
+import factoryTwocryptoPoolAbi from '#root/constants/abis/factory-twocrypto/pool.json' assert { type: 'json' };
 import factoryTricryptoPoolAbi from '#root/constants/abis/factory-crypto/factory-crypto-pool-2.json' assert { type: 'json' };
 import factoryStableNgPoolAbi from '#root/constants/abis/factory-stableswap-ng/pool.json' assert { type: 'json' };
 import factoryCrvusdPoolAbi from '#root/constants/abis/factory-crvusd/pool.json' assert { type: 'json' };
@@ -252,6 +254,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     getCryptoRegistryAddress,
     getFactoryCryptoRegistryAddress,
     getFactoryCrvusdRegistryAddress,
+    getFactoryTwocryptoRegistryAddress,
     getFactoryTricryptoRegistryAddress,
     getFactoryStableswapNgRegistryAddress,
     getFactoryEywaRegistryAddress,
@@ -281,10 +284,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         registryId === 'crypto' ? await getCryptoRegistryAddress() :
           registryId === 'factory-crypto' ? await getFactoryCryptoRegistryAddress() :
             registryId === 'factory-crvusd' ? await getFactoryCrvusdRegistryAddress() :
-              registryId === 'factory-tricrypto' ? await getFactoryTricryptoRegistryAddress() :
-                registryId === 'factory-stable-ng' ? await getFactoryStableswapNgRegistryAddress() :
-                  registryId === 'factory-eywa' ? await getFactoryEywaRegistryAddress() :
-                    undefined
+              registryId === 'factory-twocrypto' ? await getFactoryTwocryptoRegistryAddress() :
+                registryId === 'factory-tricrypto' ? await getFactoryTricryptoRegistryAddress() :
+                  registryId === 'factory-stable-ng' ? await getFactoryStableswapNgRegistryAddress() :
+                    registryId === 'factory-eywa' ? await getFactoryEywaRegistryAddress() :
+                      undefined
   );
   if (registryAddress === ZERO_ADDRESS || !registryAddress) return { poolData: [], tvlAll: 0 };
 
@@ -294,32 +298,35 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         registryId === 'crypto' ? `crypto-${id}` :
           registryId === 'factory-crypto' ? `factory-crypto-${id}` :
             registryId === 'factory-crvusd' ? `factory-crvusd-${id}` :
-              registryId === 'factory-tricrypto' ? `factory-tricrypto-${id}` :
-                registryId === 'factory-stable-ng' ? `factory-stable-ng-${id}` :
-                  registryId === 'factory-eywa' ? `factory-eywa-${id}` :
-                    undefined
+              registryId === 'factory-twocrypto' ? `factory-twocrypto-${id}` :
+                registryId === 'factory-tricrypto' ? `factory-tricrypto-${id}` :
+                  registryId === 'factory-stable-ng' ? `factory-stable-ng-${id}` :
+                    registryId === 'factory-eywa' ? `factory-eywa-${id}` :
+                      undefined
   );
 
   const POOL_ABI = (
     registryId === 'factory-crypto' ? factoryCryptoPoolAbi :
       registryId === 'factory-crvusd' ? factoryCrvusdPoolAbi :
-        registryId === 'factory-tricrypto' ? factoryTricryptoPoolAbi :
-          registryId === 'getFactoryStableswapNgRegistryAddress' ? factoryStableNgPoolAbi :
-            registryId === 'factory-eywa' ? factoryEywaPoolAbi :
-              factoryPoolAbi
+        registryId === 'factory-twocrypto' ? factoryTwocryptoPoolAbi :
+          registryId === 'factory-tricrypto' ? factoryTricryptoPoolAbi :
+            registryId === 'getFactoryStableswapNgRegistryAddress' ? factoryStableNgPoolAbi :
+              registryId === 'factory-eywa' ? factoryEywaPoolAbi :
+                factoryPoolAbi
   );
 
   const REGISTRY_ABI = (
     registryId === 'factory-crypto' ? factoryCryptoRegistryAbi :
       registryId === 'factory-crvusd' ? factoryCrvusdRegistryAbi :
-        registryId === 'factory-tricrypto' ? [
-          ...factoryTricryptoRegistryAbi,
-          ...REGISTRY_GET_IMPLEMENTATION_ADDRESS_ABI, // Hack, see get_implementation_address call for factory-tricrypto for context
-        ] :
-          registryId === 'factory-eywa' ? factoryEywaRegistryAbi :
-            registryId === 'factory-stable-ng' ? factoryStableswapNgRegistryAbi :
-              registryId === 'crypto' ? cryptoRegistryAbi :
-                factoryV2RegistryAbi
+        registryId === 'factory-twocrypto' ? factoryTwocryptoRegistryAbi :
+          registryId === 'factory-tricrypto' ? [
+            ...factoryTricryptoRegistryAbi,
+            ...REGISTRY_GET_IMPLEMENTATION_ADDRESS_ABI, // Hack, see get_implementation_address call for factory-tricrypto for context
+          ] :
+            registryId === 'factory-eywa' ? factoryEywaRegistryAbi :
+              registryId === 'factory-stable-ng' ? factoryStableswapNgRegistryAbi :
+                registryId === 'crypto' ? cryptoRegistryAbi :
+                  factoryV2RegistryAbi
   );
 
 
@@ -403,6 +410,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       'factory-eywa': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
       'factory-crypto': ['main', 'crypto', 'factory-crvusd'],
       factory: ['main', 'crypto', 'factory-crypto', 'factory-crvusd'],
+      'factory-twocrypto': ['main', 'factory-crvusd', 'factory'],
       'factory-tricrypto': ['main', 'factory-crvusd', 'factory'],
       'factory-stable-ng': ['main', 'factory-crvusd', 'factory', 'factory-crypto'],
     };
@@ -593,6 +601,29 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         superSettings: {
           fallbackValue: '0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f',
         },
+      }] : []
+    ),
+    ...(
+      registryId === 'factory-wocrypto' ? [{
+        contract: poolContract,
+        methodName: 'name',
+        metaData: { poolId, type: 'name' },
+        ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'symbol',
+        metaData: { poolId, type: 'symbol' },
+        ...networkSettingsParam,
+      }, {
+        contract: poolContract,
+        methodName: 'totalSupply',
+        metaData: { poolId, type: 'totalSupply' },
+        ...networkSettingsParam,
+      }, {
+        contract: registry,
+        methodName: 'pool_implementations',
+        params: [address],
+        metaData: { poolId, type: 'implementationAddress' },
       }] : []
     ),
     ...(
