@@ -108,6 +108,12 @@ export default async function(app) {
     },
     apis: ['./routes/v1/**/*.js'],
   });
+
+  app.get('/v1/documentation/openapi.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.json(swaggerDoc);
+  });
+
   app.use('/v1/documentation', swaggerUi.serve, swaggerUi.setup(swaggerDoc, {
     customCssUrl: [
       '/css/swaggerui.css',
