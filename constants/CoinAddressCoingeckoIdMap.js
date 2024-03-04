@@ -21,6 +21,7 @@ const CoinAddressCoingeckoIdMap = {
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'weth', // Native ETH
     '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599': 'wrapped-bitcoin', // wBTC
     '0xc2cb1040220768554cf699b0d863a3cd4324ce32': 'dai', // yDAI
+    '0x6c3ea9036406852006290770bedfcaba0e23a0e8': 'paypal-usd', // pyUSD
     '0x26ea744e5b887e5205727f55dfbe8685e3b21951': 'usd-coin', // yUSDC
     '0x04bc0ab673d88ae9dbc9da2380cb6b79c4bca9ae': 'binance-usd', // yBUSD
     '0x16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'dai', // yDAI

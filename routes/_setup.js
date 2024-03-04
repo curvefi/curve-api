@@ -109,7 +109,7 @@ export default async function(app) {
     apis: ['./routes/v1/**/*.js'],
   });
 
-  app.get('/v1/documentation/openapi.json', (req, res) => {
+  app.get('/v1/openapi.json', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.json(swaggerDoc);
   });

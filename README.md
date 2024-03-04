@@ -2,6 +2,8 @@
 
 <https://api.curve.fi/v1/documentation>
 
+OpenAPI specification: <https://api.curve.fi/v1/openapi.json>
+
 # Data
 
 ## Ethereum LST APYs

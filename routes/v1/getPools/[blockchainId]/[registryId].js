@@ -109,6 +109,7 @@ const EXTERNAL_ORACLE_COINS_ADDRESSES = {
     '0xa35b1b31ce002fbf2058d22f30f95d405200a15b', // ETHx (curve crypto pool that has precedence has low liq)
     '0xE80C0cd204D654CEbe8dd64A4857cAb6Be8345a3', // JPEG
     '0x821A278dFff762c76410264303F25bF42e195C0C', // pETH
+    '0x6c3ea9036406852006290770bedfcaba0e23a0e8', // pyUSD
   ].map(lc),
   base: [
     '0xcfa3ef56d303ae4faaba0592388f19d7c3399fb4',
