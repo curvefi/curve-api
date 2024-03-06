@@ -4,6 +4,8 @@
 
 OpenAPI specification: <https://api.curve.fi/v1/openapi.json>
 
+Status: <https://statuspage.freshping.io/59335-CurveAPI>
+
 # Data
 
 ## Ethereum LST APYs

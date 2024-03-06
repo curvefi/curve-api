@@ -20,6 +20,7 @@
 
 import Web3 from 'web3';
 import uniq from 'lodash.uniq';
+import { differenceInWeeks, fromUnixTime } from 'date-fns';
 import { NotFoundError, fn } from '#root/utils/api.js';
 import GAUGE_REGISTRY_ABI from '#root/constants/abis/gauge-registry.json' assert { type: 'json' };
 import GAUGE_REGISTRY_SIDECHAIN_ABI from '#root/constants/abis/gauge-registry-sidechain.json' assert { type: 'json' };
@@ -101,6 +102,7 @@ export default fn(async ({ blockchainId }) => {
   const weekSeconds = 86400 * 7;
   const nowTs = +Date.now() / 1000;
   const startOfWeekTs = Math.trunc(nowTs / weekSeconds);
+  const currentWeekNumber = differenceInWeeks(fromUnixTime(nowTs), fromUnixTime(0));
   const endOfWeekTs = (startOfWeekTs + 1) * weekSeconds;
 
   /**
@@ -278,7 +280,7 @@ export default fn(async ({ blockchainId }) => {
       hasCrv &&
       effectiveInflationRate > 0 &&
       isMirrored &&
-      Math.trunc(lastRequest / weekSeconds) !== startOfWeekTs
+      (differenceInWeeks(fromUnixTime(lastRequest), fromUnixTime(0)) !== currentWeekNumber)
     );
 
     return {
@@ -322,6 +324,6 @@ export default fn(async ({ blockchainId }) => {
     })),
   };
 }, {
-  maxAge: 2 * 60,
+  maxAge: 3 * 60,
   cacheKey: ({ blockchainId }) => `getFactoGauges-${blockchainId}`,
 });
