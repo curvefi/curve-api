@@ -624,7 +624,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         contract: registry,
         methodName: 'pool_implementations',
         params: [address],
-        metaData: { poolId, type: 'implementationAddress' },
+        metaData: { poolId, type: 'implementationAddress', registryId },
       }] : []
     ),
     ...(
@@ -671,6 +671,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     )];
   })));
 
+  // Make some small changes to received data
   const poolData = poolDataWithTries.map(({ data, metaData }) => {
     const isLpTokenAddressTry = metaData.type?.startsWith('lpTokenAddress_try_');
     if (isLpTokenAddressTry) {
@@ -687,6 +688,23 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
       // If address is null, drop it
       return null;
+    }
+
+    /**
+     * The two-crypto facto has a known issue with pool_implementations()
+     * that returns the zero address. This catches this situation and
+     * replaces zero address with this factory's first pool implementation.
+     */
+    const isUnavailableTwoCryptoFactoPoolImplementation = (
+      metaData.type === 'implementationAddress' &&
+      metaData.registryId === 'factory-twocrypto' &&
+      data === ZERO_ADDRESS
+    );
+    if (isUnavailableTwoCryptoFactoPoolImplementation) {
+      return {
+        data: '0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223',
+        metaData,
+      };
     }
 
     return { data, metaData };
