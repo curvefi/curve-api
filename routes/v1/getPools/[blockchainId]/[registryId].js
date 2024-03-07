@@ -605,7 +605,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       }] : []
     ),
     ...(
-      registryId === 'factory-wocrypto' ? [{
+      registryId === 'factory-twocrypto' ? [{
         contract: poolContract,
         methodName: 'name',
         metaData: { poolId, type: 'name' },
