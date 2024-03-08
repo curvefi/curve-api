@@ -80,6 +80,8 @@ const POOL_NAME_METHOD_ABI = [{ "stateMutability": "view", "type": "function", "
 const POOL_SYMBOL_METHOD_ABI = [{ "stateMutability": "view", "type": "function", "name": "symbol", "inputs": [], "outputs": [{ "name": "", "type": "string" }] }];
 const POOL_TOTALSUPPLY_METHOD_ABI = [{ "name": "totalSupply", "outputs": [{ "type": "uint256", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function" }];
 const REGISTRY_GET_IMPLEMENTATION_ADDRESS_ABI = [factoryV2RegistryAbi.find(({ name }) => name === 'get_implementation_address')]
+const REGISTRY_GET_TOKEN_METHOD_ABI = [factoryCryptoRegistryAbi.find(({ name }) => name === 'get_token')]
+const REGISTRY_GET_LP_TOKEN_METHOD_ABI = [cryptoRegistryAbi.find(({ name }) => name === 'get_lp_token')]
 const ORACLIZED_POOL_DETECTION_ABI = [{ "stateMutability": "view", "type": "function", "name": "oracle_method", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }] }];
 /* eslint-enable */
 /* eslint-disable object-curly-newline, camelcase */
@@ -340,8 +342,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       undefined
   );
 
+  const { poolsAndLpTokens: mainRegistryPoolsAndLpTokens } = await getMainRegistryPoolsAndLpTokensFn.straightCall({ blockchainId });
+
   // Retrieve base pools if any
   let basePoolAddresses = [];
+  let finalBasePoolLpAddresses = [];
   const registrySupportsBasePools = REGISTRY_ABI.some(({ name }) => name === 'base_pool_count');
 
   if (registrySupportsBasePools) {
@@ -359,6 +364,56 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         params: [id],
         ...networkSettingsParam,
       })))).map(lc);
+
+      // This array contains all different lp token retrieval methods as used for individual
+      // pools further down this script.
+      const basePoolLpAddressesRaw = await multiCall(flattenArray(basePoolAddresses.map((address) => [{
+        address,
+        abi: POOL_TOKEN_METHOD_ABI,
+        methodName: 'token', // address
+        metaData: { address, type: 'lpTokenAddress_try_1' }, // For main registry #1
+        ...networkSettingsParam,
+      }, {
+        address,
+        abi: POOL_TOKEN_METHOD_ABI,
+        methodName: 'lp_token', // address
+        metaData: { address, type: 'lpTokenAddress_try_2' }, // For main registry #1
+        superSettings: {
+          fallbackValue: (
+            mainRegistryPoolsAndLpTokens.some(({ address: mainRegAddress, lpTokenAddress }) => (mainRegAddress.toLowerCase() === address.toLowerCase() && lpTokenAddress.toLowerCase() !== mainRegAddress.toLowerCase())) ? mainRegistryPoolsAndLpTokens.find(({ address: mainRegAddress }) => mainRegAddress.toLowerCase() === address.toLowerCase()).lpTokenAddress : undefined),
+        },
+        ...networkSettingsParam,
+      }, {
+        address: registryAddress,
+        abi: REGISTRY_GET_TOKEN_METHOD_ABI,
+        methodName: 'get_token', // address
+        params: [address],
+        metaData: { address, type: 'lpTokenAddress_try_3' }, // For factory-crypto registry
+        ...networkSettingsParam,
+      }, {
+        address: registryAddress,
+        abi: REGISTRY_GET_LP_TOKEN_METHOD_ABI,
+        methodName: 'get_lp_token', // address
+        params: [address],
+        metaData: { address, type: 'lpTokenAddress_try_4' }, // For crypto registry
+        ...networkSettingsParam,
+      }])));
+
+      // Make some small changes to received data
+      const basePoolLpAddresses = basePoolLpAddressesRaw.map(({ data, metaData }) => {
+        // If address isn't null, use this as the definitive lpTokenAddress value
+        if (data !== ZERO_ADDRESS) {
+          return { data, metaData };
+        }
+
+        // If address is null, drop it
+        return null;
+      }).filter((o) => o !== null);
+
+      finalBasePoolLpAddresses = [
+        ...basePoolAddresses.filter((address) => !basePoolLpAddresses.some(({ metaData }) => lc(metaData.address) === lc(address))),
+        ...basePoolLpAddresses.map(({ data }) => data),
+      ].map(lc);
     }
   }
 
@@ -387,7 +442,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   ));
 
   const ethereumOnlyData = await getEthereumOnlyDataSwr({ preventQueryingFactoData, blockchainId });
-  const { poolsAndLpTokens: mainRegistryPoolsAndLpTokens } = await getMainRegistryPoolsAndLpTokensFn.straightCall({ blockchainId });
 
   let mainRegistryLpTokensPricesMap;
   let otherRegistryTokensPricesMap;
@@ -1013,7 +1067,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         mainRegistryPoolsAndLpTokens.some(({ lpTokenAddress }) => (
           lpTokenAddress.toLowerCase() === coinAddress.toLowerCase()
         )) ||
-        basePoolAddresses.includes(lc(coinAddress))
+        finalBasePoolLpAddresses.includes(lc(coinAddress))
       ),
     };
 
