@@ -857,6 +857,25 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     ...lpTokenData,
   ];
 
+  const emptyData = poolIds.map((id) => ({ id: getIdForPool(id) }));
+  const mergedPoolData = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
+    const index = accu.findIndex(({ id }) => id === getIdForPool(poolId));
+    const poolInfo = accu[index];
+
+    // eslint-disable-next-line no-param-reassign
+    accu[index] = {
+      ...poolInfo,
+      address: poolAddresses[index],
+      [type]: (
+        type === 'priceOracle' ?
+          (data / 1e18) :
+          data
+      ),
+    };
+
+    return accu;
+  }, emptyData);
+
   const allCoinAddresses = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
     if (type === 'coinsAddresses') {
       const poolCoins = data.filter(isDefinedCoin);
@@ -1046,6 +1065,17 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       symbol: nativeCurrencySymbol,
     };
 
+    const poolInfo = mergedPoolData.find(({ id }) => id === getIdForPool(poolId))
+    const poolImplementation = getImplementation({
+      registryId,
+      config,
+      poolInfo,
+      implementationAddressMap,
+    });
+
+    const isPermissionlessRegistry = registryId.startsWith('factory');
+    const hasMetaPoolImplementation = poolImplementation.includes('meta');
+
     // eslint-disable-next-line no-param-reassign
     accu[key] = {
       ...coinInfo,
@@ -1064,34 +1094,18 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ),
       ...(isNativeEth ? hardcodedInfoForNativeEth : {}),
       isBasePoolLpToken: (
-        mainRegistryPoolsAndLpTokens.some(({ lpTokenAddress }) => (
-          lpTokenAddress.toLowerCase() === coinAddress.toLowerCase()
-        )) ||
-        finalBasePoolLpAddresses.includes(lc(coinAddress))
+        (
+          mainRegistryPoolsAndLpTokens.some(({ lpTokenAddress }) => (
+            lpTokenAddress.toLowerCase() === coinAddress.toLowerCase()
+          )) ||
+          finalBasePoolLpAddresses.includes(lc(coinAddress))
+        ) &&
+        (!isPermissionlessRegistry || hasMetaPoolImplementation)
       ),
     };
 
     return accu;
   }, {});
-
-  const emptyData = poolIds.map((id) => ({ id: getIdForPool(id) }));
-  const mergedPoolData = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
-    const index = accu.findIndex(({ id }) => id === getIdForPool(poolId));
-    const poolInfo = accu[index];
-
-    // eslint-disable-next-line no-param-reassign
-    accu[index] = {
-      ...poolInfo,
-      address: poolAddresses[index],
-      [type]: (
-        type === 'priceOracle' ?
-          (data / 1e18) :
-          data
-      ),
-    };
-
-    return accu;
-  }, emptyData);
 
   // Fetch get_dy() between all coins in all pools in order to derive prices within a pool where necessary.
   // This is only for "factory" pools; not "main", not "crypto", not "factory-crypto", which all have other
