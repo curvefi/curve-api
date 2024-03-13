@@ -57,7 +57,9 @@ export default fn(async ({ blockchainId }) => {
   const web3 = new Web3(configEth.rpcUrl);
   const web3Side = new Web3(config.rpcUrl);
 
-  const gaugeRegistryAddress = '0xabc000d88f23bb45525e447528dbf656a9d55bf5';
+  // 0xabc is the generic gauge registry address for all sidechains, the config prop allows exceptions
+  const gaugeRegistryAddress = config.gaugeRegistryAddress ?? '0xabc000d88f23bb45525e447528dbf656a9d55bf5';
+
   const gaugeRegistry = new web3.eth.Contract(GAUGE_REGISTRY_ABI, gaugeRegistryAddress);
   const gaugeRegistrySidechain = new web3Side.eth.Contract(GAUGE_REGISTRY_SIDECHAIN_ABI, gaugeRegistryAddress);
 

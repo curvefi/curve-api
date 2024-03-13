@@ -680,6 +680,7 @@ const configs = {
     getFactoryTricryptoRegistryAddress: async () => '0xc9Fe0C63Af9A39402e8a5514f9c43Af0322b665F',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     getFactoryStableswapNgRegistryAddress: async () => '0xd2002373543Ce3527023C75e7518C274A51ce712',
+    gaugeRegistryAddress: '0xeF672bD94913CB6f1d2812a6e18c1fFdEd8eFf5c',
     factoryImplementationAddressMap: new Map([
       ['0x1764ee18e8B3ccA4787249Ceb249356192594585'.toLowerCase(), 'plainstableng'],
       ['0x5eeE3091f747E60a045a2E715a4c71e600e31F6E'.toLowerCase(), 'metausdstableng'],
