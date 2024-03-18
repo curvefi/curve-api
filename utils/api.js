@@ -1,7 +1,7 @@
 import configs from '#root/constants/configs/index.js';
 import swr from '#root/utils/swr.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
-import { arrayToHashmap } from '#root/utils/Array.js';
+import { arrayToHashmap, flattenArray, uniq } from '#root/utils/Array.js';
 import { addTtlRandomness } from '#root/utils/Number.js';
 import { getFunctionParamObjectKeys } from '#root/utils/Function.js';
 
@@ -18,6 +18,17 @@ const allRegistryIds = [
   'factory-eywa',
   'factory-stable-ng',
 ];
+const allLendingBlockchainIds = uniq(
+  Object.entries(configs)
+    .filter(([, { lendingVaultRegistries }]) => typeof lendingVaultRegistries !== 'undefined')
+    .map(([blockchainId]) => blockchainId)
+);
+console.log('allLendingBlockchainIds', allLendingBlockchainIds)
+const allLendingRegistryIds = uniq(flattenArray(Object.values(configs).map(({ lendingVaultRegistries }) => (
+  typeof lendingVaultRegistries !== 'undefined' ?
+    Object.keys(lendingVaultRegistries) :
+    []
+))));
 
 const formatJsonSuccess = ({ generatedTimeMs, ...data }, success = true) => ({
   success: true,
@@ -128,6 +139,14 @@ const DEFAULT_OPTIONS = {
     registryId: ({ registryId }) => ({
       isValid: allRegistryIds.includes(registryId),
       defaultValue: 'main',
+    }),
+    lendingBlockchainId: ({ lendingBlockchainId }) => ({
+      isValid: allLendingBlockchainIds.includes(lendingBlockchainId),
+      defaultValue: 'oneway',
+    }),
+    lendingRegistryId: ({ lendingRegistryId }) => ({
+      isValid: allLendingRegistryIds.includes(lendingRegistryId),
+      defaultValue: 'oneway',
     }),
   },
 };
@@ -246,4 +265,6 @@ export {
   NotFoundError,
   allBlockchainIds,
   allRegistryIds,
+  allLendingRegistryIds,
+  allLendingBlockchainIds,
 };

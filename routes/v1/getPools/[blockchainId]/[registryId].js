@@ -227,9 +227,9 @@ const isDefinedCoin = (address) => address !== '0x000000000000000000000000000000
 /**
  * Params:
  * - blockchainId: 'ethereum' (default) | any side chain
- * - registryId: 'factory' | 'main' | 'crypto' | 'factory-crypto' | 'factory-crvusd' | 'factory-tricrypto' | 'factory-eywa' | 'factory-stable-ng
+ * - registryId: 'factory' | 'main' | 'crypto' | 'factory-crypto' | 'factory-crvusd' | 'factory-twocrypto' | 'factory-tricrypto' | 'factory-eywa' | 'factory-stable-ng
  *
- * 'factory-crvusd', 'factory-tricrypto' and 'factory-eywa' are custom factories that aren't meant to be found on all chains
+ * 'factory-crvusd', 'factory-twocrypto', 'factory-tricrypto' and 'factory-eywa' are custom factories that aren't meant to be found on all chains
  */
 const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) => {
   const config = configs[blockchainId];

@@ -1,0 +1,940 @@
+[
+  {
+    "name": "SetImplementations",
+    "inputs": [
+      {
+        "name": "amm",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "controller",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "vault",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "price_oracle",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "monetary_policy",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "gauge",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "name": "SetDefaultRates",
+    "inputs": [
+      {
+        "name": "min_rate",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "name": "max_rate",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "name": "SetAdmin",
+    "inputs": [
+      {
+        "name": "admin",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "name": "NewVault",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "uint256",
+        "indexed": true
+      },
+      {
+        "name": "collateral_token",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "borrowed_token",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "vault",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "controller",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "amm",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "price_oracle",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "monetary_policy",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "name": "LiquidityGaugeDeployed",
+    "inputs": [
+      {
+        "name": "vault",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "gauge",
+        "type": "address",
+        "indexed": false
+      }
+    ],
+    "anonymous": false,
+    "type": "event"
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "stablecoin",
+        "type": "address"
+      },
+      {
+        "name": "amm",
+        "type": "address"
+      },
+      {
+        "name": "controller",
+        "type": "address"
+      },
+      {
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "name": "pool_price_oracle",
+        "type": "address"
+      },
+      {
+        "name": "monetary_policy",
+        "type": "address"
+      },
+      {
+        "name": "gauge",
+        "type": "address"
+      },
+      {
+        "name": "admin",
+        "type": "address"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "create",
+    "inputs": [
+      {
+        "name": "borrowed_token",
+        "type": "address"
+      },
+      {
+        "name": "collateral_token",
+        "type": "address"
+      },
+      {
+        "name": "A",
+        "type": "uint256"
+      },
+      {
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "name": "loan_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "liquidation_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "price_oracle",
+        "type": "address"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "create",
+    "inputs": [
+      {
+        "name": "borrowed_token",
+        "type": "address"
+      },
+      {
+        "name": "collateral_token",
+        "type": "address"
+      },
+      {
+        "name": "A",
+        "type": "uint256"
+      },
+      {
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "name": "loan_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "liquidation_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "price_oracle",
+        "type": "address"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "min_borrow_rate",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "create",
+    "inputs": [
+      {
+        "name": "borrowed_token",
+        "type": "address"
+      },
+      {
+        "name": "collateral_token",
+        "type": "address"
+      },
+      {
+        "name": "A",
+        "type": "uint256"
+      },
+      {
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "name": "loan_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "liquidation_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "price_oracle",
+        "type": "address"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "min_borrow_rate",
+        "type": "uint256"
+      },
+      {
+        "name": "max_borrow_rate",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "create_from_pool",
+    "inputs": [
+      {
+        "name": "borrowed_token",
+        "type": "address"
+      },
+      {
+        "name": "collateral_token",
+        "type": "address"
+      },
+      {
+        "name": "A",
+        "type": "uint256"
+      },
+      {
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "name": "loan_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "liquidation_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "create_from_pool",
+    "inputs": [
+      {
+        "name": "borrowed_token",
+        "type": "address"
+      },
+      {
+        "name": "collateral_token",
+        "type": "address"
+      },
+      {
+        "name": "A",
+        "type": "uint256"
+      },
+      {
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "name": "loan_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "liquidation_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "min_borrow_rate",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "create_from_pool",
+    "inputs": [
+      {
+        "name": "borrowed_token",
+        "type": "address"
+      },
+      {
+        "name": "collateral_token",
+        "type": "address"
+      },
+      {
+        "name": "A",
+        "type": "uint256"
+      },
+      {
+        "name": "fee",
+        "type": "uint256"
+      },
+      {
+        "name": "loan_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "liquidation_discount",
+        "type": "uint256"
+      },
+      {
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "min_borrow_rate",
+        "type": "uint256"
+      },
+      {
+        "name": "max_borrow_rate",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "controllers",
+    "inputs": [
+      {
+        "name": "n",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "borrowed_tokens",
+    "inputs": [
+      {
+        "name": "n",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "collateral_tokens",
+    "inputs": [
+      {
+        "name": "n",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "price_oracles",
+    "inputs": [
+      {
+        "name": "n",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "monetary_policies",
+    "inputs": [
+      {
+        "name": "n",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "vaults_index",
+    "inputs": [
+      {
+        "name": "vault",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "deploy_gauge",
+    "inputs": [
+      {
+        "name": "_vault",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "gauge_for_vault",
+    "inputs": [
+      {
+        "name": "_vault",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "set_implementations",
+    "inputs": [
+      {
+        "name": "controller",
+        "type": "address"
+      },
+      {
+        "name": "amm",
+        "type": "address"
+      },
+      {
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "name": "pool_price_oracle",
+        "type": "address"
+      },
+      {
+        "name": "monetary_policy",
+        "type": "address"
+      },
+      {
+        "name": "gauge",
+        "type": "address"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "set_default_rates",
+    "inputs": [
+      {
+        "name": "min_rate",
+        "type": "uint256"
+      },
+      {
+        "name": "max_rate",
+        "type": "uint256"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "stateMutability": "nonpayable",
+    "type": "function",
+    "name": "set_admin",
+    "inputs": [
+      {
+        "name": "admin",
+        "type": "address"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "coins",
+    "inputs": [
+      {
+        "name": "vault_id",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address[2]"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "STABLECOIN",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "MIN_RATE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "MAX_RATE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "amm_impl",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "controller_impl",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "vault_impl",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "pool_price_oracle_impl",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "monetary_policy_impl",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "gauge_impl",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "min_default_borrow_rate",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "max_default_borrow_rate",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "admin",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "vaults",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "amms",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "market_count",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "token_to_vaults",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "address"
+      },
+      {
+        "name": "arg1",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "token_market_count",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "gauges",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "names",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "string"
+      }
+    ]
+  }
+]

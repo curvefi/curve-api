@@ -6,7 +6,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import v1Redirects from '#root/routes/v1/_redirects.json' assert { type: 'json' };
 import rootRouteHandler from '#root/routes/root.js';
-import { allBlockchainIds, allRegistryIds } from '#root/utils/api.js';
+import { allBlockchainIds, allRegistryIds, allLendingRegistryIds, allLendingBlockchainIds } from '#root/utils/api.js';
 
 const REDIRECT_PARAM_REGEX = /(\[[a-zA-Z0-9]+(?:=[a-zA-Z0-9]+)?\])/g;
 
@@ -101,6 +101,24 @@ export default async function(app) {
             schema: {
               type: 'string',
               enum: allRegistryIds,
+            },
+          },
+          lendingRegistryId: {
+            in: 'path',
+            name: 'lendingRegistryId',
+            required: true,
+            schema: {
+              type: 'string',
+              enum: allLendingRegistryIds,
+            },
+          },
+          lendingBlockchainId: {
+            in: 'path',
+            name: 'lendingBlockchainId',
+            required: true,
+            schema: {
+              type: 'string',
+              enum: allLendingBlockchainIds,
             },
           },
         },
