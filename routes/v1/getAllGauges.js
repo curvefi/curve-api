@@ -48,6 +48,7 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'celo',
   'base',
   'fraxtal',
+  'bsc',
 ];
 
 const lc = (str) => str.toLowerCase();
