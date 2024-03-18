@@ -1282,11 +1282,18 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         )))
     );
 
-    const gaugeData = typeof ethereumOnlyData !== 'undefined' ?
-      ethereumOnlyData.gaugesDataArray.find(({ swap }) => (
-        swap?.toLowerCase() === poolInfo.address.toLowerCase()
-      )) :
-      undefined;
+    const gaugeData = (
+      typeof ethereumOnlyData !== 'undefined' ? (
+        ethereumOnlyData.gaugesDataArray.find(({ swap, side_chain, name }) => {
+          const gaugeDataBlockchainId = !side_chain ? 'ethereum' : name.split('-')[0];
+
+          return (
+            blockchainId === gaugeDataBlockchainId &&
+            lc(swap) === lc(poolInfo.address)
+          );
+        })
+      ) : undefined
+    );
     const gaugeAddress = typeof gaugeData !== 'undefined' ? gaugeData.gauge?.toLowerCase() : undefined;
     const gaugeCrvApy = gaugeData?.gaugeCrvApy;
     const gaugeFutureCrvApy = gaugeData?.gaugeFutureCrvApy;
