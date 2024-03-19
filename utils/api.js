@@ -23,7 +23,7 @@ const allLendingBlockchainIds = uniq(
     .filter(([, { lendingVaultRegistries }]) => typeof lendingVaultRegistries !== 'undefined')
     .map(([blockchainId]) => blockchainId)
 );
-console.log('allLendingBlockchainIds', allLendingBlockchainIds)
+
 const allLendingRegistryIds = uniq(flattenArray(Object.values(configs).map(({ lendingVaultRegistries }) => (
   typeof lendingVaultRegistries !== 'undefined' ?
     Object.keys(lendingVaultRegistries) :
@@ -241,6 +241,9 @@ const fn = (cb, options = {}) => {
         if (rMaxAgeSec !== null || rMaxAgeCDN !== null) {
           res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate`);
         }
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        res.setHeader("Access-Control-Allow-Headers", "*");
         const success = !isSoftError;
         res.status(200).json(
           returnFlatData ?
