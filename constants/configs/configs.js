@@ -76,8 +76,12 @@ const configs = {
       '0x808dB6E464279C6A77a1164E0b34d64Bd6fB526E', // Broken pool
       '0x45F783CCE6B7FF23B2ab2D70e416cdb7D6055f51', // Broken pool
     ].map(lc),
+    lendingVaultsBaseUrl: 'https://lend.curve.fi/#/ethereum/markets/',
     lendingVaultRegistries: {
       oneway: '0xea6876dde9e3467564acbee1ed5bac88783205e0',
+    },
+    lendingVaultRegistriesUrlFragments: {
+      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/ethereum/markets/one-way-market-3/vault/deposit
     },
   },
   polygon: {

@@ -187,7 +187,14 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
 
     const borrowedTokenData = allTokenData[lc(assetAddress)];
     const collateralTokenData = allTokenData[lc(collateralAssetAddress)];
-    const name = `${borrowedTokenData.symbol} (${collateralTokenData.symbol})`;
+    const name = `Borrow ${borrowedTokenData.symbol} (${collateralTokenData.symbol} collateral)`;
+
+    const lendingVaultUrls = {
+      deposit: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${id}/vault/deposit`,
+      withdraw: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${id}/vault/withdraw`,
+    };
+
+    const totalSuppliedUsd = pricePerShare * totalShares * assetTokenPrice;
 
     return {
       id,
@@ -211,20 +218,21 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
       },
       totalSupplied: {
         total: pricePerShare * totalShares,
-        usdTotal: pricePerShare * totalShares * assetTokenPrice,
+        usdTotal: totalSuppliedUsd,
       },
+      lendingVaultUrls,
+      usdTotal: totalSuppliedUsd, // This is missing the total collateral value supplied
     };
   });
 
   return {
     lendingVaultData: augmentedVaultData,
-    tvlAll: sum(augmentedVaultData.map(({ totalSupplied }) => totalSupplied.usdTotal)), // This is missing the total collateral value supplied
+    tvl: sum(augmentedVaultData.map(({ usdTotal }) => usdTotal)),
   };
 };
 
 const getLendingVaultsFn = fn(getLendingVaults, {
-  // maxAge: 5 * 60,
-  maxAge: 0.2 * 60,
+  maxAge: 5 * 60,
   cacheKey: ({ lendingBlockchainId, lendingRegistryId }) => `getLendingVaults-${lendingBlockchainId}-${lendingRegistryId}`,
 });
 

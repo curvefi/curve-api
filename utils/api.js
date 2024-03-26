@@ -23,7 +23,7 @@ const allLendingBlockchainIds = uniq(
     .filter(([, { lendingVaultRegistries }]) => typeof lendingVaultRegistries !== 'undefined')
     .map(([blockchainId]) => blockchainId)
 );
-console.log('allLendingBlockchainIds', allLendingBlockchainIds)
+
 const allLendingRegistryIds = uniq(flattenArray(Object.values(configs).map(({ lendingVaultRegistries }) => (
   typeof lendingVaultRegistries !== 'undefined' ?
     Object.keys(lendingVaultRegistries) :

@@ -20,6 +20,7 @@ import getFactoGaugesFn from '#root/routes/v1/getFactoGauges/[blockchainId].js';
 import { fn } from '#root/utils/api.js';
 import { multiCall } from '#root/utils/Calls.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
+import getAllCurveLendingVaultsData from '#root/utils/data/curve-lending-vaults-data.js';
 import { arrayOfIncrements, flattenArray, arrayToHashmap } from '#root/utils/Array.js';
 import { sequentialPromiseMap } from '#root/utils/Async.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
@@ -91,6 +92,16 @@ const getPoolShortName = (pool) => {
   return `${prefix}${pool.coins.map((coin) => coin.symbol).join('+')} (${pool.address.slice(0, 6)}…)`;
 };
 
+const getLendingVaultName = (lendingVault) => {
+  const prefix = lendingVault.blockchainId === 'ethereum' ? '' : `[${lendingVault.blockchainId}] `;
+  return `${prefix}Lending: ${lendingVault.name} (${lendingVault.address.slice(0, 6)}…${lendingVault.address.slice(-4)})`;
+};
+
+const getLendingVaultShortName = (lendingVault) => {
+  const prefix = lendingVault.blockchainId === 'ethereum' ? '' : `${configs[lendingVault.blockchainId].shortId}-`;
+  return `${prefix}lend-${lendingVault.assets.borrowed.symbol}(${lendingVault.assets.collateral.symbol}) (${lendingVault.address.slice(0, 6)}…)`;
+};
+
 const getAllGauges = fn(async ({ blockchainId }) => {
   const chainsToQuery = SIDECHAINS_WITH_FACTORY_GAUGES;
   const blockchainIds = [
@@ -102,7 +113,10 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     id === 'ethereum' // Always include ethereum
   ));
 
-  const allPools = await getAllCurvePoolsData(blockchainIds);
+  const [allPools, allLendingVaults] = await Promise.all([
+    getAllCurvePoolsData(blockchainIds),
+    getAllCurveLendingVaultsData(blockchainIds),
+  ]);
 
   const getPoolByLpTokenAddress = (lpTokenAddress, blockchainId) => (
     allPools.find((pool) => (
@@ -118,7 +132,14 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     ))
   );
 
-  const { rpcUrl, backuprpcUrl, chainId } = configs.ethereum;
+  const getLendingVaultByLpTokenAddress = (lpTokenAddress, blockchainId) => (
+    allLendingVaults.find((lendingVault) => (
+      lendingVault.blockchainId === blockchainId &&
+      lc(lendingVault.address) === lc(lpTokenAddress)
+    ))
+  );
+
+  const { rpcUrl, chainId } = configs.ethereum;
   const web3 = new Web3(rpcUrl);
   const web3Data = { account: '', library: web3, chainId };
 
@@ -235,12 +256,19 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     ])),
   })).map((gaugeData) => {
     const pool = getPoolByLpTokenAddress(gaugeData.lpTokenAddress, 'ethereum');
-    if (!pool) {
-      if (IS_DEV && gaugeData.lpTokenAddress !== ZERO_ADDRESS) console.log('MISSING POOL:', gaugeData.lpTokenAddress)
+    const lendingVault = getLendingVaultByLpTokenAddress(gaugeData.lpTokenAddress, 'ethereum');
+    if (!pool && !lendingVault) {
+      if (IS_DEV && gaugeData.lpTokenAddress !== ZERO_ADDRESS) console.log('Couldn’t match this LP token address with any Curve pool or lending vault address:', gaugeData.lpTokenAddress)
       return null;
     }
 
-    const lpTokenPrice = pool.usdTotal / (pool.totalSupply / 1e18);
+    const isPool = !!pool;
+
+    const lpTokenPrice = (
+      isPool ?
+        (pool.usdTotal / (pool.totalSupply / 1e18)) :
+        lendingVault.vaultShares.pricePerShare
+    );
 
     const gaugeCrvBaseApy = (
       !gaugeData.isKilled ? (
@@ -256,12 +284,35 @@ const getAllGauges = fn(async ({ blockchainId }) => {
 
     return {
       ...gaugeData,
-      poolAddress: pool.address,
-      name: getPoolName(pool),
-      shortName: getPoolShortName(pool),
-      virtualPrice: pool.virtualPrice,
-      factory: pool.factory || false,
-      type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
+      ...(isPool ? {
+        // Props shared by pools and lending vaults
+        isPool,
+        name: getPoolName(pool),
+        shortName: getPoolShortName(pool),
+
+        // Props for pools only
+        poolAddress: pool.address,
+        virtualPrice: pool.virtualPrice,
+        factory: pool.factory || false,
+        type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
+
+        // Props for lending vaults only
+        lendingVaultAddress: undefined,
+      } : {
+        // Props shared by pools and lending vaults
+        isPool,
+        name: getLendingVaultName(lendingVault),
+        shortName: getLendingVaultShortName(lendingVault),
+
+        // Props for pools only
+        poolAddress: undefined,
+        virtualPrice: undefined,
+        factory: undefined,
+        type: undefined,
+
+        // Props for lending vaults only
+        lendingVaultAddress: lendingVault.address,
+      }),
       lpTokenPrice,
       gaugeCrvApy: (
         !gaugeData.isKilled ?
@@ -277,6 +328,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
   }).filter((o) => o !== null);
 
   const mainGaugesEthereum = arrayToHashmap(gaugesData.map(({
+    isPool,
     address,
     lpTokenAddress,
     name,
@@ -286,24 +338,24 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     gaugeRelativeWeight,
     gaugeFutureRelativeWeight,
     getGaugeWeight,
-    virtualPrice,
-    poolAddress,
     isKilled,
-    factory,
-    type,
     lpTokenPrice,
     gaugeCrvApy,
     gaugeFutureCrvApy,
+
+    // Props for pools only
+    poolAddress,
+    virtualPrice,
+    factory,
+    type,
+
+    // Props for lending vaults only
+    lendingVaultAddress,
   }) => [name, {
-    poolUrls: getPoolByLpTokenAddress(lpTokenAddress, 'ethereum').poolUrls,
-    swap: lc(poolAddress),
-    swap_token: lc(lpTokenAddress),
+    isPool,
     name,
     shortName,
     gauge: lc(address),
-    swap_data: {
-      virtual_price: virtualPrice,
-    },
     gauge_data: {
       inflation_rate: inflationRate,
       working_supply: workingSupply,
@@ -314,14 +366,40 @@ const getAllGauges = fn(async ({ blockchainId }) => {
       get_gauge_weight: getGaugeWeight,
       inflation_rate: inflationRate,
     },
-    factory,
     side_chain: false,
     is_killed: isKilled,
     hasNoCrv: (LEGACY_ETHEREUM_MAIN_GAUGES_OUTSIDE_OF_REGISTRY.includes(lc(address)) && !CRVUSD_POOLS_GAUGES.includes(lc(address))),
-    type,
     lpTokenPrice,
     gaugeCrvApy,
     gaugeFutureCrvApy,
+
+    ...(isPool ? {
+      // Props for pools only
+      poolUrls: getPoolByLpTokenAddress(lpTokenAddress, 'ethereum').poolUrls,
+      swap: lc(poolAddress),
+      swap_token: lc(lpTokenAddress),
+      swap_data: {
+        virtual_price: virtualPrice,
+      },
+      type,
+      factory,
+
+      // Props for lending vaults only
+      lendingVaultAddress: undefined,
+      lendingVaultUrls: undefined,
+    } : {
+      // Props for pools only
+      poolUrls: undefined,
+      swap: undefined,
+      swap_token: undefined,
+      swap_data: undefined,
+      type: undefined,
+      factory: undefined,
+
+      // Props for lending vaults only
+      lendingVaultAddress,
+      lendingVaultUrls: getLendingVaultByLpTokenAddress(lpTokenAddress, 'ethereum').lendingVaultUrls,
+    }),
   }]));
 
   /**
@@ -385,6 +463,8 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     }];
   })));
 
+  // Note: I don't expect lending vault gauges to use this flow, so this only looks at pools here,
+  // but may need to support lending vault gauges in the future if they use this flow at all.
   const nonVotedGaugesEthereumData = arrayToHashmap(nonVotedGaugesEthereum.map(({
     data: address,
     metaData: { poolAddress },
@@ -403,6 +483,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     ]));
 
     return [name, {
+      isPool: true,
       poolUrls: getPoolByLpTokenAddress((pool.lpTokenAddress || pool.address), 'ethereum').poolUrls,
       swap: lc(poolAddress),
       swap_token: lc(pool.lpTokenAddress || pool.address),
@@ -432,6 +513,9 @@ const getAllGauges = fn(async ({ blockchainId }) => {
 
   /**
    * Step 3: Retrieve sidechain factory gauges
+   *
+   * NOTE: There are no lending vaults on sidechains yet. Will need to add support
+   * for sidechain lending vaults to getFactoGauges when necessary.
    */
   const factoGauges = await sequentialPromiseMap(blockchainIds, (blockchainIdsChunk) => (
     Promise.all(blockchainIdsChunk.map((blockchainId) => (
@@ -498,6 +582,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
 
           return [
             name, {
+              isPool: true,
               poolUrls: pool.poolUrls,
               swap: lc(swap),
               swap_token: lc(swap_token),
