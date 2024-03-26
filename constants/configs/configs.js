@@ -713,6 +713,7 @@ const configs = {
     rpcUrl: `https://lb.drpc.org/ogrpc?network=bsc&dkey=${process.env.DRPC_API_KEY}`,
     multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
     multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
+    gaugeRegistryAddress: '0xDb205f215f568ADf21b9573b62566f6d9a40bed6', // New deployment
     getFactoryRegistryAddress: async () => '0xEfDE221f306152971D8e9f181bFe998447975810',
     getFactoryCryptoRegistryAddress: async () => '0xBd5fBd2FA58cB15228a9Abdac9ec994f79E3483C',
     getFactoryTricryptoRegistryAddress: async () => '0xc55837710bc500F1E3c7bb9dd1d51F7c5647E657',
