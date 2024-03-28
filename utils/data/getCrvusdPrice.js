@@ -12,6 +12,7 @@ const CRVUSD_ADDRESSES = {
   xdai: lc('0xaBEf652195F98A91E490f047A5006B71c85f058d'),
   optimism: lc('0xc52d7f23a2e460248db6ee192cb23dd12bddcbf6'),
   polygon: lc('0xc4ce1d6f5d98d65ee25cf85e9f2e9dcfee6cb5d6'),
+  fraxtal: lc('0xB102f7Efa0d5dE071A8D37B3548e1C7CB148Caf3'),
 };
 
 const AGGREGATOR_STABLE_PRICE_ADDRESS = '0x18672b1b0c623a30089A280Ed9256379fb0E4E62';
