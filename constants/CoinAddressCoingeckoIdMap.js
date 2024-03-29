@@ -194,6 +194,9 @@ const CoinAddressCoingeckoIdMap = {
     '0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b': 'tbtc',
     '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca': 'bridged-usd-coin-base',
   },
+  fraxtal: {
+    '0xfc00000000000000000000000000000000000006': 'wrapped-frxeth',
+  },
 };
 
 export default CoinAddressCoingeckoIdMap;
