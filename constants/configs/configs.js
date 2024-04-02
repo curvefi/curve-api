@@ -101,6 +101,7 @@ const configs = {
     getFactoryCryptoRegistryAddress: async () => '0xE5De15A9C9bBedb4F5EC13B131E61245f2983A69',
     getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    getFactoryTricryptoRegistryAddress: async () => '0xC1b393EfEF38140662b91441C6710Aa704973228',
     factoryImplementationAddressMap: new Map([
       ['0x571FF5b7b346F706aa48d696a9a4a288e9Bb4091'.toLowerCase(), 'plain2basic'],
       ['0x8925D9d9B4569D737a48499DeF3f67BaA5a144b9'.toLowerCase(), 'plain2balances'],
@@ -271,6 +272,7 @@ const configs = {
     getCryptoRegistryAddress: async () => '0x90f421832199e93d01b64DaF378b183809EB0988',
     getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    getFactoryTricryptoRegistryAddress: async () => '0x3d6cB2F6DcF47CDd9C13E4e3beAe9af041d8796a',
     factoryImplementationAddressMap: new Map([
       ['0x697434ca761d4f86b553784b69f4f37f5edf54df'.toLowerCase(), 'plain2basic'],
       ['0xbdff0c27dd073c119ebcb1299a68a6a92ae607f0'.toLowerCase(), 'plain2balances'],
@@ -324,6 +326,7 @@ const configs = {
     getCryptoRegistryAddress: async () => '0x7DA64233Fefb352f8F501B357c018158ED8aA455',
     getFactoryStableswapNgRegistryAddress: async () => '0x5eeE3091f747E60a045a2E715a4c71e600e31F6E',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    getFactoryTricryptoRegistryAddress: async () => '0xc6C09471Ee39C7E30a067952FcC89c8922f9Ab53',
     factoryImplementationAddressMap: new Map([
       ['0xC2b1DF84112619D190193E48148000e3990Bf627'.toLowerCase(), 'plain2basic'],
       ['0x16a7DA911A4DD1d83F3fF066fE28F3C792C50d90'.toLowerCase(), 'plain2balances'],
@@ -374,6 +377,7 @@ const configs = {
     getCryptoRegistryAddress: async () => '0x8A4694401bE8F8FCCbC542a3219aF1591f87CE17',
     getFactoryStableswapNgRegistryAddress: async () => '0xbC0797015fcFc47d9C1856639CaE50D0e69FbEE8',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    getFactoryTricryptoRegistryAddress: async () => '0xb47988ad49dce8d909c6f9cf7b26caf04e1445c8',
     factoryImplementationAddressMap: new Map([
       ['0x04e39EF8332e979Cf8e4f8891E64934FF65F231b'.toLowerCase(), 'plain2basic'],
       ['0xC9438d8928486bD9621D326002F4672bF684187A'.toLowerCase(), 'plain2balances'],
@@ -418,6 +422,7 @@ const configs = {
     getCryptoRegistryAddress: async () => ZERO_ADDRESS,
     getFactoryStableswapNgRegistryAddress: async () => '0x5eeE3091f747E60a045a2E715a4c71e600e31F6E',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    getFactoryTricryptoRegistryAddress: async () => '0xC1b393EfEF38140662b91441C6710Aa704973228',
     factoryImplementationAddressMap: new Map([
       ['0xe265FC390E9129b7E337Da23cD42E00C34Da2CE3'.toLowerCase(), 'plainstableng'],
       ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
@@ -489,6 +494,7 @@ const configs = {
     getFactoryRegistryAddress: async () => '0x40bc62805471eF53DdD5C5cF99ed3d9e5aa81b48',
     getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
     getFactoryTwocryptoRegistryAddress: async () => '0xd3B17f862956464ae4403cCF829CE69199856e1e',
+    getFactoryTricryptoRegistryAddress: async () => '0x3d6cB2F6DcF47CDd9C13E4e3beAe9af041d8796a',
     factoryImplementationAddressMap: new Map([
       ['0x2632679f5CA396a1bd2647092d9dBf7eC5d7B263'.toLowerCase(), 'plain2basic'],
       ['0x12f196251EfcaCA0fd73D5b58132B16760ba96A8'.toLowerCase(), 'plain2balances'],
@@ -530,6 +536,7 @@ const configs = {
     getFactoryRegistryAddress: async () => '0x5277A0226d10392295E8D383E9724D6E416d6e6C',
     getFactoryStableswapNgRegistryAddress: async () => '0x1764ee18e8B3ccA4787249Ceb249356192594585',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    getFactoryTricryptoRegistryAddress: async () => '0x3d6cB2F6DcF47CDd9C13E4e3beAe9af041d8796a',
     factoryImplementationAddressMap: new Map([
       ['0xfEE7166C32Bdf6356Ef60636f43400AA55551A96'.toLowerCase(), 'plain2basic'],
       ['0x183Bb362aAa53f24BDF76a5E0FE11eEEce21F44d'.toLowerCase(), 'plain2balances'],
@@ -572,6 +579,7 @@ const configs = {
     getFactoryRegistryAddress: async () => '0xCDC481031E23AEd8CbBe6e07A638298a790D445a',
     getFactoryStableswapNgRegistryAddress: async () => '0xd2002373543Ce3527023C75e7518C274A51ce712',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    getFactoryTricryptoRegistryAddress: async () => '0x76303e4fDcA0AbF28aB3ee42Ce086E6503431F1D',
     factoryImplementationAddressMap: new Map([
       ['0xDec8C0e31A66ed2eEf7ed54155647c9abcf49b9F'.toLowerCase(), 'plain2basic'],
       ['0x6842E0412AC1c00464dc48961330156a07268d14'.toLowerCase(), 'plain2balances'],
@@ -716,7 +724,7 @@ const configs = {
     gaugeRegistryAddress: '0xDb205f215f568ADf21b9573b62566f6d9a40bed6', // New deployment
     getFactoryRegistryAddress: async () => '0xEfDE221f306152971D8e9f181bFe998447975810',
     getFactoryCryptoRegistryAddress: async () => '0xBd5fBd2FA58cB15228a9Abdac9ec994f79E3483C',
-    getFactoryTricryptoRegistryAddress: async () => '0xc55837710bc500F1E3c7bb9dd1d51F7c5647E657',
+    getFactoryTricryptoRegistryAddress: async () => '0x38f8D93406fA2d9924DcFcB67dB5B0521Fb20F7D',
     getFactoryStableswapNgRegistryAddress: async () => '0xd7E72f3615aa65b92A4DBdC211E296a35512988B',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
     factoryImplementationAddressMap: new Map([
