@@ -159,6 +159,7 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
     accu[index] = {
       ...vaultInfo,
       address: vaultAddress,
+      vaultId,
       [type]: (
         (type === 'totalShares' || type === 'pricePerShare' || type === 'borrowApr' || type === 'lendApr') ? (data / 1e18) :
           (type === 'totalAssets') ? (data / (10 ** assetTokenData.decimals)) :
@@ -176,6 +177,7 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
     borrowApr,
     collateralAssetAddress,
     id,
+    vaultId,
     lendApr,
     pricePerShare,
     totalShares,
@@ -190,8 +192,8 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
     const name = `Borrow ${borrowedTokenData.symbol} (${collateralTokenData.symbol} collateral)`;
 
     const lendingVaultUrls = {
-      deposit: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${id}/vault/deposit`,
-      withdraw: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${id}/vault/withdraw`,
+      deposit: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${vaultId}/vault/deposit`,
+      withdraw: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${vaultId}/vault/withdraw`,
     };
 
     const totalSuppliedUsd = pricePerShare * totalShares * assetTokenPrice;
