@@ -255,6 +255,13 @@ const configs = {
     ]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum',
+    lendingVaultsBaseUrl: 'https://lend.curve.fi/#/arbitrum/markets/',
+    lendingVaultRegistries: {
+      oneway: '0xcaEC110C784c9DF37240a8Ce096D352A75922DeA',
+    },
+    lendingVaultRegistriesUrlFragments: {
+      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/arbitrum/markets/one-way-market-3/vault/deposit
+    },
   },
   avalanche: {
     poolsBaseUrlOld: 'https://avax.curve.fi/',
