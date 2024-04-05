@@ -116,9 +116,7 @@ const EXTERNAL_ORACLE_COINS_ADDRESSES = {
   base: [
     '0xcfa3ef56d303ae4faaba0592388f19d7c3399fb4',
   ].map(lc),
-  fraxtal: [
-    '0xfc00000000000000000000000000000000000006',
-  ].map(lc),
+  fraxtal: [].map(lc),
 };
 
 // Lowercase token address <> symbol to use
