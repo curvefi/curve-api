@@ -462,7 +462,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'moonbeam',
     platformCoingeckoId: 'moonbeam',
     nativeAssetErc20WrapperId: 'wGLMR', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://moonbeam.drpc.org',
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=moonbeam&dkey=${process.env.DRPC_API_KEY}`,
     multicallAddress: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
     multicall2Address: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
     getFactoryRegistryAddress: async () => '0x4244eB811D6e0Ef302326675207A95113dB4E1F8',
@@ -580,7 +580,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'ethereum',
     platformCoingeckoId: 'polygon-zkevm',
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://zkevm-rpc.com',
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=polygon-zkevm&dkey=${process.env.DRPC_API_KEY}`,
     multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
     multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
     getFactoryRegistryAddress: async () => '0xCDC481031E23AEd8CbBe6e07A638298a790D445a',
