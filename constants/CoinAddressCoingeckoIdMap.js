@@ -196,6 +196,7 @@ const CoinAddressCoingeckoIdMap = {
   },
   fraxtal: {
     '0xfc00000000000000000000000000000000000006': 'frax-ether',
+    '0x269005f33e78d75dd222d3691b5fe48e8ab20e99': 'tbtc',
   },
 };
 
