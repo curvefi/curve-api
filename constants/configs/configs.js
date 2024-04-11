@@ -75,6 +75,8 @@ const configs = {
       '0x9848482da3ee3076165ce6497eda906e66bb85c5',
       '0x808dB6E464279C6A77a1164E0b34d64Bd6fB526E', // Broken pool
       '0x45F783CCE6B7FF23B2ab2D70e416cdb7D6055f51', // Broken pool
+      '0xfc636d819d1a98433402ec9dec633d864014f28c', , // Contains an exploited asset that was stopped
+      '0x68934f60758243eafaf4d2cfed27bf8010bede3a', , // Contains an exploited asset that was stopped
     ].map(lc),
     lendingVaultsBaseUrl: 'https://lend.curve.fi/#/ethereum/markets/',
     lendingVaultRegistries: {

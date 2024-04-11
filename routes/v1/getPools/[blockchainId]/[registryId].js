@@ -562,7 +562,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       contract: registry,
       methodName: 'get_coins', // address[4]
       params: [address],
-      metaData: { poolId, type: 'coinsAddresses' },
+      metaData: { poolId, type: 'coinsAddresses', address },
       ...networkSettingsParam,
     }, {
       contract: registry,
@@ -726,8 +726,43 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     )];
   })));
 
+  const poolDataWithTries2 = await multiCall(flattenArray(poolAddresses.map((address) => {
+    const poolCoinsAddressesData = poolDataWithTries.find(({ metaData }) => (
+      metaData.type === 'coinsAddresses' &&
+      address === metaData.address
+    ));
+    const poolCoinsCount = poolCoinsAddressesData.data.filter((coinAddress) => coinAddress !== '0x0000000000000000000000000000000000000000').length;
+    const poolHasMultipleOracles = poolCoinsCount > 2;
+    const poolContractForPriceOracleCall = new web3.eth.Contract(poolHasMultipleOracles ? POOL_PRICE_ORACLE_WITH_ARGS_ABI : POOL_PRICE_ORACLE_NO_ARGS_ABI, address);
+
+    // Note: reverting for at least some pools, prob non-meta ones: get_underlying_coins, get_underlying_decimals
+    return [
+      {
+        contract: poolContractForPriceOracleCall,
+        methodName: 'price_oracle', // uint256
+        params: poolHasMultipleOracles ? [0] : [], // Price oracle for first asset, there are N-1 oracles so we can fetch more if needed
+        metaData: { poolId: poolCoinsAddressesData.metaData.poolId, type: 'priceOracle' },
+        ...networkSettingsParam,
+        superSettings: {
+          fallbackValue: null, // Don't default to 0 for pools without price_oracle
+        },
+      },
+      // There are N-1 oracles
+      ...(poolHasMultipleOracles ? arrayOfIncrements(poolCoinsCount - 1).map((i) => ({
+        contract: poolContractForPriceOracleCall,
+        methodName: 'price_oracle', // uint256
+        params: [i],
+        metaData: { poolId: poolCoinsAddressesData.metaData.poolId, type: 'priceOracles', index: i },
+        ...networkSettingsParam,
+        superSettings: {
+          fallbackValue: null, // Don't default to 0 for pools without price_oracle
+        },
+      })) : []),
+    ];
+  })));
+
   // Make some small changes to received data
-  const poolData = poolDataWithTries.map(({ data, metaData }) => {
+  const poolData = [...poolDataWithTries, ...poolDataWithTries2].map(({ data, metaData }) => {
     const isLpTokenAddressTry = metaData.type?.startsWith('lpTokenAddress_try_');
     if (isLpTokenAddressTry) {
       // If address isn't null, use this as the definitive lpTokenAddress value
@@ -820,13 +855,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         metaData,
       }) => {
         const lpTokenContract = new web3.eth.Contract(erc20Abi, address);
-        const poolCoinsCount = tweakedPoolData.find(({ metaData: { type, poolId } }) => (
-          type === 'coinsAddresses' &&
-          poolId === metaData.poolId
-        )).data.filter((coinAddress) => coinAddress !== '0x0000000000000000000000000000000000000000').length;
-        const poolHasMultipleOracles = poolCoinsCount > 2;
-        const poolAddress = poolAddresses[poolIds.indexOf(metaData.poolId)];
-        const poolContractForPriceOracleCall = new web3.eth.Contract(poolHasMultipleOracles ? POOL_PRICE_ORACLE_WITH_ARGS_ABI : POOL_PRICE_ORACLE_NO_ARGS_ABI, poolAddress);
 
         return [{
           contract: lpTokenContract,
@@ -843,12 +871,6 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           methodName: 'totalSupply',
           metaData: { poolId: metaData.poolId, type: 'totalSupply' },
           ...networkSettingsParam,
-        }, {
-          contract: poolContractForPriceOracleCall,
-          methodName: 'price_oracle', // uint256
-          params: poolHasMultipleOracles ? [0] : [], // Price oracle for first asset, there are N-1 oracles so we can fetch more if needed
-          metaData: { poolId: metaData.poolId, type: 'priceOracle' },
-          ...networkSettingsParam,
         }];
       })))
   );
@@ -859,7 +881,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   ];
 
   const emptyData = poolIds.map((id) => ({ id: getIdForPool(id) }));
-  const mergedPoolData = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type } }) => {
+  const mergedPoolData = augmentedPoolData.reduce((accu, { data, metaData: { poolId, type, ...otherMetaData } }) => {
     const index = accu.findIndex(({ id }) => id === getIdForPool(poolId));
     const poolInfo = accu[index];
 
@@ -868,9 +890,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       ...poolInfo,
       address: poolAddresses[index],
       [type]: (
-        type === 'priceOracle' ?
-          (data / 1e18) :
-          data
+        (type === 'priceOracle' && data !== null) ? (data / 1e18) :
+          (type === 'priceOracles' && data !== null) ? (poolInfo.priceOracles ?? []).toSpliced(otherMetaData.index, 0, (data / 1e18)) :
+            data
       ),
     };
 

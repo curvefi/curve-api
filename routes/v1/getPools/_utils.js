@@ -48,13 +48,10 @@ const deriveMissingCoinPricesSinglePass = async ({
   }
 
   /**
-   * Method 1: A coin's price is unknown, another one is known. Use the known price,
+   * Method 1.a: A coin's price is unknown, another one is known. Use the known price,
    * alongside the price oracle, to derive the other coin's price. This method requires
-   * the pool to have a price oracle.
-   *
-   * Note: The current logic is simplistic, and only allows filling in the blanks when
-   * a pool is missing a single coin's price at index 0 or 1. Let's improve it later
-   * if more is necessary.
+   * the pool to have a price oracle, and only allows filling in the blanks when
+   * a pool is missing a single coin's price at index 0 or 1. Methods 1.x below cover more.
    */
   const canUsePriceOracle = (
     coins.filter(({ usdPrice }) => usdPrice === null).length === 1 &&
@@ -64,7 +61,7 @@ const deriveMissingCoinPricesSinglePass = async ({
   );
 
   if (canUsePriceOracle) {
-    if (LOG_DEBUG) console.log('Missing coin price: using method 1 to derive price', poolInfo.id);
+    if (LOG_DEBUG) console.log('Missing coin price: using method 1.a to derive price', poolInfo.id);
 
     return (
       coins.map((coin, i) => (
@@ -75,6 +72,34 @@ const deriveMissingCoinPricesSinglePass = async ({
               (coins[1].usdPrice / poolInfo.priceOracle) :
               (coins[0].usdPrice * poolInfo.priceOracle)
           ),
+        } : coin
+      ))
+    );
+  }
+
+  /**
+   * Method 1.b: The pool has price oracles, and any coin at index > 0 has an unknown price.
+   * Use the known price at index 0 to derive the missing coin prices.
+   *
+   * Note: The current logic only works from index 0 to other indexes. If necessary, improve
+   * it later to cover even more cases. But generally, in crypto pools, the first coin will
+   * be the least exotic, hence has the least chances of having an unknown price.
+   */
+  const canUsePriceOracles = (
+    coins[0].usdPrice !== null &&
+    coins.filter(({ usdPrice }) => usdPrice === null).length > 0 &&
+    (!!poolInfo.priceOracles) &&
+    poolInfo.totalSupply > 0 // Don't operate on empty pools because their rates will be unrepresentative
+  );
+
+  if (canUsePriceOracles) {
+    if (LOG_DEBUG) console.log('Missing coin price: using method 1.b to derive price', poolInfo.id);
+
+    return (
+      coins.map((coin, i) => (
+        coin.usdPrice === null ? {
+          ...coin,
+          usdPrice: (coins[0].usdPrice * poolInfo.priceOracles[i - 1]),
         } : coin
       ))
     );
