@@ -99,6 +99,7 @@ const CoinAddressCoingeckoIdMap = {
     '0x115d8bf0a53e751f8a472f88d587944ec1c8ca6d': 'ptokens-btc',
     '0xae6aab43c4f3e0cea4ab83752c278f8debaba689': 'dforce-token',
     '0x13ad51ed4f1b7e9dc168d8a00cb3f4ddd85efa60': 'lido-dao',
+    '0xF6328E49b1Aa09955A6607dafd6E72e135a29739': 'f-x-protocol-fxusd',
   },
   avalanche: {
     '0xd586e7f844cea2f87f50152665bcbc2c279d8d70': 'dai', // DAI
