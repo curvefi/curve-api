@@ -422,7 +422,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     [allCoins.crv.coingeckoId]: crvPrice,
   } = await getAssetsPrices([allCoins.crv.coingeckoId]);
 
-  const poolCount = Number(await registry.methods.pool_count().call());
+  const poolCount = Number((await multiCall([{
+    contract: registry,
+    methodName: 'pool_count',
+    ...networkSettingsParam,
+  }]))[0]);
   if (poolCount === 0) return { poolData: [], tvlAll: 0, tvl: 0 };
 
   const unfilteredPoolIds = Array(poolCount).fill(0).map((_, i) => i);

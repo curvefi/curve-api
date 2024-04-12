@@ -19,7 +19,7 @@ const sequentialPromiseMap = async (array, asyncFn, chunkSize) => {
   const chunked = chunkSize ? getArrayChunks(array, chunkSize) : array;
 
   while (i < chunked.length) {
-    const res = await asyncFn(chunked[i]); // eslint-disable-line no-await-in-loop
+    const res = await asyncFn(chunked[i], i); // eslint-disable-line no-await-in-loop
     results.push(res);
 
     i += 1;

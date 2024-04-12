@@ -56,9 +56,25 @@ export default fn(async ({ blockchainId }) => {
     { height: blockNumberWeekOld },
   ] = await Promise.all([
     getAllCurvePoolsData([blockchainId]),
-    (await fetch(`https://coins.llama.fi/block/${blockchainId}/${timestampDayOld}`)).json(),
-    (await fetch(`https://coins.llama.fi/block/${blockchainId}/${timestampWeekOld}`)).json(),
+    fetch(`https://coins.llama.fi/block/${blockchainId}/${timestampDayOld}`).then((res) => {
+      if (!res.ok) throw new Error();
+      else return res.json();
+    }).catch(() => {
+      console.log(`Couldn't retrieve block number: HTTP request to https://coins.llama.fi/block/${blockchainId}/${timestampDayOld} failed. Returning empty baseApys for ${blockchainId} as a result.`);
+      return { height: undefined };
+    }),
+    fetch(`https://coins.llama.fi/block/${blockchainId}/${timestampWeekOld}`).then((res) => {
+      if (!res.ok) throw new Error();
+      else return res.json();
+    }).catch(() => {
+      console.log(`Couldn't retrieve block number: HTTP request to https://coins.llama.fi/block/${blockchainId}/${timestampWeekOld} failed. Returning empty baseApys for ${blockchainId} as a result.`);
+      return { height: undefined };
+    }),
   ]);
+
+  if (typeof blockNumberDayOld === 'undefined' || typeof blockNumberWeekOld === 'undefined') {
+    return { baseApys: [] };
+  }
 
   const getPoolByAddress = (address) => (
     allPools.find((pool) => (lc(pool.address) === lc(address)))
