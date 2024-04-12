@@ -69,6 +69,7 @@ import { lc } from '#root/utils/String.js';
 import getCurvePrices from '#root/utils/data/curve-prices.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
 import { getAugmentedCoinsFirstPass, getAugmentedCoinsSecondPass } from '../_augmentedCoinsUtils.js';
+import toSpliced from 'core-js-pure/actual/array/to-spliced.js'; // For compat w/ Node 18
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [{ "name": "arg0", "type": "uint256" }], "name": "balances", "outputs": [{ "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
@@ -895,7 +896,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       address: poolAddresses[index],
       [type]: (
         (type === 'priceOracle' && data !== null) ? (data / 1e18) :
-          (type === 'priceOracles' && data !== null) ? (poolInfo.priceOracles ?? []).toSpliced(otherMetaData.index, 0, (data / 1e18)) :
+          (type === 'priceOracles' && data !== null) ? toSpliced((poolInfo.priceOracles ?? []), otherMetaData.index, 0, (data / 1e18)) :
             data
       ),
     };
