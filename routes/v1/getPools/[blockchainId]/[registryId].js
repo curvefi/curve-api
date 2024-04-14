@@ -731,7 +731,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     )];
   })));
 
-  const poolDataWithTries2 = await multiCall(flattenArray(poolAddresses.map((address) => {
+  const poolDataWithTries2 = registryId === 'factory-stable-ng' ? [] : await multiCall(flattenArray(poolAddresses.map((address) => {
     const poolCoinsAddressesData = poolDataWithTries.find(({ metaData }) => (
       metaData.type === 'coinsAddresses' &&
       address === metaData.address
