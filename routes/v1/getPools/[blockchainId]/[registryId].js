@@ -134,6 +134,7 @@ const CURVE_POOL_SYMBOLS_OVERRIDES = new Map([
   ['kava-0xb44a9b6905af7c801311e8f4e76932ee959c663c', 'multiUSDT'],
   ['arbitrum-0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', 'USDC.e'],
   ['polygon-0x2791bca1f2de4661ed88a30c99a7a9449aa84174', 'USDC.e'],
+  ['optimism-0x7f5c764cbc14f9669b88837ca1490cca17c31607', 'USDC.e'],
 ]);
 
 const overrideSymbol = (coin, blockchainId) => ({
