@@ -23,16 +23,7 @@ import getPoolListFn from '#root/routes/v1/getPoolList/[blockchainId].js';
 import getBaseApysFn from '#root/routes/v1/getBaseApys/[blockchainId].js';
 import { lc } from '#root/utils/String.js';
 import { sumBN } from '#root/utils/Array.js';
-
-// Note: keep the openapi description up to date when editing this array
-const AVAILABLE_CHAIN_IDS = [
-  'ethereum',
-  'polygon',
-  'arbitrum',
-  'base',
-  'optimism',
-  'fantom',
-];
+import getPricesCurveFiChainsBlockchainId, { PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS } from '#root/utils/data/prices.curve.fi/chains.js';
 
 const DEFAULT_VOLUME_DATA = {
   trading_volume_24h: 0,
@@ -45,17 +36,17 @@ const DEFAULT_VOLUME_DATA = {
 export default fn(async ({ blockchainId }) => {
   const config = configs[blockchainId];
 
-  if (typeof config === 'undefined' || !AVAILABLE_CHAIN_IDS.includes(blockchainId)) {
+  if (typeof config === 'undefined' || !PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS.includes(blockchainId)) {
     throw new NotFoundError(`Endpoint "getVolumes" not available for "${blockchainId}"`);
   }
 
   const [
     { poolList: poolAddressesAndTypes },
-    { data: poolData },
+    poolData,
     { baseApys },
   ] = await Promise.all([
     getPoolListFn.straightCall({ blockchainId }),
-    (await fetch(`https://prices.curve.fi/v1/chains/${blockchainId}`)).json(),
+    getPricesCurveFiChainsBlockchainId(blockchainId),
     getBaseApysFn.straightCall({ blockchainId }),
   ]);
 
@@ -123,4 +114,4 @@ export default fn(async ({ blockchainId }) => {
   cacheKey: ({ blockchainId }) => `getVolumes-${blockchainId}`,
 });
 
-export { AVAILABLE_CHAIN_IDS }; // Temporary export while this function is used internally in other places
+export { PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS as AVAILABLE_CHAIN_IDS }; // Temporary export while this function is used internally in other places

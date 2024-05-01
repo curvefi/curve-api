@@ -70,6 +70,7 @@ import getCurvePrices from '#root/utils/data/curve-prices.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
 import { getAugmentedCoinsFirstPass, getAugmentedCoinsSecondPass } from '../_augmentedCoinsUtils.js';
 import toSpliced from 'core-js-pure/actual/array/to-spliced.js'; // For compat w/ Node 18
+import getPricesCurveFiChainsBlockchainId from '#root/utils/data/prices.curve.fi/chains.js';
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [{ "name": "arg0", "type": "uint256" }], "name": "balances", "outputs": [{ "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
@@ -449,7 +450,13 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     !DISABLED_POOLS_ADDRESSES.includes(unfilteredPoolAddresses[id]?.toLowerCase())
   ));
 
-  const ethereumOnlyData = await getEthereumOnlyDataSwr({ preventQueryingFactoData, blockchainId });
+  const [
+    ethereumOnlyData,
+    pricesCurveFiPoolData,
+  ] = await Promise.all([
+    getEthereumOnlyDataSwr({ preventQueryingFactoData, blockchainId }),
+    getPricesCurveFiChainsBlockchainId(blockchainId),
+  ]);
 
   let mainRegistryLpTokensPricesMap;
   let otherRegistryTokensPricesMap;
@@ -1466,6 +1473,12 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       throw new Error(`Pool ${poolInfo.address} is a meta pool, yet we couldn’t retrieve its underlying pool. Please check METAPOOL_REGISTRIES_DEPENDENCIES, its base pool’s registry is likely missing.`)
     }
 
+    const poolAvailableMethods = pricesCurveFiPoolData.find(({ address }) => lc(address) === lc(poolInfo.address))?.pool_methods ?? [];
+    const hasMethods = {
+      exchange_received: poolAvailableMethods.includes('exchange_received'),
+      exchange_extended: poolAvailableMethods.includes('exchange_extended'),
+    };
+
     const augmentedPool = {
       ...poolInfo,
       poolUrls: detailedPoolUrls,
@@ -1500,6 +1513,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       oracleMethod: undefined, // Don't return this value, unneeded for api consumers
       usesRateOracle,
       isBroken: (BROKEN_POOLS_ADDRESSES || []).includes(lc(poolInfo.address)),
+      hasMethods, // Used to know the presence of some methods not available in all pools
     };
 
     // When retrieving pool data for a registry that isn't 'main', mainRegistryLpTokensPricesMap
