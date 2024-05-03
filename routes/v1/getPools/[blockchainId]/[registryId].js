@@ -629,6 +629,15 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       }] : []
     ),
     ...(
+      (registryId === 'factory-stable-ng') ? [{
+        contract: registry,
+        methodName: 'get_pool_asset_types',
+        params: [address],
+        metaData: { poolId, type: 'assetTypes' },
+        ...networkSettingsParam,
+      }] : []
+    ),
+    ...(
       (registryId === 'factory' || registryId === 'factory-crvusd' || registryId === 'factory-eywa' || registryId === 'factory-stable-ng') ? [{
         contract: registry,
         methodName: 'get_implementation_address', // address
@@ -1475,7 +1484,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
     const poolAvailableMethods = pricesCurveFiPoolData.find(({ address }) => lc(address) === lc(poolInfo.address))?.pool_methods ?? [];
     const hasMethods = {
-      exchange_received: poolAvailableMethods.includes('exchange_received'),
+      // Pools with rebasing tokens (asset type 2) disable their use of exchange_received
+      exchange_received: poolAvailableMethods.includes('exchange_received') && !(poolInfo.assetTypes ?? []).some((type) => Number(type) === 2),
       exchange_extended: poolAvailableMethods.includes('exchange_extended'),
     };
 
@@ -1511,6 +1521,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       gaugeCrvApy,
       gaugeFutureCrvApy,
       oracleMethod: undefined, // Don't return this value, unneeded for api consumers
+      assetTypes: undefined, // Don't return this value, unneeded for api consumers
       usesRateOracle,
       isBroken: (BROKEN_POOLS_ADDRESSES || []).includes(lc(poolInfo.address)),
       hasMethods, // Used to know the presence of some methods not available in all pools
