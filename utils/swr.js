@@ -1,7 +1,7 @@
 /**
  * Returns a Promise-wrapped instance of a stale-while-revalidate cache helper that
  * takes care of serving fresh data, caching it, and revalidating as needed, using
- * memcached hosts as cache storage.
+ * Redis as cache storage.
  */
 
 import { createStaleWhileRevalidateCache, EmitterEvents } from 'stale-while-revalidate-cache';

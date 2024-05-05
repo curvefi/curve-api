@@ -21,7 +21,7 @@
 
 const CACHE_SETTINGS = {
   minTimeToStale: 30 * 1000, // 30s
-  maxTimeToLive: 7 * 24 * 60 * 60 * 1000, // 7d
+  maxTimeToLive: 14 * 24 * 60 * 60 * 1000, // 14d
   serialize: JSON.stringify, // serialize product object to string
   deserialize: JSON.parse, // deserialize cached product string to object
 };

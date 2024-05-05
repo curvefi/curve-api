@@ -71,6 +71,7 @@ import { IS_DEV } from '#root/constants/AppConstants.js';
 import { getAugmentedCoinsFirstPass, getAugmentedCoinsSecondPass } from '../_augmentedCoinsUtils.js';
 import toSpliced from 'core-js-pure/actual/array/to-spliced.js'; // For compat w/ Node 18
 import getPricesCurveFiChainsBlockchainId from '#root/utils/data/prices.curve.fi/chains.js';
+import { getPoolAssetTypesFromExternalStore } from '#root/utils/data/prices.curve.fi/pools-metadata.js';
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [{ "name": "arg0", "type": "uint256" }], "name": "balances", "outputs": [{ "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
@@ -1482,10 +1483,20 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       throw new Error(`Pool ${poolInfo.address} is a meta pool, yet we couldn’t retrieve its underlying pool. Please check METAPOOL_REGISTRIES_DEPENDENCIES, its base pool’s registry is likely missing.`)
     }
 
+    /**
+     * An issue with the factory-stable-ng registry leads to some pools having an empty array returned
+     * by `assetTypes()`. We use data returned by prices.curve.fi as a fallback in these situations.
+     */
+    const poolAssetTypes = (
+      typeof poolInfo.assetTypes === 'undefined' ? undefined :
+        poolInfo.assetTypes.length > 0 ? poolInfo.assetTypes :
+          await getPoolAssetTypesFromExternalStore(poolInfo.address, blockchainId)
+    );
+
     const poolAvailableMethods = pricesCurveFiPoolData.find(({ address }) => lc(address) === lc(poolInfo.address))?.pool_methods ?? [];
     const hasMethods = {
       // Pools with rebasing tokens (asset type 2) disable their use of exchange_received
-      exchange_received: poolAvailableMethods.includes('exchange_received') && !(poolInfo.assetTypes ?? []).some((type) => Number(type) === 2),
+      exchange_received: poolAvailableMethods.includes('exchange_received') && !(poolAssetTypes ?? []).some((type) => Number(type) === 2),
       exchange_extended: poolAvailableMethods.includes('exchange_extended'),
     };
 
