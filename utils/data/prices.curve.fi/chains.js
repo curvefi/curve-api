@@ -20,7 +20,7 @@ const getPricesCurveFiChainsBlockchainId = memoize(async (blockchainId) => {
   return data;
 }, {
   promise: true,
-  maxAge: 5 * 1000, // That endpoint is cached 5 minutes, no point in querying it more often
+  maxAge: 5 * 60 * 1000, // That endpoint is cached 5 minutes, no point in querying it more often
 });
 
 export default getPricesCurveFiChainsBlockchainId;
