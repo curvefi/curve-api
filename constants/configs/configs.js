@@ -762,5 +762,50 @@ const configs = {
     approxBlocksPerDay: 28800, // https://bscscan.com/chart/blocks
     graphEndpoint: undefined, // Not supported by TheGraph's hosted service https://thegraph.com/docs/en/developing/supported-networks/
   },
+  'x-layer': {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: 'https://curve.fi/#/x-layer/pools/',
+    shortId: 'xlayer',
+    nativeCurrencySymbol: 'OKB',
+    chainId: 196,
+    nativeCurrencyCoingeckoId: 'okb',
+    platformCoingeckoId: 'x-layer',
+    nativeAssetErc20WrapperId: 'wrapped-okb', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://xlayerrpc.okx.com',
+    multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
+    multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
+    gaugeRegistryAddress: '0xDb205f215f568ADf21b9573b62566f6d9a40bed6',
+    // getFactoryRegistryAddress: async () => '0xEfDE221f306152971D8e9f181bFe998447975810',
+    // getFactoryCryptoRegistryAddress: async () => '0xBd5fBd2FA58cB15228a9Abdac9ec994f79E3483C',
+    // getFactoryTricryptoRegistryAddress: async () => '0x38f8D93406fA2d9924DcFcB67dB5B0521Fb20F7D',
+    // getFactoryStableswapNgRegistryAddress: async () => '0xd7E72f3615aa65b92A4DBdC211E296a35512988B',
+    // getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    // factoryImplementationAddressMap: new Map([
+    //   ['0xB90B9B1F91a01Ea22A182CD84C1E22222e39B415'.toLowerCase(), 'plain2basic'],
+    //   ['0x7CDE88e96E9445D986537074B1bFD32c5623c71f'.toLowerCase(), 'plain2balances'],
+    //   ['0x5BD917879e04Cf18EC79285a1C960C5fbA7f5EA3'.toLowerCase(), 'plain2eth'],
+    //   ['0x630C7Ad3998f397df0c0A8FfDB7a65B61ec5539E'.toLowerCase(), 'plain2optimized'],
+    //   ['0xD166EEdf272B860E991d331B71041799379185D5'.toLowerCase(), 'plain3basic'],
+    //   ['0x5C627d6925e448Ae418BC8a45d56B31fe5009Bea'.toLowerCase(), 'plain3balances'],
+    //   ['0x22D710931F01c1681Ca1570Ff016eD42EB7b7c2a'.toLowerCase(), 'plain3eth'],
+    //   ['0xA50d9a424A14aF0b9e7e9243dc1597d977f6cB09'.toLowerCase(), 'plain3optimized'],
+    //   ['0xeD49979026DC44DC7E83b1471794ec9b2a365Ea2'.toLowerCase(), 'plain4basic'],
+    //   ['0x0Cc51c9786f3777a6d50961CEBb2BB6E69ec5e07'.toLowerCase(), 'plain4balances'],
+    //   ['0x0a31527a8dE2Ee97BBD8cCE14Db8E8826a0b6C4f'.toLowerCase(), 'plain4eth'],
+    //   ['0x1086F023146f9026A9Bb22983CE866813C59518A'.toLowerCase(), 'plain4optimized'],
+    //   ['0x505d666E4DD174DcDD7FA090ed95554486d2Be44'.toLowerCase(), 'plainstableng'],
+    //   ['0x64379C265Fc6595065D7d835AAaa731c0584dB80'.toLowerCase(), 'plainstableng-old2'],
+    //   ['0x604388Bb1159AFd21eB5191cE22b4DeCdEE2Ae22'.toLowerCase(), 'plainstableng-old'],
+    //   ['0x5a8C93EE12a8Df4455BA111647AdA41f29D5CfcC'.toLowerCase(), 'metausdstableng'],
+    //   ['0xd3B17f862956464ae4403cCF829CE69199856e1e'.toLowerCase(), 'metausdstableng-old2'],
+    //   ['0x06452f9c013fc37169B57Eab8F50A7A48c9198A3'.toLowerCase(), 'metausdstableng-old'],
+    //   ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
+    // ]),
+    // BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    // DISABLED_POOLS_ADDRESSES: [].map(lc),
+    approxBlocksPerDay: 103000, // https://www.okx.com/web3/explorer/xlayer/block-list
+    graphEndpoint: undefined,
+  },
 };
 export default configs;
