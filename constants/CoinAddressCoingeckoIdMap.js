@@ -50,6 +50,7 @@ const CoinAddressCoingeckoIdMap = {
     '0x0ec9f76202a7061eb9b3a7d6b59d36215a7e37da': 'blackpool-token',
     '0x865377367054516e17014ccded1e7d814edc9ce4': 'dola-usd',
     '0x808507121b80c02388fad14726482e061b8da827': 'pendle',
+    '0xd9a442856c234a39a81a089c06451ebaa4306a72': 'pufeth', // Token seems bricked, leave price oracle responsibility to defillama
   },
   polygon: {
     '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063': 'dai', // DAI
