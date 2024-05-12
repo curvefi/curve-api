@@ -496,7 +496,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'kava',
     platformCoingeckoId: 'kava',
     nativeAssetErc20WrapperId: 'wrapped-kava', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://lb.nodies.app/v1/9687f643ddbe4982aa07657338a8dd7d',
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=kava&dkey=${process.env.DRPC_API_KEY}`,
     noArchivalAlternateRpcUrl: 'https://kava-pokt.nodies.app',
     multicallAddress: '0x7ED7bBd8C454a1B0D9EdD939c45a81A03c20131C',
     multicall2Address: '0x30A62aA52Fa099C4B227869EB6aeaDEda054d121',
