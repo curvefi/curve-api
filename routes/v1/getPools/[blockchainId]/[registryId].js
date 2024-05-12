@@ -1566,9 +1566,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     tvlAll: sum(augmentedData.map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)),
     ...(typeof ethereumOnlyData !== 'undefined' ? {
       tvl: sum(
-        registryId === 'factory' ? (
+        // ethereumOnlyData.mainRegistryPoolList is undefined when preventQueryingFactoData=true,
+        // and in this case we don't care about these totals so nbd
+        (registryId === 'factory' && typeof ethereumOnlyData.mainRegistryPoolList !== 'undefined') ? (
           augmentedData
-            .filter(({ address }) => !ethereumOnlyData.mainRegistryPoolList.includes(address.toLowerCase()))
+            .filter(({ address }) => !ethereumOnlyData.mainRegistryPoolList?.includes(address.toLowerCase()))
             .map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)
         ) : (
           augmentedData.map(({ usdTotalExcludingBasePool }) => usdTotalExcludingBasePool)

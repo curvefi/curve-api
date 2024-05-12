@@ -17,6 +17,7 @@
 import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js'
 import { fn, ParamError } from '#root/utils/api.js';
+import swr from '#root/utils/swr.js';
 import { multiCall } from '#root/utils/Calls.js';
 import onewayVaultAbi from '#root/constants/abis/lending/oneway/vault.json' assert { type: 'json' };
 import onewayRegistryAbi from '#root/constants/abis/lending/oneway/registry.json' assert { type: 'json' };
@@ -25,14 +26,94 @@ import getTokensData from '#root/utils/data/tokens-data.js';
 import { lc } from '#root/utils/String.js';
 import getTokensPrices from '#root/utils/data/tokens-prices.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
+import { sequentialPromiseMap } from '#root/utils/Async.js';
+import getAllGaugesFn, { SIDECHAINS_WITH_FACTORY_GAUGES } from '#root/routes/v1/getAllGauges.js';
+
+const MAX_AGE = 5 * 60;
+
+// Chains for which curve-prices is used as only data source for coins usd prices
+const CURVE_PRICES_AVAILABLE_CHAIN_IDS = [
+  // 'ethereum',
+];
 
 const EMPTY_RESULT = { lendingVaultData: [], tvlAll: 0 };
 
-const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
+const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) => {
+  const USE_CURVE_PRICES_DATA = CURVE_PRICES_AVAILABLE_CHAIN_IDS.includes(blockchainId);
+
+  let gaugesData = {};
+  let gaugeRewards = {};
+
+  if (!preventQueryingFactoData) {
+    const getFactoryV2GaugeRewards = (
+      blockchainId === 'ethereum' ?
+        (await import('#root/utils/data/getFactoryV2GaugeRewards.js')).default :
+        (await import('#root/utils/data/getFactoryV2SidechainGaugeRewards.js')).default
+    );
+
+    gaugesData = (
+      (blockchainId === 'ethereum' || SIDECHAINS_WITH_FACTORY_GAUGES.includes(blockchainId)) ?
+        await getAllGaugesFn.straightCall({ blockchainId }) :
+        {}
+    );
+
+    if (blockchainId === 'ethereum') {
+      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => !side_chain);
+      const factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge).filter((s) => s); // eslint-disable-line no-param-reassign
+
+      gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, factoryGaugesAddresses });
+    } else {
+      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => side_chain);
+
+      gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, gauges: factoryGauges });
+    }
+  }
+
+  const gaugesDataArray = Array.from(Object.values(gaugesData));
+  // const factoryGaugesPoolAddressesAndCoingeckoIdMap = arrayToHashmap(
+  //   gaugesDataArray
+  //     .filter(({ factory, type }) => (
+  //       factory === true &&
+  //       type !== 'stable' && // Harcoded type in the gauge endpoint that is *not* a coingecko id
+  //       type !== 'crypto' // Harcoded type in the gauge endpoint that is *not* a coingecko id
+  //     ))
+  //     .map(({ swap, type: coingeckoId }) => [swap, coingeckoId])
+  // );
+
+  // let factoryGaugesPoolAddressesAndAssetPricesMap;
+  // if (!USE_CURVE_PRICES_DATA) {
+  //   const gaugesAssetPrices = await getAssetsPrices(Array.from(Object.values(factoryGaugesPoolAddressesAndCoingeckoIdMap)));
+  //   factoryGaugesPoolAddressesAndAssetPricesMap = arrayToHashmap(
+  //     Array.from(Object.entries(factoryGaugesPoolAddressesAndCoingeckoIdMap))
+  //       .map(([address, coingeckoId]) => [
+  //         address.toLowerCase(),
+  //         gaugesAssetPrices[coingeckoId],
+  //       ])
+  //   );
+  // }
+
+  return {
+    gaugesDataArray,
+    gaugeRewards,
+    // factoryGaugesPoolAddressesAndAssetPricesMap,
+  };
+};
+
+const getEthereumOnlyDataSwr = async ({ preventQueryingFactoData, blockchainId }) => (
+  (await swr(
+    `getEthereumOnlyDataLendingVaults-${blockchainId}-${preventQueryingFactoData}`,
+    () => getEthereumOnlyData({ preventQueryingFactoData, blockchainId }),
+    { minTimeToStale: MAX_AGE * 1000 } // See CacheSettings.js
+  )).value
+);
+
+const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preventQueryingFactoData }) => {
   const config = configs[lendingBlockchainId];
   if (typeof config === 'undefined') {
     throw new ParamError(`No config data for lendingBlockchainId "${lendingBlockchainId}"`);
   }
+
+  const USE_CURVE_PRICES_DATA = CURVE_PRICES_AVAILABLE_CHAIN_IDS.includes(lendingBlockchainId);
 
   const {
     rpcUrl,
@@ -171,7 +252,7 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
     return accu;
   }, emptyData);
 
-  const augmentedVaultData = mergedVaultData.map(({
+  const augmentedVaultData = await sequentialPromiseMap(mergedVaultData, async ({
     address,
     assetAddress,
     borrowApr,
@@ -198,6 +279,56 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
 
     const totalSuppliedUsd = pricePerShare * totalShares * assetTokenPrice;
 
+    const ethereumOnlyData = await getEthereumOnlyDataSwr({ preventQueryingFactoData, blockchainId: lendingBlockchainId });
+    const gaugeData = (
+      typeof ethereumOnlyData !== 'undefined' ? (
+        ethereumOnlyData.gaugesDataArray.find(({ lendingVaultAddress, side_chain, name }) => {
+          const gaugeDataBlockchainId = !side_chain ? 'ethereum' : name.split('-')[0];
+
+          return (
+            lendingBlockchainId === gaugeDataBlockchainId &&
+            lc(lendingVaultAddress) === lc(address)
+          );
+        })
+      ) : undefined
+    );
+    const gaugeAddress = typeof gaugeData !== 'undefined' ? gaugeData.gauge?.toLowerCase() : undefined;
+    const gaugeRewardsInfo = gaugeAddress ? ethereumOnlyData.gaugeRewards[gaugeAddress] : undefined;
+
+    const gaugeRewards = (
+      typeof gaugeRewardsInfo === 'undefined' ?
+        undefined :
+        await sequentialPromiseMap(gaugeRewardsInfo, async ({
+          tokenAddress,
+          apyData,
+          ...rewardInfo
+        }) => {
+          const gaugeTotalSupply = apyData.totalSupply;
+          const gaugeUsdTotal = gaugeTotalSupply / totalShares * totalSuppliedUsd;
+          const tokenCoingeckoPrice = apyData.tokenPrice;
+
+          let tokenPrice;
+          if (!USE_CURVE_PRICES_DATA) {
+            // Note: we're not using deriveMissingCoinPrices() here but we could if needed later on
+            tokenPrice = tokenCoingeckoPrice;
+          } else {
+            // Here need CURVE_PRICES_DATA
+            tokenPrice = curvePrices[lc(tokenAddress)] || tokenCoingeckoPrice || null;
+          }
+
+          return {
+            ...rewardInfo,
+            tokenAddress,
+            tokenPrice,
+            apy: (
+              apyData.isRewardStillActive ?
+                apyData.rate * 86400 * 365 * tokenPrice / gaugeUsdTotal * 100 :
+                0
+            ),
+          };
+        })
+    );
+
     return {
       id,
       name,
@@ -210,6 +341,12 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
         lendApy,
         lendApyPcent: lendApy * 100,
       },
+      gaugeAddress,
+      gaugeRewards: (
+        (gaugeAddress && !gaugeData.is_killed) ?
+          (gaugeRewards || []) :
+          undefined
+      ),
       assets: {
         borrowed: borrowedTokenData,
         collateral: collateralTokenData,
@@ -234,8 +371,19 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId }) => {
 };
 
 const getLendingVaultsFn = fn(getLendingVaults, {
-  maxAge: 5 * 60,
-  cacheKey: ({ lendingBlockchainId, lendingRegistryId }) => `getLendingVaults-${lendingBlockchainId}-${lendingRegistryId}`,
+  maxAge: MAX_AGE,
+  cacheKey: ({ lendingBlockchainId, lendingRegistryId, preventQueryingFactoData }) => `getLendingVaults-${lendingBlockchainId}-${lendingRegistryId}-${preventQueryingFactoData}`,
+  paramSanitizers: {
+    /**
+     * Set to true to prevent circular dependencies when calling getLendingVaults() in an area of the code that getLendingVaults()
+     * itself calls, e.g. getFactoGauges sets this setting to true because it's interested in the pool list, and
+     * the pool list only.
+     */
+    preventQueryingFactoData: ({ preventQueryingFactoData }) => ({
+      isValid: (typeof preventQueryingFactoData === 'boolean'),
+      defaultValue: false,
+    }),
+  }
 });
 
 export default getLendingVaultsFn;

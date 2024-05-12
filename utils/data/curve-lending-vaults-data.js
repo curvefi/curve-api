@@ -14,13 +14,13 @@ const attachRegistryId = (registryId, vaultData) => ({
   registryId,
 });
 
-const getAllCurveLendingVaultsData = memoize(async (blockchainIds) => (
+const getAllCurveLendingVaultsData = memoize(async (blockchainIds, preventQueryingFactoData = true) => (
   flattenArray(await sequentialPromiseFlatMap(blockchainIds, async (lendingBlockchainId) => {
     const config = configs[lendingBlockchainId];
     const platformRegistries = Object.keys(config.lendingVaultRegistries ?? []);
 
     return Promise.all(platformRegistries.map((lendingRegistryId) => (
-      (getLendingVaultsFn.straightCall({ lendingBlockchainId, lendingRegistryId }))
+      (getLendingVaultsFn.straightCall({ lendingBlockchainId, lendingRegistryId, preventQueryingFactoData }))
         .then((res) => res.lendingVaultData.map((vaultData) => attachBlockchainId(lendingBlockchainId, vaultData)).map((vaultData) => attachRegistryId(lendingRegistryId, vaultData)))
     )))
   }))

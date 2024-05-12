@@ -49,7 +49,7 @@ export default fn(async ({ lendingBlockchainId }) => {
       [lendingBlockchainId]
   );
 
-  const lendingVaultData = await getAllCurveLendingVaultsData(blockchainIds);
+  const lendingVaultData = await getAllCurveLendingVaultsData(blockchainIds, false);
 
   return {
     lendingVaultData,
