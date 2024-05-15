@@ -201,6 +201,10 @@ const CoinAddressCoingeckoIdMap = {
   fraxtal: {
     '0xfc00000000000000000000000000000000000006': 'frax-ether',
   },
+  'x-layer': {
+    '0x74b7F16337b8972027F6196A17a631aC6dE26d22': 'usd-coin',
+    '0x1E4a5963aBFD975d8c9021ce480b42188849D41d': 'tether',
+  },
 };
 
 export default CoinAddressCoingeckoIdMap;
