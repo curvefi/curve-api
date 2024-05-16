@@ -204,6 +204,8 @@ const CoinAddressCoingeckoIdMap = {
   'x-layer': {
     '0x74b7F16337b8972027F6196A17a631aC6dE26d22': 'usd-coin',
     '0x1E4a5963aBFD975d8c9021ce480b42188849D41d': 'tether',
+    '0x5a77f1443d16ee5761d310e38b62f77f726bc71c': 'weth',
+    '0xe538905cf8410324e03A5A23C1c177a474D59b2b': 'wrapped-okb',
   },
 };
 
