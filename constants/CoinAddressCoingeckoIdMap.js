@@ -103,6 +103,7 @@ const CoinAddressCoingeckoIdMap = {
     '0xF6328E49b1Aa09955A6607dafd6E72e135a29739': 'f-x-protocol-fxusd',
     '0x365AccFCa291e7D3914637ABf1F7635dB165Bb09': 'fxn-token',
     '0x179F38f78346F5942E95C5C59CB1da7F55Cf7CAd': 'fxn-token',
+    '0xca5ca9083702c56b481d1eec86f1776fdbd2e594': 'reserve-rights-token',
   },
   avalanche: {
     '0xd586e7f844cea2f87f50152665bcbc2c279d8d70': 'dai', // DAI

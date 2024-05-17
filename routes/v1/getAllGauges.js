@@ -557,11 +557,11 @@ const getAllGauges = fn(async ({ blockchainId }) => {
           isKilled,
         }) => {
           const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
-          const name = getPoolName(pool);
           if (!pool) {
             if (IS_DEV) console.log('MISSING POOL:', poolAddress)
             return null;
           }
+          const name = getPoolName(pool);
 
           const shortName = getPoolShortName(pool);
 
