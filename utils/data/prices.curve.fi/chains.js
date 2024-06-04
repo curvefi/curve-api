@@ -9,6 +9,7 @@ const PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS = [
   'optimism',
   'fantom',
   'xdai',
+  'fraxtal',
 ];
 
 const getPricesCurveFiChainsBlockchainId = memoize(async (blockchainId) => {
