@@ -16,16 +16,16 @@ import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.
 import groupBy from 'lodash.groupby';
 import { multiCall } from '#root/utils/Calls.js';
 
-const web3 = new Web3(configs['x-layer'].rpcUrl);
+const web3 = new Web3(configs.mantle.rpcUrl);
 const networkSettings = {
   web3,
-  multicall2Address: configs['x-layer'].multicall2Address,
+  multicall2Address: configs.mantle.multicall2Address,
 };
 
 export default async ({ version }) => {
-  const config = configs['x-layer'];
+  const config = configs.mantle;
 
-  const poolData = (await getAllCurvePoolsData(['x-layer'])).filter(({ registryId }) => (
+  const poolData = (await getAllCurvePoolsData(['mantle'])).filter(({ registryId }) => (
     version === 'crypto' ?
       registryId.endsWith('crypto') :
       !registryId.endsWith('crypto')
@@ -36,7 +36,7 @@ export default async ({ version }) => {
 
   const latest = await web3.eth.getBlockNumber()
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
-  let DAY_BLOCKS = 10000
+  let DAY_BLOCKS = 100000
 
   await Promise.all(
     poolData.map(async (pool, index) => {

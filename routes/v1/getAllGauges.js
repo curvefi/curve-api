@@ -51,6 +51,7 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'fraxtal',
   'bsc',
   'x-layer',
+  'mantle',
 ];
 
 const lc = (str) => str.toLowerCase();

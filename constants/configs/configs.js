@@ -787,5 +787,30 @@ const configs = {
     approxBlocksPerDay: 103000, // https://www.okx.com/web3/explorer/xlayer/block-list
     graphEndpoint: undefined,
   },
+  mantle: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: 'https://curve.fi/#/mantle/pools/',
+    shortId: 'mantle',
+    nativeCurrencySymbol: 'MNT',
+    chainId: 5000,
+    nativeCurrencyCoingeckoId: 'mantle',
+    platformCoingeckoId: 'mantle',
+    nativeAssetErc20WrapperId: 'wrapped-mantle', // Used by crypto facto, since it handles wrapped native as native
+    rpcUrl: 'https://mantle.drpc.org',
+    multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
+    multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
+    gaugeRegistryAddress: '0xeF672bD94913CB6f1d2812a6e18c1fFdEd8eFf5c',
+    getFactoryTricryptoRegistryAddress: async () => '0x0C9D8c7e486e822C29488Ff51BFf0167B4650953',
+    getFactoryStableswapNgRegistryAddress: async () => '0x5eeE3091f747E60a045a2E715a4c71e600e31F6E',
+    getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
+    factoryImplementationAddressMap: new Map([
+      //
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    approxBlocksPerDay: 191574, // https://explorer.mantle.xyz/stats
+    graphEndpoint: undefined,
+  },
 };
 export default configs;

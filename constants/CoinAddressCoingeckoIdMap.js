@@ -208,6 +208,13 @@ const CoinAddressCoingeckoIdMap = {
     '0x5a77f1443d16ee5761d310e38b62f77f726bc71c': 'weth',
     '0xe538905cf8410324e03A5A23C1c177a474D59b2b': 'wrapped-okb',
   },
+  // https://token-list.mantle.xyz/mantle.tokenlist.json
+  mantle: {
+    '0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9': 'usd-coin',
+    '0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE': 'tether',
+    '0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111': 'ethereum',
+    '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000': 'mantle',
+  },
 };
 
 export default CoinAddressCoingeckoIdMap;
