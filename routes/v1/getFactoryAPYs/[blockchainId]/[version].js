@@ -48,7 +48,6 @@ const SIDECHAINS_WITH_CUSTOM_SUPPORT = [
   'kava',
   'zkevm',
   'zksync',
-  'fraxtal',
   'x-layer',
 ];
 
