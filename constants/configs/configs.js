@@ -437,7 +437,7 @@ const configs = {
       ['0xa7b9d886A9a374A1C86DC52d2BA585c5CDFdac26'.toLowerCase(), 'metausdstableng'],
       ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-aurora',
+    graphEndpoint: undefined,
   },
   harmony: {
     poolsBaseUrlOld: 'https://harmony.curve.fi/',
@@ -485,7 +485,7 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 7000, // https://moonscan.io/chart/blocks
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-moonbeam',
+    graphEndpoint: undefined,
   },
   kava: {
     poolsBaseUrlOld: 'https://kava.curve.fi/',
@@ -570,7 +570,7 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 17280, // https://celoscan.io/chart/blocks
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-celo',
+    graphEndpoint: undefined,
   },
   zkevm: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
@@ -609,7 +609,7 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 50000, // https://zkevm.polygonscan.com/chart/blocks
-    graphEndpoint: undefined, // Not supported by TheGraph's hosted service
+    graphEndpoint: undefined,
   },
   zksync: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider

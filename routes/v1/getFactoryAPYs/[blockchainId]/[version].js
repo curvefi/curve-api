@@ -46,6 +46,9 @@ const paramSanitizers = {
 const SIDECHAINS_WITH_CUSTOM_SUPPORT = [
   'bsc',
   'kava',
+  'aurora',
+  'celo',
+  'moonbeam',
   'zkevm',
   'zksync',
   'x-layer',
@@ -61,7 +64,7 @@ export default fn(async ({ blockchainId, version }) => {
     return getSidechainFactoryAPYs({ blockchainId, version });
   }
 }, {
-  maxAge: 5 * 60,
+  maxAge: 10 * 60,
   cacheKey: ({ blockchainId, version }) => `getFactoryAPYs-${blockchainId}-${version}`,
   paramSanitizers,
 });
