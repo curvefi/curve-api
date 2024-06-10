@@ -14,38 +14,32 @@
 
 import { fn } from '#root/utils/api.js';
 import { sum } from '#root/utils/Array.js';
-import { request } from '#root/utils/Graphql/index.js';
-
-const GRAPH_ENDPOINT = 'https://api.thegraph.com/subgraphs/name/convex-community/crvusd';
+import { sequentialPromiseMap } from '#root/utils/Async.js';
+import { getNowTimestamp } from '#root/utils/Date.js';
+import { fetchPages } from '#root/utils/Pagination.js';
 
 export default fn(async () => {
-  const query = `
-    {
-      amms{
-        id
-        volumeSnapshots(
-          orderBy:timestamp
-          orderDirection:desc
-          where: { period: "86400"}
-          first: 1
-        ) {
-          swapVolumeUSD
-          timestamp
-        }
-      }
-    }
-  `;
+  const crvusdMarkets = await fetchPages('https://prices.curve.fi/v1/crvusd/markets/ethereum', {
+    fetch_on_chain: false,
+    per_page: 100,
+  });
 
-  const data = await request(GRAPH_ENDPOINT, query, undefined, 'crvusd-amms');
+  const amms = crvusdMarkets.map(({ llamma }) => llamma);
+  const timestampNow = getNowTimestamp();
+  const timestampDayAgo = timestampNow - 86400;
 
-  const amms = data.amms.map(({ id, volumeSnapshots }) => ({
-    address: id,
-    volumeUSD: Math.trunc(volumeSnapshots[0]?.swapVolumeUSD || 0),
-  }));
+  const volumeData = await sequentialPromiseMap(amms, async (amm) => {
+    const { data } = await (await fetch(`https://prices.curve.fi/v1/crvusd/llamma_ohlc/ethereum/${amm}?agg_number=1&agg_units=day&start=${timestampDayAgo}&end=${timestampNow}`)).json();
+
+    return {
+      address: amm,
+      volumeUSD: data[0].volume,
+    };
+  });
 
   return {
-    amms,
-    totalVolume: sum(amms.map(({ volumeUSD }) => volumeUSD)),
+    amms: volumeData,
+    totalVolume: sum(volumeData.map(({ volumeUSD }) => volumeUSD)),
   };
 }, {
   maxAge: 60 * 60,
