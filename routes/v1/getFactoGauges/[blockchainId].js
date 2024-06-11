@@ -33,6 +33,7 @@ import { multiCall } from '#root/utils/Calls.js';
 import { lc } from '#root/utils/String.js';
 import { arrayToHashmap, arrayOfIncrements, flattenArray } from '#root/utils/Array.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
+import getAllCurveLendingVaultsData from '#root/utils/data/curve-lending-vaults-data.js';
 import configs from '#root/constants/configs/index.js';
 import { getNowTimestamp } from '#root/utils/Date.js';
 import getFactoryV2SidechainGaugeRewards from '#root/utils/data/getFactoryV2SidechainGaugeRewards.js';
@@ -223,25 +224,38 @@ export default fn(async ({ blockchainId }) => {
     };
   });
 
-  const allPools = await getAllCurvePoolsData([blockchainId]);
+  const [allPools, allLendingVaults] = await Promise.all([
+    getAllCurvePoolsData([blockchainId]),
+    getAllCurveLendingVaultsData([blockchainId]),
+  ]);
 
   const gaugesDataWithPoolAddressAndType = gaugesData.map((gaugeData) => {
-    const pool = allPools.find(({ lpTokenAddress, address }) => (
+    const poolOrLendingVault = allPools.find(({ lpTokenAddress, address }) => (
       lc(lpTokenAddress) === lc(gaugeData.lpTokenAddress) ||
       lc(address) === lc(gaugeData.lpTokenAddress)
+    )) ?? allLendingVaults.find(({ address }) => (
+      lc(address) === lc(gaugeData.lpTokenAddress)
     ));
+    if (typeof poolOrLendingVault === 'undefined') return null;
 
-    if (typeof pool === 'undefined') return null;
+    const isPool = typeof poolOrLendingVault.vaultShares === 'undefined';
 
     return {
       ...gaugeData,
-      poolAddress: pool.address,
+      isPool,
+      poolAddress: poolOrLendingVault.address,
       lpTokenPrice: (
-        pool.usdTotal /
-        (pool.totalSupply / 1e18)
+        isPool ? (
+          poolOrLendingVault.usdTotal /
+          (poolOrLendingVault.totalSupply / 1e18)
+        ) : (poolOrLendingVault.vaultShares.pricePerShare)
       ),
-      type: ((pool.registryId === 'main' || pool.registryId === 'factory') ? 'stable' : 'crypto'),
-      registryId: pool.registryId,
+      type: (
+        isPool ?
+          ((poolOrLendingVault.registryId === 'main' || poolOrLendingVault.registryId === 'factory') ? 'stable' : 'crypto') :
+          undefined
+      ),
+      registryId: poolOrLendingVault.registryId,
     };
   }).filter((o) => o !== null);
 

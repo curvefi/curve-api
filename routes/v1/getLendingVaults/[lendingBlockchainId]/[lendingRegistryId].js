@@ -39,8 +39,6 @@ const CURVE_PRICES_AVAILABLE_CHAIN_IDS = [
 const EMPTY_RESULT = { lendingVaultData: [], tvlAll: 0 };
 
 const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) => {
-  const USE_CURVE_PRICES_DATA = CURVE_PRICES_AVAILABLE_CHAIN_IDS.includes(blockchainId);
-
   let gaugesData = {};
   let gaugeRewards = {};
 
@@ -282,14 +280,10 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
     const ethereumOnlyData = await getEthereumOnlyDataSwr({ preventQueryingFactoData, blockchainId: lendingBlockchainId });
     const gaugeData = (
       typeof ethereumOnlyData !== 'undefined' ? (
-        ethereumOnlyData.gaugesDataArray.find(({ lendingVaultAddress, side_chain, name }) => {
-          const gaugeDataBlockchainId = !side_chain ? 'ethereum' : name.split('-')[0];
-
-          return (
-            lendingBlockchainId === gaugeDataBlockchainId &&
-            lc(lendingVaultAddress) === lc(address)
-          );
-        })
+        ethereumOnlyData.gaugesDataArray.find(({ lendingVaultAddress, blockchainId: gaugeDataBlockchainId }) => (
+          lendingBlockchainId === gaugeDataBlockchainId &&
+          lc(lendingVaultAddress) === lc(address)
+        ))
       ) : undefined
     );
     const gaugeAddress = typeof gaugeData !== 'undefined' ? gaugeData.gauge?.toLowerCase() : undefined;

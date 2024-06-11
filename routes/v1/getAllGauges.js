@@ -354,6 +354,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     // Props for lending vaults only
     lendingVaultAddress,
   }) => [name, {
+    blockchainId: 'ethereum',
     isPool,
     name,
     shortName,
@@ -485,6 +486,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     ]));
 
     return [name, {
+      blockchainId: 'ethereum',
       isPool: true,
       poolUrls: getPoolByLpTokenAddress((pool.lpTokenAddress || pool.address), 'ethereum').poolUrls,
       swap: lc(poolAddress),
@@ -558,13 +560,15 @@ const getAllGauges = fn(async ({ blockchainId }) => {
           isKilled,
         }) => {
           const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
-          if (!pool) {
-            if (IS_DEV) console.log('MISSING POOL:', poolAddress)
+          const lendingVault = getLendingVaultByLpTokenAddress(swap_token, blockchainId);
+          if (!pool && !lendingVault) {
+            if (IS_DEV && swap_token !== ZERO_ADDRESS) console.log('Couldn’t match this LP token address with any Curve pool or lending vault address:', swap_token)
             return null;
           }
-          const name = getPoolName(pool);
 
-          const shortName = getPoolShortName(pool);
+          const isPool = !!pool;
+          const name = isPool ? getPoolName(pool) : getLendingVaultName(lendingVault);
+          const shortName = isPool ? getPoolShortName(pool) : getLendingVaultShortName(lendingVault);
 
           const isSupersededByOtherGauge = blockchainFactoGauges.some((factoGauge) => (
             factoGauge.gauge !== gauge &&
@@ -584,16 +588,11 @@ const getAllGauges = fn(async ({ blockchainId }) => {
 
           return [
             name, {
-              isPool: true,
-              poolUrls: pool.poolUrls,
-              swap: lc(swap),
-              swap_token: lc(swap_token),
+              isPool,
               name,
               shortName,
               gauge: lc(gauge),
-              type,
               side_chain: true,
-              factory: true,
               gauge_data: {
                 inflation_rate,
                 working_supply,
@@ -618,6 +617,31 @@ const getAllGauges = fn(async ({ blockchainId }) => {
                   rewardsNeedNudging,
                 },
               } : {}),
+              blockchainId,
+
+              ...(isPool ? {
+                // Props for pools only
+                poolUrls: pool.poolUrls,
+                swap: lc(swap),
+                swap_token: lc(swap_token),
+                type,
+                factory: true,
+
+                // Props for lending vaults only
+                lendingVaultAddress: undefined,
+                lendingVaultUrls: undefined,
+              } : {
+                // Props for pools only
+                poolUrls: undefined,
+                swap: undefined,
+                swap_token: undefined,
+                type: undefined,
+                factory: undefined,
+
+                // Props for lending vaults only
+                lendingVaultAddress: lendingVault.address,
+                lendingVaultUrls: lendingVault.lendingVaultUrls,
+              }),
             },
           ];
         }).filter((o) => o !== null)
