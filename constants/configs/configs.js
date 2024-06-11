@@ -66,7 +66,7 @@ const configs = {
     getFactoryTricryptoRegistryAddress: async () => '0x0c0e5f2ff0ff18a3be9b835635039256dc4b4963',
     getFactoryStableswapNgRegistryAddress: async () => '0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf',
     getFactoryTwocryptoRegistryAddress: async () => '0x98EE851a00abeE0d95D08cF4CA2BdCE32aeaAF7F',
-    graphEndpoint: `https://api.thegraph.com/subgraphs/name/convex-community/volume-mainnet`,
+    graphEndpoint: undefined,
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     BROKEN_POOLS_ADDRESSES: [
       '0x8301ae4fc9c624d1d396cbdaa1ed877821d7c511',
@@ -149,7 +149,7 @@ const configs = {
       '0x64FFf0e27c223097c824f9d9278eFD5B55c3430e', // Broken pool
     ].map(lc),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-matic',
+    graphEndpoint: undefined,
   },
   fantom: {
     poolsBaseUrlOld: 'https://ftm.curve.fi/',
@@ -203,7 +203,7 @@ const configs = {
     ]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 95000, // https://ftmscan.com/chart/blocks
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-fantom'
+    graphEndpoint: undefined,
   },
   arbitrum: {
     poolsBaseUrlOld: 'https://arbitrum.curve.fi/',
@@ -256,7 +256,7 @@ const configs = {
       ['0x3E01dD8a5E1fb3481F0F589056b428Fc308AF0Fb', '0xC2b1DF84112619D190193E48148000e3990Bf627'], // meta btc
     ]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-arbitrum',
+    graphEndpoint: undefined,
     lendingVaultsBaseUrl: 'https://lend.curve.fi/#/arbitrum/markets/',
     lendingVaultRegistries: {
       oneway: '0xcaEC110C784c9DF37240a8Ce096D352A75922DeA',
@@ -366,7 +366,7 @@ const configs = {
     // ])
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-optimism',
+    graphEndpoint: undefined,
   },
   xdai: {
     poolsBaseUrlOld: 'https://xdai.curve.fi/',
@@ -411,7 +411,7 @@ const configs = {
       ['0xd3B17f862956464ae4403cCF829CE69199856e1e'.toLowerCase(), 'metausdstableng-old'],
       ['0x04Fd6beC7D45EFA99a27D29FB94b55c56dD07223'.toLowerCase(), 'twocrypto-optimized'],
     ]),
-    graphEndpoint: 'https://api.thegraph.com/subgraphs/name/convex-community/volume-xdai',
+    graphEndpoint: undefined,
   },
   aurora: {
     poolsBaseUrlOld: 'https://aurora.curve.fi/',
@@ -686,7 +686,7 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // Very approx from list of blocks on https://basescan.org/blocks
-    graphEndpoint: undefined, // Not supported by TheGraph's hosted service https://thegraph.com/docs/en/developing/supported-networks/
+    graphEndpoint: undefined,
   },
   fraxtal: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
@@ -715,7 +715,7 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // Very approx from list of blocks on https://fraxscan.com/blocks
-    graphEndpoint: undefined, // Not supported by TheGraph's hosted service https://thegraph.com/docs/en/developing/supported-networks/
+    graphEndpoint: undefined,
   },
   bsc: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
@@ -797,7 +797,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'mantle',
     platformCoingeckoId: 'mantle',
     nativeAssetErc20WrapperId: 'wrapped-mantle', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://mantle.drpc.org',
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=mantle&dkey=${process.env.DRPC_API_KEY}`,
     multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
     multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
     gaugeRegistryAddress: '0xeF672bD94913CB6f1d2812a6e18c1fFdEd8eFf5c',
