@@ -17,6 +17,7 @@ import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import getFactoGaugesFn from '#root/routes/v1/getFactoGauges/[blockchainId].js';
 import { lc } from '#root/utils/String.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
+import getAllCurveLendingVaultsData from '#root/utils/data/curve-lending-vaults-data.js';
 
 const NON_STANDARD_OUTDATED_GAUGES = [
   'celo-0x4969e38b8d37fc42a1897295Ea6d7D0b55944497',
@@ -24,7 +25,10 @@ const NON_STANDARD_OUTDATED_GAUGES = [
 
 export default fn(async ({ blockchainId }) => {
   const { gauges } = await getFactoGaugesFn.straightCall({ blockchainId });
-  const poolData = await getAllCurvePoolsData([blockchainId]);
+  const [poolsData, lendingVaultsData] = await Promise.all([
+    getAllCurvePoolsData([blockchainId]),
+    getAllCurveLendingVaultsData([blockchainId]),
+  ]);
 
   const sideChainGauges = gauges.filter(({
     side_chain: isSideChain,
@@ -54,12 +58,20 @@ export default fn(async ({ blockchainId }) => {
   }) => {
     const lcAddress = swap.toLowerCase();
     // Not all pools have an lpTokenAddress
-    const pool = poolData.find(({ address }) => (
+    const pool = poolsData.find(({ address }) => (
       address.toLowerCase() === lcAddress
     ));
-    if (!pool) throw new Error(`Can't find pool data for swap address "${lcAddress}"`);
+    const lendingVault = lendingVaultsData.find(({ address }) => (
+      address.toLowerCase() === lcAddress
+    ));
+    if (!pool && !lendingVault) throw new Error(`Can't find pool or lending vault data for address "${lcAddress}"`);
+    const isPool = !!pool;
 
-    const lpTokenUsdValue = pool.usdTotal / (pool.totalSupply / 1e18);
+    const lpTokenUsdValue = (
+      isPool ?
+        (pool.usdTotal / (pool.totalSupply / 1e18)) :
+        lendingVault.vaultShares.pricePerShare
+    );
     const gaugeUsdValue = totalSupply / 1e18 * lpTokenUsdValue;
 
     const apy = (
