@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import memoize from 'memoizee';
-import configs from '#root/constants/configs/index.js'
+import configs, { getConfigByRpcUrl } from '#root/constants/configs/index.js'
 import * as WEB3_CONSTANTS from '#root/constants/Web3.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/web3.js';
 import { IS_DEV } from '#root/constants/AppConstants.js'
@@ -17,6 +17,11 @@ const FALLBACK_DECODED_PARAMETERS_VALUES = {
   address: ZERO_ADDRESS,
   bool: false,
   string: '',
+};
+
+const MULTICALL_CHUNKS_SIZE = {
+  default: 200,
+  arbitrum: 150,
 };
 
 // Contract instances cache store
@@ -100,6 +105,8 @@ const multiCall = async (callsConfig, isDebugging = false) => {
     }
   }
 
+  const network = getConfigByRpcUrl(augmentedCallsConfig[0].networkSettings.web3.currentProvider.host)?.[0];
+
   const hasMetaData = augmentedCallsConfig.some(({ metaData }) => typeof metaData !== 'undefined');
   const calls = augmentedCallsConfig.map((callConfig) => {
     const {
@@ -127,7 +134,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
   const { networkSettings } = augmentedCallsConfig[0];
 
   const multicall = getContractInstance(networkSettings.multicall2Address, MULTICALL2_ABI, networkSettings.web3);
-  const chunkedCalls = getArrayChunks(calls, 200); // Keep each multicall size reasonable
+  const chunkedCalls = getArrayChunks(calls, (MULTICALL_CHUNKS_SIZE[network] ?? MULTICALL_CHUNKS_SIZE.default)); // Keep each multicall size reasonable
 
   let decodedData;
   try {
