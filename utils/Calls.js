@@ -21,7 +21,7 @@ const FALLBACK_DECODED_PARAMETERS_VALUES = {
 
 const MULTICALL_CHUNKS_SIZE = {
   default: 200,
-  arbitrum: 150,
+  arbitrum: 100,
 };
 
 // Contract instances cache store
