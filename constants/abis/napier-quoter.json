@@ -1,0 +1,908 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "contract IPoolFactory",
+        "name": "_factory",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "ApproxBinarySearchInputInvalid",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ApproxFail",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "hint",
+        "type": "bytes"
+      }
+    ],
+    "name": "ApproxFailWithHint",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "SD59x18",
+        "name": "x",
+        "type": "int256"
+      }
+    ],
+    "name": "PRBMath_SD59x18_Exp2_InputTooBig",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "SD59x18",
+        "name": "x",
+        "type": "int256"
+      }
+    ],
+    "name": "PRBMath_SD59x18_Exp_InputTooBig",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "SD59x18",
+        "name": "x",
+        "type": "int256"
+      }
+    ],
+    "name": "PRBMath_SD59x18_Log_InputTooSmall",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "UD60x18",
+        "name": "x",
+        "type": "uint256"
+      }
+    ],
+    "name": "PRBMath_UD60x18_Exp2_InputTooBig",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "UD60x18",
+        "name": "x",
+        "type": "uint256"
+      }
+    ],
+    "name": "PRBMath_UD60x18_Exp_InputTooBig",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "int256",
+        "name": "exchangeRate",
+        "type": "int256"
+      }
+    ],
+    "name": "PoolExchangeRateBelowOne",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PoolInsufficientBaseLptForTrade",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PoolProportionMustNotEqualOne",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PoolProportionTooHigh",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PoolRateScalarZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PoolZeroAmountsInput",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PoolZeroLnImpliedRate",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RouterInsufficientUnderlyingRepay",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RouterPoolNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ptToAdd",
+        "type": "uint256"
+      }
+    ],
+    "name": "approxBaseLptToAddLiquidityOnePt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingsToAdd",
+        "type": "uint256"
+      }
+    ],
+    "name": "approxBaseLptToAddLiquidityOneUnderlying",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidity",
+        "type": "uint256"
+      }
+    ],
+    "name": "approxBaseLptToRemoveLiquidityOnePt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingDesired",
+        "type": "uint256"
+      }
+    ],
+    "name": "approxPtForExactUnderlyingIn",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingDesired",
+        "type": "uint256"
+      }
+    ],
+    "name": "approxPtForExactUnderlyingOut",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingsToAdd",
+        "type": "uint256"
+      }
+    ],
+    "name": "approxUnderlyingToAddLiquidityOneUnderlyingKeepYt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingDesired",
+        "type": "uint256"
+      }
+    ],
+    "name": "approxYtForExactUnderlyingIn",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingDesired",
+        "type": "uint256"
+      }
+    ],
+    "name": "approxYtForExactUnderlyingOut",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "factory",
+    "outputs": [
+      {
+        "internalType": "contract IPoolFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "getPoolAssets",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "basePool",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "underlying",
+            "type": "address"
+          },
+          {
+            "internalType": "address[3]",
+            "name": "principalTokens",
+            "type": "address[3]"
+          }
+        ],
+        "internalType": "struct IPoolFactory.PoolAssets",
+        "name": "assets",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "mintCallback",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[3]",
+        "name": "ptsIn",
+        "type": "uint256[3]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingIn",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteAddLiquidity",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "liquidity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gasEstimate",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ptIn",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteAddLiquidityOnePt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "liquidity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "baseLptSwap",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingIn",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteAddLiquidityOneUnderlying",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "liquidity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "baseLptSwap",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingIn",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteAddLiquidityOneUnderlyingKeepYt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "liquidity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ytOut",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "underlyingDeposit",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      }
+    ],
+    "name": "quoteBasePoolLpPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ptIn",
+        "type": "uint256"
+      }
+    ],
+    "name": "quotePtForUnderlying",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "underlyingOut",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gasEstimate",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "quotePtPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidity",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteRemoveLiquidity",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[3]",
+        "name": "",
+        "type": "uint256[3]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidity",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteRemoveLiquidityBaseLpt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidity",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteRemoveLiquidityOnePt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidity",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteRemoveLiquidityOneUnderlying",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "underlyingOut",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gasEstimate",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ptOutDesired",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteUnderlyingForPt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "underlyingIn",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gasEstimate",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ytOut",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteUnderlyingForYt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "underlyingIn",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "uDeposit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gasEstimate",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract INapierPool",
+        "name": "pool",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ytIn",
+        "type": "uint256"
+      }
+    ],
+    "name": "quoteYtForUnderlying",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "underlyingOut",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gasEstimate",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "int256",
+        "name": "underlyingDelta",
+        "type": "int256"
+      },
+      {
+        "internalType": "int256",
+        "name": "ptDelta",
+        "type": "int256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "swapCallback",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

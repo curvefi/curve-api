@@ -49,6 +49,7 @@ import { getRegistry } from '#root/utils/getters.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import getTokensPrices from '#root/utils/data/tokens-prices.js';
 import getYcTokenPrices from '#root/utils/data/getYcTokenPrices.js';
+import getNapierTokenPrices from '#root/utils/data/getNapierTokenPrices.js';
 import getCrvusdPrice from '#root/utils/data/getCrvusdPrice.js';
 import getETHLSTAPYs from '#root/utils/data/getETHLSTAPYs.js';
 import getDaiAPYs from '#root/utils/data/getDaiAPYs.js';
@@ -935,6 +936,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   let coinAddressesAndPricesMapFallback;
   let crvusdTokenAddresseAndPriceMapFallback;
   let ycTokensAddressesAndPricesMapFallback;
+  let napierTokensAddressesAndPricesMapFallback;
   let templeTokensAddressesAndPricesMapFallback;
   let synthetixTokensAddressesAndPricesMapFallback;
   let eywaTokensAddressesAndPricesMapFallback;
@@ -997,6 +999,12 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     synthetixTokensAddressesAndPricesMapFallback = (
       (blockchainId === 'ethereum') ?
         await getSynthetixTokenPrices(networkSettingsParam) :
+        {}
+    );
+
+    napierTokensAddressesAndPricesMapFallback = (
+      (blockchainId === 'ethereum') ?
+        await getNapierTokenPrices(networkSettingsParam) :
         {}
     );
 
@@ -1098,6 +1106,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
             mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()] || //
             coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
             ycTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
+            napierTokensAddressesAndPricesMapFallback[`${poolAddress.toLowerCase()}-${coinAddress.toLowerCase()}`] || //
             templeTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
             synthetixTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
             eywaTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
