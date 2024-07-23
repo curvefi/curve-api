@@ -41,5 +41,16 @@ const getPoolAssetTypesFromExternalStore = async (address, blockchainId) => {
   return metaData?.asset_types;
 };
 
+const getPoolCreationTimestampFromExternalStore = async (address, blockchainId) => {
+  const metaData = await getPricesCurveFiPoolsMetadataBlockchainId(address, blockchainId);
+  if (!metaData || metaData.deployment_date === null) return null;
+
+  // Append 'Z' because this is a UTC datetime string
+  return (Date.parse(`${metaData.deployment_date}Z`) / 1000);
+};
+
 export default getPricesCurveFiPoolsMetadataBlockchainId;
-export { getPoolAssetTypesFromExternalStore };
+export {
+  getPoolAssetTypesFromExternalStore,
+  getPoolCreationTimestampFromExternalStore,
+};

@@ -72,7 +72,10 @@ import { IS_DEV } from '#root/constants/AppConstants.js';
 import { getAugmentedCoinsFirstPass, getAugmentedCoinsSecondPass } from '../_augmentedCoinsUtils.js';
 import toSpliced from 'core-js-pure/actual/array/to-spliced.js'; // For compat w/ Node 18
 import getPricesCurveFiChainsBlockchainId from '#root/utils/data/prices.curve.fi/chains.js';
-import { getPoolAssetTypesFromExternalStore } from '#root/utils/data/prices.curve.fi/pools-metadata.js';
+import {
+  getPoolAssetTypesFromExternalStore,
+  getPoolCreationTimestampFromExternalStore,
+} from '#root/utils/data/prices.curve.fi/pools-metadata.js';
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [{ "name": "arg0", "type": "uint256" }], "name": "balances", "outputs": [{ "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
@@ -1505,6 +1508,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       exchange_extended: poolAvailableMethods.includes('exchange_extended'),
     };
 
+    const creationTs = await getPoolCreationTimestampFromExternalStore(poolInfo.address, blockchainId);
+
     const augmentedPool = {
       ...poolInfo,
       poolUrls: detailedPoolUrls,
@@ -1541,6 +1546,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       usesRateOracle,
       isBroken: (BROKEN_POOLS_ADDRESSES || []).includes(lc(poolInfo.address)),
       hasMethods, // Used to know the presence of some methods not available in all pools
+      creationTs,
     };
 
     // When retrieving pool data for a registry that isn't 'main', mainRegistryLpTokensPricesMap
