@@ -1508,7 +1508,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       exchange_extended: poolAvailableMethods.includes('exchange_extended'),
     };
 
-    const { creationTs, creationBlockNumber } = await getPoolCreationTsAndBlockFromExternalStore(poolInfo.address, blockchainId);
+    const creationMetadata = await getPoolCreationTsAndBlockFromExternalStore(poolInfo.address, blockchainId);
+    const creationTs = creationMetadata?.creationTs ?? null;
+    const creationBlockNumber = creationMetadata?.creationBlockNumber ?? null;
 
     const augmentedPool = {
       ...poolInfo,
