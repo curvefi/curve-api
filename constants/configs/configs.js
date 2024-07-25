@@ -96,6 +96,7 @@ const configs = {
     platformCoingeckoId: 'polygon-pos',
     nativeAssetErc20WrapperId: 'wmatic',
     rpcUrl: `https://lb.drpc.org/ogrpc?network=polygon&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://polygon-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604',
     multicall2Address: '0x275617327c958bD06b5D6b871E7f491D76113dd8',
     getFactoryRegistryAddress: async () => '0x722272d36ef0da72ff51c5a65db7b870e2e8d4ee',
@@ -161,6 +162,7 @@ const configs = {
     platformCoingeckoId: 'fantom',
     nativeAssetErc20WrapperId: 'wftm',
     rpcUrl: `https://lb.drpc.org/ogrpc?network=fantom&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://fantom-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xb828c456600857abd4ed6c32facc607bd0464f4f',
     multicall2Address: '0xD98e3dBE5950Ca8Ce5a4b59630a5652110403E5c',
     getFactoryRegistryAddress: async () => '0x686d67265703d1f124c45e33d47d794c566889ba',
@@ -215,6 +217,7 @@ const configs = {
     platformCoingeckoId: 'ethereum',
     nativeAssetErc20WrapperId: 'weth',
     rpcUrl: `https://lb.drpc.org/ogrpc?network=arbitrum&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     multicall2Address: '0x5b5cfe992adac0c9d48e05854b2d91c73a003858',
     getFactoryRegistryAddress: async () => '0xb17b674D9c5CB2e441F8e196a2f048A81355d031',
@@ -274,6 +277,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'avalanche-2',
     platformCoingeckoId: 'avalanche',
     rpcUrl: `https://lb.drpc.org/ogrpc?network=avalanche&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://avax-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     nativeAssetErc20WrapperId: 'wavax',
     multicallAddress: '0xa00FB557AA68d2e98A830642DBbFA534E8512E5f',
     multicall2Address: '0x29b6603D17B9D8f021EcB8845B6FD06E1Adf89DE',
@@ -329,6 +333,7 @@ const configs = {
     platformCoingeckoId: 'optimistic-ethereum',
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: `https://lb.drpc.org/ogrpc?network=optimism&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://opt-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0x2DC0E2aa608532Da689e89e237dF582B783E552C',
     multicall2Address: '0x2DC0E2aa608532Da689e89e237dF582B783E552C',
     getFactoryRegistryAddress: async () => '0x2db0E83599a91b508Ac268a6197b8B14F5e72840',
@@ -378,6 +383,7 @@ const configs = {
     platformCoingeckoId: 'xdai',
     nativeAssetErc20WrapperId: 'wxdai', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://rpc.ankr.com/gnosis',
+    backuprpcUrl: `https://gnosis-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
     multicall2Address: '0xFAa296891cA6CECAF2D86eF5F7590316d0A17dA0',
     DISABLED_POOLS_ADDRESSES: [].map(lc),
@@ -540,6 +546,7 @@ const configs = {
     platformCoingeckoId: 'celo',
     nativeAssetErc20WrapperId: 'celo', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://rpc.ankr.com/celo',
+    backuprpcUrl: `https://celo-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
     multicall2Address: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
     getFactoryRegistryAddress: async () => '0x5277A0226d10392295E8D383E9724D6E416d6e6C',
@@ -583,6 +590,7 @@ const configs = {
     platformCoingeckoId: 'polygon-zkevm',
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: `https://lb.drpc.org/ogrpc?network=polygon-zkevm&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://polygonzkevm-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
     multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
     getFactoryRegistryAddress: async () => '0xCDC481031E23AEd8CbBe6e07A638298a790D445a',
@@ -622,6 +630,7 @@ const configs = {
     platformCoingeckoId: 'zksync',
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://mainnet.era.zksync.io',
+    backuprpcUrl: `https://zksync-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xF9cda624FBC7e059355ce98a31693d299FACd963',
     multicall2Address: '0xF9cda624FBC7e059355ce98a31693d299FACd963',
     getFactoryRegistryAddress: async () => '0xAF5261eD780fd5b80CF6E206b6BF90CbB97F511B',
@@ -655,6 +664,7 @@ const configs = {
     platformCoingeckoId: 'base',
     nativeAssetErc20WrapperId: 'weth', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: `https://lb.drpc.org/ogrpc?network=base&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://base-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
     multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
     getFactoryRegistryAddress: async () => '0x3093f9B57A428F3EB6285a589cb35bEA6e78c336',
@@ -699,6 +709,7 @@ const configs = {
     platformCoingeckoId: 'fraxtal', // Not on Coingecko yet, but likely to be this id
     nativeAssetErc20WrapperId: 'frax-ether', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: 'https://rpc.frax.com',
+    backuprpcUrl: `https://frax-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
     multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
     getFactoryTricryptoRegistryAddress: async () => '0xc9Fe0C63Af9A39402e8a5514f9c43Af0322b665F',
@@ -728,6 +739,7 @@ const configs = {
     platformCoingeckoId: 'binance-smart-chain',
     nativeAssetErc20WrapperId: 'wbnb', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: `https://lb.drpc.org/ogrpc?network=bsc&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
     multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
     gaugeRegistryAddress: '0xDb205f215f568ADf21b9573b62566f6d9a40bed6', // New deployment
@@ -798,6 +810,7 @@ const configs = {
     platformCoingeckoId: 'mantle',
     nativeAssetErc20WrapperId: 'wrapped-mantle', // Used by crypto facto, since it handles wrapped native as native
     rpcUrl: `https://lb.drpc.org/ogrpc?network=mantle&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://mantle-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
     multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
     gaugeRegistryAddress: '0xeF672bD94913CB6f1d2812a6e18c1fFdEd8eFf5c',
