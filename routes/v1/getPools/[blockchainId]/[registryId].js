@@ -74,7 +74,7 @@ import toSpliced from 'core-js-pure/actual/array/to-spliced.js'; // For compat w
 import getPricesCurveFiChainsBlockchainId from '#root/utils/data/prices.curve.fi/chains.js';
 import {
   getPoolAssetTypesFromExternalStore,
-  getPoolCreationTimestampFromExternalStore,
+  getPoolCreationTsAndBlockFromExternalStore,
 } from '#root/utils/data/prices.curve.fi/pools-metadata.js';
 
 /* eslint-disable */
@@ -1508,7 +1508,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       exchange_extended: poolAvailableMethods.includes('exchange_extended'),
     };
 
-    const creationTs = await getPoolCreationTimestampFromExternalStore(poolInfo.address, blockchainId);
+    const { creationTs, creationBlockNumber } = await getPoolCreationTsAndBlockFromExternalStore(poolInfo.address, blockchainId);
 
     const augmentedPool = {
       ...poolInfo,
@@ -1547,6 +1547,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       isBroken: (BROKEN_POOLS_ADDRESSES || []).includes(lc(poolInfo.address)),
       hasMethods, // Used to know the presence of some methods not available in all pools
       creationTs,
+      creationBlockNumber,
     };
 
     // When retrieving pool data for a registry that isn't 'main', mainRegistryLpTokensPricesMap
