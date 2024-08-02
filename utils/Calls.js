@@ -228,7 +228,6 @@ const multiCallWithRetries = async (callsConfig, isDebugging) => {
 
   do {
     try {
-      console.log('running multicall...') //
       res = await multiCall(callsConfig, isDebugging, retryCount);
     } catch (error) {
       console.log(`multiCall() failed, try ${retryCount} of ${MAX_MULTICALL_RETRIES}. Error below ↓`);
@@ -241,10 +240,8 @@ const multiCallWithRetries = async (callsConfig, isDebugging) => {
   } while (typeof res === 'undefined' && (retryCount - 1) < MAX_MULTICALL_RETRIES)
 
   if (typeof res !== 'undefined') {
-    console.log('multicall done!') //
     return res;
   } else {
-    console.log('multicall failed!') //
     throw err;
   }
 };
