@@ -2,8 +2,10 @@ import configs from '#root/constants/configs/index.js';
 import swr from '#root/utils/swr.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
 import { arrayToHashmap, flattenArray, uniq } from '#root/utils/Array.js';
-import { addTtlRandomness } from '#root/utils/Number.js';
+// import { addTtlRandomness } from '#root/utils/Number.js';
 import { getFunctionParamObjectKeys } from '#root/utils/Function.js';
+
+const addTtlRandomness = (ttl) => ttl; // Disable ttl randomness temporarily as it seems to mess with things
 
 const getNowMs = () => Number(Date.now());
 const allBlockchainIds = Object.keys(configs);
