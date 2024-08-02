@@ -9,6 +9,7 @@ import MULTICALL2_ABI from '../constants/abis/multicall2.json' assert { type: 'j
 import { getArrayChunks, flattenArray } from '#root/utils/Array.js';
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
+const MAX_MULTICALL_RETRIES = 2;
 
 const FALLBACK_DECODED_PARAMETERS_VALUES = {
   uint256: 0,
@@ -22,6 +23,7 @@ const FALLBACK_DECODED_PARAMETERS_VALUES = {
 const MULTICALL_CHUNKS_SIZE = {
   default: 200,
   arbitrum: 100,
+  polygon: 100,
 };
 
 // Contract instances cache store
@@ -37,7 +39,7 @@ const getContractInstance = memoize((address, abi, library) => (
  * Returns an array of data.
  * If `metaData` is passed alongside any call, returns an array of objects of shape { data, metaData } instead.
  */
-const multiCall = async (callsConfig, isDebugging = false) => {
+const multiCall = async (callsConfig, isDebugging = false, retryCount = 0) => {
   if (callsConfig.length === 0) return [];
 
   const defaultCallConfig = {
@@ -191,7 +193,7 @@ const multiCall = async (callsConfig, isDebugging = false) => {
     });
   } catch (err) {
     console.error(err)
-    if (IS_DEV && !isDebugging) await findThrowingCall(callsConfig);
+    if (IS_DEV && !isDebugging && retryCount >= MAX_MULTICALL_RETRIES) await findThrowingCall(callsConfig);
     else throw err;
   }
 
@@ -219,6 +221,34 @@ const findThrowingCall = async (callsConfig) => {
   console.log('Found throwing call:', subset);
 };
 
+const multiCallWithRetries = async (callsConfig, isDebugging) => {
+  let res;
+  let err;
+  let retryCount = 0;
+
+  do {
+    try {
+      console.log('running multicall...') //
+      res = await multiCall(callsConfig, isDebugging, retryCount);
+    } catch (error) {
+      console.log(`multiCall() failed, try ${retryCount} of ${MAX_MULTICALL_RETRIES}. Error below ↓`);
+      console.error(error);
+      err = error;
+      if (IS_DEV) console.log('Slice of the call config: ', callsConfig[0]);
+    }
+
+    retryCount += 1;
+  } while (typeof res === 'undefined' && (retryCount - 1) < MAX_MULTICALL_RETRIES)
+
+  if (typeof res !== 'undefined') {
+    console.log('multicall done!') //
+    return res;
+  } else {
+    console.log('multicall failed!') //
+    throw err;
+  }
+};
+
 export {
-  multiCall,
+  multiCallWithRetries as multiCall,
 };
