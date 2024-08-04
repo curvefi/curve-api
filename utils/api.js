@@ -2,10 +2,8 @@ import configs from '#root/constants/configs/index.js';
 import swr from '#root/utils/swr.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
 import { arrayToHashmap, flattenArray, uniq } from '#root/utils/Array.js';
-// import { addTtlRandomness } from '#root/utils/Number.js';
+import { addTtlRandomness } from '#root/utils/Number.js';
 import { getFunctionParamObjectKeys } from '#root/utils/Function.js';
-
-const addTtlRandomness = (ttl) => ttl; // Disable ttl randomness temporarily as it seems to mess with things
 
 const getNowMs = () => Number(Date.now());
 const allBlockchainIds = Object.keys(configs);
@@ -173,7 +171,8 @@ const fn = (cb, options = {}) => {
   };
 
   const rMaxAgeSec = maxAgeSec !== null ? addTtlRandomness(maxAgeSec) : null;
-  const rMaxAgeCDN = maxAgeCDN !== null ? addTtlRandomness(maxAgeCDN) : null;
+  // const rMaxAgeCDN = maxAgeCDN !== null ? addTtlRandomness(maxAgeCDN) : null;
+  const rMaxAgeCDN = maxAgeCDN; // No upside to adding randomness there
 
   if (rMaxAgeSec !== null && rMaxAgeCDN !== null) {
     throw new Error('cacheKey and cacheKeyCDN cannot be both defined: cacheKey applies to both Redis and CDN, while cacheKeyCDN applies only to CDN. Use cacheKey if the entry must be cached in both caches, or cacheKeyCDN if it must be cached only at the CDN level.');
@@ -226,7 +225,7 @@ const fn = (cb, options = {}) => {
       })
       .then((data) => {
         // rMaxAgeSec is reduced so that the two swr caches don't add up to twice the caching time
-        const maxAgeCdnValue = rMaxAgeCDN ?? Math.trunc(rMaxAgeSec / 1.2);
+        const maxAgeCdnValue = rMaxAgeCDN ?? Math.trunc(maxAgeSec / 1.2);
         const maxAgeBrowserValue = IS_DEV ? 0 : 60;
 
         // Send a 200 response for expected errors
