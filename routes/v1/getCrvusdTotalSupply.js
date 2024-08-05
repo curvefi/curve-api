@@ -20,7 +20,7 @@ export default fn(async () => {
   const crvusdTotalSupply = await crvusd.default.totalSupply();
 
   return {
-    crvusdTotalSupply,
+    crvusdTotalSupply: crvusdTotalSupply.total,
   };
 }, {
   maxAge: 5 * 60, // 5m
