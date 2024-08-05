@@ -126,6 +126,7 @@ const DEFAULT_OPTIONS = {
   cacheKey: undefined,
   maxAgeCDN: null,
   returnFlatData: false,
+  appendGeneratedTime: true,
   paramSanitizers: {
     blockchainId: ({ blockchainId }) => ({
       isValid: allBlockchainIds.includes(blockchainId),
@@ -160,6 +161,7 @@ const fn = (cb, options = {}) => {
     cacheKeyCDN = null, // Either a function that's passed the call's params and returns a string, or a static string. Note: Cloudfront doesn't use this as a cache key, but our internal logging and monitoring system uses it to identify endpoints usage.
     maxAgeCDN = null, // Caching duration for CDN only, in seconds
     returnFlatData = false,
+    appendGeneratedTime,
     paramSanitizers,
   } = {
     ...DEFAULT_OPTIONS,
@@ -186,6 +188,8 @@ const fn = (cb, options = {}) => {
     throw new Error('cacheKeyCDN not defined: cacheKeyCDN must be set when using maxAgeCDN');
   }
 
+  const addGeneratedTimeFn = appendGeneratedTime ? addGeneratedTime : (o) => o;
+
   const callback = (
     rMaxAgeSec !== null ? (
       async (query) => {
@@ -194,7 +198,7 @@ const fn = (cb, options = {}) => {
 
         return (await swr(
           cacheKeyStr,
-          async () => logRuntime(() => addGeneratedTime(cb(params)), cacheKeyStr),
+          async () => logRuntime(() => addGeneratedTimeFn(cb(params)), cacheKeyStr),
           { minTimeToStale: rMaxAgeSec * 1000 } // See CacheSettings.js
         )).value;
       }
@@ -203,7 +207,7 @@ const fn = (cb, options = {}) => {
         const params = sanitizeParams(cb, query, paramSanitizers);
         const cacheKeyStr = (typeof cacheKeyCDN === 'function' ? cacheKeyCDN(params) : cacheKeyCDN);
 
-        return logRuntime(() => addGeneratedTime(cb(params)), cacheKeyStr);
+        return logRuntime(() => addGeneratedTimeFn(cb(params)), cacheKeyStr);
       }
     )
   );
