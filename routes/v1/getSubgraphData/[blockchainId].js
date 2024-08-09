@@ -337,6 +337,6 @@ export default fn(async ({ blockchainId }) => {
     }
   }
 }, {
-  maxAge: 5 * 60, // 5 min
+  maxAge: 12 * 3600, // 12 hours, uses free thegraph queries so needs to be severely limited
   cacheKey: ({ blockchainId }) => `getSubgraphData-${blockchainId}`,
 });
