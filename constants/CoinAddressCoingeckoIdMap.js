@@ -198,6 +198,7 @@ const CoinAddressCoingeckoIdMap = {
     '0x417Ac0e078398C154EdFadD9Ef675d30Be60Af93': 'crvusd',
     '0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b': 'tbtc',
     '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca': 'bridged-usd-coin-base',
+    '0x64b88c73a5dfa78d1713fe1b4c69a22d7e0faaa7': 'maverick-protocol',
   },
   fraxtal: {
     '0xfc00000000000000000000000000000000000006': 'frax-ether',
