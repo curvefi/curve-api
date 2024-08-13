@@ -485,9 +485,9 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       'factory-eywa': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
       'factory-crypto': ['main', 'crypto', 'factory-crvusd'],
       factory: ['main', 'crypto', 'factory-crypto', 'factory-crvusd'],
-      'factory-twocrypto': ['main', 'factory-crvusd', 'factory'],
       'factory-tricrypto': ['main', 'factory-crvusd', 'factory'],
       'factory-stable-ng': ['main', 'factory-crvusd', 'factory', 'factory-crypto'],
+      'factory-twocrypto': ['main', 'factory-crvusd', 'factory', 'factory-stable-ng'],
     };
     otherRegistryPoolsData = await sequentialPromiseFlatMap(REGISTRIES_DEPENDENCIES[registryId], async (id) => (
       // eslint-disable-next-line no-use-before-define
@@ -510,7 +510,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           addressB.toLowerCase() === address.toLowerCase()
         )) :
           poolRegistryId === 'crypto' ? pool :
-            null
+            poolRegistryId === 'factory-stable-ng' ? pool :
+              null
       );
 
       if (!matchingPool) return null;
