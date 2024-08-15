@@ -95,8 +95,6 @@ export default fn(async ({ blockchainId }) => {
   if (!GRAPH_ENDPOINT) throw new NotFoundError('No subgraph endpoint');
 
   try {
-    const web3 = new Web3(config.rpcUrl);
-
     if (typeof config === 'undefined') {
       throw new NotFoundError(`No factory data for blockchainId "${blockchainId}"`);
     }
@@ -117,7 +115,6 @@ export default fn(async ({ blockchainId }) => {
 
     await runConcurrentlyAtMost(poolList.map((_, i) => async () => {
       const poolAddress = lc(poolList[i].address);
-
       let POOL_QUERY = `
         {
           swapVolumeSnapshots(
@@ -138,13 +135,21 @@ export default fn(async ({ blockchainId }) => {
           }
         }
         `
-      const res = await fetch(GRAPH_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: POOL_QUERY })
-      })
 
-      let data = await res.json()
+      let data;
+      try {
+        const res = await fetch(GRAPH_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: POOL_QUERY })
+        })
+
+        data = await res.json()
+      } catch (err) {
+        if (IS_DEV) console.log(`Error happened within first query for pool ${poolAddress}`);
+        throw err;
+      }
+
       let rollingDaySummedVolume = 0
       let rollingRawVolume = 0
 
@@ -193,7 +198,6 @@ export default fn(async ({ blockchainId }) => {
       totalVolume += parseFloat(rollingDaySummedVolume)
       cryptoVolume += (poolList[i].type.includes('crypto')) ? parseFloat(rollingDaySummedVolume) : 0
 
-
       const APY_QUERY = `
       {
         dailyPoolSnapshots(first: 7,
@@ -211,13 +215,19 @@ export default fn(async ({ blockchainId }) => {
       }
       `;
 
-      const resAPY = await fetch(GRAPH_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: APY_QUERY }),
-      });
+      let dataAPY;
+      try {
+        const resAPY = await fetch(GRAPH_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: APY_QUERY }),
+        });
 
-      let dataAPY = await resAPY.json();
+        dataAPY = await resAPY.json();
+      } catch (err) {
+        if (IS_DEV) console.log(`Error happened within second query for pool ${poolAddress}`);
+        throw err;
+      }
 
       const snapshots = dataAPY?.data?.dailyPoolSnapshots?.map((a) => ({
         baseApr: +a.baseApr,
@@ -260,7 +270,7 @@ export default fn(async ({ blockchainId }) => {
       poolList[i].latestWeeklyApy = Math.min(latestWeeklyApy, 1e6);
       poolList[i].virtualPrice = snapshots[0] ? snapshots[0].virtualPrice : undefined;
 
-    }), 10);
+    }), 4);
 
     // When a crypto pool uses a base pool lp as one of its underlying assets, apy calculations
     // using xcp_profit need to add up 1/3rd of the underlying pool's base volume

@@ -320,7 +320,7 @@ const configs = {
       ['0xB755B949C126C04e0348DD881a5cF55d424742B2', '0x7f90122BF0700F9E7e1F688fe926940E8839F353'], // atricrypto<>aave
     ]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
-    graphEndpoint: `https://gateway.thegraph.com/api/${process.env.THEGRAPH_API_KEY}/subgraphs/id/4m6FwSHYnkQRUBSKdhh5heGd1ojTAXwEiacUyFix2Ygx`,
+    graphEndpoint: `https://subgraph.satsuma-prod.com/${process.env.ALCHEMY_SUBGRAPH_API_KEY}/curve-1/curve-volume-subgraph-avalanche/api`,
     approxBlocksPerDay: 43000,
   },
   optimism: {
