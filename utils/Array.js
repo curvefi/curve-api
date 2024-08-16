@@ -72,6 +72,8 @@ class CaseInsensitiveMap extends Map {
   }
 }
 
+const removeNulls = (arr) => arr.filter((o) => o !== null);
+
 export {
   uniq,
   uniqBy,
@@ -85,4 +87,5 @@ export {
   sum,
   arrayOfIncrements,
   CaseInsensitiveMap,
+  removeNulls,
 };

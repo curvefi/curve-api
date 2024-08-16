@@ -388,6 +388,8 @@ const configs = {
     multicall2Address: '0xFAa296891cA6CECAF2D86eF5F7590316d0A17dA0',
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 16900,
+    gaugeRegistryAddress: '0xabc000d88f23bb45525e447528dbf656a9d55bf5',
+    gaugeRegistryAddress2: '0xef672bd94913cb6f1d2812a6e18c1ffded8eff5c',
     getFactoryRegistryAddress: async () => '0xD19Baeadc667Cf2015e395f2B08668Ef120f41F5',
     getCryptoRegistryAddress: async () => '0x8A4694401bE8F8FCCbC542a3219aF1591f87CE17',
     getFactoryStableswapNgRegistryAddress: async () => '0xbC0797015fcFc47d9C1856639CaE50D0e69FbEE8',
