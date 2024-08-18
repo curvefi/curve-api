@@ -382,7 +382,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'xdai',
     platformCoingeckoId: 'xdai',
     nativeAssetErc20WrapperId: 'wxdai', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://rpc.ankr.com/gnosis',
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=gnosis&dkey=${process.env.DRPC_API_KEY}`,
     backuprpcUrl: `https://gnosis-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a',
     multicall2Address: '0xFAa296891cA6CECAF2D86eF5F7590316d0A17dA0',
