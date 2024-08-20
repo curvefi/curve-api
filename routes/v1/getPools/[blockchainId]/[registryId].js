@@ -323,7 +323,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       registryId === 'factory-crvusd' ? factoryCrvusdPoolAbi :
         registryId === 'factory-twocrypto' ? factoryTwocryptoPoolAbi :
           registryId === 'factory-tricrypto' ? factoryTricryptoPoolAbi :
-            registryId === 'getFactoryStableswapNgRegistryAddress' ? factoryStableNgPoolAbi :
+            registryId === 'factory-stable-ng' ? factoryStableNgPoolAbi :
               registryId === 'factory-eywa' ? factoryEywaPoolAbi :
                 factoryPoolAbi
   );
