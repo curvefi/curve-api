@@ -20,7 +20,10 @@ import { fn, ParamError } from '#root/utils/api.js';
 import swr from '#root/utils/swr.js';
 import { multiCall } from '#root/utils/Calls.js';
 import onewayVaultAbi from '#root/constants/abis/lending/oneway/vault.json' assert { type: 'json' };
+import vaultControllerAbi from '#root/constants/abis/lending/controller.json' assert { type: 'json' };
+import vaultAmmAbi from '#root/constants/abis/lending/amm.json' assert { type: 'json' };
 import onewayRegistryAbi from '#root/constants/abis/lending/oneway/registry.json' assert { type: 'json' };
+import ERC20_ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
 import { flattenArray, sum, uniq } from '#root/utils/Array.js';
 import getTokensData from '#root/utils/data/tokens-data.js';
 import { lc } from '#root/utils/String.js';
@@ -28,6 +31,7 @@ import getTokensPrices from '#root/utils/data/tokens-prices.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
 import { sequentialPromiseMap } from '#root/utils/Async.js';
 import getAllGaugesFn, { SIDECHAINS_WITH_FACTORY_GAUGES } from '#root/routes/v1/getAllGauges.js';
+import { trunc } from '#root/utils/Number.js';
 
 const MAX_AGE = 5 * 60;
 
@@ -68,32 +72,10 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
   }
 
   const gaugesDataArray = Array.from(Object.values(gaugesData));
-  // const factoryGaugesPoolAddressesAndCoingeckoIdMap = arrayToHashmap(
-  //   gaugesDataArray
-  //     .filter(({ factory, type }) => (
-  //       factory === true &&
-  //       type !== 'stable' && // Harcoded type in the gauge endpoint that is *not* a coingecko id
-  //       type !== 'crypto' // Harcoded type in the gauge endpoint that is *not* a coingecko id
-  //     ))
-  //     .map(({ swap, type: coingeckoId }) => [swap, coingeckoId])
-  // );
-
-  // let factoryGaugesPoolAddressesAndAssetPricesMap;
-  // if (!USE_CURVE_PRICES_DATA) {
-  //   const gaugesAssetPrices = await getAssetsPrices(Array.from(Object.values(factoryGaugesPoolAddressesAndCoingeckoIdMap)));
-  //   factoryGaugesPoolAddressesAndAssetPricesMap = arrayToHashmap(
-  //     Array.from(Object.entries(factoryGaugesPoolAddressesAndCoingeckoIdMap))
-  //       .map(([address, coingeckoId]) => [
-  //         address.toLowerCase(),
-  //         gaugesAssetPrices[coingeckoId],
-  //       ])
-  //   );
-  // }
 
   return {
     gaugesDataArray,
     gaugeRewards,
-    // factoryGaugesPoolAddressesAndAssetPricesMap,
   };
 };
 
@@ -209,6 +191,18 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
     methodName: 'totalSupply',
     metaData: { vaultId, vaultAddress: address, type: 'totalShares' },
     ...networkSettingsParam,
+  }, {
+    address,
+    abi: VAULT_ABI,
+    methodName: 'amm',
+    metaData: { vaultId, vaultAddress: address, type: 'ammAddress' },
+    ...networkSettingsParam,
+  }, {
+    address,
+    abi: VAULT_ABI,
+    methodName: 'controller',
+    metaData: { vaultId, vaultAddress: address, type: 'controllerAddress' },
+    ...networkSettingsParam,
   }])));
 
   const allTokenAddresses = uniq(vaultsData.filter(({ metaData }) => (
@@ -220,7 +214,6 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
     getTokensPrices(allTokenAddresses, lendingBlockchainId),
   ]);
 
-  const emptyData = marketIds.map((id) => ({ id: getIdForVault(id) }));
   const mergedVaultData = vaultsData.reduce((accu, { data, metaData: { vaultId, vaultAddress, type } }) => {
     const index = accu.findIndex(({ id }) => id === getIdForVault(vaultId));
     const vaultInfo = accu[index];
@@ -248,10 +241,111 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
     };
 
     return accu;
-  }, emptyData);
+  }, marketIds.map((id) => ({ id: getIdForVault(id) })));
+
+  const controllerAddresses = vaultsData.filter(({ metaData }) => metaData.type === 'controllerAddress');
+  const ammAddresses = vaultsData.filter(({ metaData }) => metaData.type === 'ammAddress');
+  const otherData = await multiCall(flattenArray([
+    ...controllerAddresses.map(({ data: controllerAddress, metaData: { vaultId, vaultAddress } }) => {
+      const index = mergedVaultData.findIndex(({ id }) => id === getIdForVault(vaultId));
+      const vaultInfo = mergedVaultData[index];
+      const { assetAddress } = vaultInfo;
+
+      return [{
+        address: controllerAddress,
+        abi: vaultControllerAbi,
+        methodName: 'total_debt',
+        metaData: { vaultId, vaultAddress, type: 'borrowed' },
+        ...networkSettingsParam,
+      }, {
+        address: controllerAddress,
+        abi: vaultControllerAbi,
+        methodName: 'monetary_policy',
+        metaData: { vaultId, vaultAddress, type: 'monetaryPolicyAddress' },
+        ...networkSettingsParam,
+      }, {
+        address: assetAddress,
+        abi: ERC20_ABI,
+        methodName: 'balanceOf',
+        params: [controllerAddress],
+        metaData: { vaultId, vaultAddress, type: 'availableToBorrow' },
+        ...networkSettingsParam,
+      }];
+    }),
+    ...ammAddresses.map(({ data: ammAddress, metaData: { vaultId, vaultAddress } }) => {
+      const index = mergedVaultData.findIndex(({ id }) => id === getIdForVault(vaultId));
+      const vaultInfo = mergedVaultData[index];
+      const { assetAddress, collateralAssetAddress } = vaultInfo;
+
+      return [{
+        address: assetAddress,
+        abi: ERC20_ABI,
+        methodName: 'balanceOf',
+        params: [ammAddress],
+        metaData: { vaultId, vaultAddress, type: 'ammBalanceBorrowed' },
+        ...networkSettingsParam,
+      }, {
+        address: collateralAssetAddress,
+        abi: ERC20_ABI,
+        methodName: 'balanceOf',
+        params: [ammAddress],
+        metaData: { vaultId, vaultAddress, type: 'ammBalanceCollateral' },
+        ...networkSettingsParam,
+      }, {
+        address: ammAddress,
+        abi: vaultAmmAbi,
+        methodName: 'admin_fees_x',
+        metaData: { vaultId, vaultAddress, type: 'ammFeesBorrowed' },
+        ...networkSettingsParam,
+      }, {
+        address: ammAddress,
+        abi: vaultAmmAbi,
+        methodName: 'admin_fees_y',
+        metaData: { vaultId, vaultAddress, type: 'ammFeesCollateral' },
+        ...networkSettingsParam,
+      }];
+    }),
+  ]));
+
+  const mergedOtherData = otherData.reduce((accu, { data, metaData: { vaultId, vaultAddress, type } }) => {
+    const index = accu.findIndex(({ id }) => id === getIdForVault(vaultId));
+    const vaultInfo = mergedVaultData[index];
+    const otherInfo = accu[index];
+
+    const {
+      assetAddress,
+      collateralAssetAddress,
+    } = vaultInfo;
+
+    const borrowedTokenData = allTokenData[lc(assetAddress)];
+    const collateralTokenData = allTokenData[lc(collateralAssetAddress)];
+
+    accu[index] = {
+      ...otherInfo,
+      address: vaultAddress,
+      vaultId,
+      [type]: (
+        (
+          type === 'borrowed' ||
+          type === 'availableToBorrow' ||
+          type === 'ammBalanceBorrowed' ||
+          type === 'ammFeesBorrowed'
+        ) ? (data / (10 ** borrowedTokenData.decimals)) :
+          (
+            type === 'ammBalanceCollateral' ||
+            type === 'ammFeesCollateral'
+          ) ? (data / (10 ** collateralTokenData.decimals)) :
+            data
+      ),
+    };
+
+    return accu;
+  }, marketIds.map((id) => ({ id: getIdForVault(id) })));
 
   const augmentedVaultData = await sequentialPromiseMap(mergedVaultData, async ({
     address,
+    controllerAddress,
+    ammAddress,
     assetAddress,
     borrowApr,
     collateralAssetAddress,
@@ -265,6 +359,7 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
     const lendApy = (1 + lendApr / 365) ** 365 - 1;
 
     const assetTokenPrice = allTokenPrices[lc(assetAddress)];
+    const collateralTokenPrice = allTokenPrices[lc(collateralAssetAddress)];
 
     const borrowedTokenData = allTokenData[lc(assetAddress)];
     const collateralTokenData = allTokenData[lc(collateralAssetAddress)];
@@ -323,17 +418,38 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
         })
     );
 
+    const {
+      borrowed,
+      availableToBorrow,
+      ammBalanceBorrowed,
+      ammBalanceCollateral,
+      ammFeesBorrowed,
+      ammFeesCollateral,
+      monetaryPolicyAddress,
+    } = mergedOtherData.find((data) => data.id === id);
+
+    const borrowedUsd = borrowed * assetTokenPrice;
+    const availableToBorrowUsd = availableToBorrow * assetTokenPrice;
+
+    const ammBalanceBorrowedNet = ammBalanceBorrowed - ammFeesBorrowed;
+    const ammBalanceBorrowedNetUsd = ammBalanceBorrowedNet * assetTokenPrice;
+    const ammBalanceCollateralNet = ammBalanceCollateral - ammFeesCollateral;
+    const ammBalanceCollateralNetUsd = ammBalanceCollateralNet * collateralTokenPrice;
+
     return {
       id,
       name,
       address,
+      controllerAddress,
+      ammAddress,
+      monetaryPolicyAddress,
       rates: {
-        borrowApr,
-        borrowApy,
-        borrowApyPcent: borrowApy * 100,
-        lendApr,
-        lendApy,
-        lendApyPcent: lendApy * 100,
+        borrowApr: Number(trunc(borrowApr, 4)),
+        borrowApy: Number(trunc(borrowApy, 4)),
+        borrowApyPcent: Number(trunc(borrowApy * 100, 4)),
+        lendApr: Number(trunc(lendApr, 4)),
+        lendApy: Number(trunc(lendApy, 4)),
+        lendApyPcent: Number(trunc(lendApy * 100, 4)),
       },
       gaugeAddress,
       gaugeRewards: (
@@ -342,19 +458,39 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
           undefined
       ),
       assets: {
-        borrowed: borrowedTokenData,
-        collateral: collateralTokenData,
+        borrowed: {
+          ...borrowedTokenData,
+          usdPrice: Number(trunc(assetTokenPrice, 2)),
+        },
+        collateral: {
+          ...collateralTokenData,
+          usdPrice: Number(trunc(collateralTokenPrice, 2)),
+        },
       },
       vaultShares: {
         pricePerShare,
-        totalShares,
+        totalShares: Number(trunc(totalShares, 2)),
       },
       totalSupplied: {
-        total: pricePerShare * totalShares,
-        usdTotal: totalSuppliedUsd,
+        total: Number(trunc(pricePerShare * totalShares, 2)),
+        usdTotal: Number(trunc(totalSuppliedUsd, 2)),
+      },
+      borrowed: {
+        total: Number(trunc(borrowed, 2)),
+        usdTotal: Number(trunc(borrowedUsd, 2)),
+      },
+      availableToBorrow: {
+        total: Number(trunc(availableToBorrow, 2)),
+        usdTotal: Number(trunc(availableToBorrowUsd, 2)),
       },
       lendingVaultUrls,
-      usdTotal: totalSuppliedUsd, // This is missing the total collateral value supplied
+      usdTotal: Number(trunc(totalSuppliedUsd, 2)), // This is missing the total collateral value supplied
+      ammBalances: {
+        ammBalanceBorrowed: Number(trunc(ammBalanceBorrowedNet, 2)),
+        ammBalanceBorrowedUsd: Number(trunc(ammBalanceBorrowedNetUsd, 2)),
+        ammBalanceCollateral: Number(trunc(ammBalanceCollateralNet, 2)),
+        ammBalanceCollateralUsd: Number(trunc(ammBalanceCollateralNetUsd, 2)),
+      },
     };
   });
 
