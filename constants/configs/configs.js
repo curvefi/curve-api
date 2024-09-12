@@ -372,6 +372,13 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
     graphEndpoint: undefined,
+    lendingVaultsBaseUrl: 'https://lend.curve.fi/#/optimism/markets/',
+    lendingVaultRegistries: {
+      oneway: '0x5EA8f3D674C70b020586933A0a5b250734798BeF',
+    },
+    lendingVaultRegistriesUrlFragments: {
+      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/ethereum/markets/one-way-market-3/vault/deposit
+    },
   },
   xdai: {
     poolsBaseUrlOld: 'https://xdai.curve.fi/',
@@ -722,6 +729,13 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // Very approx from list of blocks on https://fraxscan.com/blocks
     graphEndpoint: undefined,
+    lendingVaultsBaseUrl: 'https://lend.curve.fi/#/fraxtal/markets/',
+    lendingVaultRegistries: {
+      oneway: '0xf3c9bdAB17B7016fBE3B77D17b1602A7db93ac66',
+    },
+    lendingVaultRegistriesUrlFragments: {
+      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/ethereum/markets/one-way-market-3/vault/deposit
+    },
   },
   bsc: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
