@@ -69,19 +69,24 @@ export default fn(async ({ blockchainId }) => {
   ]);
 
   const gauges = await sequentialPromiseFlatMap(gaugeRegistryAddresses, async (registryAddress) => {
-    const gaugeRegistry = new web3.eth.Contract(GAUGE_REGISTRY_ABI, registryAddress);
+    // Newest gauge registries have the same root registry (`0x0647…`), and separate child registries (`gaugeRegistryAddress2`)
+    const isSecondGaugeRegistry = registryAddress === gaugeRegistryAddress2;
+    const rootRegistryAddress = isSecondGaugeRegistry ? '0x06471ED238306a427241B3eA81352244E77B004F' : registryAddress;
+
+    const gaugeRegistry = new web3.eth.Contract(GAUGE_REGISTRY_ABI, rootRegistryAddress);
     const gaugeRegistrySidechain = new web3Side.eth.Contract(GAUGE_REGISTRY_SIDECHAIN_ABI, registryAddress);
 
     const [mirroredGaugeCount, unmirroredGaugeCount] = await Promise.all([
       gaugeRegistry.methods.get_gauge_count(config.chainId).call(),
       gaugeRegistrySidechain.methods.get_gauge_count().call(),
     ]);
+
     if (Number(mirroredGaugeCount) === 0 && Number(unmirroredGaugeCount) === 0) {
       return [];
     }
 
     const unfilteredMirroredGaugeList = await multiCall(arrayOfIncrements(mirroredGaugeCount).map((gaugeIndex) => ({
-      address: registryAddress,
+      address: rootRegistryAddress,
       abi: GAUGE_REGISTRY_ABI,
       methodName: 'get_gauge',
       params: [config.chainId, gaugeIndex],
