@@ -24,6 +24,10 @@ export default fn(async () => ({
     blockchainId,
     (await getPlatformRegistries(blockchainId)).registryIds,
   ]))),
+  platformToChainIdMap: arrayToHashmap(allBlockchainIds.map((platformId) => [
+    platformId,
+    configs[platformId].chainId,
+  ])),
 }), {
   maxAge: 60 * 60, // 1h
   cacheKey: 'getPlatforms',
