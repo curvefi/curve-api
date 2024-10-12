@@ -35,6 +35,7 @@ import getAssetsPrices from '#root/utils/data/assets-prices.js';
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
 const GAUGE_IS_ROOT_GAUGE_2_ABI = [{ "stateMutability": "view", "type": "function", "name": "emissions", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 2778 }];
+const LENDING_VAULT_FACTORY_GAUGE_FOR_VAULT_ABI = [{ "stateMutability": "view", "type": "function", "name": "gauge_for_vault", "inputs": [{ "name": "_vault", "type": "address" }], "outputs": [{ "name": "", "type": "address" }] }];
 /* eslint-enable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 
 const SIDECHAINS_WITH_FACTORY_GAUGES = [
@@ -407,7 +408,8 @@ const getAllGauges = fn(async ({ blockchainId }) => {
 
   /**
    * Step 2: Retrieve mainnet gauges that aren't in the gauge registry (no dao vote yet),
-   * but have been deployed (they're in the metaregistry).
+   * but have been deployed (they're in the metaregistry; well not all of them, hence the
+   * other imports).
    */
   const META_REGISTRY_ADDRESS = '0xF98B45FA17DE75FB1aD0e7aFD971b0ca00e379fC';
   const allGaugesEthereumMetaregistry = await multiCall(allPools.map(({ address }) => ({
@@ -420,7 +422,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
   })));
 
   const stableNgFactoAddress = await configs.ethereum.getFactoryStableswapNgRegistryAddress();
-  const allGaugesEthereumStableNgFacto = await multiCall(allPools.map(({ address }) => ({
+  const allGaugesEthereumStableNgFacto = await multiCall(allPools.filter(({ blockchainId }) => blockchainId === 'ethereum').map(({ address }) => ({
     address: stableNgFactoAddress,
     abi: META_REGISTRY_ABI,
     methodName: 'get_gauge',
@@ -429,7 +431,21 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     web3Data,
   })));
 
-  const nonVotedGaugesEthereum = [...allGaugesEthereumMetaregistry, ...allGaugesEthereumStableNgFacto].filter(({ data }) => (
+  const lendingEthereumFactoAddress = configs.ethereum.lendingVaultRegistries.oneway;
+  const allGaugesEthereumLendingFacto = await multiCall(allLendingVaults.filter(({ blockchainId }) => blockchainId === 'ethereum').map(({ address }) => ({
+    address: lendingEthereumFactoAddress,
+    abi: LENDING_VAULT_FACTORY_GAUGE_FOR_VAULT_ABI,
+    methodName: 'gauge_for_vault',
+    params: [address],
+    metaData: { poolAddress: address },
+    web3Data,
+  })));
+
+  const nonVotedGaugesEthereum = [
+    ...allGaugesEthereumMetaregistry,
+    ...allGaugesEthereumStableNgFacto,
+    ...allGaugesEthereumLendingFacto,
+  ].filter(({ data }) => (
     data !== ZERO_ADDRESS &&
     !gaugesData.some(({ address }) => lc(address) === lc(data))
   ));
@@ -473,26 +489,71 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     metaData: { poolAddress },
   }) => {
     const pool = getPoolByAddress(poolAddress, 'ethereum');
-    if (!pool) {
-      if (IS_DEV) console.log('MISSING POOL:', poolAddress)
+    const lendingVault = getLendingVaultByLpTokenAddress(poolAddress, 'ethereum');
+    if (!pool && !lendingVault) {
+      if (IS_DEV) console.log('MISSING POOL/VAULT:', poolAddress)
       return null;
     }
 
-    const name = getPoolName(pool);
-    const shortName = getPoolShortName(pool);
+    const isPool = !!pool;
+
     const rawData = arrayToHashmap(nonVotedGaugesEthereumDataRaw.filter(({ metaData }) => lc(metaData.gaugeAddress) === lc(address)).map(({ data, metaData: { type } }) => [
       type,
       data,
     ]));
 
+    const name = (
+      isPool ?
+        getPoolName(pool) :
+        getLendingVaultName(lendingVault)
+    );
+
+    const lpTokenPrice = (
+      isPool ?
+        (pool.usdTotal / (pool.totalSupply / 1e18)) :
+        lendingVault.vaultShares.pricePerShare
+    );
+
     return [name, {
+      ...(isPool ? {
+        // Props shared by pools and lending vaults
+        isPool,
+        name,
+        shortName: getPoolShortName(pool),
+
+        // Props for pools only
+        poolUrls: pool.poolUrls,
+        poolAddress: pool.address,
+        virtualPrice: pool.virtualPrice,
+        factory: pool.factory || false,
+        type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
+        swap: lc(poolAddress),
+        swap_token: lc(pool.lpTokenAddress || pool.address),
+
+        // Props for lending vaults only
+        lendingVaultUrls: undefined,
+        lendingVaultAddress: undefined,
+      } : {
+        // Props shared by pools and lending vaults
+        isPool,
+        name,
+        shortName: getLendingVaultShortName(lendingVault),
+
+        // Props for pools only
+        poolUrls: undefined,
+        poolAddress: undefined,
+        virtualPrice: undefined,
+        factory: undefined,
+        type: undefined,
+        swap: undefined,
+        swap_token: undefined,
+
+        // Props for lending vaults only
+        lendingVaultUrls: lendingVault.poolUrls,
+        lendingVaultAddress: lendingVault.address,
+      }),
+      lpTokenPrice,
       blockchainId: 'ethereum',
-      isPool: true,
-      poolUrls: getPoolByLpTokenAddress((pool.lpTokenAddress || pool.address), 'ethereum').poolUrls,
-      swap: lc(poolAddress),
-      swap_token: lc(pool.lpTokenAddress || pool.address),
-      name,
-      shortName,
       gauge: lc(address),
       gauge_data: {
         inflation_rate: rawData.inflationRate,
@@ -510,8 +571,6 @@ const getAllGauges = fn(async ({ blockchainId }) => {
       side_chain: false,
       is_killed: rawData.isKilled,
       hasNoCrv: true,
-      type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
-      lpTokenPrice: (pool.usdTotal / (pool.totalSupply / 1e18)),
     }];
   }).filter((o) => o !== null));
 
