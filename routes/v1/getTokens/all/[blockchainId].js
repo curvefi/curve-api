@@ -55,11 +55,13 @@ export default fn(async ({ blockchainId }) => {
         address,
         decimals,
         symbol,
+        name,
         usdPrice,
       }) => ({
         address,
         decimals: Number(decimals),
         symbol,
+        name,
         usdPrice,
       }))
   );

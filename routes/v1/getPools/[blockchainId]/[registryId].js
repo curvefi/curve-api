@@ -1064,6 +1064,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       metaData: { poolId, poolAddress, coinAddress: address, isNativeEth, type: 'symbol' },
       ...networkSettingsParam,
     }, {
+      contract: coinContract,
+      methodName: 'name',
+      metaData: { poolId, poolAddress, coinAddress: address, isNativeEth, type: 'name' },
+      ...networkSettingsParam,
+    }, {
       contract: poolContractUint256,
       methodName: 'balances',
       params: [coinIndex],
@@ -1123,6 +1128,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const hardcodedInfoForNativeEth = {
       decimals: 18,
       symbol: nativeCurrencySymbol,
+      name: 'Ether',
     };
 
     const poolInfo = mergedPoolData.find(({ id }) => id === getIdForPool(poolId))
