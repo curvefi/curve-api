@@ -12,6 +12,7 @@ import ERC20_ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
 import SIDECHAIN_FACTO_GAUGE_ABI from '#root/constants/abis/sidechain-gauge.json' assert { type: 'json' };
 import COIN_ADDRESS_COINGECKO_ID_MAP from '#root/constants/CoinAddressCoingeckoIdMap.js';
 import COIN_ADDRESS_REPLACEMENT_MAP from '#root/constants/CoinAddressReplacementMap.js';
+import getEywaTokenPrices from './getEywaTokenPrices.js';
 
 export default memoize(async ({ blockchainId, gauges }) => {
   const config = configs[blockchainId];
@@ -88,6 +89,12 @@ export default memoize(async ({ blockchainId, gauges }) => {
       {}
   );
 
+  const eywaTokensAddressesAndPricesMapFallback = (
+    blockchainId === 'fantom' ?
+      await getEywaTokenPrices([], 'factory-eywa') :
+      {}
+  );
+
   const rewardAndTokenData = await multiCall(flattenArray(rewardTokens.map(({
     data: rewardTokenAddress,
     metaData: { name, gauge, lpTokenPrice },
@@ -147,6 +154,7 @@ export default memoize(async ({ blockchainId, gauges }) => {
     const tokenPrice = (
       coinAddressesAndPricesMap[effectiveTokenRewardAddressForPrice] ||
       coinAddressesAndPricesMapFallback[effectiveTokenRewardAddressForPrice] ||
+      eywaTokensAddressesAndPricesMapFallback[effectiveTokenRewardAddressForPrice] ||
       null
     );
 
