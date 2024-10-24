@@ -14,7 +14,7 @@
     "#root/*.json": "./*.json"
   },
   "dependencies": {
-    "@curvefi/stablecoin-api": "^1.5.5",
+    "@curvefi/stablecoin-api": "^1.5.7",
     "bignumber.js": "^9.1.2",
     "body-parser": "^1.20.2",
     "core-js-pure": "^3.36.1",
