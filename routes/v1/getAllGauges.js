@@ -549,7 +549,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
         swap_token: undefined,
 
         // Props for lending vaults only
-        lendingVaultUrls: lendingVault.poolUrls,
+        lendingVaultUrls: lendingVault.lendingVaultUrls,
         lendingVaultAddress: lendingVault.address,
       }),
       lpTokenPrice,
