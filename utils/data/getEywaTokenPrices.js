@@ -14,7 +14,13 @@ const getEywaTokenPrice = memoize((address) => (
   Request.get(`https://pusher.eywa.fi/prices/${address}`)
     .then((res) => res.json())
     .then((str) => Number(str))
-    .catch(() => 1) // Fallback if the eywa api doesn't know about this token yet, should happen rarely if at all
+    .catch(() => (
+      // Fallback to curve-prices when eywa api is down
+      Request.get(`https://prices.curve.fi/v1/usd_price/fantom/${address}`)
+        .then((res) => res.json())
+        .then(({ data: { usd_price } }) => usd_price)
+    ))
+    .catch(() => 1) // Fallback non-zero value
 ), {
   promise: true,
   maxAge: 60 * 1000,
