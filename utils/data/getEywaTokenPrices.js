@@ -10,6 +10,9 @@ const REWARD_TOKEN_ADDRESSES = [
   '0x8D9241935453120825C4a95446e351FbC338527D',
 ];
 
+// Eywa API isn’t reliable, this keeps a copy last prices for when live prices aren’t available
+const LAST_PRICES_CACHE = new Map();
+
 const getEywaTokenPrice = memoize((address) => (
   Request.get(`https://pusher.eywa.fi/prices/${address}`)
     .then((res) => res.json())
@@ -20,7 +23,11 @@ const getEywaTokenPrice = memoize((address) => (
         .then((res) => res.json())
         .then(({ data: { usd_price } }) => usd_price)
     ))
-    .catch(() => 1) // Fallback non-zero value
+    .then((usdPrice) => {
+      LAST_PRICES_CACHE.set(address, usdPrice);
+      return usdPrice;
+    })
+    .catch(() => LAST_PRICES_CACHE.get(address)) // Fallback to last known value
 ), {
   promise: true,
   maxAge: 60 * 1000,
