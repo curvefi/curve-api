@@ -62,6 +62,7 @@ export default fn(async ({ blockchainId }) => {
   // 0xabc is the generic gauge registry address for all sidechains, the config prop allows exceptions
   const gaugeRegistryAddress = config.gaugeRegistryAddress ?? '0xabc000d88f23bb45525e447528dbf656a9d55bf5';
   const gaugeRegistryAddress2 = config.gaugeRegistryAddress2 ?? null;
+  const gaugeRootRegistry2 = config.gaugeRootRegistry2 ?? null;
 
   const gaugeRegistryAddresses = removeNulls([
     gaugeRegistryAddress,
@@ -69,9 +70,9 @@ export default fn(async ({ blockchainId }) => {
   ]);
 
   const gauges = await sequentialPromiseFlatMap(gaugeRegistryAddresses, async (registryAddress) => {
-    // Newest gauge registries have the same root registry (`0x0647…`), and separate child registries (`gaugeRegistryAddress2`)
+    // Newest gauge registries have the same root registry (`gaugeRootRegistry2` except gnosis), and separate child registries (`gaugeRegistryAddress2`)
     const isSecondGaugeRegistry = registryAddress === gaugeRegistryAddress2;
-    const rootRegistryAddress = isSecondGaugeRegistry ? '0x06471ED238306a427241B3eA81352244E77B004F' : registryAddress;
+    const rootRegistryAddress = isSecondGaugeRegistry ? gaugeRootRegistry2 : registryAddress;
 
     const gaugeRegistry = new web3.eth.Contract(GAUGE_REGISTRY_ABI, rootRegistryAddress);
     const gaugeRegistrySidechain = new web3Side.eth.Contract(GAUGE_REGISTRY_SIDECHAIN_ABI, registryAddress);
@@ -100,13 +101,29 @@ export default fn(async ({ blockchainId }) => {
       networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
     })));
 
-    const unfilteredGaugeList = uniq([
-      ...unfilteredMirroredGaugeList,
-      ...unfilteredUnmirroredGaugeList,
-    ]);
+    /**
+    * The first version of sidechain gauges always had the same root & child addresses.
+    * The second version of sidechain gauges have different root & child addresses.
+    */
+    const unfilteredGaugeList = (
+      isSecondGaugeRegistry ? (
+        unfilteredMirroredGaugeList.map((rootGaugeAddress, i) => ({
+          rootGaugeAddress,
+          childGaugeAddress: unfilteredUnmirroredGaugeList[i],
+        }))
+      ) : (
+        uniq([
+          ...unfilteredMirroredGaugeList,
+          ...unfilteredUnmirroredGaugeList,
+        ]).map((gaugeAddress) => ({
+          rootGaugeAddress: gaugeAddress,
+          childGaugeAddress: gaugeAddress,
+        }))
+      )
+    );
 
-    const gaugesKilledInfo = await multiCall(unfilteredGaugeList.map((gaugeAddress) => ({
-      address: gaugeAddress,
+    const gaugesKilledInfo = await multiCall(unfilteredGaugeList.map(({ rootGaugeAddress }) => ({
+      address: rootGaugeAddress,
       abi: sideChainRootGauge,
       methodName: 'is_killed',
     })));
@@ -124,25 +141,25 @@ export default fn(async ({ blockchainId }) => {
      * (will be passed to side gauge as soon as someone interacts with it). We thus
      * use those pending emissions as the basis to calculate apys for this side gauge.
      */
-    const pendingEmissionsRaw = await multiCall(gaugeList.map((gaugeAddress) => ({
-      address: gaugeAddress,
+    const pendingEmissionsRaw = await multiCall(gaugeList.map(({ rootGaugeAddress }) => ({
+      address: rootGaugeAddress,
       abi: sideChainRootGauge,
       methodName: 'total_emissions',
-      metaData: { gaugeAddress },
+      metaData: { rootGaugeAddress },
       networkSettings: { web3, multicall2Address: configs.ethereum.multicall2Address },
     })));
     const pendingEmissions = arrayToHashmap(pendingEmissionsRaw.map(({ data, metaData }) => {
       const inflationRate = data / (endOfWeekTs - nowTs);
 
       return [
-        metaData.gaugeAddress,
+        metaData.rootGaugeAddress,
         inflationRate,
       ];
     }));
 
-    const gaugesDataFromSidechain = await multiCall(flattenArray(gaugeList.map((gaugeAddress) => {
+    const gaugesDataFromSidechain = await multiCall(flattenArray(gaugeList.map(({ childGaugeAddress }) => {
       const baseConfigData = {
-        address: gaugeAddress,
+        address: childGaugeAddress,
         abi: sideChainGauge,
         networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
       };
@@ -150,45 +167,45 @@ export default fn(async ({ blockchainId }) => {
       return [{
         ...baseConfigData,
         methodName: 'lp_token',
-        metaData: { gaugeAddress, type: 'lpTokenAddress' },
+        metaData: { childGaugeAddress, type: 'lpTokenAddress' },
       }, {
         ...baseConfigData,
         methodName: 'name',
-        metaData: { gaugeAddress, type: 'name' },
+        metaData: { childGaugeAddress, type: 'name' },
       }, {
         ...baseConfigData,
         methodName: 'symbol',
-        metaData: { gaugeAddress, type: 'symbol' },
+        metaData: { childGaugeAddress, type: 'symbol' },
       }, {
         ...baseConfigData,
         methodName: 'working_supply',
-        metaData: { gaugeAddress, type: 'workingSupply' },
+        metaData: { childGaugeAddress, type: 'workingSupply' },
       }, {
         ...baseConfigData,
         methodName: 'totalSupply',
-        metaData: { gaugeAddress, type: 'totalSupply' },
+        metaData: { childGaugeAddress, type: 'totalSupply' },
       }, {
         ...baseConfigData,
         methodName: 'inflation_rate',
         params: [startOfWeekTs],
-        metaData: { gaugeAddress, type: 'inflationRate' },
+        metaData: { childGaugeAddress, type: 'inflationRate' },
       }, {
         address: registryAddress,
         abi: GAUGE_FACTORY_ABI,
         methodName: 'is_mirrored',
-        params: [gaugeAddress],
-        metaData: { gaugeAddress, type: 'isMirrored' },
+        params: [childGaugeAddress],
+        metaData: { childGaugeAddress, type: 'isMirrored' },
       }, {
         address: registryAddress,
         abi: GAUGE_FACTORY_ABI,
         methodName: 'last_request',
-        params: [gaugeAddress],
-        metaData: { gaugeAddress, type: 'lastRequest' },
+        params: [childGaugeAddress],
+        metaData: { childGaugeAddress, type: 'lastRequest' },
       }];
     })));
 
     const gaugeControllerAddress = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB';
-    const gaugesDataFromMainnet = await multiCall(flattenArray(gaugeList.map((gaugeAddress) => {
+    const gaugesDataFromMainnet = await multiCall(flattenArray(gaugeList.map(({ rootGaugeAddress }) => {
       const baseConfigData = {
         address: gaugeControllerAddress,
         abi: gaugeControllerAbi,
@@ -197,33 +214,34 @@ export default fn(async ({ blockchainId }) => {
       return [{
         ...baseConfigData,
         methodName: 'gauge_types',
-        params: [gaugeAddress],
-        metaData: { gaugeAddress, type: 'hasCrv' },
+        params: [rootGaugeAddress],
+        metaData: { rootGaugeAddress, type: 'hasCrv' },
         superSettings: { returnSuccessState: true },
       }, {
         ...baseConfigData,
         methodName: 'gauge_relative_weight',
-        params: [gaugeAddress],
-        metaData: { gaugeAddress, type: 'gaugeRelativeWeight' },
+        params: [rootGaugeAddress],
+        metaData: { rootGaugeAddress, type: 'gaugeRelativeWeight' },
       }, {
         ...baseConfigData,
         methodName: 'gauge_relative_weight',
-        params: [gaugeAddress, getNowTimestamp() + (7 * 86400)],
-        metaData: { gaugeAddress, type: 'gaugeFutureRelativeWeight' },
+        params: [rootGaugeAddress, getNowTimestamp() + (7 * 86400)],
+        metaData: { rootGaugeAddress, type: 'gaugeFutureRelativeWeight' },
       }, {
         ...baseConfigData,
         methodName: 'get_gauge_weight',
-        params: [gaugeAddress],
-        metaData: { gaugeAddress, type: 'getGaugeWeight' },
+        params: [rootGaugeAddress],
+        metaData: { rootGaugeAddress, type: 'getGaugeWeight' },
       }];
     })));
 
-    const gaugesData = gaugeList.map((gaugeAddress) => {
-      const gaugeDataFromSidechain = gaugesDataFromSidechain.filter(({ metaData }) => metaData.gaugeAddress === gaugeAddress);
-      const gaugeDataFromMainnet = gaugesDataFromMainnet.filter(({ metaData }) => metaData.gaugeAddress === gaugeAddress);
+    const gaugesData = gaugeList.map(({ rootGaugeAddress, childGaugeAddress }) => {
+      const gaugeDataFromSidechain = gaugesDataFromSidechain.filter(({ metaData }) => metaData.childGaugeAddress === childGaugeAddress);
+      const gaugeDataFromMainnet = gaugesDataFromMainnet.filter(({ metaData }) => metaData.rootGaugeAddress === rootGaugeAddress);
 
       return {
-        address: gaugeAddress,
+        address: childGaugeAddress,
+        rootAddress: rootGaugeAddress,
         ...arrayToHashmap(gaugeDataFromSidechain.map(({ data, metaData: { type } }) => [
           type,
           data,
@@ -285,6 +303,7 @@ export default fn(async ({ blockchainId }) => {
     // Map to the historical data structure for compatibility purposes
     const formattedGaugesData = gaugesDataWithPoolVprice.map(({
       address,
+      rootAddress,
       lpTokenAddress,
       name,
       symbol,
@@ -302,7 +321,7 @@ export default fn(async ({ blockchainId }) => {
       isMirrored,
       lastRequest,
     }) => {
-      const effectiveInflationRate = Number(inflationRate) || (getGaugeWeight > 0 ? pendingEmissions[address] : 0);
+      const effectiveInflationRate = Number(inflationRate) || (getGaugeWeight > 0 ? pendingEmissions[rootAddress] : 0);
       const rewardsNeedNudging = (
         hasCrv &&
         effectiveInflationRate > 0 &&
@@ -313,6 +332,7 @@ export default fn(async ({ blockchainId }) => {
       return {
         swap_token: lpTokenAddress,
         gauge: address,
+        rootGauge: rootAddress,
         name,
         symbol,
         hasCrv,
@@ -337,7 +357,7 @@ export default fn(async ({ blockchainId }) => {
           Number(inflationRate) === 0 &&
           !rewardsNeedNudging
         ),
-        isKilled: gaugesKilledInfo[unfilteredGaugeList.findIndex((gaugeAddress) => lc(gaugeAddress) === lc(address))],
+        isKilled: gaugesKilledInfo[unfilteredGaugeList.findIndex(({ rootGaugeAddress }) => lc(rootGaugeAddress) === lc(rootAddress))],
       };
     });
 

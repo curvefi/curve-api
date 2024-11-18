@@ -602,6 +602,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
         .map(({
           blockchainId,
           gauge,
+          rootGauge,
           gauge_data: {
             gauge_relative_weight,
             gauge_future_relative_weight,
@@ -651,6 +652,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
               name,
               shortName,
               gauge: lc(gauge),
+              rootGauge: lc(rootGauge),
               side_chain: true,
               gauge_data: {
                 inflation_rate,

@@ -4,6 +4,9 @@ import { IS_DEV } from '#root/constants/AppConstants.js';
 const checks = [{
   description: 'Sidechain config must have a `shortId` property',
   failsIfFn: (id, config) => (id !== 'ethereum' && !config.shortId),
+}, {
+  description: '`gaugeRegistryAddress2` and `gaugeRootRegistry2` must be either both defined or undefined: if one exists, the other must too',
+  failsIfFn: (id, config) => (typeof config.gaugeRegistryAddress2 !== typeof config.gaugeRootRegistry2),
 }];
 
 const validateConfigs = (configs) => {
