@@ -110,7 +110,7 @@ export default fn(async ({ blockchainId }) => {
         unfilteredMirroredGaugeList.map((rootGaugeAddress, i) => ({
           rootGaugeAddress,
           childGaugeAddress: unfilteredUnmirroredGaugeList[i],
-        }))
+        })).filter(({ childGaugeAddress }) => childGaugeAddress !== undefined) // Idk why in rare occurences is undefined
       ) : (
         uniq([
           ...unfilteredMirroredGaugeList,
