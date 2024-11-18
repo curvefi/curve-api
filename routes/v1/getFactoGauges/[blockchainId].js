@@ -39,6 +39,8 @@ import { getNowTimestamp } from '#root/utils/Date.js';
 import getFactoryV2SidechainGaugeRewards from '#root/utils/data/getFactoryV2SidechainGaugeRewards.js';
 import { sequentialPromiseFlatMap } from '#root/utils/Async.js';
 
+const ROOT_GAUGE_CHILD_GAUGE_ABI_SUBSET = [{ "stateMutability": "view", "type": "function", "name": "child_gauge", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
+
 export default fn(async ({ blockchainId }) => {
   if (blockchainId === 'ethereum') {
     return {
@@ -93,13 +95,25 @@ export default fn(async ({ blockchainId }) => {
       params: [config.chainId, gaugeIndex],
     })));
 
-    const unfilteredUnmirroredGaugeList = await multiCall(arrayOfIncrements(unmirroredGaugeCount).map((gaugeIndex) => ({
-      address: registryAddress,
-      abi: GAUGE_REGISTRY_SIDECHAIN_ABI,
-      methodName: 'get_gauge',
-      params: [gaugeIndex],
-      networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
-    })));
+    const unfilteredUnmirroredGaugeList = (
+      isSecondGaugeRegistry ? (
+        // Root-child registries aren’t necessarily in sync, so querying root gauges
+        // for their child counterpart is the only reliable way to retrieve them
+        await multiCall(unfilteredMirroredGaugeList.map((rootGaugeAddress) => ({
+          address: rootGaugeAddress,
+          abi: ROOT_GAUGE_CHILD_GAUGE_ABI_SUBSET,
+          methodName: 'child_gauge',
+        })))
+      ) : (
+        await multiCall(arrayOfIncrements(unmirroredGaugeCount).map((gaugeIndex) => ({
+          address: registryAddress,
+          abi: GAUGE_REGISTRY_SIDECHAIN_ABI,
+          methodName: 'get_gauge',
+          params: [gaugeIndex],
+          networkSettings: { web3: web3Side, multicall2Address: config.multicall2Address },
+        })))
+      )
+    );
 
     /**
     * The first version of sidechain gauges always had the same root & child addresses.
@@ -110,7 +124,7 @@ export default fn(async ({ blockchainId }) => {
         unfilteredMirroredGaugeList.map((rootGaugeAddress, i) => ({
           rootGaugeAddress,
           childGaugeAddress: unfilteredUnmirroredGaugeList[i],
-        })).filter(({ childGaugeAddress }) => childGaugeAddress !== undefined) // Idk why in rare occurences is undefined
+        }))
       ) : (
         uniq([
           ...unfilteredMirroredGaugeList,
