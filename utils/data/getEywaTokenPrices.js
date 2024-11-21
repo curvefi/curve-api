@@ -5,7 +5,7 @@ import Request from '#root/utils/Request.js';
 
 // Id of eywa pools in factory-stable-ng registry
 // Used to only query their api for relevant assets
-const FACTO_STABLE_NG_EYWA_POOL_IDS = [0, 1, 2, 3, 4, 16, 17, 24, 37, 39];
+const FACTO_STABLE_NG_EYWA_POOL_IDS = [0, 1, 2, 3, 4, 16, 17, 24, 37, 39, 43];
 const REWARD_TOKEN_ADDRESSES = [
   '0x8D9241935453120825C4a95446e351FbC338527D',
 ];
