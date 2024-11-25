@@ -31,8 +31,6 @@ import { IS_DEV } from '#root/constants/AppConstants.js';
 import { getNowTimestamp } from '#root/utils/Date.js';
 import allCoins from '#root/constants/coins/index.js'
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
-import { maxChars } from '#root/utils/String.js';
-import { EYWA_POOLS_METADATA, FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
@@ -94,15 +92,7 @@ const getPoolName = (pool) => {
 
 const getPoolShortName = (pool) => {
   const prefix = pool.blockchainId === 'ethereum' ? '' : `${configs[pool.blockchainId].shortId}-`;
-
-  const isEywaPool = pool.blockchainId === 'fantom' && pool.registryId === 'factory-stable-ng' && FACTO_STABLE_NG_EYWA_POOL_IDS.includes(Number(pool.id.replace('factory-stable-ng-', '')));
-  const poolStringIdentifier = (
-    isEywaPool ?
-      EYWA_POOLS_METADATA.find((metadata) => metadata.fantomFactoryStableNgPoolId === Number(pool.id.replace('factory-stable-ng-', ''))).shortName :
-      pool.coins.map((coin) => coin.symbol).join('+')
-  );
-
-  return `${maxChars(`${prefix}${poolStringIdentifier}`, 22)} (${pool.address.slice(0, 6)}…)`; // Max 32 chars long
+  return `${prefix}${pool.coins.map((coin) => coin.symbol).join('+')} (${pool.address.slice(0, 6)}…)`;
 };
 
 const getLendingVaultName = (lendingVault) => {
@@ -112,7 +102,7 @@ const getLendingVaultName = (lendingVault) => {
 
 const getLendingVaultShortName = (lendingVault) => {
   const prefix = lendingVault.blockchainId === 'ethereum' ? '' : `${configs[lendingVault.blockchainId].shortId}-`;
-  return `${maxChars(`${prefix}lend-${lendingVault.assets.borrowed.symbol}(${lendingVault.assets.collateral.symbol})`, 22)} (${lendingVault.address.slice(0, 6)}…)`; // Max 32 chars long
+  return `${prefix}lend-${lendingVault.assets.borrowed.symbol}(${lendingVault.assets.collateral.symbol}) (${lendingVault.address.slice(0, 6)}…)`;
 };
 
 const getAllGauges = fn(async ({ blockchainId }) => {
