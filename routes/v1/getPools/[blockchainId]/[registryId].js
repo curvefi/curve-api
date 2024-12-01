@@ -116,6 +116,7 @@ const EXTERNAL_ORACLE_COINS_ADDRESSES = {
     '0xa0d69e286b938e21cbf7e51d71f6a4c8918f482f', // eUSD (no curve crypto pool to act as oracle)
     '0x530824da86689c9c17cdc2871ff29b058345b44a', // sTBT (curve crypto pool that has precedence has low liq)
     '0xa35b1b31ce002fbf2058d22f30f95d405200a15b', // ETHx (curve crypto pool that has precedence has low liq)
+    '0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf', // cbBTC (curve crypto pool that has precedence has low liq)
     '0xE80C0cd204D654CEbe8dd64A4857cAb6Be8345a3', // JPEG
     '0x821A278dFff762c76410264303F25bF42e195C0C', // pETH
     '0x6c3ea9036406852006290770bedfcaba0e23a0e8', // pyUSD
