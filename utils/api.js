@@ -4,6 +4,7 @@ import { IS_DEV } from '#root/constants/AppConstants.js';
 import { arrayToHashmap, flattenArray, uniq } from '#root/utils/Array.js';
 import { addTtlRandomness } from '#root/utils/Number.js';
 import { getFunctionParamObjectKeys } from '#root/utils/Function.js';
+import CACHE_SETTINGS from '#root/constants/CacheSettings.js';
 
 const getNowMs = () => Number(Date.now());
 const allBlockchainIds = Object.keys(configs);
@@ -231,6 +232,7 @@ const fn = (cb, options = {}) => {
         // rMaxAgeSec is reduced so that the two swr caches don't add up to twice the caching time
         const maxAgeCdnValue = rMaxAgeCDN ?? Math.trunc(maxAgeSec / 1.2);
         const maxAgeBrowserValue = IS_DEV ? 0 : 60;
+        const cdnHardExpiryValue = CACHE_SETTINGS.maxTimeToLive / 1000;
 
         // Send a 200 response for expected errors
         const isSoftError = (
@@ -244,7 +246,7 @@ const fn = (cb, options = {}) => {
         }
 
         if (rMaxAgeSec !== null || rMaxAgeCDN !== null) {
-          res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate`);
+          res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate=${cdnHardExpiryValue}, stale-if-error=${cdnHardExpiryValue}`);
         }
         const success = !isSoftError;
         res.status(200).json(

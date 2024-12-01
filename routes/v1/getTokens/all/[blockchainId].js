@@ -70,7 +70,6 @@ export default fn(async ({ blockchainId }) => {
     tokens: coins,
   };
 }, {
-  // maxAgeCDN: 5 * 60,
-  maxAgeCDN: 0.05 * 60,
+  maxAgeCDN: 5 * 60,
   cacheKeyCDN: ({ blockchainId }) => `getAllTokens-${blockchainId}`,
 });
