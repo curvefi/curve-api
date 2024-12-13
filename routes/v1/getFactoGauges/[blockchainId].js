@@ -155,13 +155,18 @@ export default fn(async ({ blockchainId }) => {
      * (will be passed to side gauge as soon as someone interacts with it). We thus
      * use those pending emissions as the basis to calculate apys for this side gauge.
      */
-    const pendingEmissionsRaw = await multiCall(gaugeList.map(({ rootGaugeAddress }) => ({
-      address: rootGaugeAddress,
-      abi: sideChainRootGauge,
-      methodName: 'total_emissions',
+    // const pendingEmissionsRaw = await multiCall(gaugeList.map(({ rootGaugeAddress }) => ({
+    //   address: rootGaugeAddress,
+    //   abi: sideChainRootGauge,
+    //   methodName: 'total_emissions',
+    //   metaData: { rootGaugeAddress },
+    //   networkSettings: { web3, multicall2Address: configs.ethereum.multicall2Address },
+    // })));
+    // Temporarily disable this feature which yielded incorrect apys
+    const pendingEmissionsRaw = gaugeList.map(({ rootGaugeAddress }) => ({
+      data: 0,
       metaData: { rootGaugeAddress },
-      networkSettings: { web3, multicall2Address: configs.ethereum.multicall2Address },
-    })));
+    }));
     const pendingEmissions = arrayToHashmap(pendingEmissionsRaw.map(({ data, metaData }) => {
       const inflationRate = data / (endOfWeekTs - nowTs);
 
