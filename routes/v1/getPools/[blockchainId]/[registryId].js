@@ -123,6 +123,8 @@ const EXTERNAL_ORACLE_COINS_ADDRESSES = {
   ].map(lc),
   base: [
     '0xcfa3ef56d303ae4faaba0592388f19d7c3399fb4',
+    '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf', // cbBTC (curve crypto pool that has precedence has low liq)
+    '0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22', // cbETH (curve crypto pool that has precedence has low liq)
   ].map(lc),
   fraxtal: [].map(lc),
 };
