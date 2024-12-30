@@ -69,7 +69,10 @@ const getNapierTokenPrices = memoize(async (networkSettingsParam) => {
 
   // Mutate poolsData to add prices to it
   Object.entries(groupBy(principalTokensPricesRaw, 'metaData.poolAddress')).forEach(([poolAddress, pricesData]) => {
-    poolsData[poolAddress].principalTokensPrices = pricesData.map(({ data }) => data);
+    poolsData[poolAddress].principalTokensPrices = pricesData.map(({ data }) => (
+      uintToBN(data, 18).gte(1e18) ? '0' : // Contract can return erroneously high numbers, this excludes these numbers
+        data
+    ));
   });
 
   const underlyingAddressesAndMetadata = uniq(poolsDataRaw.filter(({ metaData: { type } }) => type === 'underlyingToken'));
