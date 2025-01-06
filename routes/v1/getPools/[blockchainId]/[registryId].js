@@ -120,6 +120,7 @@ const EXTERNAL_ORACLE_COINS_ADDRESSES = {
     '0xE80C0cd204D654CEbe8dd64A4857cAb6Be8345a3', // JPEG
     '0x821A278dFff762c76410264303F25bF42e195C0C', // pETH
     '0x6c3ea9036406852006290770bedfcaba0e23a0e8', // pyUSD
+    '0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3', // MIM
   ].map(lc),
   base: [
     '0xcfa3ef56d303ae4faaba0592388f19d7c3399fb4',
@@ -1197,7 +1198,11 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       });
       const isUsdMetaPool = implementation.startsWith('metausd') || implementation.startsWith('v1metausd');
 
-      const SMALL_AMOUNT_UNIT = BN(isUsdMetaPool ? 10000 : 1);
+      const SMALL_AMOUNT_UNIT = BN(
+        isUsdMetaPool ? 10000 :
+          Number(totalSupply) > BN(5).times(1e18) ? 1 : // Use small amount that's not too large wrt pool total supply
+            0.1
+      );
       if (Number(totalSupply) < SMALL_AMOUNT_UNIT.times(1e18)) return []; // Ignore empty pools
 
       const coinsAddresses = unfilteredCoinsAddresses.filter(isDefinedCoin);
