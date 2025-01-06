@@ -97,7 +97,7 @@ const MAX_AGE = 5 * 60;
 
 // Chains for which curve-prices is used as only data source for coins usd prices
 const CURVE_PRICES_AVAILABLE_CHAIN_IDS = [
-  // 'ethereum',
+  'ethereum',
 ];
 
 const IGNORED_COINS = {
@@ -206,16 +206,14 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
   );
 
   let factoryGaugesPoolAddressesAndAssetPricesMap;
-  if (!USE_CURVE_PRICES_DATA) {
-    const gaugesAssetPrices = await getAssetsPrices(Array.from(Object.values(factoryGaugesPoolAddressesAndCoingeckoIdMap)));
-    factoryGaugesPoolAddressesAndAssetPricesMap = arrayToHashmap(
-      Array.from(Object.entries(factoryGaugesPoolAddressesAndCoingeckoIdMap))
-        .map(([address, coingeckoId]) => [
-          address.toLowerCase(),
-          gaugesAssetPrices[coingeckoId],
-        ])
-    );
-  }
+  const gaugesAssetPrices = await getAssetsPrices(Array.from(Object.values(factoryGaugesPoolAddressesAndCoingeckoIdMap)));
+  factoryGaugesPoolAddressesAndAssetPricesMap = arrayToHashmap(
+    Array.from(Object.entries(factoryGaugesPoolAddressesAndCoingeckoIdMap))
+      .map(([address, coingeckoId]) => [
+        address.toLowerCase(),
+        gaugesAssetPrices[coingeckoId],
+      ])
+  );
 
   return {
     mainRegistryPoolList: mainRegistryPoolList.map((address) => address.toLowerCase()),
@@ -470,105 +468,85 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   let mainRegistryLpTokensPricesMap;
   let otherRegistryTokensPricesMap;
   let otherRegistryPoolsData;
-  if (!USE_CURVE_PRICES_DATA) {
-    /**
-    * We use pools from other registries as a fallback data source for the current registry.
-    * Registries depend on each other in the following one-way fashion to prevent circular dependencies:
-    * main <- crypto <- factory-crypto <- factory
-    * So main does not depend on other registries, crypto only depends on main, factory-crypto
-    * depends on the two previous, and factory on all three others.
-    * With this order of precedence, any asset can be priced automatically by simply having
-    * a crypto factory pool against any popular asset (like eth/usdc/etc) which makes sense in most
-    * cases anyway. E.g. cvxCRV is automatically priced because there's a CRV/ETH pool to price CRV
-    * against ETH, and a CRV/cvxCRV pool to price cvxCRV against CRV.
-    */
-    const REGISTRIES_DEPENDENCIES = {
-      main: [],
-      crypto: ['main'],
-      'factory-crvusd': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
-      'factory-eywa': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
-      'factory-crypto': ['main', 'crypto', 'factory-crvusd'],
-      factory: ['main', 'crypto', 'factory-crypto', 'factory-crvusd'],
-      'factory-tricrypto': ['main', 'factory-crvusd', 'factory'],
-      'factory-stable-ng': ['main', 'factory-crvusd', 'factory', 'factory-crypto'],
-      'factory-twocrypto': ['main', 'factory-crvusd', 'factory', 'factory-stable-ng'],
-    };
-    otherRegistryPoolsData = await sequentialPromiseFlatMap(REGISTRIES_DEPENDENCIES[registryId], async (id) => (
-      // eslint-disable-next-line no-use-before-define
-      (await getPoolsFn.straightCall({ blockchainId, registryId: id, preventQueryingFactoData: true })).poolData.map((poolData) => ({
-        ...poolData,
-        registryId: id,
-      }))
-    ));
+  /**
+  * We use pools from other registries as a fallback data source for the current registry.
+  * Registries depend on each other in the following one-way fashion to prevent circular dependencies:
+  * main <- crypto <- factory-crypto <- factory
+  * So main does not depend on other registries, crypto only depends on main, factory-crypto
+  * depends on the two previous, and factory on all three others.
+  * With this order of precedence, any asset can be priced automatically by simply having
+  * a crypto factory pool against any popular asset (like eth/usdc/etc) which makes sense in most
+  * cases anyway. E.g. cvxCRV is automatically priced because there's a CRV/ETH pool to price CRV
+  * against ETH, and a CRV/cvxCRV pool to price cvxCRV against CRV.
+  */
+  const REGISTRIES_DEPENDENCIES = {
+    main: [],
+    crypto: ['main'],
+    'factory-crvusd': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
+    'factory-eywa': ['main'], // This factory will have limited pools, for which main registry holds enough coin pricings
+    'factory-crypto': ['main', 'crypto', 'factory-crvusd'],
+    factory: ['main', 'crypto', 'factory-crypto', 'factory-crvusd'],
+    'factory-tricrypto': ['main', 'factory-crvusd', 'factory'],
+    'factory-stable-ng': ['main', 'factory-crvusd', 'factory', 'factory-crypto'],
+    'factory-twocrypto': ['main', 'factory-crvusd', 'factory', 'factory-stable-ng'],
+  };
+  otherRegistryPoolsData = await sequentialPromiseFlatMap(REGISTRIES_DEPENDENCIES[registryId], async (id) => (
+    // eslint-disable-next-line no-use-before-define
+    (await getPoolsFn.straightCall({ blockchainId, registryId: id, preventQueryingFactoData: true })).poolData.map((poolData) => ({
+      ...poolData,
+      registryId: id,
+    }))
+  ));
 
-    mainRegistryLpTokensPricesMap = arrayToHashmap(otherRegistryPoolsData.map((pool) => {
-      const {
-        address,
-        totalSupply,
-        usdTotal,
-        registryId: poolRegistryId,
-      } = pool;
-
-      const matchingPool = (
-        poolRegistryId === 'main' ? mainRegistryPoolsAndLpTokens.find(({ address: addressB }) => (
-          addressB.toLowerCase() === address.toLowerCase()
-        )) :
-          poolRegistryId === 'crypto' ? pool :
-            poolRegistryId === 'factory-stable-ng' ? pool :
-              null
-      );
-
-      if (!matchingPool) return null;
-
-      return [
-        matchingPool.lpTokenAddress.toLowerCase(),
-        (usdTotal / (totalSupply / 1e18)),
-      ];
-    }).filter((o) => o !== null));
-
-    otherRegistryTokensPricesMap = arrayToHashmap(Array.from(otherRegistryPoolsData.reduce((accu, {
-      coins,
+  mainRegistryLpTokensPricesMap = arrayToHashmap(otherRegistryPoolsData.map((pool) => {
+    const {
+      address,
+      totalSupply,
       usdTotal,
-    }) => {
-      coins.forEach(({ address, usdPrice }) => {
-        if (usdPrice !== null && !Number.isNaN(usdPrice) && usdTotal > 5000) {
-          const lcAddress = address.toLowerCase();
-          const tokenUsdPrices = accu.get(lcAddress) || [];
+      registryId: poolRegistryId,
+    } = pool;
 
-          accu.set(lcAddress, [
-            ...tokenUsdPrices,
-            { usdPrice, poolUsdTotal: usdTotal },
-          ]);
-        }
-      });
-
-      return accu;
-    }, new Map()).entries()).map(([lcAddress, tokenUsdPrices]) => [
-      lcAddress,
-      tokenUsdPrices.sort(({ poolUsdTotal: poolUsdTotalA }, { poolUsdTotal: poolUsdTotalB }) => (
-        poolUsdTotalA > poolUsdTotalB ? -1 :
-          poolUsdTotalB > poolUsdTotalA ? 1 : 0
-      ))[0].usdPrice,
-    ]));
-  } else {
-    const METAPOOL_REGISTRIES_DEPENDENCIES = {
-      main: [],
-      default: ['main'],
-    };
-
-    const metapoolRegistryDependencies = (
-      METAPOOL_REGISTRIES_DEPENDENCIES[registryId] ||
-      METAPOOL_REGISTRIES_DEPENDENCIES.default
+    const matchingPool = (
+      poolRegistryId === 'main' ? mainRegistryPoolsAndLpTokens.find(({ address: addressB }) => (
+        addressB.toLowerCase() === address.toLowerCase()
+      )) :
+        poolRegistryId === 'crypto' ? pool :
+          poolRegistryId === 'factory-stable-ng' ? pool :
+            null
     );
 
-    otherRegistryPoolsData = await sequentialPromiseFlatMap(metapoolRegistryDependencies, async (id) => (
-      // eslint-disable-next-line no-use-before-define
-      (await getPoolsFn.straightCall({ blockchainId, registryId: id, preventQueryingFactoData: true })).poolData.map((poolData) => ({
-        ...poolData,
-        registryId: id,
-      }))
-    ));
-  }
+    if (!matchingPool) return null;
+
+    return [
+      matchingPool.lpTokenAddress.toLowerCase(),
+      (usdTotal / (totalSupply / 1e18)),
+    ];
+  }).filter((o) => o !== null));
+
+  otherRegistryTokensPricesMap = arrayToHashmap(Array.from(otherRegistryPoolsData.reduce((accu, {
+    coins,
+    usdTotal,
+  }) => {
+    coins.forEach(({ address, usdPrice }) => {
+      if (usdPrice !== null && !Number.isNaN(usdPrice) && usdTotal > 5000) {
+        const lcAddress = address.toLowerCase();
+        const tokenUsdPrices = accu.get(lcAddress) || [];
+
+        accu.set(lcAddress, [
+          ...tokenUsdPrices,
+          { usdPrice, poolUsdTotal: usdTotal },
+        ]);
+      }
+    });
+
+    return accu;
+  }, new Map()).entries()).map(([lcAddress, tokenUsdPrices]) => [
+    lcAddress,
+    tokenUsdPrices.sort(({ poolUsdTotal: poolUsdTotalA }, { poolUsdTotal: poolUsdTotalB }) => (
+      poolUsdTotalA > poolUsdTotalB ? -1 :
+        poolUsdTotalB > poolUsdTotalA ? 1 : 0
+    ))[0].usdPrice,
+  ]));
 
   const poolDataWithTries = await multiCall(flattenArray(poolAddresses.map((address, i) => {
     const poolId = poolIds[i];
@@ -949,81 +927,80 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   let synthetixTokensAddressesAndPricesMapFallback;
   let eywaTokensAddressesAndPricesMapFallback;
   let curvePrices;
-  if (!USE_CURVE_PRICES_DATA) {
-    const coinsFallbackPricesFromCgId = (
-      COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
-        await getAssetsPrices(Array.from(Object.values(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))) :
-        {}
-    );
 
-    const coinAddressesAndPricesMapFallbackFromCgId = (
-      COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
-        arrayToHashmap(
-          Array.from(Object.entries(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))
-            .map(([address, coingeckoId]) => [
-              address.toLowerCase(),
-              coinsFallbackPricesFromCgId[coingeckoId],
-            ])
-        ) :
-        {}
-    );
+  const coinsFallbackPricesFromCgId = (
+    COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
+      await getAssetsPrices(Array.from(Object.values(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))) :
+      {}
+  );
 
-    const coinsFallbackPricesFromAddress = (
-      EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
-        await getTokensPrices(EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId], blockchainId) :
-        {}
-    );
-
-    const coinAddressesAndPricesMapFallbackFromAddress = (
-      EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
-        arrayToHashmap(
-          EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId].map((address) => [
-            address,
-            coinsFallbackPricesFromAddress[address],
+  const coinAddressesAndPricesMapFallbackFromCgId = (
+    COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId] ?
+      arrayToHashmap(
+        Array.from(Object.entries(COIN_ADDRESS_COINGECKO_ID_MAP[blockchainId]))
+          .map(([address, coingeckoId]) => [
+            address.toLowerCase(),
+            coinsFallbackPricesFromCgId[coingeckoId],
           ])
-        ) :
-        {}
-    );
+      ) :
+      {}
+  );
 
-    coinAddressesAndPricesMapFallback = {
-      ...coinAddressesAndPricesMapFallbackFromCgId,
-      ...coinAddressesAndPricesMapFallbackFromAddress,
-    };
+  const coinsFallbackPricesFromAddress = (
+    EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
+      await getTokensPrices(EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId], blockchainId) :
+      {}
+  );
 
-    crvusdTokenAddresseAndPriceMapFallback = await getCrvusdPrice(blockchainId);
+  const coinAddressesAndPricesMapFallbackFromAddress = (
+    EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId] ?
+      arrayToHashmap(
+        EXTERNAL_ORACLE_COINS_ADDRESSES[blockchainId].map((address) => [
+          address,
+          coinsFallbackPricesFromAddress[address],
+        ])
+      ) :
+      {}
+  );
 
-    ycTokensAddressesAndPricesMapFallback = (
-      (blockchainId === 'ethereum' || blockchainId === 'fantom') ?
-        await getYcTokenPrices(networkSettingsParam, blockchainId, coinAddressesAndPricesMapFallback) :
-        {}
-    );
+  coinAddressesAndPricesMapFallback = {
+    ...coinAddressesAndPricesMapFallbackFromCgId,
+    ...coinAddressesAndPricesMapFallbackFromAddress,
+  };
 
-    templeTokensAddressesAndPricesMapFallback = (
-      (blockchainId === 'ethereum' && registryId === 'factory') ?
-        await getTempleTokenPrices(networkSettingsParam, blockchainId, coinAddressesAndPricesMapFallback) :
-        {}
-    );
+  crvusdTokenAddresseAndPriceMapFallback = await getCrvusdPrice(blockchainId);
 
-    synthetixTokensAddressesAndPricesMapFallback = (
-      (blockchainId === 'ethereum') ?
-        await getSynthetixTokenPrices(networkSettingsParam) :
-        {}
-    );
+  ycTokensAddressesAndPricesMapFallback = (
+    (blockchainId === 'ethereum' || blockchainId === 'fantom') ?
+      await getYcTokenPrices(networkSettingsParam, blockchainId, coinAddressesAndPricesMapFallback) :
+      {}
+  );
 
-    napierTokensAddressesAndPricesMapFallback = (
-      (blockchainId === 'ethereum') ?
-        await getNapierTokenPrices(networkSettingsParam) :
-        {}
-    );
+  templeTokensAddressesAndPricesMapFallback = (
+    (blockchainId === 'ethereum' && registryId === 'factory') ?
+      await getTempleTokenPrices(networkSettingsParam, blockchainId, coinAddressesAndPricesMapFallback) :
+      {}
+  );
 
-    eywaTokensAddressesAndPricesMapFallback = (
-      (blockchainId === 'fantom' && (registryId === 'factory-eywa' || registryId === 'factory-stable-ng')) ?
-        await getEywaTokenPrices(allCoinAddresses, registryId) :
-        {}
-    );
-  } else {
-    curvePrices = await getCurvePrices(blockchainId);
-  }
+  synthetixTokensAddressesAndPricesMapFallback = (
+    (blockchainId === 'ethereum') ?
+      await getSynthetixTokenPrices(networkSettingsParam) :
+      {}
+  );
+
+  napierTokensAddressesAndPricesMapFallback = (
+    (blockchainId === 'ethereum') ?
+      await getNapierTokenPrices(networkSettingsParam) :
+      {}
+  );
+
+  eywaTokensAddressesAndPricesMapFallback = (
+    (blockchainId === 'fantom' && (registryId === 'factory-eywa' || registryId === 'factory-stable-ng')) ?
+      await getEywaTokenPrices(allCoinAddresses, registryId) :
+      {}
+  );
+
+  curvePrices = await getCurvePrices(blockchainId);
 
   const coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
     // In crypto facto pools, native eth is represented as weth
@@ -1110,22 +1087,18 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const coinPrice = (
       (IGNORED_COINS[blockchainId] || []).includes(coinAddress.toLowerCase()) ? 0 :
         (
-          USE_CURVE_PRICES_DATA ? (
-            curvePrices[lc(coinAddress)] ||
-            null
-          ) : (
-            crvusdTokenAddresseAndPriceMapFallback[coinAddress.toLowerCase()] || //
-            otherRegistryTokensPricesMap[coinAddress.toLowerCase()] || //
-            mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()] || //
-            coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
-            ycTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
-            napierTokensAddressesAndPricesMapFallback[`${poolAddress.toLowerCase()}-${coinAddress.toLowerCase()}`] || //
-            templeTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
-            synthetixTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
-            eywaTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
-            (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) || //
-            null
-          )
+          (USE_CURVE_PRICES_DATA ? curvePrices[lc(coinAddress)] : undefined) ||
+          crvusdTokenAddresseAndPriceMapFallback[coinAddress.toLowerCase()] || //
+          otherRegistryTokensPricesMap[coinAddress.toLowerCase()] || //
+          mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()] || //
+          coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
+          ycTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
+          napierTokensAddressesAndPricesMapFallback[`${poolAddress.toLowerCase()}-${coinAddress.toLowerCase()}`] || //
+          templeTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
+          synthetixTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
+          eywaTokensAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
+          (registryId === 'factory' && ethereumOnlyData?.factoryGaugesPoolAddressesAndAssetPricesMap?.[poolAddress.toLowerCase()]) || //
+          null
         )
     );
 
@@ -1210,7 +1183,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
       return flattenArray(coinsAddresses.map((_, i) => {
         const iDecimals = Number(decimals[i]);
-        const smallAmount = SMALL_AMOUNT_UNIT.times(BN(10).pow(iDecimals)).toFixed();
+        const safeSmallAmountUnit = (iDecimals === 0 && SMALL_AMOUNT_UNIT.toNumber() === 0.1) ? BN(1) : SMALL_AMOUNT_UNIT;
+        const smallAmount = safeSmallAmountUnit.times(BN(10).pow(iDecimals)).toFixed();
 
         return coinsAddresses.map((__, j) => {
           if (j === i) return null;
@@ -1223,7 +1197,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
               poolId: id,
               i,
               j,
-              jDivideBy: SMALL_AMOUNT_UNIT.times(BN(10).pow(Number(decimals[j]))),
+              jDivideBy: safeSmallAmountUnit.times(BN(10).pow(Number(decimals[j]))),
             },
             ...networkSettingsParam,
           };
@@ -1240,25 +1214,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     return { rate, poolId, i, j };
   }), 'poolId');
 
-  /**
-   * missingCoinPrices plays two different roles:
-   * - if USE_CURVE_PRICES_DATA === true: it contains tokens missing from curve-prices, and that'll be passed
-   *   to deriveMissingCoinPrices to fill in the blanks
-   * - if USE_CURVE_PRICES_DATA === false: deriveMissingCoinPrices will be called first to give priority to
-   *   deriving prices using curve pools data; then any token still missing a price will be given a second
-   *   chance to have one with missingCoinPrices which will be passed a second time to deriveMissingCoinPrices
-   */
   let missingCoinPrices = {};
-  if (USE_CURVE_PRICES_DATA) {
-    const coinsAddressesWithMissingPrices = uniq(Array.from(Object.values(mergedCoinData)).filter(({
-      address,
-      usdPrice,
-    }) => (
-      !(IGNORED_COINS[blockchainId] || []).includes(lc(address)) &&
-      usdPrice === null
-    )).map(({ address }) => lc(address)));
-    missingCoinPrices = await getTokensPrices(coinsAddressesWithMissingPrices, blockchainId);
-  }
 
   const augmentedDataPart1 = await sequentialPromiseReduce(mergedPoolData, async (poolInfo, i, wipMergedPoolData) => {
     const implementation = getImplementation({
@@ -1286,7 +1242,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     );
 
     const augmentedCoins = await getAugmentedCoinsFirstPass({
-      USE_CURVE_PRICES_DATA,
+      USE_CURVE_PRICES_DATA: false,
       poolInfo,
       mergedCoinData,
       blockchainId,
@@ -1312,24 +1268,22 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     };
   });
 
-  if (!USE_CURVE_PRICES_DATA) {
-    const coinsAddressesWithMissingPrices = uniq(flattenArray(augmentedDataPart1.map(({ coins }) => coins)).filter(({
-      address,
-      usdPrice,
-    }) => (
-      !(IGNORED_COINS[blockchainId] || []).includes(lc(address)) &&
-      usdPrice === null
-    )).map(({ address }) => lc(address)));
-    if (coinsAddressesWithMissingPrices.length > 0) {
-      missingCoinPrices = await getTokensPrices(coinsAddressesWithMissingPrices, blockchainId);
-    }
+  const coinsAddressesWithMissingPrices = uniq(flattenArray(augmentedDataPart1.map(({ coins }) => coins)).filter(({
+    address,
+    usdPrice,
+  }) => (
+    !(IGNORED_COINS[blockchainId] || []).includes(lc(address)) &&
+    usdPrice === null
+  )).map(({ address }) => lc(address)));
+  if (coinsAddressesWithMissingPrices.length > 0) {
+    missingCoinPrices = await getTokensPrices(coinsAddressesWithMissingPrices, blockchainId);
   }
 
   const augmentedDataPart2 = await sequentialPromiseReduce(augmentedDataPart1, async (poolInfo, i, wipMergedPoolData) => {
     const augmentedCoins = (
       Object.values(missingCoinPrices).length > 0 ? (
         await getAugmentedCoinsSecondPass({
-          USE_CURVE_PRICES_DATA,
+          USE_CURVE_PRICES_DATA: false,
           poolInfo,
           blockchainId,
           registryId,
@@ -1455,26 +1409,21 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           const tokenCoingeckoPrice = apyData.tokenPrice;
 
           let tokenPrice;
-          if (!USE_CURVE_PRICES_DATA) {
-            const [augmentedCoin] = await deriveMissingCoinPrices({
-              blockchainId,
-              registryId,
-              coins: [{ address: tokenAddress, usdPrice: null }],
-              poolInfo: { id: poolInfo.id }, // Passing a subset of poolInfo to avoid hitting other derivation methods for this very specific use-case
-              otherPools: (
-                wipMergedPoolData
-                  .concat({ coins: augmentedCoins, usdTotal }) // Attach this pool's own augmented coins
-              ),
-              internalPoolPrices: internalPoolsPrices[poolInfo.id] || [], //
-              mainRegistryLpTokensPricesMap, //
-              otherRegistryTokensPricesMap, //
-            });
+          const [augmentedCoin] = await deriveMissingCoinPrices({
+            blockchainId,
+            registryId,
+            coins: [{ address: tokenAddress, usdPrice: null }],
+            poolInfo: { id: poolInfo.id }, // Passing a subset of poolInfo to avoid hitting other derivation methods for this very specific use-case
+            otherPools: (
+              wipMergedPoolData
+                .concat({ coins: augmentedCoins, usdTotal }) // Attach this pool's own augmented coins
+            ),
+            internalPoolPrices: internalPoolsPrices[poolInfo.id] || [], //
+            mainRegistryLpTokensPricesMap, //
+            otherRegistryTokensPricesMap, //
+          });
 
-            tokenPrice = augmentedCoin.usdPrice || tokenCoingeckoPrice;
-          } else {
-            // Here need CURVE_PRICES_DATA
-            tokenPrice = curvePrices[lc(tokenAddress)] || tokenCoingeckoPrice || null;
-          }
+          tokenPrice = (USE_CURVE_PRICES_DATA ? curvePrices[lc(tokenAddress)] : undefined) || augmentedCoin.usdPrice || tokenCoingeckoPrice;
 
           return {
             ...rewardInfo,
@@ -1578,9 +1527,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       } = augmentedPool;
       const lpTokenAddress = mainRegistryPoolsAndLpTokens.find(({ address: addressB }) => addressB.toLowerCase() === address.toLowerCase()).lpTokenAddress.toLowerCase();
 
-      if (!USE_CURVE_PRICES_DATA) {
-        mainRegistryLpTokensPricesMap[lpTokenAddress] = (usdTotal / (totalSupply / 1e18));
-      }
+      mainRegistryLpTokensPricesMap[lpTokenAddress] = (usdTotal / (totalSupply / 1e18));
     }
 
     return augmentedPool;

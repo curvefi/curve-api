@@ -27,10 +27,10 @@ const getCurvePrices = memoize(async (blockchainId) => {
 
   return arrayToHashmap(
     data
-      // Only use fresh prices (last updated in the past 7d, i.e. had a trade in the past 7d)
+      // Only use fresh prices (last updated in the past 24h, i.e. had a trade in the past 24h)
       .filter(({ last_updated }) => (
         // Append 'Z' because this is a UTC datetime string
-        (Date.parse(`${last_updated}Z`) / 1000) > (getNowTimestamp() - (7 * 86400))
+        (Date.parse(`${last_updated}Z`) / 1000) > (getNowTimestamp() - (86400))
       ))
       .map(({
         address,
