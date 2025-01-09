@@ -38,6 +38,9 @@ const EYWA_POOLS_METADATA = [{
 }, {
   fantomFactoryStableNgPoolId: 49,
   shortName: 'CrossCurve ETH 2',
+}, {
+  fantomFactoryStableNgPoolId: 54,
+  shortName: 'CrossCurve Stable 3',
 }];
 
 const FACTO_STABLE_NG_EYWA_POOL_IDS = EYWA_POOLS_METADATA.map(({ fantomFactoryStableNgPoolId }) => fantomFactoryStableNgPoolId);
