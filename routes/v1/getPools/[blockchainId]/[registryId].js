@@ -1087,8 +1087,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     const coinPrice = (
       (IGNORED_COINS[blockchainId] || []).includes(coinAddress.toLowerCase()) ? 0 :
         (
-          (USE_CURVE_PRICES_DATA ? curvePrices[lc(coinAddress)] : undefined) ||
           crvusdTokenAddresseAndPriceMapFallback[coinAddress.toLowerCase()] || //
+          (USE_CURVE_PRICES_DATA ? curvePrices[lc(coinAddress)] : undefined) ||
           otherRegistryTokensPricesMap[coinAddress.toLowerCase()] || //
           mainRegistryLpTokensPricesMap[coinAddress.toLowerCase()] || //
           coinAddressesAndPricesMapFallback[coinAddress.toLowerCase()] || //
