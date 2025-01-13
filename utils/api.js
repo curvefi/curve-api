@@ -174,7 +174,6 @@ const fn = (cb, options = {}) => {
   };
 
   const rMaxAgeSec = maxAgeSec !== null ? addTtlRandomness(maxAgeSec) : null;
-  // const rMaxAgeCDN = maxAgeCDN !== null ? addTtlRandomness(maxAgeCDN) : null;
   const rMaxAgeCDN = maxAgeCDN; // No upside to adding randomness there
 
   if (rMaxAgeSec !== null && rMaxAgeCDN !== null) {
@@ -231,7 +230,7 @@ const fn = (cb, options = {}) => {
       .then((data) => {
         // rMaxAgeSec is reduced so that the two swr caches don't add up to twice the caching time
         const maxAgeCdnValue = rMaxAgeCDN ?? Math.trunc(maxAgeSec / 1.2);
-        const maxAgeBrowserValue = IS_DEV ? 0 : 60;
+        const maxAgeBrowserValue = IS_DEV ? 0 : Math.min(30, maxAgeCdnValue / 2);
         const cdnHardExpiryValue = CACHE_SETTINGS.maxTimeToLive / 1000;
 
         // Send a 200 response for expected errors
@@ -246,7 +245,19 @@ const fn = (cb, options = {}) => {
         }
 
         if (rMaxAgeSec !== null || rMaxAgeCDN !== null) {
-          res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate=${cdnHardExpiryValue}, stale-if-error=${cdnHardExpiryValue}`);
+          /**
+          * Docs: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html#stale-content
+          * Caching strategy:
+          * - Browser: cache for 30s, or half of `maxAgeCdnValue`, whichever is lowest
+          * - CloudFront:
+          *   - Cache for `maxAgeCdnValue`
+          *   - After this duration, return value from origin (swr=0) and cache it again
+          *   - If origin errors, keep returning stale value for long, safe duration (sie=`cdnHardExpiryValue`)
+          * Advantages of this strategy: good caching, and guaranteed fresh data for cold edges, and regular refreshes for warm edges; no downtime in case of errors.
+          * Possible downside: load placed on origin.
+          * Alternative strategy: much lower cache duration, and larger swr duration, to regularly refresh the cache without impacting edge latency, but would still lead to stale data being served for cold edges.
+          */
+          res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate=0, stale-if-error=${cdnHardExpiryValue}`);
         }
         const success = !isSoftError;
         res.status(200).json(
