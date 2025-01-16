@@ -12,7 +12,7 @@ const REWARD_TOKEN_ADDRESSES = [
 const LAST_PRICES_CACHE = new Map();
 
 const getEywaTokenPrice = memoize((address) => (
-  Request.get(`https://pusher.eywa.fi/prices/${address}`)
+  Request.get(`https://api.crosscurve.fi/prices/${address}/250`)
     .then((res) => res.json())
     .then((str) => Number(str))
     .catch(() => (
