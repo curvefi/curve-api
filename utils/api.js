@@ -257,7 +257,7 @@ const fn = (cb, options = {}) => {
           * Possible downside: load placed on origin.
           * Alternative strategy: much lower cache duration, and larger swr duration, to regularly refresh the cache without impacting edge latency, but would still lead to stale data being served for cold edges.
           */
-          res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate=0, stale-if-error=${cdnHardExpiryValue}`);
+          res.setHeader('Cache-Control', `max-age=${maxAgeBrowserValue}, s-maxage=${maxAgeCdnValue}, stale-while-revalidate=0, stale-if-error=${cdnHardExpiryValue * 1000}`);
         }
         const success = !isSoftError;
         res.status(200).json(
