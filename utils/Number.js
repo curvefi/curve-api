@@ -82,10 +82,9 @@ const decimalsNumber = (decimals) => (
 );
 
 const addTtlRandomness = (ttl) => Math.trunc(
-  ttl < 20 ? ttl :
-  ttl < 60 ? (ttl - (Math.random() * 10) + (Math.random() * 20)) : // between -10 and +30 of initial ttl
-  ttl < 120 ? (ttl - (Math.random() * 20) + (Math.random() * 40)) : // between -20 and +60 of initial ttl
-  (ttl - (Math.random() * 30) + (Math.random() * 60)) // between -30 and +90 of initial ttl
+  ttl < 30 ? ttl :
+    ttl < 180 ? (ttl - (Math.random() * 10) + (Math.random() * 20)) : // between -10 and +30 of initial ttl
+      (ttl - (Math.random() * 30) + (Math.random() * 60)) // between -30 and +90 of initial ttl
 );
 
 export {
