@@ -135,6 +135,6 @@ export default fn(async () => {
 
   return { poolData, totals };
 }, {
-  maxAge: 2 * 60,
+  maxAge: 5 * 60,
   cacheKey: 'getFactoryPools',
 });

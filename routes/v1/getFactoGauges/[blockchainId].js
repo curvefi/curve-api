@@ -393,6 +393,6 @@ export default fn(async ({ blockchainId }) => {
     gauges,
   };
 }, {
-  maxAge: 3 * 60,
+  maxAge: 5 * 60,
   cacheKey: ({ blockchainId }) => `getFactoGauges-${blockchainId}`,
 });

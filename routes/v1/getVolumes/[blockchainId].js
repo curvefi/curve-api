@@ -110,7 +110,7 @@ export default fn(async ({ blockchainId }) => {
     },
   };
 }, {
-  maxAge: 60,
+  maxAge: 90,
   cacheKey: ({ blockchainId }) => `getVolumes-${blockchainId}`,
 });
 
