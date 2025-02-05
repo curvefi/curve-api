@@ -30,7 +30,7 @@ const MULTICALL_CHUNKS_SIZE = {
 const getContractInstance = memoize((address, abi, library) => (
   new library.eth.Contract(abi, address)
 ), {
-  maxAge: 60 * 1000,
+  maxAge: 3 * 60 * 60 * 1000,
 });
 
 /**
