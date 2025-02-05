@@ -1,8 +1,9 @@
 import Web3 from 'web3';
-import configs, { getConfigByRpcUrl } from '#root/constants/configs/index.js';
+import memoize from 'memoizee';
+import configs, { getConfigByRpcUrl } from '#root/constants/configs/index.js'
 import * as WEB3_CONSTANTS from '#root/constants/Web3.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/web3.js';
-import { IS_DEV } from '#root/constants/AppConstants.js';
+import { IS_DEV } from '#root/constants/AppConstants.js'
 import { sequentialPromiseMap } from '#root/utils/Async.js';
 import MULTICALL2_ABI from '../constants/abis/multicall2.json' assert { type: 'json' };
 import { getArrayChunks, flattenArray } from '#root/utils/Array.js';
@@ -26,9 +27,11 @@ const MULTICALL_CHUNKS_SIZE = {
 };
 
 // Contract instances cache store
-const getContractInstance = (address, abi, library) => (
+const getContractInstance = memoize((address, abi, library) => (
   new library.eth.Contract(abi, address)
-);
+), {
+  maxAge: 60 * 1000,
+});
 
 /**
  * @param {Array<{contract: Object, methodName: String, params: Array}>} callsConfig
