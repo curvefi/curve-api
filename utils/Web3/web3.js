@@ -1,7 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 
 import Web3 from 'web3';
-import memoize from 'memoizee';
 import Multicall from '#root/constants/abis/multicall.json' assert { type: 'json' };
 import { RPC_URL, RPC_URL_BSC } from '#root/constants/Web3.js';
 
@@ -9,11 +8,9 @@ const web3 = new Web3(Web3?.givenProvider?.networkVersion === '1' ? Web3.givenPr
 const MulticallContract = new web3.eth.Contract(Multicall, '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441');
 
 // Contract instances cache store
-const getContractInstance = memoize((address, abi, account, library, chainId) => (
+const getContractInstance = (address, abi, account, library, chainId) => (
   new library.eth.Contract(abi, address)
-), {
-  maxAge: 60 * 1000,
-});
+);
 
 const getEncodedCalls = (callsConfig) => {
   const defaultCallConfig = {
