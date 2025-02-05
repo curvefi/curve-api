@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@curvefi/stablecoin-api": "^1.5.7",
+    "@octokit/rest": "^21.1.0",
     "bignumber.js": "^9.1.2",
     "body-parser": "^1.20.2",
     "core-js-pure": "^3.36.1",
