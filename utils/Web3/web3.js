@@ -13,7 +13,7 @@ const getContractInstance = memoize((address, abi, account, library, chainId) =>
   new library.eth.Contract(abi, address)
 ), {
   maxAge: 60 * 1000,
-  normalizer: ([address, abi, account, library, chainId]) => `${address}-${abi.length}-${chainId}`,
+  // normalizer: ([address, abi, account, library, chainId]) => `${address}-${abi.length}-${chainId}`,
 });
 
 const getEncodedCalls = (callsConfig) => {
