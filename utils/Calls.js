@@ -31,7 +31,7 @@ const getContractInstance = memoize((address, abi, library) => (
   new library.eth.Contract(abi, address)
 ), {
   maxAge: 60 * 1000,
-  // normalizer: ([address, abi, library]) => `${address}-${abi.length}-${library.currentProvider?.host}`,
+  normalizer: ([address, abi, library]) => `${address}-${abi.map(({ name }) => name).join(',')}-${library.currentProvider?.host}`,
 });
 
 /**
