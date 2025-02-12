@@ -28,7 +28,6 @@ import { ZERO_ADDRESS } from '#root/utils/Web3/web3.js';
 import getTokensPrices from '#root/utils/data/tokens-prices.js';
 import getFactoryV2GaugeRewards from '#root/utils/data/getFactoryV2GaugeRewards.js';
 import ERC20_ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
-import getAavePoolRewardsInfo from '#root/utils/data/getAavePoolRewardsInfo.js';
 import RewardContractV1ABI from '#root/utils/data/abis/json/reward-contracts/v1.json' assert { type: 'json' };
 import RewardContractV4ABI from '#root/utils/data/abis/json/reward-contracts/v4.json' assert { type: 'json' };
 import RewardContractVrewarddataABI from '#root/utils/data/abis/json/reward-contracts/vrewarddata.json' assert { type: 'json' };
@@ -380,8 +379,7 @@ export default fn(async ({ gauges }) => {
     };
   });
 
-  const [customLogicRewardsInfo, mainPoolsFactoryPoolsRewardsInfo] = await Promise.all([
-    getAavePoolRewardsInfo(gaugesRewardData, CUSTOM_LOGIC_REWARD_CONTRACTS),
+  const [mainPoolsFactoryPoolsRewardsInfo] = await Promise.all([
     getFactoryV2GaugeRewards({ factoryGaugesAddresses: FACTORY_GAUGES_ADDED_TO_MAIN_LIST_ADDRESSES }).then((gaugesRewards) => Array.from(Object.values(gaugesRewards)).map((gaugeRewards) => gaugeRewards.map(({
       apyData,
       ...rewardInfo
@@ -398,7 +396,6 @@ export default fn(async ({ gauges }) => {
 
   const mergedRewardsInfo = [
     ...rewardsInfo,
-    ...customLogicRewardsInfo,
     ...flattenArray(Array.from(Object.values(mainPoolsFactoryPoolsRewardsInfo))),
   ];
 
