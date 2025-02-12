@@ -1425,16 +1425,17 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
           });
 
           tokenPrice = (USE_CURVE_PRICES_DATA ? curvePrices[lc(tokenAddress)] : undefined) || augmentedCoin.usdPrice || tokenCoingeckoPrice;
+          const apy = (
+            apyData.isRewardStillActive ?
+              apyData.rate * 86400 * 365 * tokenPrice / gaugeUsdTotal * 100 :
+              0
+          )
 
           return {
             ...rewardInfo,
             tokenAddress,
             tokenPrice,
-            apy: (
-              apyData.isRewardStillActive ?
-                apyData.rate * 86400 * 365 * tokenPrice / gaugeUsdTotal * 100 :
-                0
-            ),
+            apy: apy === Infinity ? 1000 : apy,
           };
         })
     );
