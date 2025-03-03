@@ -865,5 +865,28 @@ const configs = {
     approxBlocksPerDay: 191574, // https://explorer.mantle.xyz/stats
     graphEndpoint: undefined,
   },
+  sonic: {
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: null,
+    shortId: 'sonic',
+    nativeCurrencySymbol: 'S',
+    chainId: 146,
+    nativeCurrencyCoingeckoId: 'sonic-3',
+    platformCoingeckoId: 'sonic',
+    nativeAssetErc20WrapperId: 'wrapped-sonic',
+    rpcUrl: `https://rpc.soniclabs.com`,
+    backuprpcUrl: `https://rpc.soniclabs.com`,
+    multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    graphEndpoint: undefined,
+    lendingVaultsBaseUrl: 'https://curve.fi/lend/#/sonic/markets/',
+    lendingVaultRegistries: {
+      oneway: '0x30D1859DaD5A52aE03B6e259d1b48c4b12933993',
+    },
+    lendingVaultRegistriesUrlFragments: {
+      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/arbitrum/markets/one-way-market-3/vault/deposit
+    },
+  },
 };
 export default configs;
