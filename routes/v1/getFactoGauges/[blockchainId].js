@@ -62,7 +62,7 @@ export default fn(async ({ blockchainId }) => {
   const web3Side = new Web3(config.rpcUrl);
 
   // 0xabc is the generic gauge registry address for all sidechains, the config prop allows exceptions
-  const gaugeRegistryAddress = config.gaugeRegistryAddress ?? '0xabc000d88f23bb45525e447528dbf656a9d55bf5';
+  const gaugeRegistryAddress = config.gaugeRegistryAddress !== undefined ? config.gaugeRegistryAddress : '0xabc000d88f23bb45525e447528dbf656a9d55bf5';
   const gaugeRegistryAddress2 = config.gaugeRegistryAddress2 ?? null;
   const gaugeRootRegistry2 = config.gaugeRootRegistry2 ?? null;
 

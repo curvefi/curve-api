@@ -55,6 +55,7 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'bsc',
   'x-layer',
   'mantle',
+  'sonic',
 ];
 
 const lc = (str) => str.toLowerCase();

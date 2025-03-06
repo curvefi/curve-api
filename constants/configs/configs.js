@@ -6,7 +6,7 @@ import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
 const configs = {
   ethereum: {
     poolsBaseUrlOld: 'https://classic.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/ethereum/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/ethereum/pools/',
     nativeCurrencySymbol: 'ETH',
     chainId: 1,
     nativeCurrencyCoingeckoId: 'ethereum',
@@ -78,17 +78,17 @@ const configs = {
       '0xfc636d819d1a98433402ec9dec633d864014f28c', , // Contains an exploited asset that was stopped
       '0x68934f60758243eafaf4d2cfed27bf8010bede3a', , // Contains an exploited asset that was stopped
     ].map(lc),
-    lendingVaultsBaseUrl: 'https://lend.curve.fi/#/ethereum/markets/',
+    lendingVaultsBaseUrl: 'https://curve.fi/lend/#/ethereum/markets/',
     lendingVaultRegistries: {
       oneway: '0xea6876dde9e3467564acbee1ed5bac88783205e0',
     },
     lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/ethereum/markets/one-way-market-3/vault/deposit
+      oneway: 'one-way-market', // e.g. https://curve.fi/lend/#/ethereum/markets/one-way-market-3/vault/deposit
     },
   },
   polygon: {
     poolsBaseUrlOld: 'https://polygon.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/polygon/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/polygon/pools/',
     shortId: 'poly',
     nativeCurrencySymbol: 'MATIC',
     chainId: 137,
@@ -156,7 +156,7 @@ const configs = {
   },
   fantom: {
     poolsBaseUrlOld: 'https://ftm.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/fantom/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/fantom/pools/',
     shortId: 'ftm',
     nativeCurrencySymbol: 'FTM',
     chainId: 250,
@@ -213,7 +213,7 @@ const configs = {
   },
   arbitrum: {
     poolsBaseUrlOld: 'https://arbitrum.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/arbitrum/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/arbitrum/pools/',
     shortId: 'arbi',
     nativeCurrencySymbol: 'ETH',
     chainId: 42161,
@@ -266,17 +266,17 @@ const configs = {
     ]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     graphEndpoint: undefined,
-    lendingVaultsBaseUrl: 'https://lend.curve.fi/#/arbitrum/markets/',
+    lendingVaultsBaseUrl: 'https://curve.fi/lend/#/arbitrum/markets/',
     lendingVaultRegistries: {
       oneway: '0xcaEC110C784c9DF37240a8Ce096D352A75922DeA',
     },
     lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/arbitrum/markets/one-way-market-3/vault/deposit
+      oneway: 'one-way-market', // e.g. https://curve.fi/lend/#/arbitrum/markets/one-way-market-3/vault/deposit
     },
   },
   avalanche: {
     poolsBaseUrlOld: 'https://avax.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/avalanche/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/avalanche/pools/',
     shortId: 'ava',
     nativeCurrencySymbol: 'AVAX',
     chainId: 43114,
@@ -333,7 +333,7 @@ const configs = {
   },
   optimism: {
     poolsBaseUrlOld: 'https://optimism.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/optimism/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/optimism/pools/',
     shortId: 'op',
     nativeCurrencySymbol: 'ETH',
     chainId: 10,
@@ -382,17 +382,17 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
     graphEndpoint: undefined,
-    lendingVaultsBaseUrl: 'https://lend.curve.fi/#/optimism/markets/',
+    lendingVaultsBaseUrl: 'https://curve.fi/lend/#/optimism/markets/',
     lendingVaultRegistries: {
       oneway: '0x5EA8f3D674C70b020586933A0a5b250734798BeF',
     },
     lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/ethereum/markets/one-way-market-3/vault/deposit
+      oneway: 'one-way-market', // e.g. https://curve.fi/lend/#/ethereum/markets/one-way-market-3/vault/deposit
     },
   },
   xdai: {
     poolsBaseUrlOld: 'https://xdai.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/gnosis/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/gnosis/pools/',
     shortId: 'xdai',
     nativeCurrencySymbol: 'xDAI',
     chainId: 100,
@@ -441,7 +441,7 @@ const configs = {
   },
   aurora: {
     poolsBaseUrlOld: 'https://aurora.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/aurora/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/aurora/pools/',
     shortId: 'aur',
     nativeCurrencySymbol: 'AURORA',
     chainId: 1313161555,
@@ -483,7 +483,7 @@ const configs = {
   },
   moonbeam: {
     poolsBaseUrlOld: 'https://moonbeam.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/moonbeam/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/moonbeam/pools/',
     shortId: 'moon',
     nativeCurrencySymbol: 'GLMR',
     chainId: 1284,
@@ -517,7 +517,7 @@ const configs = {
   },
   kava: {
     poolsBaseUrlOld: 'https://kava.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/kava/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/kava/pools/',
     shortId: 'kava',
     nativeCurrencySymbol: 'KAVA',
     chainId: 2222,
@@ -562,7 +562,7 @@ const configs = {
   celo: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: 'https://celo.curve.fi/',
-    poolsBaseUrl: 'https://curve.fi/#/celo/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/celo/pools/',
     shortId: 'celo',
     nativeCurrencySymbol: 'CELO',
     chainId: 42220,
@@ -679,7 +679,7 @@ const configs = {
   base: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.fi/#/base/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/base/pools/',
     shortId: 'base',
     nativeCurrencySymbol: 'ETH',
     chainId: 8453,
@@ -726,7 +726,7 @@ const configs = {
   fraxtal: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.fi/#/fraxtal/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/fraxtal/pools/',
     shortId: 'fraxtal',
     nativeCurrencySymbol: 'frxETH',
     chainId: 252,
@@ -754,18 +754,18 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // Very approx from list of blocks on https://fraxscan.com/blocks
     graphEndpoint: undefined,
-    lendingVaultsBaseUrl: 'https://lend.curve.fi/#/fraxtal/markets/',
+    lendingVaultsBaseUrl: 'https://curve.fi/lend/#/fraxtal/markets/',
     lendingVaultRegistries: {
       oneway: '0xf3c9bdAB17B7016fBE3B77D17b1602A7db93ac66',
     },
     lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/ethereum/markets/one-way-market-3/vault/deposit
+      oneway: 'one-way-market', // e.g. https://curve.fi/lend/#/ethereum/markets/one-way-market-3/vault/deposit
     },
   },
   bsc: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.fi/#/bsc/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/bsc/pools/',
     shortId: 'bsc',
     nativeCurrencySymbol: 'BNB',
     chainId: 56,
@@ -813,7 +813,7 @@ const configs = {
   'x-layer': {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.fi/#/x-layer/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/x-layer/pools/',
     shortId: 'x-layer',
     nativeCurrencySymbol: 'OKB',
     chainId: 196,
@@ -840,7 +840,7 @@ const configs = {
   mantle: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.fi/#/mantle/pools/',
+    poolsBaseUrl: 'https://curve.fi/dex/#/mantle/pools/',
     shortId: 'mantle',
     nativeCurrencySymbol: 'MNT',
     chainId: 5000,
@@ -866,8 +866,9 @@ const configs = {
     graphEndpoint: undefined,
   },
   sonic: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: null,
+    poolsBaseUrl: 'https://curve.fi/dex/#/sonic/pools/',
     shortId: 'sonic',
     nativeCurrencySymbol: 'S',
     chainId: 146,
@@ -878,6 +879,16 @@ const configs = {
     backuprpcUrl: `https://rpc.soniclabs.com`,
     multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
     multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    getFactoryTricryptoRegistryAddress: async () => '0x635742dCC8313DCf8c904206037d962c042EAfBd',
+    getFactoryStableswapNgRegistryAddress: async () => '0x7C2085419BE6a04f4ad88ea91bC9F5C6E6C463D8',
+    getFactoryTwocryptoRegistryAddress: async () => '0x1A83348F9cCFD3Fe1A8C0adBa580Ac4e267Fe495',
+    gaugeRegistryAddress: null,
+    gaugeRegistryAddress2: '0xf3A431008396df8A8b2DF492C913706BDB0874ef',
+    gaugeRootRegistry2: '0x306A45a1478A000dC701A6e1f7a569afb8D9DCD6',
+    factoryImplementationAddressMap: new Map([
+      //
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     graphEndpoint: undefined,
     lendingVaultsBaseUrl: 'https://curve.fi/lend/#/sonic/markets/',
@@ -885,7 +896,7 @@ const configs = {
       oneway: '0x30D1859DaD5A52aE03B6e259d1b48c4b12933993',
     },
     lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://lend.curve.fi/#/arbitrum/markets/one-way-market-3/vault/deposit
+      oneway: 'one-way-market', // e.g. https://curve.fi/lend/#/arbitrum/markets/one-way-market-3/vault/deposit
     },
   },
 };
