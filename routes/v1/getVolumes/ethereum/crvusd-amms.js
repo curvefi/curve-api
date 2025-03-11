@@ -33,7 +33,7 @@ export default fn(async () => {
 
     return {
       address: amm,
-      volumeUSD: data[0].volume,
+      volumeUSD: data[0]?.volume ?? 0,
     };
   });
 
