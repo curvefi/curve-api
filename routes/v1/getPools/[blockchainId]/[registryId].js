@@ -98,6 +98,7 @@ const MAX_AGE = 5 * 60;
 // Chains for which curve-prices is used as only data source for coins usd prices
 const CURVE_PRICES_AVAILABLE_CHAIN_IDS = [
   'ethereum',
+  'sonic',
 ];
 
 const IGNORED_COINS = {
