@@ -1492,8 +1492,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
         return ({
           ...overrideSymbol(coin, blockchainId),
-          ...(typeof ethLsdApyData !== 'undefined' ? { ethLsdApy: ethLsdApyData.stakingApy } : {}),
-          ...(typeof ethDaiApyData !== 'undefined' ? { ethLsdApy: ethDaiApyData.apy } : {}), // Stuffed in the same prop as LSTs apys
+          ...((typeof ethLsdApyData !== 'undefined' && registryId.includes('crypto')) ? { ethLsdApy: ethLsdApyData.stakingApy } : {}),
+          ...((typeof ethDaiApyData !== 'undefined' && registryId.includes('crypto')) ? { ethLsdApy: ethDaiApyData.apy } : {}), // Stuffed in the same prop as LSTs apys
         });
       }),
       usdTotal,
