@@ -569,7 +569,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'celo',
     platformCoingeckoId: 'celo',
     nativeAssetErc20WrapperId: 'celo', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: 'https://rpc.ankr.com/celo',
+    rpcUrl: `https://lb.drpc.org/ogrpc?network=celo&dkey=${process.env.DRPC_API_KEY}`,
     backuprpcUrl: `https://celo-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
     multicall2Address: '0xE72f42c64EA3dc05D2D94F541C3a806fa161c49B',
