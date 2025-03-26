@@ -38,11 +38,14 @@ const HIDDEN_POOLS_IDS = {
     'factory-crypto-265', // broken
     'factory-stable-ng-69', // broken
     'factory-stable-ng-405', // offensive
+    'factory-stable-ng-406', // offensive
     'factory-twocrypto-154', // offensive
     'factory-twocrypto-155', // offensive
     'factory-twocrypto-156', // offensive
     'factory-tricrypto-53', // offensive
     'factory-tricrypto-54', // offensive
+    'factory-tricrypto-55', // offensive
+    'factory-tricrypto-56', // offensive
   ],
   fantom: [
     'factory-v2-2', // Exact duplicate of another facto pool, with 0 liquidity
