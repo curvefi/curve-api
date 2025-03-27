@@ -36,7 +36,7 @@ export default async ({ version }) => {
 
   const latest = await web3.eth.getBlockNumber()
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
-  let DAY_BLOCKS = DAY_BLOCKS_24H
+  let DAY_BLOCKS = 10000
 
   await Promise.all(
     poolData.map(async (pool, index) => {
