@@ -15,6 +15,7 @@ import factorypool3BaseTwocryptoAbi from '#root/constants/abis/factory-twocrypto
 import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.json' assert { type: 'json' };
 import groupBy from 'lodash.groupby';
 import { multiCall } from '#root/utils/Calls.js';
+import { IS_DEV } from '#root/constants/AppConstants.js';
 
 const web3 = new Web3(configs.bsc.rpcUrl);
 const networkSettings = {
@@ -139,7 +140,7 @@ export default async ({ version }) => {
         try {
           vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', oneDayOldBlockNumber)
         } catch (e) {
-          console.error(`Couldn't fetch get_virtual_price for block ${oneDayOldBlockNumber}: ${e.toString()}`);
+          if (IS_DEV) console.error(`[Using fallback value] Couldn't fetch get_virtual_price for block ${oneDayOldBlockNumber}: ${e.toString()}`);
           vPriceOldFetchFailed = true;
           vPriceOldFetch = 1 * (10 ** 18)
         }

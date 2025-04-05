@@ -14,6 +14,7 @@ import memoize from 'memoizee';
 import { PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS } from '#root/utils/data/prices.curve.fi/chains.js';
 import { lc } from '#root/utils/String.js';
 import swr from '#root/utils/swr.js';
+import { backOff } from 'exponential-backoff';
 
 const MAX_AGE_SEC = 86400; // 24 hours
 
@@ -26,10 +27,18 @@ const getPricesCurveFiPoolsMetadataBlockchainId = memoize(async (address, blockc
 
   const metaData = (await swr(
     `getPricesCurveFiPoolsMetadataBlockchainId-${blockchainId}-${lcAddress}`,
-    async () => (await fetch(`https://prices.curve.fi/v1/pools/${blockchainId}/${lcAddress}/metadata`)).json(),
+    async () => (await backOff(async () => {
+      return (await fetch(`https://prices.curve.fi/v1/pools/${blockchainId}/${lcAddress}/metadata`)).json();
+    }, {
+      numOfAttempts: 5,
+      retry: (e, attemptNumber) => {
+        console.log(`prices.curve.fi retrying!`, { attemptNumber, blockchainId, lcAddress });
+        return true;
+      },
+    })),
     { minTimeToStale: MAX_AGE_SEC * 1000 } // See CacheSettings.js
-  )).value
-    ;
+  )).value;
+
   return metaData;
 }, {
   promise: true,
