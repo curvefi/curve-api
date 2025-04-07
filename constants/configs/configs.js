@@ -772,7 +772,8 @@ const configs = {
     nativeCurrencyCoingeckoId: 'binancecoin',
     platformCoingeckoId: 'binance-smart-chain',
     nativeAssetErc20WrapperId: 'wbnb', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: `https://lb.drpc.org/ogrpc?network=bsc&dkey=${process.env.DRPC_API_KEY}`,
+    rpcUrl: 'https://bsc-dataseed.bnbchain.org',
+    // rpcUrl: `https://lb.drpc.org/ogrpc?network=bsc&dkey=${process.env.DRPC_API_KEY}`,
     backuprpcUrl: `https://bnb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
     multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
@@ -875,7 +876,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'sonic-3',
     platformCoingeckoId: 'sonic',
     nativeAssetErc20WrapperId: 'wrapped-sonic',
-    rpcUrl: `https://rpc.soniclabs.com`,
+    rpcUrl: `https://sonic-rpc.publicnode.com`,
     backuprpcUrl: `https://rpc.soniclabs.com`,
     multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
     multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
