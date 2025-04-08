@@ -368,6 +368,7 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
     const lendingVaultUrls = {
       deposit: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${vaultId}/vault/deposit`,
       withdraw: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${vaultId}/vault/withdraw`,
+      borrow: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${vaultId}/create`,
     };
 
     const totalSuppliedUsd = pricePerShare * totalShares * assetTokenPrice;
