@@ -32,7 +32,7 @@ import { getNowTimestamp } from '#root/utils/Date.js';
 import allCoins from '#root/constants/coins/index.js'
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import { maxChars } from '#root/utils/String.js';
-import { EYWA_POOLS_METADATA, FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
+import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
@@ -96,10 +96,13 @@ const getPoolName = (pool) => {
 const getPoolShortName = (pool) => {
   const prefix = pool.blockchainId === 'ethereum' ? '' : `${configs[pool.blockchainId].shortId}-`;
 
-  const isEywaPool = pool.blockchainId === 'fantom' && pool.registryId === 'factory-stable-ng' && FACTO_STABLE_NG_EYWA_POOL_IDS.includes(Number(pool.id.replace('factory-stable-ng-', '')));
+  const isEywaPool = (
+    (pool.blockchainId === 'fantom' && pool.registryId === 'factory-stable-ng' && FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS.includes(Number(pool.id.replace('factory-stable-ng-', '')))) ||
+    (pool.blockchainId === 'sonic' && pool.registryId === 'factory-stable-ng' && SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS.includes(Number(pool.id.replace('factory-stable-ng-', ''))))
+  );
   const poolStringIdentifier = (
     isEywaPool ?
-      EYWA_POOLS_METADATA.find((metadata) => metadata.fantomFactoryStableNgPoolId === Number(pool.id.replace('factory-stable-ng-', ''))).shortName :
+      EYWA_POOLS_METADATA.find((metadata) => metadata[pool.blockchainId === 'fantom' ? 'fantomFactoryStableNgPoolId' : 'sonicFactoryStableNgPoolId'] === Number(pool.id.replace('factory-stable-ng-', ''))).shortName :
       pool.coins.map((coin) => coin.symbol).join('+')
   );
 

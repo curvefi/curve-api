@@ -90,8 +90,8 @@ export default memoize(async ({ blockchainId, gauges }) => {
   );
 
   const eywaTokensAddressesAndPricesMapFallback = (
-    blockchainId === 'fantom' ?
-      await getEywaTokenPrices([], 'factory-eywa') :
+    (blockchainId === 'fantom' || blockchainId === 'sonic') ?
+      await getEywaTokenPrices([], 'factory-eywa', blockchainId) :
       {}
   );
 
