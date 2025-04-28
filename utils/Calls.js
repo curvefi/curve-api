@@ -235,7 +235,7 @@ const multiCallWithRetries = async (callsConfig, isDebugging) => {
       console.log(`Host: ${callsConfig[0]?.networkSettings?.web3?.currentProvider?.host}`);
       console.error(error);
       err = error;
-      if (IS_DEV) console.log('Slice of the call config: ', callsConfig[0]);
+      if (IS_DEV && !isDebugging) console.log('Slice of the call config: ', callsConfig[0]);
     }
 
     retryCount += 1;

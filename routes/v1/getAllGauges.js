@@ -33,6 +33,7 @@ import allCoins from '#root/constants/coins/index.js'
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import { maxChars } from '#root/utils/String.js';
 import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
+import getExternalGaugeListAddresses from '#root/utils/data/prices.curve.fi/gauges.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
@@ -67,6 +68,37 @@ const GAUGES_ADDRESSES_TO_IGNORE = [
   '0x8101E6760130be2C8Ace79643AB73500571b7162', // Already absent from legacy endpoint data
   '0xC85b385C8587219b1085A264f0235225644a5dD9', // Already absent from legacy endpoint data
   '0x174baa6b56ffe479b604CC20f22D09AD74F1Ca49', // Already absent from legacy endpoint data
+  '0x1cEBdB0856dd985fAe9b8fEa2262469360B8a3a6', // Gauge for broken pool, already absent
+
+  // The below have never been retrieved by this endpoint, but are picked up by curve-prices and can
+  // be safely ignored (dead gauges that were never ever used)
+  '0xffbACcE0CC7C19d46132f1258FC16CF6871D153c',
+  '0x19793B454D3AfC7b454F206Ffe95aDE26cA6912c',
+  '0x3B6B158A76fd8ccc297538F454ce7B4787778c7C',
+  '0x40c0e9376468b4f257d15F8c47E5D0C646C28880',
+  '0xbF7E49483881C76487b0989CD7d9A8239B20CA41',
+  '0x97E2768e8E73511cA874545DC5Ff8067eB19B787',
+  '0x37C7ef6B0E23C9bd9B620A6daBbFEC13CE30D824',
+  '0x8866414733F22295b7563f9C5299715D2D76CAf4',
+  '0xBdFF0C27dd073C119ebcb1299a68A6A92aE607F0',
+  '0xd4F94D0aaa640BBb72b5EEc2D85F6D114D81a88E',
+  '0x279f11F8E2825dbe0b00F6776376601AC948d868',
+  '0x95069889DF0BCdf15bc3182c1A4D6B20631F3B46',
+  '0x00702BbDEaD24C40647f235F15971dB0867F6bdB',
+  '0x9c735e617050fA6849462299513633d87FbD3f05',
+  '0x5A537a46D780B1C70138aB98eDce69e7a53177ba',
+  '0x82049b520cAc8b05E703bb35d1691B5005A92848',
+  '0x7ce8aF75A9180B602445bE230860DDcb4cAc3E42',
+  '0xC91113B4Dd89dd20FDEECDAC82477Bc99A840355',
+  '0xD44eB2061362D28f741Bb3547b1a36aB13A8a582',
+  '0x5cc0144A511807608eF644c9e99B486124D1cFd6',
+  '0x6C09F6727113543Fd061a721da512B7eFCDD0267',
+  '0xf2Cde8c47C20aCbffC598217Ad5FE6DB9E00b163',
+  '0xd4b19642701964c402DFa668F96F294266bC0a86',
+  '0xa05E565cA0a103FcD999c7A7b8de7Bd15D5f6505',
+  '0x75D05190f35567e79012c2F0a02330D3Ed8a1F74',
+  '0xB504b6EB06760019801a91B451d3f7BD9f027fC9',
+  '0x66EFd8E255B8B7Cf32961E90A5820f289402629e',
 ].map(lc);
 
 const CRVUSD_POOLS_GAUGES = [
@@ -130,9 +162,14 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     id === 'ethereum' // Always include ethereum
   ));
 
-  const [allPools, allLendingVaults] = await Promise.all([
+  const [
+    allPools,
+    allLendingVaults,
+    externalIncompleteGaugeListAddresses,
+  ] = await Promise.all([
     getAllCurvePoolsData(blockchainIds),
     getAllCurveLendingVaultsData(blockchainIds),
+    getExternalGaugeListAddresses(),
   ]);
 
   const getPoolByLpTokenAddress = (lpTokenAddress, blockchainId) => (
@@ -275,8 +312,11 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     const pool = getPoolByLpTokenAddress(gaugeData.lpTokenAddress, 'ethereum');
     const lendingVault = getLendingVaultByLpTokenAddress(gaugeData.lpTokenAddress, 'ethereum');
     if (!pool && !lendingVault) {
-      if (IS_DEV && gaugeData.lpTokenAddress !== ZERO_ADDRESS) console.log('Couldn’t match this LP token address with any Curve pool or lending vault address:', gaugeData.lpTokenAddress)
-      return null;
+      if (gaugeData.lpTokenAddress !== ZERO_ADDRESS) {
+        throw new Error(`Couldn’t match this LP token address with any Curve pool or lending vault address: ${gaugeData.lpTokenAddress} (gauge address: ${gaugeData.address})`)
+      } else {
+        return null;
+      }
     }
 
     const isPool = !!pool;
@@ -505,8 +545,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     const pool = getPoolByAddress(poolAddress, 'ethereum');
     const lendingVault = getLendingVaultByLpTokenAddress(poolAddress, 'ethereum');
     if (!pool && !lendingVault) {
-      if (IS_DEV) console.log('MISSING POOL/VAULT:', poolAddress)
-      return null;
+      throw new Error(`MISSING POOL/VAULT: ${poolAddress}`);
     }
 
     const isPool = !!pool;
@@ -636,8 +675,9 @@ const getAllGauges = fn(async ({ blockchainId }) => {
           const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
           const lendingVault = getLendingVaultByLpTokenAddress(swap_token, blockchainId);
           if (!pool && !lendingVault) {
-            if (IS_DEV && swap_token !== ZERO_ADDRESS) console.log('Couldn’t match this LP token address with any Curve pool or lending vault address:', swap_token)
-            return null;
+            if (swap_token !== ZERO_ADDRESS) {
+              throw new Error(`Couldn’t match this LP token address with any Curve pool or lending vault address: ${swap_token}`);
+            }
           }
 
           const isPool = !!pool;
@@ -722,6 +762,21 @@ const getAllGauges = fn(async ({ blockchainId }) => {
         }).filter((o) => o !== null)
     )))),
   };
+
+  /**
+  * Check if the list of gauges returned by this endpoint contains all gauges retrieved from curve-prices:
+  * curve-prices doesn't return as many gauges as the present endpoint does, but making sure the present
+  * endpoint returns *at least* all gauges from curve-prices is a good sanity check in case, for an unknown
+  * reason, anything was to miss.
+  */
+  const allGaugesLcAddresses = Object.values(gauges).map(({ gauge }) => lc(gauge));
+  const externalGaugesAddressesMinusIgnoredOnes = externalIncompleteGaugeListAddresses.filter((gaugeAddress) => !GAUGES_ADDRESSES_TO_IGNORE.some((gaugeAddress2) => lc(gaugeAddress2) === lc(gaugeAddress)));
+  const passesSanityCheck = externalGaugesAddressesMinusIgnoredOnes.every((gaugeAddress) => allGaugesLcAddresses.includes(lc(gaugeAddress)));
+  if (!passesSanityCheck) {
+    console.log('Missing gauges addresses ↓');
+    console.log(externalGaugesAddressesMinusIgnoredOnes.filter((gaugeAddress) => !allGaugesLcAddresses.includes(lc(gaugeAddress))));
+    throw new Error('Gauges are missing from the tentatively returned value from getAllGauges: throwing instead to serve old accurate data');
+  }
 
   return gauges;
 }, {
