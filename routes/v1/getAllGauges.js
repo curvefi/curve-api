@@ -771,7 +771,10 @@ const getAllGauges = fn(async ({ blockchainId }) => {
   */
   const allGaugesLcAddresses = Object.values(gauges).map(({ gauge }) => lc(gauge));
   const externalGaugesAddressesMinusIgnoredOnes = externalIncompleteGaugeListAddresses.filter((gaugeAddress) => !GAUGES_ADDRESSES_TO_IGNORE.some((gaugeAddress2) => lc(gaugeAddress2) === lc(gaugeAddress)));
-  const passesSanityCheck = externalGaugesAddressesMinusIgnoredOnes.every((gaugeAddress) => allGaugesLcAddresses.includes(lc(gaugeAddress)));
+  const passesSanityCheck = (
+    blockchainId !== 'all' || // Do not check missing gauges when retrieving gauges only for a specific chain
+    externalGaugesAddressesMinusIgnoredOnes.every((gaugeAddress) => allGaugesLcAddresses.includes(lc(gaugeAddress)))
+  );
   if (!passesSanityCheck) {
     console.log('Missing gauges addresses ↓');
     console.log(externalGaugesAddressesMinusIgnoredOnes.filter((gaugeAddress) => !allGaugesLcAddresses.includes(lc(gaugeAddress))));
