@@ -776,9 +776,21 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     externalGaugesAddressesMinusIgnoredOnes.every((gaugeAddress) => allGaugesLcAddresses.includes(lc(gaugeAddress)))
   );
   if (!passesSanityCheck) {
+    console.log('Gauges are missing from the tentatively returned value from getAllGauges: throwing instead to serve old accurate data');
     console.log('Missing gauges addresses ↓');
     console.log(externalGaugesAddressesMinusIgnoredOnes.filter((gaugeAddress) => !allGaugesLcAddresses.includes(lc(gaugeAddress))));
-    throw new Error('Gauges are missing from the tentatively returned value from getAllGauges: throwing instead to serve old accurate data');
+    throw new Error('Gauges sanity check 1 error');
+  }
+
+  const passesSanityCheck2 = (
+    blockchainId !== 'all' || // Do not check missing gauges when retrieving gauges only for a specific chain
+    allGaugesLcAddresses.length > 1400 // Ugly hard limit to try to tame down that issue for good for now
+  );
+  if (!passesSanityCheck2) {
+    console.log('Gauges are too few to be complete from the tentatively returned value from getAllGauges: throwing instead to serve old accurate data')
+    console.log('Number of gauges ↓');
+    console.log(allGaugesLcAddresses.length);
+    throw new Error('Gauges sanity check 2 error');
   }
 
   return gauges;
