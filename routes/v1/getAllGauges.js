@@ -161,6 +161,7 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     id === blockchainId ||
     id === 'ethereum' // Always include ethereum
   ));
+  console.log(`DEBUG getAllGauges called with blockchainId=${blockchainId}: fetching gauges for ${blockchainIds.join()}`)
 
   const [
     allPools,
@@ -793,10 +794,16 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     throw new Error('Gauges sanity check 2 error');
   }
 
+  console.log(`DEBUG getAllGauges called with blockchainId=${blockchainId}: returning ${Object.values(gauges).length} gauges`)
+
   return gauges;
 }, {
   maxAge: 5 * 60,
-  cacheKey: ({ blockchainId }) => `getAllGauges-${blockchainId}`,
+  cacheKey: ({ blockchainId }) => {
+    const key = `getAllGauges-${blockchainId}`;
+    console.log(`DEBUG cacheKey fn called with blockchainId=${blockchainId}: using "${key}"`)
+    return key;
+  },
   paramSanitizers: {
     // Override default blockchainId sanitizer for this endpoint
     blockchainId: ({ blockchainId }) => ({
