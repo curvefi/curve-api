@@ -115,6 +115,9 @@ const IGNORED_COINS = {
   ethereum: [
     '0xc7D9c108D4E1dD1484D3e2568d7f74bfD763d356', // depegged stable, incorrect price on defillama
   ].map(lc),
+  arbitrum: [
+    '0xF6c1c9Bf800E0431D350f9C32a90365241787C08', // causing issues
+  ].map(lc),
 };
 
 // Tokens for which to use Defillama as external price oracle
