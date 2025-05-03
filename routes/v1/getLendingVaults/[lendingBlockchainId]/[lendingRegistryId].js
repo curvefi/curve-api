@@ -55,17 +55,17 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
 
     gaugesData = (
       (blockchainId === 'ethereum' || SIDECHAINS_WITH_FACTORY_GAUGES.includes(blockchainId)) ?
-        await getAllGaugesFn.straightCall({ blockchainId }) :
+        await getAllGaugesFn.straightCall() :
         {}
     );
 
     if (blockchainId === 'ethereum') {
-      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => !side_chain);
+      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain, blockchainId: blockchainIdProp }) => !side_chain && blockchainIdProp === blockchainId);
       const factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge).filter((s) => s); // eslint-disable-line no-param-reassign
 
       gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, factoryGaugesAddresses });
     } else {
-      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain }) => side_chain);
+      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain, blockchainId: blockchainIdProp }) => side_chain && blockchainIdProp === blockchainId);
 
       gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, gauges: factoryGauges });
     }

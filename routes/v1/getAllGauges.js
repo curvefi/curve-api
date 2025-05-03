@@ -15,7 +15,7 @@
 
 import Web3 from 'web3';
 import partition from 'lodash.partition';
-import configs from '#root/constants/configs/index.js'
+import configs from '#root/constants/configs/index.js';
 import getFactoGaugesFn from '#root/routes/v1/getFactoGauges/[blockchainId].js';
 import { fn } from '#root/utils/api.js';
 import { multiCall } from '#root/utils/Calls.js';
@@ -27,9 +27,8 @@ import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
 import GAUGE_CONTROLLER_ABI from '#root/constants/abis/gauge_controller.json' assert { type: 'json' };
 import GAUGE_ABI from '#root/constants/abis/example_gauge_2.json' assert { type: 'json' };
 import META_REGISTRY_ABI from '#root/constants/abis/meta-registry.json' assert { type: 'json' };
-import { IS_DEV } from '#root/constants/AppConstants.js';
 import { getNowTimestamp } from '#root/utils/Date.js';
-import allCoins from '#root/constants/coins/index.js'
+import allCoins from '#root/constants/coins/index.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import { maxChars } from '#root/utils/String.js';
 import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
@@ -151,17 +150,13 @@ const getLendingVaultShortName = (lendingVault) => {
   return `${maxChars(`${prefix}lend-${lendingVault.assets.borrowed.symbol}(${lendingVault.assets.collateral.symbol})`, 22)} (${lendingVault.address.slice(0, 6)}…)`; // Max 32 chars long
 };
 
-const getAllGauges = fn(async ({ blockchainId }) => {
+const getAllGauges = fn(async () => {
   const chainsToQuery = SIDECHAINS_WITH_FACTORY_GAUGES;
   const blockchainIds = [
     'ethereum',
     ...chainsToQuery,
-  ].filter((id) => (
-    blockchainId === 'all' ||
-    id === blockchainId ||
-    id === 'ethereum' // Always include ethereum
-  ));
-  console.log(`DEBUG getAllGauges called with blockchainId=${blockchainId}: fetching gauges for ${blockchainIds.join()}`)
+  ];
+  console.log(`DEBUG getAllGauges called: fetching gauges for ${blockchainIds.join()}`)
 
   const [
     allPools,
@@ -773,7 +768,6 @@ const getAllGauges = fn(async ({ blockchainId }) => {
   const allGaugesLcAddresses = Object.values(gauges).map(({ gauge }) => lc(gauge));
   const externalGaugesAddressesMinusIgnoredOnes = externalIncompleteGaugeListAddresses.filter((gaugeAddress) => !GAUGES_ADDRESSES_TO_IGNORE.some((gaugeAddress2) => lc(gaugeAddress2) === lc(gaugeAddress)));
   const passesSanityCheck = (
-    blockchainId !== 'all' || // Do not check missing gauges when retrieving gauges only for a specific chain
     externalGaugesAddressesMinusIgnoredOnes.every((gaugeAddress) => allGaugesLcAddresses.includes(lc(gaugeAddress)))
   );
   if (!passesSanityCheck) {
@@ -784,7 +778,6 @@ const getAllGauges = fn(async ({ blockchainId }) => {
   }
 
   const passesSanityCheck2 = (
-    blockchainId !== 'all' || // Do not check missing gauges when retrieving gauges only for a specific chain
     allGaugesLcAddresses.length > 1400 // Ugly hard limit to try to tame down that issue for good for now
   );
   if (!passesSanityCheck2) {
@@ -794,26 +787,12 @@ const getAllGauges = fn(async ({ blockchainId }) => {
     throw new Error('Gauges sanity check 2 error');
   }
 
-  console.log(`DEBUG getAllGauges called with blockchainId=${blockchainId}: returning ${Object.values(gauges).length} gauges`)
+  console.log(`DEBUG getAllGauges called: returning ${Object.values(gauges).length} gauges`)
 
   return gauges;
 }, {
   maxAge: 5 * 60,
-  cacheKey: ({ blockchainId }) => {
-    const key = `getAllGauges-${blockchainId}`;
-    console.log(`DEBUG cacheKey fn called with blockchainId=${blockchainId}: using "${key}"`)
-    return key;
-  },
-  paramSanitizers: {
-    // Override default blockchainId sanitizer for this endpoint
-    blockchainId: ({ blockchainId }) => ({
-      isValid: (
-        blockchainId === 'ethereum' ||
-        SIDECHAINS_WITH_FACTORY_GAUGES.includes(blockchainId)
-      ),
-      defaultValue: 'all',
-    }),
-  },
+  cacheKey: 'getAllGauges',
 });
 
 export default getAllGauges;
