@@ -115,6 +115,9 @@ const HIDDEN_POOLS_IDS = {
     'factory-crypto-0',
     'factory-tricrypto-0',
   ],
+  hyperliquid: [
+    'factory-stable-ng-6', // test pool, team asked to hide it
+  ],
 };
 
 export default fn(async () => HIDDEN_POOLS_IDS, {
