@@ -44,7 +44,7 @@ swr.onAny((event, payload) => {
 
     case EmitterEvents.revalidateFailed:
       if (IS_DEV) {
-        console.log(payload);
+        console.log(JSON.stringify(payload));
         console.log('Error: revalidateFailed');
       } else if (!(payload.error instanceof ParamError) && !(payload.error instanceof NotFoundError)) {
         console.log('Error: revalidateFailed', payload.cacheKey);

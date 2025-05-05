@@ -27,15 +27,15 @@ const getPricesCurveFiPoolsMetadataBlockchainId = memoize(async (address, blockc
 
   const metaData = (await swr(
     `getPricesCurveFiPoolsMetadataBlockchainId-${blockchainId}-${lcAddress}`,
-    async () => (await backOff(async () => {
+    async () => backOff(async () => {
       return (await fetch(`https://prices.curve.fi/v1/pools/${blockchainId}/${lcAddress}/metadata`)).json();
     }, {
-      numOfAttempts: 5,
+      numOfAttempts: 1,
       retry: (e, attemptNumber) => {
         console.log(`prices.curve.fi retrying!`, { attemptNumber, blockchainId, lcAddress });
         return true;
       },
-    })),
+    }).catch(() => undefined),
     { minTimeToStale: MAX_AGE_SEC * 1000 } // See CacheSettings.js
   )).value;
 
