@@ -15,6 +15,7 @@ import { PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS } from '#root/utils/data/prices.cur
 import { lc } from '#root/utils/String.js';
 import swr from '#root/utils/swr.js';
 import { backOff } from 'exponential-backoff';
+import { IS_DEV } from '#root/constants/AppConstants.js';
 
 const MAX_AGE_SEC = 86400; // 24 hours
 
@@ -25,21 +26,22 @@ const getPricesCurveFiPoolsMetadataBlockchainId = memoize(async (address, blockc
 
   const lcAddress = lc(address);
 
-  // const metaData = (await swr(
-  //   `getPricesCurveFiPoolsMetadataBlockchainId-${blockchainId}-${lcAddress}`,
-  //   async () => backOff(async () => {
-  //     return (await fetch(`https://prices.curve.fi/v1/pools/${blockchainId}/${lcAddress}/metadata`)).json();
-  //   }, {
-  //     numOfAttempts: 1,
-  //     retry: (e, attemptNumber) => {
-  //       console.log(`prices.curve.fi retrying!`, { attemptNumber, blockchainId, lcAddress });
-  //       return true;
-  //     },
-  //   }).catch(() => undefined),
-  //   { minTimeToStale: MAX_AGE_SEC * 1000 } // See CacheSettings.js
-  // )).value;
-  //
-  const metaData = undefined;
+  const metaData = (await swr(
+    `getPricesCurveFiPoolsMetadataBlockchainId-${blockchainId}-${lcAddress}`,
+    async () => backOff(async () => {
+      return (await fetch(`https://prices.curve.fi/v1/pools/${blockchainId}/${lcAddress}/metadata`)).json();
+    }, {
+      numOfAttempts: 1,
+      retry: (e, attemptNumber) => {
+        if (IS_DEV) console.log(`prices.curve.fi retrying!`, { attemptNumber, blockchainId, lcAddress });
+        return true;
+      },
+    }).catch(() => {
+      console.log(`prices.curve.fi failed, returning undefined!`, { blockchainId, lcAddress });
+      return undefined;
+    }),
+    { minTimeToStale: MAX_AGE_SEC * 1000 } // See CacheSettings.js
+  )).value;
 
   return metaData;
 }, {
