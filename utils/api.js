@@ -37,10 +37,20 @@ const formatJsonSuccess = ({ generatedTimeMs, ...data }, success = true) => ({
   generatedTimeMs,
 });
 
-const formatJsonError = (err) => ({
-  success: false,
-  err: err.toString ? err.toString() : err,
-});
+const formatJsonError = (err) => {
+  let errString;
+
+  try {
+    errString = JSON.stringify(err);
+  } catch (e) {
+    errString = rr.toString ? err.toString() : err;
+  }
+
+  return {
+    success: false,
+    err: errString,
+  };
+};
 
 const addGeneratedTime = async (res) => ({
   ...await res,
