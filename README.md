@@ -14,6 +14,12 @@ When a Curve pool contains an LST, the API includes its staking APY into the poo
 This is the list of ETH LSTs currently supported by the API: https://github.com/curvefi/curve-api-metadata/blob/main/ethereum-lst-defillama.json
 If an ETH LST is missing from this list, feel free to add it: [info on how to do it](https://github.com/curvefi/curve-api-metadata/tree/main?tab=readme-ov-file#files)
 
+# Development
+
+## Deployment
+
+When a PR is merged into `main`, the new app is automatically deployed (it takes roughly 15 minutes).
+
 # Technical setup
 
 - Environment variables:
