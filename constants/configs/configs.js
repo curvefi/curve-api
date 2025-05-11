@@ -735,7 +735,7 @@ const configs = {
     nativeCurrencyCoingeckoId: 'frax-ether',
     platformCoingeckoId: 'fraxtal', // Not on Coingecko yet, but likely to be this id
     nativeAssetErc20WrapperId: 'frax-ether', // Used by crypto facto, since it handles wrapped native as native
-    rpcUrl: `https://direct.drpc.org/ogrpc?network=fraxtal&dkey=${process.env.DRPC_API_KEY}`,
+    rpcUrl: 'https://rpc.frax.com',
     backuprpcUrl: `https://frax-mainnet.g.alchemy.com/v2/${process.env.ALCHEMI_API_KEY}`,
     multicallAddress: '0xca11bde05977b3631167028862be2a173976ca11',
     multicall2Address: '0xca11bde05977b3631167028862be2a173976ca11',
