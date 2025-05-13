@@ -1,8 +1,8 @@
 # Documentation
 
-<https://api.curve.fi/v1/documentation>
+<https://api.curve.finance/v1/documentation>
 
-OpenAPI specification: <https://api.curve.fi/v1/openapi.json>
+OpenAPI specification: <https://api.curve.finance/v1/openapi.json>
 
 Status: <https://statuspage.freshping.io/59335-CurveAPI>
 

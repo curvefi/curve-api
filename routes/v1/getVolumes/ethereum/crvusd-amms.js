@@ -19,7 +19,7 @@ import { getNowTimestamp } from '#root/utils/Date.js';
 import { fetchPages } from '#root/utils/Pagination.js';
 
 export default fn(async () => {
-  const crvusdMarkets = await fetchPages('https://prices.curve.fi/v1/crvusd/markets/ethereum', {
+  const crvusdMarkets = await fetchPages('https://prices.curve.finance/v1/crvusd/markets/ethereum', {
     fetch_on_chain: false,
     per_page: 100,
   });
@@ -29,7 +29,7 @@ export default fn(async () => {
   const timestampDayAgo = timestampNow - 86400;
 
   const volumeData = await sequentialPromiseMap(amms, async (amm) => {
-    const { data } = await (await fetch(`https://prices.curve.fi/v1/crvusd/llamma_ohlc/ethereum/${amm}?agg_number=1&agg_units=day&start=${timestampDayAgo}&end=${timestampNow}`)).json();
+    const { data } = await (await fetch(`https://prices.curve.finance/v1/crvusd/llamma_ohlc/ethereum/${amm}?agg_number=1&agg_units=day&start=${timestampDayAgo}&end=${timestampNow}`)).json();
 
     return {
       address: amm,

@@ -1470,7 +1470,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
 
     /**
      * An issue with the factory-stable-ng registry leads to some pools having an empty array returned
-     * by `assetTypes()`. We use data returned by prices.curve.fi as a fallback in these situations.
+     * by `assetTypes()`. We use data returned by prices.curve.finance as a fallback in these situations.
      */
     const poolAssetTypes = (
       typeof poolInfo.assetTypes === 'undefined' ? undefined :

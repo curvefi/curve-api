@@ -1,7 +1,7 @@
 /**
- * Retrieves pool data from prices.curve.fi and caches it.
+ * Retrieves pool data from prices.curve.finance and caches it.
  *
- * This utility uses two layers of caching to reduce load on prices.curve.fi and time spent
+ * This utility uses two layers of caching to reduce load on prices.curve.finance and time spent
  * networking as much as possible:
  * 1. An in-memory cache (using memoizee) for instant storing+retrieving
  * 2. A Redis cache to keep cached entities readily available across restarts/redeployments
@@ -29,15 +29,15 @@ const getPricesCurveFiPoolsMetadataBlockchainId = memoize(async (address, blockc
   const metaData = (await swr(
     `getPricesCurveFiPoolsMetadataBlockchainId-${blockchainId}-${lcAddress}`,
     async () => backOff(async () => {
-      return (await fetch(`https://prices.curve.fi/v1/pools/${blockchainId}/${lcAddress}/metadata`)).json();
+      return (await fetch(`https://prices.curve.finance/v1/pools/${blockchainId}/${lcAddress}/metadata`)).json();
     }, {
       numOfAttempts: 1,
       retry: (e, attemptNumber) => {
-        if (IS_DEV) console.log(`prices.curve.fi retrying!`, { attemptNumber, blockchainId, lcAddress });
+        if (IS_DEV) console.log(`prices.curve.finance retrying!`, { attemptNumber, blockchainId, lcAddress });
         return true;
       },
     }).catch(() => {
-      console.log(`prices.curve.fi failed, returning undefined!`, { blockchainId, lcAddress });
+      console.log(`prices.curve.finance failed, returning undefined!`, { blockchainId, lcAddress });
       return undefined;
     }),
     { minTimeToStale: MAX_AGE_SEC * 1000 } // See CacheSettings.js

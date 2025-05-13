@@ -67,7 +67,7 @@ const augmentedPools = pools.map((pool) => ({
     wrappedSymbol: pool.coingeckoInfo ? pool.coingeckoInfo.symbol : pool.id,
     wrapperSymbol: 'CRV',
   },
-  poolUrl: `https://curve.fi/${pool.id}/deposit`,
+  poolUrl: `https://curve.finance/${pool.id}/deposit`,
   get containsSynthCoin() {
     return (
       pool.coins.some(({ isSynth }) => isSynth)

@@ -1,12 +1,12 @@
 /**
  * All factory pools can be accessed in Curve front-ends using their registry id
- * (e.g. `curve.fi/factory-crypto/100` for pool id 100 in the 'factory-crypto' registry
+ * (e.g. `curve.finance/factory-crypto/100` for pool id 100 in the 'factory-crypto' registry
  * on Ethereum).
  *
  * However, non-factory pools (mostly pools that predate the creation of Curve's
  * pool factories) have hardcoded ids within existing Curve front-ends, and for
  * legacy reasons can only be accessed in Curve front-ends using this hardcoded id
- * (e.g. `curve.fi/eurtusd` for the EURT/USD pool on Ethereum).
+ * (e.g. `curve.finance/eurtusd` for the EURT/USD pool on Ethereum).
  *
  * This file maps pool addresses to their respective hardcoded id in Curve front-ends,
  * on each blockchain, to help dynamically generate urls to access these pools.

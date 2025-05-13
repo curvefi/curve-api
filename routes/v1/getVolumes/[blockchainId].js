@@ -6,7 +6,7 @@
  *       - Volumes and APYs
  *     description: |
  *       Returns all 24h volume and base APY data for Curve pools on each chain.
- *       It relies on the [Curve Prices API](https://prices.curve.fi/feeds-docs), and is meant as a more reliable replacement to the [`getSubgraphData/[blockchainId]`](#/default/get_getSubgraphData__blockchainId_) endpoints.
+ *       It relies on the [Curve Prices API](https://prices.curve.finance/feeds-docs), and is meant as a more reliable replacement to the [`getSubgraphData/[blockchainId]`](#/default/get_getSubgraphData__blockchainId_) endpoints.
  *
  *       Note: Not all chains are currently available on the Curve Prices API. Currently available chains: `ethereum | polygon | arbitrum | base | optimism | fantom`
  *     parameters:

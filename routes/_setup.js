@@ -10,7 +10,7 @@ import { allBlockchainIds, allRegistryIds, allLendingRegistryIds, allLendingBloc
 
 const REDIRECT_PARAM_REGEX = /(\[[a-zA-Z0-9]+(?:=[a-zA-Z0-9]+)?\])/g;
 
-export default async function(app) {
+export default async function (app) {
   app.use(bodyParser.json());
   app.get('/', rootRouteHandler);
 
@@ -74,10 +74,10 @@ export default async function(app) {
     definition: {
       openapi: '3.0.0',
       info: {
-        title: 'Curve.fi API',
+        title: 'Curve.finance API',
         version: '1.0.0',
       },
-      servers: [{ url: 'https://api.curve.fi/v1' }],
+      servers: [{ url: 'https://api.curve.finance/v1' }],
       components: {
         parameters: {
           blockchainId: {

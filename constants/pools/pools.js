@@ -7,7 +7,7 @@ const pools = [{
   name: 'Compound',
   pageMetaData: {
     title: 'Compounded',
-    description: 'A curve.fi portal for swapping cDAI/cUSDC',
+    description: 'A curve.finance portal for swapping cDAI/cUSDC',
   },
   lpTokenInfo: {
     name: 'cCurve',
@@ -41,7 +41,7 @@ const pools = [{
   name: 'USDT',
   pageMetaData: {
     title: 'Tethered',
-    description: 'A curve.fi Tethered portal for swapping cDAI/cUSDC/USDT',
+    description: 'A curve.finance Tethered portal for swapping cDAI/cUSDC/USDT',
   },
   lpTokenInfo: {
     name: 'tCurve',
@@ -113,7 +113,7 @@ const pools = [{
   name: 'Y',
   pageMetaData: {
     title: 'Yield',
-    description: 'A curve.fi yTokens portal for swapping DAI/USDC/USDT/TUSD',
+    description: 'A curve.finance yTokens portal for swapping DAI/USDC/USDT/TUSD',
   },
   lpTokenInfo: {
     name: 'yCurve',
@@ -152,7 +152,7 @@ const pools = [{
   name: 'BUSD',
   pageMetaData: {
     title: 'bUSD',
-    description: 'A curve.fi portal for swapping BUSD and other stablecoins',
+    description: 'A curve.finance portal for swapping BUSD and other stablecoins',
   },
   lpTokenInfo: {
     name: 'bCurve',

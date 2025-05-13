@@ -19,7 +19,7 @@ const getEywaTokenPrice = memoize((address, blockchainId) => (
     // Commented out because curve-prices not available for sonic yet, and LAST_PRICES_CACHE takes care of the same job
     // .catch(() => (
     //   // Fallback to curve-prices when eywa api is down
-    //   Request.get(`https://prices.curve.fi/v1/usd_price/${blockchainId}/${address}`)
+    //   Request.get(`https://prices.curve.finance/v1/usd_price/${blockchainId}/${address}`)
     //     .then((res) => res.json())
     //     .then(({ data: { usd_price } }) => usd_price)
     // ))

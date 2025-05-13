@@ -23,7 +23,7 @@ const IGNORED_POOL_ADDRESSES = {
 
 const getCurvePrices = memoize(async (blockchainId) => {
   if (typeof blockchainId === 'undefined') throw new Error('Missing blockchainId param');
-  const { data } = await (await Request.get(`https://prices.curve.fi/v1/usd_price/${blockchainId}`)).json();
+  const { data } = await (await Request.get(`https://prices.curve.finance/v1/usd_price/${blockchainId}`)).json();
 
   return arrayToHashmap(
     data
