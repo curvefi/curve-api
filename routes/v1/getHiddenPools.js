@@ -42,10 +42,12 @@ const HIDDEN_POOLS_IDS = {
     'factory-twocrypto-154', // offensive
     'factory-twocrypto-155', // offensive
     'factory-twocrypto-156', // offensive
+    'factory-twocrypto-200', // offensive
     'factory-tricrypto-53', // offensive
     'factory-tricrypto-54', // offensive
     'factory-tricrypto-55', // offensive
     'factory-tricrypto-56', // offensive
+    'factory-tricrypto-71', // offensive
   ],
   fantom: [
     'factory-v2-2', // Exact duplicate of another facto pool, with 0 liquidity
