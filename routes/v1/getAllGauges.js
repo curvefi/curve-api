@@ -156,7 +156,6 @@ const getAllGauges = fn(async () => {
     'ethereum',
     ...chainsToQuery,
   ];
-  console.log(`DEBUG getAllGauges called: fetching gauges for ${blockchainIds.join()}`)
 
   const [
     allPools,
@@ -786,8 +785,6 @@ const getAllGauges = fn(async () => {
     console.log(allGaugesLcAddresses.length);
     throw new Error('Gauges sanity check 2 error');
   }
-
-  console.log(`DEBUG getAllGauges called: returning ${Object.values(gauges).length} gauges`)
 
   return gauges;
 }, {

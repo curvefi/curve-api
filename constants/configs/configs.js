@@ -901,5 +901,32 @@ const configs = {
       oneway: 'one-way-market', // e.g. https://curve.finance/lend/#/arbitrum/markets/one-way-market-3/vault/deposit
     },
   },
+  hyperliquid: {
+    hasNoMainRegistry: true, // No main registry deployed nor address provider
+    poolsBaseUrlOld: null,
+    poolsBaseUrl: 'https://curve.finance/dex/#/hyperliquid/pools/',
+    shortId: 'hyperliquid',
+    nativeCurrencySymbol: 'HYPE',
+    chainId: 999,
+    nativeCurrencyCoingeckoId: 'hyperliquid',
+    platformCoingeckoId: 'hyperliquid',
+    nativeAssetErc20WrapperId: 'wrapped-hype',
+    rpcUrl: `https://direct.drpc.org/ogrpc?network=hyperliquid&dkey=${process.env.DRPC_API_KEY}`,
+    backuprpcUrl: `https://rpc.hyperliquid.xyz/evm`,
+    multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    multicall2Address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+    getFactoryTricryptoRegistryAddress: async () => '0x5702BDB1Ec244704E3cBBaAE11a0275aE5b07499',
+    getFactoryStableswapNgRegistryAddress: async () => '0x604388Bb1159AFd21eB5191cE22b4DeCdEE2Ae22',
+    getFactoryTwocryptoRegistryAddress: async () => '0xc9Fe0C63Af9A39402e8a5514f9c43Af0322b665F',
+    gaugeRegistryAddress: null,
+    gaugeRegistryAddress2: '0x8b3EFBEfa6eD222077455d6f0DCdA3bF4f3F57A6',
+    gaugeRootRegistry2: '0x306A45a1478A000dC701A6e1f7a569afb8D9DCD6',
+    factoryImplementationAddressMap: new Map([
+      //
+    ]),
+    BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
+    DISABLED_POOLS_ADDRESSES: [].map(lc),
+    graphEndpoint: undefined,
+  },
 };
 export default configs;

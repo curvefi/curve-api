@@ -106,6 +106,7 @@ const CURVE_PRICES_AVAILABLE_CHAIN_IDS = [
   'optimism',
   'fantom',
   'sonic',
+  'hyperliquid',
 ];
 
 const IGNORED_COINS = {
