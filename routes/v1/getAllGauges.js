@@ -56,6 +56,7 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'x-layer',
   'mantle',
   'sonic',
+  'hyperliquid',
 ];
 
 const lc = (str) => str.toLowerCase();
