@@ -99,6 +99,11 @@ const GAUGES_ADDRESSES_TO_IGNORE = [
   '0x75D05190f35567e79012c2F0a02330D3Ed8a1F74',
   '0xB504b6EB06760019801a91B451d3f7BD9f027fC9',
   '0x66EFd8E255B8B7Cf32961E90A5820f289402629e',
+
+  // The below have never been retrieved by this endpoint, but are picked up by curve-prices and can
+  // be safely ignored (new gauges from lite deployment that will get support once made into a full deployment)
+  '0xF347e58166521A6DdCFa4A2Ccbae1f1E93fAe7De',
+  '0x9bd94Af225D48e8334B5c549f5C90a3C2097E5B0',
 ].map(lc);
 
 const CRVUSD_POOLS_GAUGES = [
