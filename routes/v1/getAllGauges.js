@@ -22,7 +22,7 @@ import { multiCall } from '#root/utils/Calls.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 import getAllCurveLendingVaultsData from '#root/utils/data/curve-lending-vaults-data.js';
 import { arrayOfIncrements, flattenArray, arrayToHashmap } from '#root/utils/Array.js';
-import { sequentialPromiseMap } from '#root/utils/Async.js';
+import { sequentialPromiseFlatMap, sequentialPromiseMap } from '#root/utils/Async.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
 import GAUGE_CONTROLLER_ABI from '#root/constants/abis/gauge_controller.json' assert { type: 'json' };
 import GAUGE_ABI from '#root/constants/abis/example_gauge_2.json' assert { type: 'json' };
@@ -33,6 +33,7 @@ import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import { maxChars } from '#root/utils/String.js';
 import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
 import getExternalGaugeListAddresses from '#root/utils/data/prices.curve.fi/gauges.js';
+import Request from '#root/utils/Request.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
@@ -57,6 +58,13 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'mantle',
   'sonic',
   'hyperliquid',
+];
+
+// Curve lite deployments are normally not included in this endpoint because they
+// historically do not receive CRV emissions. Exceptions exists, and we retrieve
+// them from curve-api-core (since curve-api focuses on full deployments only).
+const LITE_SIDECHAINS_WITH_CRV_EMISSIONS = [
+  'taiko',
 ];
 
 const lc = (str) => str.toLowerCase();
@@ -131,7 +139,7 @@ const getPoolName = (pool) => {
 };
 
 const getPoolShortName = (pool) => {
-  const prefix = pool.blockchainId === 'ethereum' ? '' : `${configs[pool.blockchainId].shortId}-`;
+  const prefix = pool.blockchainId === 'ethereum' ? '' : (configs[pool.blockchainId] !== undefined ? `${configs[pool.blockchainId].shortId}-` : `${pool.blockchainId}-`);
 
   const isEywaPool = (
     (pool.blockchainId === 'fantom' && pool.registryId === 'factory-stable-ng' && FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS.includes(Number(pool.id.replace('factory-stable-ng-', '')))) ||
@@ -645,6 +653,65 @@ const getAllGauges = fn(async () => {
     )))
   ), 8);
 
+  /**
+   * Step 4: Retrieve gauges from lite deployments that have CRV emissions
+   */
+  const liteDeploymentsGauges = await sequentialPromiseFlatMap(LITE_SIDECHAINS_WITH_CRV_EMISSIONS, async (chainId) => {
+    const chainGauges = await Request.get(`https://api-core.curve.finance/v1/getPools/all/${chainId}`)
+      .then((response) => response.json())
+      .then(({ data: { poolData } }) => (
+        poolData.filter(({ gaugeAddress }) => !!gaugeAddress).map((pool) => {
+          const name = getPoolName(pool);
+          const shortName = getPoolShortName(pool);
+
+          return {
+            isPool: true,
+            name,
+            shortName,
+            gauge: lc(pool.gaugeAddress),
+            rootGauge: lc(pool.rootGaugeAddress),
+            side_chain: true,
+            gauge_data: {
+              inflation_rate: pool.gaugeData.inflationRate,
+              working_supply: pool.gaugeData.workingSupply,
+            },
+            gauge_controller: {
+              gauge_relative_weight: pool.gaugeData.gaugeRelativeWeight,
+              gauge_future_relative_weight: pool.gaugeData.gaugeFutureRelativeWeight,
+              get_gauge_weight: pool.gaugeData.getGaugeWeight,
+              inflation_rate: pool.gaugeData.inflationRate,
+            },
+            hasNoCrv: !pool.gaugeHasCrv,
+            is_killed: pool.gaugeIsKilled,
+            lpTokenPrice: pool.lpTokenPrice,
+            gaugeCrvApy: pool.gaugeCrvApy,
+            gaugeStatus: {
+              areCrvRewardsStuckInBridge: false, // Hardcoded to false for lite deployments
+              rewardsNeedNudging: false, // Hardcoded to false for lite deployments
+            },
+            blockchainId: pool.blockchainId,
+            poolUrls: pool.poolUrls,
+            swap: lc(pool.address),
+            swap_token: lc(pool.lpTokenAddress),
+            type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
+            factory: true,
+
+            // Props for lending vaults only
+            lendingVaultAddress: undefined,
+            lendingVaultUrls: undefined,
+          };
+        })
+      ))
+      .catch((err) => {
+        console.log('Error:')
+        console.log(err)
+
+        return [];
+      });
+
+    return chainGauges;
+  }, 1);
+
   const gauges = {
     ...nonVotedGaugesEthereumData,
     ...mainGaugesEthereum,
@@ -762,6 +829,7 @@ const getAllGauges = fn(async () => {
           ];
         }).filter((o) => o !== null)
     )))),
+    ...arrayToHashmap(liteDeploymentsGauges.map((gauge) => [gauge.name, gauge])),
   };
 
   /**
