@@ -48,6 +48,7 @@ swr.onAny((event, payload) => {
         console.log('Error: revalidateFailed');
       } else if (!(payload.error instanceof ParamError) && !(payload.error instanceof NotFoundError)) {
         console.log('Error: revalidateFailed', payload.cacheKey);
+        console.log('payload.error', payload.error)
       }
       break;
   }
