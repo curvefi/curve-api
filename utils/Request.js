@@ -10,6 +10,7 @@
  */
 
 import formUrlEncoded from 'form-urlencoded';
+import https from 'https';
 
 class Request {
   static send(url, data = {}, customSettings = {}) {
@@ -67,4 +68,11 @@ class Request {
   }
 }
 
+const httpsAgentWithoutStrictSsl = new https.Agent({
+  rejectUnauthorized: false,
+});
+
 export default Request;
+export {
+  httpsAgentWithoutStrictSsl,
+};

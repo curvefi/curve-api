@@ -1,5 +1,5 @@
 import memoize from 'memoizee';
-import Request from '#root/utils/Request.js';
+import Request, { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
 import { arrayToHashmap } from '#root/utils/Array.js';
 import { lc } from '#root/utils/String.js';
 import { getNowTimestamp } from '#root/utils/Date.js';
@@ -23,7 +23,9 @@ const IGNORED_POOL_ADDRESSES = {
 
 const getCurvePrices = memoize(async (blockchainId) => {
   if (typeof blockchainId === 'undefined') throw new Error('Missing blockchainId param');
-  const { data } = await (await Request.get(`https://prices.curve.finance/v1/usd_price/${blockchainId}`)).json();
+  const { data } = await (await Request.get(`https://prices.curve.finance/v1/usd_price/${blockchainId}`, undefined, {
+    agent: httpsAgentWithoutStrictSsl,
+  })).json();
 
   return arrayToHashmap(
     data

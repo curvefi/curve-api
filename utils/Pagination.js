@@ -27,7 +27,7 @@ const DEFAULT_PAGINATION_PROPS = {
   DATA: 'data',
 };
 
-const fetchPages = async (url, data = {}, paginationPropsOverride = {}) => {
+const fetchPages = async (url, data = {}, paginationPropsOverride = {}, customSettings = {}) => {
   const paginationProps = { ...DEFAULT_PAGINATION_PROPS, ...paginationPropsOverride };
   const fetchedPages = [];
 
@@ -40,7 +40,7 @@ const fetchPages = async (url, data = {}, paginationPropsOverride = {}) => {
       [paginationProps.PAGE]: page,
       [paginationProps.PER_PAGE]: data[paginationProps.PER_PAGE],
     }
-    const result = await (await Request.get(url, dataWithPaginationParams)).json();
+    const result = await (await Request.get(url, dataWithPaginationParams, customSettings)).json();
 
     fetchedPages.push(...result[paginationProps.DATA]);
     page = result[paginationProps.PAGE] + 1;
