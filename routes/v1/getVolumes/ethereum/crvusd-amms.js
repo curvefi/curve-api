@@ -24,7 +24,7 @@ export default fn(async () => {
     fetch_on_chain: false,
     per_page: 100,
   }, {}, {
-    agent: httpsAgentWithoutStrictSsl,
+    dispatcher: httpsAgentWithoutStrictSsl,
   });
 
   const amms = crvusdMarkets.map(({ llamma }) => llamma);
@@ -33,7 +33,7 @@ export default fn(async () => {
 
   const volumeData = await sequentialPromiseMap(amms, async (amm) => {
     const { data } = await (await fetch(`https://prices.curve.finance/v1/crvusd/llamma_ohlc/ethereum/${amm}?agg_number=1&agg_units=day&start=${timestampDayAgo}&end=${timestampNow}`, {
-      agent: httpsAgentWithoutStrictSsl,
+      dispatcher: httpsAgentWithoutStrictSsl,
     })).json();
 
     return {

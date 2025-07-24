@@ -31,7 +31,7 @@ const getPricesCurveFiPoolsMetadataBlockchainId = memoize(async (address, blockc
     `getPricesCurveFiPoolsMetadataBlockchainId-${blockchainId}-${lcAddress}`,
     async () => backOff(async () => {
       return (await fetch(`https://prices.curve.finance/v1/pools/${blockchainId}/${lcAddress}/metadata`, {
-        agent: httpsAgentWithoutStrictSsl,
+        dispatcher: httpsAgentWithoutStrictSsl,
       })).json();
     }, {
       numOfAttempts: 1,

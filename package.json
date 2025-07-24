@@ -35,6 +35,7 @@
     "stale-while-revalidate-cache": "^3.2.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
+    "undici": "^7.12.0",
     "web3": "^1.3.4"
   },
   "devDependencies": {

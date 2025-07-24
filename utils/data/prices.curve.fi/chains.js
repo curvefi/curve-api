@@ -21,7 +21,7 @@ const getPricesCurveFiChainsBlockchainId = memoize(async (blockchainId) => {
   }
 
   const { data } = await (await fetch(`https://prices.curve.finance/v1/chains/${blockchainId}`, {
-    agent: httpsAgentWithoutStrictSsl,
+    dispatcher: httpsAgentWithoutStrictSsl,
   })).json();
   return data;
 }, {
