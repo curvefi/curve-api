@@ -1,7 +1,7 @@
 import memoize from 'memoizee';
 import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js'
-import addressGetterAbi from '#root/constants/abis/address_getter.json' with { type: 'json' };
+import addressGetterAbi from '#root/constants/abis/address_getter.json' assert { type: 'json' };
 const addressGetter = '0x0000000022d53366457f9d5e68ec105046fc4383'
 const multiCall = '0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441'
 

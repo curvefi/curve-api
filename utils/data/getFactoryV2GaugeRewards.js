@@ -7,7 +7,7 @@ import { flattenArray, uniq } from '#root/utils/Array.js';
 import { getNowTimestamp } from '#root/utils/Date.js';
 import { decimalsNumber } from '#root/utils/Number.js';
 import getTokensPrices from '#root/utils/data/tokens-prices.js';
-import ERC20_ABI from '#root/constants/abis/erc20.json' with { type: 'json' };
+import ERC20_ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
 
 // eslint-disable-next-line
 const FACTORY_GAUGES_ABI = [{ "stateMutability": "view", "type": "function", "name": "reward_count", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 3498 }, { "stateMutability": "view", "type": "function", "name": "reward_tokens", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3573 }, { "stateMutability": "view", "type": "function", "name": "reward_data", "inputs": [{ "name": "arg0", "type": "address" }], "outputs": [{ "name": "token", "type": "address" }, { "name": "distributor", "type": "address" }, { "name": "period_finish", "type": "uint256" }, { "name": "rate", "type": "uint256" }, { "name": "last_update", "type": "uint256" }, { "name": "integral", "type": "uint256" }], "gas": 15003 }, { "stateMutability": "view", "type": "function", "name": "totalSupply", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 3108 }];

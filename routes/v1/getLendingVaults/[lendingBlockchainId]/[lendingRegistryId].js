@@ -19,11 +19,11 @@ import configs from '#root/constants/configs/index.js'
 import { fn, ParamError } from '#root/utils/api.js';
 import swr from '#root/utils/swr.js';
 import { multiCall } from '#root/utils/Calls.js';
-import onewayVaultAbi from '#root/constants/abis/lending/oneway/vault.json' with { type: 'json' };
-import vaultControllerAbi from '#root/constants/abis/lending/controller.json' with { type: 'json' };
-import vaultAmmAbi from '#root/constants/abis/lending/amm.json' with { type: 'json' };
-import onewayRegistryAbi from '#root/constants/abis/lending/oneway/registry.json' with { type: 'json' };
-import ERC20_ABI from '#root/constants/abis/erc20.json' with { type: 'json' };
+import onewayVaultAbi from '#root/constants/abis/lending/oneway/vault.json' assert { type: 'json' };
+import vaultControllerAbi from '#root/constants/abis/lending/controller.json' assert { type: 'json' };
+import vaultAmmAbi from '#root/constants/abis/lending/amm.json' assert { type: 'json' };
+import onewayRegistryAbi from '#root/constants/abis/lending/oneway/registry.json' assert { type: 'json' };
+import ERC20_ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
 import { flattenArray, sum, uniq } from '#root/utils/Array.js';
 import getTokensData from '#root/utils/data/tokens-data.js';
 import { lc } from '#root/utils/String.js';

@@ -8,8 +8,8 @@ import { getNowTimestamp } from '#root/utils/Date.js';
 import getTokensPrices from '#root/utils/data/tokens-prices.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import configs from '#root/constants/configs/index.js'
-import ERC20_ABI from '#root/constants/abis/erc20.json' with { type: 'json' };
-import SIDECHAIN_FACTO_GAUGE_ABI from '#root/constants/abis/sidechain-gauge.json' with { type: 'json' };
+import ERC20_ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
+import SIDECHAIN_FACTO_GAUGE_ABI from '#root/constants/abis/sidechain-gauge.json' assert { type: 'json' };
 import COIN_ADDRESS_COINGECKO_ID_MAP from '#root/constants/CoinAddressCoingeckoIdMap.js';
 import COIN_ADDRESS_REPLACEMENT_MAP from '#root/constants/CoinAddressReplacementMap.js';
 import getEywaTokenPrices from './getEywaTokenPrices.js';

@@ -25,10 +25,10 @@ import { sequentialPromiseMap } from '#root/utils/Async.js';
 import { multiCall } from '#root/utils/Calls.js';
 import { getNowTimestamp } from '#root/utils/Date.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
-import factorypool3Abi from '#root/constants/abis/factory_swap.json' with { type: 'json' };
-import factorypool3BaseTricryptoAbi from '#root/constants/abis/factory_tricrypto_swap.json' with { type: 'json' };
-import factorypool3BaseTwocryptoAbi from '#root/constants/abis/factory-twocrypto/pool.json' with { type: 'json' };
-import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.json' with { type: 'json' };
+import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
+import factorypool3BaseTricryptoAbi from '#root/constants/abis/factory_tricrypto_swap.json' assert { type: 'json' };
+import factorypool3BaseTwocryptoAbi from '#root/constants/abis/factory-twocrypto/pool.json' assert { type: 'json' };
+import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.json' assert { type: 'json' };
 import { uintToBN } from '#root/utils/Web3/index.js';
 import { lc } from '#root/utils/String.js';
 

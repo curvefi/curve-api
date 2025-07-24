@@ -1,6 +1,6 @@
 import coins from '#root/constants/coins/coins.js';
 import { arrayToHashmap } from '#root/utils/Array.js';
-import REFERENCE_ASSETS from '../reference-assets.json' with { type: 'json' };
+import REFERENCE_ASSETS from '../reference-assets.json' assert { type: 'json' };
 import validateCoinConfigs from './init-validation.js';
 
 const FIAT_ASSET_TYPES = [

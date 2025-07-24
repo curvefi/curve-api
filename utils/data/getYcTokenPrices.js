@@ -1,8 +1,8 @@
 import memoize from 'memoizee';
 import { arrayToHashmap, flattenArray } from '#root/utils/Array.js';
 import { multiCall } from '#root/utils/Calls.js';
-import ERC20ABI from '#root/constants/abis/erc20.json' with { type: 'json' };
-import YC_TOKEN_ABI from '#root/constants/abis/yc-token.json' with { type: 'json' };
+import ERC20ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
+import YC_TOKEN_ABI from '#root/constants/abis/yc-token.json' assert { type: 'json' };
 import getTokensPrices from '#root/utils/data/tokens-prices.js';
 
 // Add more if we're missing prices from more

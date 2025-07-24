@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js'
 import { multiCall } from '#root/utils/Calls.js';
-import ERC20ABI from '#root/constants/abis/erc20.json' with { type: 'json' };
+import ERC20ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
 import { flattenArray, arrayToHashmap } from '#root/utils/Array.js';
 import { lc } from '#root/utils/String.js';
 

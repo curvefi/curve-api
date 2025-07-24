@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js';
 import { lc } from '#root/utils/String.js';
 import { multiCall } from '#root/utils/Calls.js';
-import AGGREGATOR_STABLE_PRICE_ABI from '#root/constants/abis/AggregatorStablePrice.json' with { type: 'json' };
+import AGGREGATOR_STABLE_PRICE_ABI from '#root/constants/abis/AggregatorStablePrice.json' assert { type: 'json' };
 
 const CRVUSD_ADDRESSES = {
   ethereum: lc('0xf939e0a03fb07f59a73314e73794be0e57ac1b4e'),

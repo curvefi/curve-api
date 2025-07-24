@@ -9,10 +9,10 @@
 import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
-import factorypool3Abi from '#root/constants/abis/factory_swap.json' with { type: 'json' };
-import factorypool3BaseTricryptoAbi from '#root/constants/abis/factory_tricrypto_swap.json' with { type: 'json' };
-import factorypool3BaseTwocryptoAbi from '#root/constants/abis/factory-twocrypto/pool.json' with { type: 'json' };
-import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.json' with { type: 'json' };
+import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
+import factorypool3BaseTricryptoAbi from '#root/constants/abis/factory_tricrypto_swap.json' assert { type: 'json' };
+import factorypool3BaseTwocryptoAbi from '#root/constants/abis/factory-twocrypto/pool.json' assert { type: 'json' };
+import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.json' assert { type: 'json' };
 import groupBy from 'lodash.groupby';
 import { multiCall } from '#root/utils/Calls.js';
 

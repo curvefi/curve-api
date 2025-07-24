@@ -1,6 +1,6 @@
 import { flatMap } from '#root/utils/Array.js';
 import pools from './pools.js';
-import REFERENCE_ASSETS from '#root/constants/reference-assets.json' with { type: 'json' };
+import REFERENCE_ASSETS from '#root/constants/reference-assets.json' assert { type: 'json' };
 import validatePoolConfigs from './init-validation.js';
 
 const defaultPoolTemplate = {
