@@ -33,7 +33,7 @@ import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import { maxChars } from '#root/utils/String.js';
 import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
 import getExternalGaugeListAddresses from '#root/utils/data/prices.curve.fi/gauges.js';
-import Request from '#root/utils/Request.js';
+import Request, { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
@@ -657,7 +657,9 @@ const getAllGauges = fn(async () => {
    * Step 4: Retrieve gauges from lite deployments that have CRV emissions
    */
   const liteDeploymentsGauges = await sequentialPromiseFlatMap(LITE_SIDECHAINS_WITH_CRV_EMISSIONS, async (chainId) => {
-    const chainGauges = await Request.get(`https://api-core.curve.finance/v1/getPools/all/${chainId}`)
+    const chainGauges = await Request.get(`https://api-core.curve.finance/v1/getPools/all/${chainId}`, undefined, {
+      dispatcher: httpsAgentWithoutStrictSsl,
+    })
       .then((response) => response.json())
       .then(({ data: { poolData } }) => (
         poolData.filter(({ gaugeAddress }) => !!gaugeAddress).map((pool) => {
