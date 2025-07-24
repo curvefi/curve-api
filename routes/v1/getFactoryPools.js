@@ -17,9 +17,9 @@ import Web3 from 'web3';
 import * as WEB3_CONSTANTS from '#root/constants/Web3.js';
 import { fn } from '#root/utils/api.js';
 import { getMultiCall, getFactoryRegistry } from '#root/utils/getters.js';
-import registryAbi from '#root/constants/abis/factory_registry.json' assert { type: 'json' };
-import multicallAbi from '#root/constants/abis/multicall.json' assert { type: 'json' };
-import erc20Abi from '#root/constants/abis/erc20.json' assert { type: 'json' };
+import registryAbi from '#root/constants/abis/factory_registry.json' with { type: 'json' };
+import multicallAbi from '#root/constants/abis/multicall.json' with { type: 'json' };
+import erc20Abi from '#root/constants/abis/erc20.json' with { type: 'json' };
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);
 

@@ -1,8 +1,8 @@
 import memoize from 'memoizee';
 import { arrayToHashmap, flattenArray, uniq } from '#root/utils/Array.js';
 import { multiCall } from '#root/utils/Calls.js';
-import NAPIER_POOL_ABI from '#root/constants/abis/napier-pool.json' assert { type: 'json' };
-import NAPIER_QUOTER_ABI from '#root/constants/abis/napier-quoter.json' assert { type: 'json' };
+import NAPIER_POOL_ABI from '#root/constants/abis/napier-pool.json' with { type: 'json' };
+import NAPIER_QUOTER_ABI from '#root/constants/abis/napier-quoter.json' with { type: 'json' };
 import getTokensPrices from '#root/utils/data/tokens-prices.js';
 import { request, gql } from 'graphql-request';
 import groupBy from 'lodash.groupby';

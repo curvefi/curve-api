@@ -7,8 +7,8 @@ import memoize from 'memoizee';
 import { arrayToHashmap } from '#root/utils/Array.js';
 import { multiCall } from '#root/utils/Calls.js';
 import { lc } from '#root/utils/String.js';
-import SYNTHETIX_TOKEN_ABI from '#root/constants/abis/synthetix-token.json' assert { type: 'json' };
-import SYNTHETIX_EXCHANGE_RATES_ABI from '#root/constants/abis/synthetix-exchange-rates.json' assert { type: 'json' };
+import SYNTHETIX_TOKEN_ABI from '#root/constants/abis/synthetix-token.json' with { type: 'json' };
+import SYNTHETIX_EXCHANGE_RATES_ABI from '#root/constants/abis/synthetix-exchange-rates.json' with { type: 'json' };
 import { uintToBN } from '../Web3/index.js';
 
 const synths = [

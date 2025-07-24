@@ -8,7 +8,7 @@
 
 import Web3 from 'web3';
 import configs from '#root/constants/configs/index.js';
-import factorypool3Abi from '#root/constants/abis/factory_swap.json' assert { type: 'json' };
+import factorypool3Abi from '#root/constants/abis/factory_swap.json' with { type: 'json' };
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 
 const web3 = new Web3(configs.zkevm.rpcUrl);

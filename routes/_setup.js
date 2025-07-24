@@ -4,7 +4,7 @@ import fs from 'fs/promises';
 import { Router } from 'express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import v1Redirects from '#root/routes/v1/_redirects.json' assert { type: 'json' };
+import v1Redirects from '#root/routes/v1/_redirects.json' with { type: 'json' };
 import rootRouteHandler from '#root/routes/root.js';
 import { allBlockchainIds, allRegistryIds, allLendingRegistryIds, allLendingBlockchainIds } from '#root/utils/api.js';
 

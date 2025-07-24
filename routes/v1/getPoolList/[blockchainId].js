@@ -19,7 +19,7 @@
 
 import Web3 from 'web3';
 import { NotFoundError, fn } from '#root/utils/api.js';
-import REGISTRY_ABI from '#root/constants/abis/registry.json' assert { type: 'json' };
+import REGISTRY_ABI from '#root/constants/abis/registry.json' with { type: 'json' };
 import configs from '#root/constants/configs/index.js'
 import getPlatformRegistries from '#root/utils/data/curve-platform-registries.js';
 import { sequentialPromiseFlatMap } from '#root/utils/Async.js';

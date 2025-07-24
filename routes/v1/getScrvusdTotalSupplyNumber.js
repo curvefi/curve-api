@@ -12,7 +12,7 @@
 
 import { fn } from '#root/utils/api.js';
 import { multiCall } from '#root/utils/Calls.js';
-import erc20Abi from '#root/constants/abis/erc20.json' assert { type: 'json' };
+import erc20Abi from '#root/constants/abis/erc20.json' with { type: 'json' };
 import { uintToBN } from '#root/utils/Web3/parsing.js';
 
 export default fn(async () => {

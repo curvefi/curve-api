@@ -5,7 +5,7 @@ import * as WEB3_CONSTANTS from '#root/constants/Web3.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/web3.js';
 import { IS_DEV } from '#root/constants/AppConstants.js'
 import { sequentialPromiseMap } from '#root/utils/Async.js';
-import MULTICALL2_ABI from '../constants/abis/multicall2.json' assert { type: 'json' };
+import MULTICALL2_ABI from '../constants/abis/multicall2.json' with { type: 'json' };
 import { getArrayChunks, flattenArray } from '#root/utils/Array.js';
 
 const web3 = new Web3(WEB3_CONSTANTS.RPC_URL);

@@ -1,4 +1,4 @@
-import REFERENCE_ASSETS from '#root/constants/reference-assets.json' assert { type: 'json' };
+import REFERENCE_ASSETS from '#root/constants/reference-assets.json' with { type: 'json' };
 
 export default {
   dai: {

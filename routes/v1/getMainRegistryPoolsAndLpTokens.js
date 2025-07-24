@@ -24,7 +24,7 @@ import getMainRegistryPoolsFn from '#root/routes/v1/getMainRegistryPools.js';
 import { multiCall } from '#root/utils/Calls.js';
 import { fn } from '#root/utils/api.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
-import POOL_SWAP_ABI from '#root/utils/data/abis/json/aave/swap.json' assert { type: 'json' };
+import POOL_SWAP_ABI from '#root/utils/data/abis/json/aave/swap.json' with { type: 'json' };
 
 export default fn(async ({ blockchainId }) => {
   const { poolList: mainRegistryPools } = await getMainRegistryPoolsFn.straightCall({ blockchainId });

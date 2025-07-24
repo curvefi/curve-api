@@ -1,4 +1,4 @@
-import REFERENCE_ASSETS from '../reference-assets.json'  assert { type: 'json' };
+import REFERENCE_ASSETS from '../reference-assets.json'  with { type: 'json' };
 import coins from '../coins/index.js';
 
 const pools = [{

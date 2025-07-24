@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import memoize from 'memoizee';
 import configs from '#root/constants/configs/index.js';
-import ADDRESS_GETTER_ABI from '#root/constants/abis/address_getter.json' assert { type: 'json' };
+import ADDRESS_GETTER_ABI from '#root/constants/abis/address_getter.json' with { type: 'json' };
 import { multiCall } from '#root/utils/Calls.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
 

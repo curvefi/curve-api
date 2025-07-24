@@ -1,7 +1,7 @@
 import memoize from 'memoizee';
 import { arrayToHashmap, flattenArray } from '#root/utils/Array.js';
 import { multiCall } from '#root/utils/Calls.js';
-import TEMPLE_LP_TOKEN_ABI from '#root/constants/abis/temple-lp-token.json' assert { type: 'json' };
+import TEMPLE_LP_TOKEN_ABI from '#root/constants/abis/temple-lp-token.json' with { type: 'json' };
 import getTokensPrices from '#root/utils/data/tokens-prices.js';
 
 // Add more if we're missing prices from more

@@ -24,9 +24,9 @@ import getAllCurveLendingVaultsData from '#root/utils/data/curve-lending-vaults-
 import { arrayOfIncrements, flattenArray, arrayToHashmap } from '#root/utils/Array.js';
 import { sequentialPromiseFlatMap, sequentialPromiseMap } from '#root/utils/Async.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
-import GAUGE_CONTROLLER_ABI from '#root/constants/abis/gauge_controller.json' assert { type: 'json' };
-import GAUGE_ABI from '#root/constants/abis/example_gauge_2.json' assert { type: 'json' };
-import META_REGISTRY_ABI from '#root/constants/abis/meta-registry.json' assert { type: 'json' };
+import GAUGE_CONTROLLER_ABI from '#root/constants/abis/gauge_controller.json' with { type: 'json' };
+import GAUGE_ABI from '#root/constants/abis/example_gauge_2.json' with { type: 'json' };
+import META_REGISTRY_ABI from '#root/constants/abis/meta-registry.json' with { type: 'json' };
 import { getNowTimestamp } from '#root/utils/Date.js';
 import allCoins from '#root/constants/coins/index.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';

@@ -23,8 +23,8 @@ import configs from '#root/constants/configs/index.js'
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
 import { fn } from '#root/utils/api.js';
 import { getRegistry } from '#root/utils/getters.js';
-import registryAbi from '#root/constants/abis/factory_registry.json' assert { type: 'json' };
-import multicallAbi from '#root/constants/abis/multicall.json' assert { type: 'json' };
+import registryAbi from '#root/constants/abis/factory_registry.json' with { type: 'json' };
+import multicallAbi from '#root/constants/abis/multicall.json' with { type: 'json' };
 
 export default fn(async ({ blockchainId }) => {
   const config = configs[blockchainId];

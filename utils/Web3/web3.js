@@ -2,7 +2,7 @@
 
 import Web3 from 'web3';
 import memoize from 'memoizee';
-import Multicall from '#root/constants/abis/multicall.json' assert { type: 'json' };
+import Multicall from '#root/constants/abis/multicall.json' with { type: 'json' };
 import { RPC_URL, RPC_URL_BSC } from '#root/constants/Web3.js';
 
 const web3 = new Web3(Web3?.givenProvider?.networkVersion === '1' ? Web3.givenProvider : RPC_URL);

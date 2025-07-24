@@ -27,10 +27,10 @@ import { flattenArray, uniq } from '#root/utils/Array.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/web3.js';
 import getTokensPrices from '#root/utils/data/tokens-prices.js';
 import getFactoryV2GaugeRewards from '#root/utils/data/getFactoryV2GaugeRewards.js';
-import ERC20_ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
-import RewardContractV1ABI from '#root/utils/data/abis/json/reward-contracts/v1.json' assert { type: 'json' };
-import RewardContractV4ABI from '#root/utils/data/abis/json/reward-contracts/v4.json' assert { type: 'json' };
-import RewardContractVrewarddataABI from '#root/utils/data/abis/json/reward-contracts/vrewarddata.json' assert { type: 'json' };
+import ERC20_ABI from '#root/constants/abis/erc20.json' with { type: 'json' };
+import RewardContractV1ABI from '#root/utils/data/abis/json/reward-contracts/v1.json' with { type: 'json' };
+import RewardContractV4ABI from '#root/utils/data/abis/json/reward-contracts/v4.json' with { type: 'json' };
+import RewardContractVrewarddataABI from '#root/utils/data/abis/json/reward-contracts/vrewarddata.json' with { type: 'json' };
 
 const REWARDS_CONFIG = {
   v1: {
