@@ -62,8 +62,8 @@ const CoinAddressCoingeckoIdMap = {
     '0x5c2ed810328349100A66B82b78a1791B101C9D61': 'wrapped-bitcoin', // amWBTC
     '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6': 'wrapped-bitcoin', // amWBTC
     '0x28424507fefb6f7f8E9D3860F56504E4e5f5f390': 'ethereum', // amWETH
-    '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270': 'matic-network', // MATIC
-    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'matic-network', // MATIC
+    '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270': 'polygon-ecosystem-token', // wPOL
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'polygon-ecosystem-token', // POL
     '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619': 'weth', // WETH
     '0xdab529f40e671a1d4bf91361c21bf9f0c9712ab7': 'binance-usd',
     '0x7bdf330f423ea880ff95fc41a280fd5ecfd3d09f': 'tether-eurt',

@@ -704,10 +704,10 @@ export default {
   wmatic: {
     id: 'wmatic',
     type: REFERENCE_ASSETS.MATIC,
-    symbol: 'WMATIC',
+    symbol: 'wPOL',
     decimals: 18,
     address: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-    coingeckoId: 'wmatic',
+    coingeckoId: 'polygon-ecosystem-token',
   },
   wftm: {
     id: 'wftm',
