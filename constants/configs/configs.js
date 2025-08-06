@@ -77,6 +77,7 @@ const configs = {
       '0x45F783CCE6B7FF23B2ab2D70e416cdb7D6055f51', // Broken pool
       '0xfc636d819d1a98433402ec9dec633d864014f28c', , // Contains an exploited asset that was stopped
       '0x68934f60758243eafaf4d2cfed27bf8010bede3a', , // Contains an exploited asset that was stopped
+      '0xA5407eAE9Ba41422680e2e00537571bcC53efBfD', // Deprecated pool as per Synthetix team
     ].map(lc),
     lendingVaultsBaseUrl: 'https://curve.finance/lend/#/ethereum/markets/',
     lendingVaultRegistries: {
