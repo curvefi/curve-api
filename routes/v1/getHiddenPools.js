@@ -120,6 +120,7 @@ const HIDDEN_POOLS_IDS = {
   ],
   hyperliquid: [
     'factory-stable-ng-6', // test pool, team asked to hide it
+    'factory-stable-ng-26', // redeployed, team asked to hide it
   ],
 };
 
