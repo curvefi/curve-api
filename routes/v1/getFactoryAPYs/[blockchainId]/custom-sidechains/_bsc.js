@@ -16,6 +16,7 @@ import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.
 import groupBy from 'lodash.groupby';
 import { multiCall } from '#root/utils/Calls.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
+import { sequentialPromiseMap } from '#root/utils/Async.js';
 
 const web3 = new Web3(configs.bsc.rpcUrl);
 const networkSettings = {
@@ -39,142 +40,147 @@ export default async ({ version }) => {
   const DAY_BLOCKS_24H = config.approxBlocksPerDay;
   let DAY_BLOCKS = 10000
 
-  await Promise.all(
-    poolData.map(async (pool, index) => {
-      const lpTokenUsdPrice = pool.usdTotal / (pool.totalSupply / 1e18);
+  await sequentialPromiseMap(poolData, async (pool, index) => {
 
-      const poolAbi = (
-        pool.registryId === 'factory-tricrypto' ? factorypool3BaseTricryptoAbi :
-          pool.registryId === 'factory-twocrypto' ? factorypool3BaseTwocryptoAbi :
-            pool.registryId === 'factory-crypto' ? factorypool3BaseCryptoAbi :
-              factorypool3Abi
-      );
-      let poolContract = new web3.eth.Contract(poolAbi, pool.address)
+    const lpTokenUsdPrice = pool.usdTotal / (pool.totalSupply / 1e18);
+
+    const poolAbi = (
+      pool.registryId === 'factory-tricrypto' ? factorypool3BaseTricryptoAbi :
+        pool.registryId === 'factory-twocrypto' ? factorypool3BaseTwocryptoAbi :
+          pool.registryId === 'factory-crypto' ? factorypool3BaseCryptoAbi :
+            factorypool3Abi
+    );
+    let poolContract = new web3.eth.Contract(poolAbi, pool.address)
 
 
 
-      const isCryptoPool = (
-        pool.registryId === 'factory-tricrypto' ||
-        pool.registryId === 'factory-twocrypto' ||
-        pool.registryId === 'factory-crypto'
-      );
+    const isCryptoPool = (
+      pool.registryId === 'factory-tricrypto' ||
+      pool.registryId === 'factory-twocrypto' ||
+      pool.registryId === 'factory-crypto'
+    );
 
-      let apy;
-      let vPriceFetch;
+    let apy;
+    let vPriceFetch;
 
-      const oneDayOldBlockNumber = latest - DAY_BLOCKS;
-      if (isCryptoPool) {
-        const {
-          xcpProfit: [{ data: xcpProfitDayOld }],
-          xcpProfitA: [{ data: xcpProfitADayOld }],
-        } = groupBy(await multiCall([{
-          address: pool.address,
-          abi: poolAbi,
-          methodName: 'xcp_profit',
-          metaData: { type: 'xcpProfit' },
-          networkSettings: {
-            ...networkSettings,
-            blockNumber: oneDayOldBlockNumber,
-          },
-          superSettings: {
-            fallbackValue: 1e18,
-          },
-        }, {
-          address: pool.address,
-          abi: poolAbi,
-          methodName: 'xcp_profit_a',
-          metaData: { type: 'xcpProfitA' },
-          networkSettings: {
-            ...networkSettings,
-            blockNumber: oneDayOldBlockNumber,
-          },
-          superSettings: {
-            fallbackValue: 1e18,
-          },
-        }]), 'metaData.type');
+    const oneDayOldBlockNumber = latest - DAY_BLOCKS;
+    if (isCryptoPool) {
 
-        const {
-          xcpProfit: [{ data: xcpProfit }],
-          xcpProfitA: [{ data: xcpProfitA }],
-          virtualPrice: [{ data: virtualPrice }],
-        } = groupBy(await multiCall([{
-          address: pool.address,
-          abi: poolAbi,
-          methodName: 'xcp_profit',
-          metaData: { type: 'xcpProfit' },
-          networkSettings,
-          superSettings: {
-            fallbackValue: 1e18,
-          },
-        }, {
-          address: pool.address,
-          abi: poolAbi,
-          methodName: 'xcp_profit_a',
-          metaData: { type: 'xcpProfitA' },
-          networkSettings,
-          superSettings: {
-            fallbackValue: 1e18,
-          },
-        }, {
-          address: pool.address,
-          abi: poolAbi,
-          methodName: 'get_virtual_price',
-          metaData: { type: 'virtualPrice' },
-          networkSettings,
-          superSettings: {
-            fallbackValue: 1e18,
-          },
-        }]), 'metaData.type');
+      const {
+        xcpProfit: [{ data: xcpProfitDayOld }],
+        xcpProfitA: [{ data: xcpProfitADayOld }],
+      } = groupBy(await multiCall([{
+        address: pool.address,
+        abi: poolAbi,
+        methodName: 'xcp_profit',
+        metaData: { type: 'xcpProfit' },
+        networkSettings: {
+          ...networkSettings,
+          blockNumber: oneDayOldBlockNumber,
+        },
+        superSettings: {
+          fallbackValue: 1e18,
+        },
+      }, {
+        address: pool.address,
+        abi: poolAbi,
+        methodName: 'xcp_profit_a',
+        metaData: { type: 'xcpProfitA' },
+        networkSettings: {
+          ...networkSettings,
+          blockNumber: oneDayOldBlockNumber,
+        },
+        superSettings: {
+          fallbackValue: 1e18,
+        },
+      }]), 'metaData.type');
 
-        const currentProfit = ((xcpProfit / 2) + (xcpProfitA / 2) + 1e18) / 2;
-        const dayOldProfit = ((xcpProfitDayOld / 2) + (xcpProfitADayOld / 2) + 1e18) / 2;
-        const rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
+      const {
+        xcpProfit: [{ data: xcpProfit }],
+        xcpProfitA: [{ data: xcpProfitA }],
+        virtualPrice: [{ data: virtualPrice }],
+      } = groupBy(await multiCall([{
+        address: pool.address,
+        abi: poolAbi,
+        methodName: 'xcp_profit',
+        metaData: { type: 'xcpProfit' },
+        networkSettings,
+        superSettings: {
+          fallbackValue: 1e18,
+        },
+      }, {
+        address: pool.address,
+        abi: poolAbi,
+        methodName: 'xcp_profit_a',
+        metaData: { type: 'xcpProfitA' },
+        networkSettings,
+        superSettings: {
+          fallbackValue: 1e18,
+        },
+      }, {
+        address: pool.address,
+        abi: poolAbi,
+        methodName: 'get_virtual_price',
+        metaData: { type: 'virtualPrice' },
+        networkSettings,
+        superSettings: {
+          fallbackValue: 1e18,
+        },
+      }]), 'metaData.type');
 
-        const latestDailyApy = ((rateDaily + 1) ** 365 - 1) * 100;
-        apy = latestDailyApy;
+      const currentProfit = ((xcpProfit / 2) + (xcpProfitA / 2) + 1e18) / 2;
+      const dayOldProfit = ((xcpProfitDayOld / 2) + (xcpProfitADayOld / 2) + 1e18) / 2;
+      const rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
 
-        vPriceFetch = virtualPrice;
-      } else {
-        let vPriceOldFetch;
-        let vPriceOldFetchFailed = false;
-        try {
-          vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', oneDayOldBlockNumber)
-        } catch (e) {
-          if (IS_DEV) console.error(`[Using fallback value] Couldn't fetch get_virtual_price for block ${oneDayOldBlockNumber}: ${e.toString()}`);
-          vPriceOldFetchFailed = true;
-          vPriceOldFetch = 1 * (10 ** 18)
-        }
+      const latestDailyApy = ((rateDaily + 1) ** 365 - 1) * 100;
+      apy = latestDailyApy;
 
-        try {
-          vPriceFetch = await poolContract.methods.get_virtual_price().call()
-        } catch (e) {
-          vPriceFetch = 1 * (10 ** 18)
-        }
+      vPriceFetch = virtualPrice;
 
-        let vPrice = vPriceOldFetchFailed ? vPriceFetch : vPriceOldFetch
-        let vPriceNew = vPriceFetch
+    } else {
 
-        apy = (vPriceNew - vPrice) / vPrice * 100 * 365
+      let vPriceOldFetch;
+      let vPriceOldFetchFailed = false;
+      try {
+        vPriceOldFetch = await poolContract.methods.get_virtual_price().call('', oneDayOldBlockNumber)
+      } catch (e) {
+        if (IS_DEV) console.error(`[Using fallback value] Couldn't fetch get_virtual_price for block ${oneDayOldBlockNumber}: ${e.toString()}`);
+        vPriceOldFetchFailed = true;
+        vPriceOldFetch = 1 * (10 ** 18)
       }
 
+      try {
+        vPriceFetch = await poolContract.methods.get_virtual_price().call()
+      } catch (e) {
+        vPriceFetch = 1 * (10 ** 18)
+      }
 
-      const eventName = 'TokenExchangeUnderlying';
-      const eventName2 = 'TokenExchange';
+      let vPrice = vPriceOldFetchFailed ? vPriceFetch : vPriceOldFetch
+      let vPriceNew = vPriceFetch
 
-      const isMetaPool = (
-        pool.implementation?.startsWith('v1metausd') ||
-        pool.implementation?.startsWith('metausd') ||
-        pool.implementation?.startsWith('v1metabtc') ||
-        pool.implementation?.startsWith('metabtc')
-      );
+      apy = (vPriceNew - vPrice) / vPrice * 100 * 365
+    }
 
-      let decimals = (
-        (isMetaPool) ? pool.underlyingDecimals :
-          pool.decimals
-      );
-      let volume = 0;
-      let volumeUsd = 0;
 
+    const eventName = 'TokenExchangeUnderlying';
+    const eventName2 = 'TokenExchange';
+
+    const isMetaPool = (
+      pool.implementation?.startsWith('v1metausd') ||
+      pool.implementation?.startsWith('metausd') ||
+      pool.implementation?.startsWith('v1metabtc') ||
+      pool.implementation?.startsWith('metabtc')
+    );
+
+
+    let decimals = (
+      (isMetaPool) ? pool.underlyingDecimals :
+        pool.decimals
+    );
+    let volume = 0;
+    let volumeUsd = 0;
+
+    try {
       if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-twocrypto' && pool.registryId !== 'factory-crypto') {
         let events = await poolContract.getPastEvents(eventName, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
@@ -204,8 +210,14 @@ export default async ({ version }) => {
 
         })
       }
+    } catch (err) {
+      console.log('Caught non-breaking error:')
+      console.log(err)
+    }
 
-      if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-twocrypto' && pool.registryId !== 'factory-crypto') {
+
+    if (pool.registryId !== 'factory-tricrypto' && pool.registryId !== 'factory-twocrypto' && pool.registryId !== 'factory-crypto') {
+      try {
         let events2 = await poolContract.getPastEvents(eventName2, {
           filter: {}, // Using an array means OR: e.g. 20 or 23
           fromBlock: oneDayOldBlockNumber,
@@ -217,32 +229,38 @@ export default async ({ version }) => {
           volume += t;
           volumeUsd += (t * pool.coins[Number(trade.returnValues[1])].usdPrice);
         })
+      } catch (err) {
+        console.log('Caught non-breaking error:')
+        console.log(err)
       }
+    }
 
-      // Since we don't fetch blocks for the entirety of the past 24 hours,
-      // we multiply the split volume accordingly
-      const correctedVolume = volume * (DAY_BLOCKS_24H / DAY_BLOCKS);
-      const correctedVolumeUsd = volumeUsd * (DAY_BLOCKS_24H / DAY_BLOCKS);
 
-      let apyFormatted = `${apy.toFixed(2)}%`
-      totalVolume += correctedVolume
-      totalVolumeUsd += correctedVolumeUsd
+    // Since we don't fetch blocks for the entirety of the past 24 hours,
+    // we multiply the split volume accordingly
+    const correctedVolume = volume * (DAY_BLOCKS_24H / DAY_BLOCKS);
+    const correctedVolumeUsd = volumeUsd * (DAY_BLOCKS_24H / DAY_BLOCKS);
 
-      let p = {
-        index,
-        'poolAddress': pool.address,
-        'poolSymbol': pool.symbol,
-        apyFormatted,
-        apy,
-        'virtualPrice': vPriceFetch,
-        volume: (correctedVolumeUsd / lpTokenUsdPrice) || 0, // lp volume
-        totalVolumeUsd: correctedVolumeUsd,
-        'pool.registryId': pool.registryId,
-        'pool.id': pool.id,
-      }
-      poolDetails.push(p)
-    })
-  )
+    let apyFormatted = `${apy.toFixed(2)}%`
+    totalVolume += correctedVolume
+    totalVolumeUsd += correctedVolumeUsd
+
+    let p = {
+      index,
+      'poolAddress': pool.address,
+      'poolSymbol': pool.symbol,
+      apyFormatted,
+      apy,
+      'virtualPrice': vPriceFetch,
+      volume: (correctedVolumeUsd / lpTokenUsdPrice) || 0, // lp volume
+      totalVolumeUsd: correctedVolumeUsd,
+      'pool.registryId': pool.registryId,
+      'pool.id': pool.id,
+    }
+    poolDetails.push(p)
+  }, 10)
+
+
 
   poolDetails.sort((a, b) => (a.index > b.index) ? 1 : ((b.index > a.index) ? -1 : 0))
 
