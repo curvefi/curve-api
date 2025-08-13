@@ -202,6 +202,8 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
     }
   }
 
+
+
   const { poolList: mainRegistryPoolList } = await getMainRegistryPoolsFn.straightCall({ blockchainId });
   const mainRegistryPoolGaugesRewards = (
     blockchainId === 'ethereum' ?
@@ -229,6 +231,7 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
         gaugesAssetPrices[coingeckoId],
       ])
   );
+
 
   return {
     mainRegistryPoolList: mainRegistryPoolList.map((address) => address.toLowerCase()),
@@ -1015,7 +1018,8 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
       {}
   );
 
-  curvePrices = await getCurvePrices(blockchainId);
+
+  curvePrices = USE_CURVE_PRICES_DATA ? await getCurvePrices(blockchainId) : undefined;
 
   const coinData = await multiCall(flattenArray(allCoinAddresses.map(({ poolId, address }) => {
     // In crypto facto pools, native eth is represented as weth
@@ -1094,6 +1098,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         []
     )];
   })));
+
 
   const mergedCoinData = coinData.reduce((accu, { data, metaData: { poolId, poolAddress, coinAddress, type, isNativeEth } }) => {
     const key = `${getIdForPool(poolId)}-${coinAddress}`;
