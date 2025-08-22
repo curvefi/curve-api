@@ -43,9 +43,12 @@ const fetchPages = async (url, data = {}, paginationPropsOverride = {}, customSe
     const result = await (await Request.get(url, dataWithPaginationParams, customSettings)).json();
 
     fetchedPages.push(...result[paginationProps.DATA]);
-    page = result[paginationProps.PAGE] + 1;
+    page = result[paginationProps.PAGE] === null ? null : (result[paginationProps.PAGE] + 1);
     count = result[paginationProps.COUNT];
-  } while ((page - 1) * data[paginationProps.PER_PAGE] < count);
+  } while (
+    ((page - 1) * data[paginationProps.PER_PAGE] < count) &&
+    page !== null // Protect from endpoints that drop pagination support
+  );
 
   return fetchedPages;
 };
