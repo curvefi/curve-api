@@ -108,7 +108,8 @@ const multiCall = async (callsConfig, isDebugging = false, retryCount = 0) => {
     }
   }
 
-  const network = getConfigByRpcUrl(augmentedCallsConfig[0].networkSettings.web3.currentProvider.host)?.[0];
+  const rpcUrl = augmentedCallsConfig[0].networkSettings.web3.currentProvider.host;
+  const network = getConfigByRpcUrl(rpcUrl)?.[0];
 
   const hasMetaData = augmentedCallsConfig.some(({ metaData }) => typeof metaData !== 'undefined');
   const calls = augmentedCallsConfig.map((callConfig) => {
@@ -143,7 +144,24 @@ const multiCall = async (callsConfig, isDebugging = false, retryCount = 0) => {
   try {
     const chunkedReturnData = await sequentialPromiseMap(chunkedCalls, async (callsChunk) => (
       Promise.all(callsChunk.map(async (chunk) => {
-        const aggregateReturnData = await multicall.methods.tryAggregate(false, chunk).call(undefined, networkSettings.blockNumber);
+        const aggregateReturnData = await (
+          multicall.methods.tryAggregate(false, chunk).call(undefined, networkSettings.blockNumber)
+            .catch((err) => {
+              // This tries to handle recurrent unexplained connection issues with drpc where a simple domain switch helps
+              if (rpcUrl.includes('direct.drpc.org') && String(err).includes('CONNECTION ERROR')) {
+                console.log('Caught RPC connection error with a direct.drpc.org endpoint: retrying with lb.drpc.org', network);
+
+                const altRpcUrl = rpcUrl.replace('direct.drpc.org', 'lb.drpc.org');
+                const altWeb3Instance = new Web3(altRpcUrl);
+                const altMulticall = getContractInstance(networkSettings.multicall2Address, MULTICALL2_ABI, altWeb3Instance);
+
+                return altMulticall.methods.tryAggregate(false, chunk).call(undefined, networkSettings.blockNumber);
+              } else {
+                console.log('Uncaught RPC connection error', err)
+                throw err;
+              }
+            })
+        );
         const returnData = aggregateReturnData.map(({ success, returnData: hexData }) => ({ success, hexData }));
         return returnData;
       }))
