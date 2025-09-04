@@ -53,7 +53,7 @@ export default fn(async ({ blockchainId }) => {
   // The APYs retrieved from getBaseApysFn already include LST APYs
   const pools = poolAddressesAndTypes.map(({ address, type }) => {
     const lcAddress = lc(address)
-    const volumeData = poolData.find((data) => lc(data.address) === lcAddress);
+    const volumeData = poolData?.find((data) => lc(data.address) === lcAddress);
 
     const {
       trading_volume_24h: tradingVolume,
