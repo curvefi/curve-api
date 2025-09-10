@@ -853,7 +853,7 @@ const getAllGauges = fn(async () => {
   }
 
   const passesSanityCheck2 = (
-    allGaugesLcAddresses.length > 1400 // Ugly hard limit to try to tame down that issue for good for now
+    allGaugesLcAddresses.length >= 1704 // Ugly hard limit to try to tame down that issue for good for now
   );
   if (!passesSanityCheck2) {
     console.log('Gauges are too few to be complete from the tentatively returned value from getAllGauges: throwing instead to serve old accurate data')
