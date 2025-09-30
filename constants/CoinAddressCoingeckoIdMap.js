@@ -209,6 +209,7 @@ const CoinAddressCoingeckoIdMap = {
     '0x5a77f1443d16ee5761d310e38b62f77f726bc71c': 'weth',
     '0xe538905cf8410324e03A5A23C1c177a474D59b2b': 'wrapped-okb',
     '0x4ae46a509F6b1D9056937BA4500cb143933D2dc8': 'global-dollar',
+    '0x779ded0c9e1022225f8e0630b35a9b54be713736': 'usdt0',
   },
   // https://token-list.mantle.xyz/mantle.tokenlist.json
   mantle: {
