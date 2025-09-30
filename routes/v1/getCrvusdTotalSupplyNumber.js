@@ -23,7 +23,7 @@ export default fn(async () => {
     crvusdAllocatedToYieldbasis,
   ] = await Promise.all([
     crvusd.default.totalSupply(),
-    getCrvusdAllocatedToYieldbasis(),
+    getCrvusdAllocatedToYieldbasis(), // In later versions of @curvefi/stablecoin-api, this number is already included in `crvusd.totalSupply()`
   ]);
 
   return Number(crvusdTotalSupply.total) + Number(crvusdAllocatedToYieldbasis);
