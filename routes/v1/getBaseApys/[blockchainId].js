@@ -32,6 +32,9 @@ import factorypool3BaseCryptoAbi from '#root/constants/abis/factory_crypto_swap.
 import { uintToBN } from '#root/utils/Web3/index.js';
 import { lc } from '#root/utils/String.js';
 
+const ADMIN_FEE_1_ABI = [{ "name": "admin_fee", "outputs": [{ "type": "uint256", "name": "" }], "inputs": [], "stateMutability": "view", "type": "function" }];
+const ADMIN_FEE_2_ABI = [{ "stateMutability": "view", "type": "function", "name": "ADMIN_FEE", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }] }];
+
 const isCryptoPool = ({ registryId }) => registryId.includes('crypto');
 
 // xcp_profit and xcp_profit_a can return '0' when queried for a crypto pool with no activity, whether
@@ -118,7 +121,31 @@ export default fn(async ({ blockchainId }) => {
           superSettings: {
             fallbackValue: 1e18,
           },
-        }] : [{
+        }, ...(blockNumber === undefined ? [{
+          address: pool.address,
+          abi: ADMIN_FEE_1_ABI,
+          methodName: 'admin_fee',
+          metaData: { type: 'adminFee_try_1', pool },
+          networkSettings: {
+            ...networkSettings,
+            blockNumber,
+          },
+          superSettings: {
+            fallbackValue: null, // Know when this method hits a dead-end instead of defaulting to valid value
+          },
+        }, {
+          address: pool.address,
+          abi: ADMIN_FEE_2_ABI,
+          methodName: 'ADMIN_FEE',
+          metaData: { type: 'adminFee_try_2', pool },
+          networkSettings: {
+            ...networkSettings,
+            blockNumber,
+          },
+          superSettings: {
+            fallbackValue: null, // Know when this method hits a dead-end instead of defaulting to valid value
+          },
+        }] : [])] : [{
           address: pool.address,
           abi: poolAbi,
           methodName: 'get_virtual_price',
@@ -149,8 +176,9 @@ export default fn(async ({ blockchainId }) => {
     /**
     * Calculate base daily and weekly apys
     */
+    let adminFee;
     if (isCryptoPool(pool)) {
-      const { xcpProfit: [{ data: unsafeXcpProfit }], xcpProfitA: [{ data: unsafeXcpProfitA }] } = currentPoolData;
+      const { xcpProfit: [{ data: unsafeXcpProfit }], xcpProfitA: [{ data: unsafeXcpProfitA }], adminFee_try_1: [{ data: adminFeeRaw1 }], adminFee_try_2: [{ data: adminFeeRaw2 }] } = currentPoolData;
       const { xcpProfit: [{ data: unsafeXcpProfitDayOld }], xcpProfitA: [{ data: unsafeXcpProfitADayOld }] } = dayOldPoolData;
       const { xcpProfit: [{ data: unsafeXcpProfitWeekOld }], xcpProfitA: [{ data: unsafeXcpProfitAWeekOld }] } = weekOldPoolData;
 
@@ -161,9 +189,14 @@ export default fn(async ({ blockchainId }) => {
       const xcpProfitWeekOld = safeXcpProfit(unsafeXcpProfitWeekOld);
       const xcpProfitAWeekOld = safeXcpProfit(unsafeXcpProfitAWeekOld);
 
-      const currentProfit = ((xcpProfit / 2) + (xcpProfitA / 2) + 1e18) / 2;
-      const dayOldProfit = ((xcpProfitDayOld / 2) + (xcpProfitADayOld / 2) + 1e18) / 2;
-      const weekOldProfit = ((xcpProfitWeekOld / 2) + (xcpProfitAWeekOld / 2) + 1e18) / 2;
+      if (adminFeeRaw1 === null && adminFeeRaw2 === null) {
+        throw new Error(`adminFee could not be retrieved for pool ${pool} because methods used seem invalid`)
+      }
+      adminFee = uintToBN(adminFeeRaw1 ?? adminFeeRaw2, 10).toNumber();
+
+      const currentProfit = (xcpProfit * (1 - adminFee) / 1e18 + xcpProfitA * adminFee / 1e18 + 1) / 2; // Better calc taking admin fee into account
+      const dayOldProfit = (xcpProfitDayOld * (1 - adminFee) / 1e18 + xcpProfitADayOld * adminFee / 1e18 + 1) / 2; // Better calc taking admin fee into account
+      const weekOldProfit = (xcpProfitWeekOld * (1 - adminFee) / 1e18 + xcpProfitAWeekOld * adminFee / 1e18 + 1) / 2; // Better calc taking admin fee into account
       const rateDaily = (currentProfit - dayOldProfit) / dayOldProfit;
       const rateWeekly = (currentProfit - weekOldProfit) / weekOldProfit;
 

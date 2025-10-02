@@ -25,6 +25,14 @@ import { lc } from '#root/utils/String.js';
 import { sumBN } from '#root/utils/Array.js';
 import getPricesCurveFiChainsBlockchainId, { PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS } from '#root/utils/data/prices.curve.fi/chains.js';
 
+// Used to temporarily give precedence to internal base apr calcs (vs prices.curve api)
+// for yb pools
+const YB_POOLS_ADDRESSES = [
+  '0xf1F435B05D255a5dBdE37333C0f61DA6F69c6127',
+  '0x83f24023d15d835a213df24fd309c47dAb5BEb32',
+  '0xD9FF8396554A0d18B2CFbeC53e1979b7ecCe8373',
+].map(lc);
+
 const DEFAULT_VOLUME_DATA = {
   trading_volume_24h: 0,
   liquidity_volume_24h: 0,
@@ -87,8 +95,16 @@ export default fn(async ({ blockchainId }) => {
       address,
       type,
       volumeUSD: BN(tradingVolume).dp(2).toNumber() ?? 0, // Excluding liquidityVolume for consistency for now, may add it later
-      latestDailyApyPcent: BN(dailyApyWithoutLSTApr ?? latestDailyApyFromApi).plus(additionalApyFromLsts).times(100).dp(2).toNumber(),
-      latestWeeklyApyPcent: BN(weeklyApyWithoutLSTApr ?? latestWeeklyApyFromApi).plus(additionalApyFromLsts).times(100).dp(2).toNumber(),
+      latestDailyApyPcent: BN((
+        YB_POOLS_ADDRESSES.includes(lcAddress) ?
+          latestDailyApyFromApi :
+          (dailyApyWithoutLSTApr ?? latestDailyApyFromApi)
+      )).plus(additionalApyFromLsts).times(100).dp(2).toNumber(),
+      latestWeeklyApyPcent: BN((
+        YB_POOLS_ADDRESSES.includes(lcAddress) ?
+          latestWeeklyApyFromApi :
+          (weeklyApyWithoutLSTApr ?? latestWeeklyApyFromApi)
+      )).plus(additionalApyFromLsts).times(100).dp(2).toNumber(),
       includedApyPcentFromLsts: additionalApyFromLsts.times(100).dp(2).toNumber(),
       virtualPrice,
     }
