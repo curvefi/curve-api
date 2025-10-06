@@ -77,6 +77,7 @@ const GAUGES_ADDRESSES_TO_IGNORE = [
   '0xC85b385C8587219b1085A264f0235225644a5dD9', // Already absent from legacy endpoint data
   '0x174baa6b56ffe479b604CC20f22D09AD74F1Ca49', // Already absent from legacy endpoint data
   '0x1cEBdB0856dd985fAe9b8fEa2262469360B8a3a6', // Gauge for broken pool, already absent
+  '0xFF0871601158e506338967aB8C19fB59d8d5cAB2', // Not a gauge
 
   // The below have never been retrieved by this endpoint, but are picked up by curve-prices and can
   // be safely ignored (dead gauges that were never ever used)
