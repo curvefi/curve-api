@@ -13,6 +13,7 @@ const PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS = [
   'fraxtal',
   'sonic',
   'hyperliquid',
+  'bsc',
 ];
 
 const getPricesCurveFiChainsBlockchainId = memoize(async (blockchainId) => {
