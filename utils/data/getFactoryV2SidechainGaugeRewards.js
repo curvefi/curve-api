@@ -13,6 +13,8 @@ import SIDECHAIN_FACTO_GAUGE_ABI from '#root/constants/abis/sidechain-gauge.json
 import COIN_ADDRESS_COINGECKO_ID_MAP from '#root/constants/CoinAddressCoingeckoIdMap.js';
 import COIN_ADDRESS_REPLACEMENT_MAP from '#root/constants/CoinAddressReplacementMap.js';
 import getEywaTokenPrices from './getEywaTokenPrices.js';
+import { sequentialPromiseMap } from '../Async.js';
+import getPricesCurveTokenPrice from './prices.curve.fi/single-token-price.js';
 
 export default memoize(async ({ blockchainId, gauges }) => {
   const config = configs[blockchainId];
@@ -129,7 +131,7 @@ export default memoize(async ({ blockchainId, gauges }) => {
     partition(rewardAndTokenData, ({ metaData: { type } }) => type === 'rewardData');
 
   const nowTimestamp = getNowTimestamp();
-  const rewardsInfo = rewardData.map(({
+  const rewardsInfo = await sequentialPromiseMap(rewardData, async ({
     data: {
       period_finish: periodFinish,
       1: periodFinishFallback,
@@ -155,6 +157,7 @@ export default memoize(async ({ blockchainId, gauges }) => {
       coinAddressesAndPricesMap[effectiveTokenRewardAddressForPrice] ||
       coinAddressesAndPricesMapFallback[effectiveTokenRewardAddressForPrice] ||
       eywaTokensAddressesAndPricesMapFallback[effectiveTokenRewardAddressForPrice] ||
+      await getPricesCurveTokenPrice(blockchainId, effectiveTokenRewardAddressForPrice) || // Use prices.curve.finance as fallback value (since it's invididual api requests)
       null
     );
 

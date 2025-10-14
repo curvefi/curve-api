@@ -76,6 +76,7 @@ import {
   getPoolAssetTypesFromExternalStore,
   getPoolCreationTsAndBlockFromExternalStore,
 } from '#root/utils/data/prices.curve.fi/pools-metadata.js';
+import getPricesCurveTokenPrice from '#root/utils/data/prices.curve.fi/single-token-price.js';
 
 /* eslint-disable */
 const POOL_BALANCE_ABI_UINT256 = [{ "gas": 1823, "inputs": [{ "name": "arg0", "type": "uint256" }], "name": "balances", "outputs": [{ "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
@@ -1443,7 +1444,14 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
             otherRegistryTokensPricesMap, //
           });
 
-          tokenPrice = (USE_CURVE_PRICES_DATA ? curvePrices[lc(tokenAddress)] : undefined) || augmentedCoin.usdPrice || tokenCoingeckoPrice;
+          tokenPrice = (
+            rewardInfo.tokenPrice ||
+            (USE_CURVE_PRICES_DATA ? curvePrices[lc(tokenAddress)] : undefined) ||
+            augmentedCoin.usdPrice ||
+            tokenCoingeckoPrice ||
+            (USE_CURVE_PRICES_DATA ? (await getPricesCurveTokenPrice(lc(tokenAddress))) : undefined) || // Use prices.curve.finance as fallback value (since it's invididual api requests)
+            undefined
+          );
           const apy = (
             apyData.isRewardStillActive ?
               apyData.rate * 86400 * 365 * tokenPrice / gaugeUsdTotal * 100 :
