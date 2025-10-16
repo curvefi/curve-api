@@ -49,6 +49,8 @@ const HIDDEN_POOLS_IDS = {
     'factory-tricrypto-56', // offensive
     'factory-tricrypto-71', // offensive
     'one-way-market-34', // price per share too high, will be redeployed
+    'factory-twocrypto-274', // duplicate and empty
+    'factory-twocrypto-275', // duplicate and empty
   ],
   fantom: [
     'factory-v2-2', // Exact duplicate of another facto pool, with 0 liquidity
