@@ -113,6 +113,8 @@ const GAUGES_ADDRESSES_TO_IGNORE = [
   // be safely ignored (new gauges from lite deployment that will get support once made into a full deployment)
   '0xF347e58166521A6DdCFa4A2Ccbae1f1E93fAe7De',
   '0x9bd94Af225D48e8334B5c549f5C90a3C2097E5B0',
+  '0x077999E08cbb3990b05d23F6ED7890D34b337771',
+  '0x962F71A37Ccb6224de4DDbAfFd2d9EB7678c9a42',
 ].map(lc);
 
 const CRVUSD_POOLS_GAUGES = [
