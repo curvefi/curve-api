@@ -65,6 +65,7 @@ const SIDECHAINS_WITH_FACTORY_GAUGES = [
 // them from curve-api-core (since curve-api focuses on full deployments only).
 const LITE_SIDECHAINS_WITH_CRV_EMISSIONS = [
   'taiko',
+  'etherlink',
 ];
 
 const lc = (str) => str.toLowerCase();
