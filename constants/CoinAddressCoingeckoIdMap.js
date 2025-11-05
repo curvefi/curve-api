@@ -130,6 +130,8 @@ const CoinAddressCoingeckoIdMap = {
     '0x6feFd97F328342a8A840546A55FDcfEe7542F9A8': 'ageur', // agEUR
     '0x9fB1d52596c44603198fB0aee434fac3a679f702': 'jarvis-synthetic-euro', // jEUR
     '0x152b9d0fdc40c096757f570a51e494bd4b943e50': 'bitcoin-avalanche-bridged-btc-b', // BTC.b
+    '0x14A84F1a61cCd7D1BE596A6cc11FE33A36Bc1646': 'treehouse-avax', // tAVAX
+    '0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE': 'benqi-liquid-staked-avax', // sAVAX
   },
   fantom: {
     '0x74b23882a30290451a17c44f4f05243b6b58c76d': 'weth', // WETH
