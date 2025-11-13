@@ -685,8 +685,15 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
         // there's only one implementation available in this registry, so we hardcode it by querying
         // an unexisting method and falling back to the desired value, but we'll need to find
         // another way when another implementation is added.
+        // Update: other implementations now exist in that registry, but with no programmatic way to retrieve them,
+        // they need to be hardcoded for each pool that uses another implementation.
         superSettings: {
-          fallbackValue: '0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f',
+          fallbackValue: (
+            // Impl for https://www.curve.finance/dex/ethereum/pools/factory-tricrypto-81
+            (blockchainId === 'ethereum' && lc(address) === lc('0x66da369fC5dBBa0774Da70546Bd20F2B242Cd34d')) ? '0x1601f9c6640FE06E5928bB4451f99a015630FAF0' :
+              // Default implementation for registry
+              '0x66442B0C5260B92cAa9c234ECf2408CBf6b19a6f'
+          ),
         },
       }] : []
     ),
