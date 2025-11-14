@@ -78,7 +78,7 @@ const getTokensData = async (tokenAddresses, blockchainId = 'ethereum') => {
   /**
    * This caching strategy will only return cached results if *all* requested addresses
    * are already cached. This is ok because by far the lowest hanging fruit to avoid
-   * unecessary onchain requests is to prevent the exact same requests from being run
+   * unnecessary onchain requests is to prevent the exact same requests from being run
    * multiple times.
    */
   const areAllTokenDataCached = lcTokenAddresses.every((address) => cache.has(`${blockchainId}-${address}`));

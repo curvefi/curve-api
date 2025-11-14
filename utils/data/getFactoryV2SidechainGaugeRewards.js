@@ -157,7 +157,7 @@ export default memoize(async ({ blockchainId, gauges }) => {
       coinAddressesAndPricesMap[effectiveTokenRewardAddressForPrice] ||
       coinAddressesAndPricesMapFallback[effectiveTokenRewardAddressForPrice] ||
       eywaTokensAddressesAndPricesMapFallback[effectiveTokenRewardAddressForPrice] ||
-      await getPricesCurveTokenPrice(blockchainId, effectiveTokenRewardAddressForPrice) || // Use prices.curve.finance as fallback value (since it's invididual api requests)
+      await getPricesCurveTokenPrice(blockchainId, effectiveTokenRewardAddressForPrice) || // Use prices.curve.finance as fallback value (since it's individual api requests)
       null
     );
 
