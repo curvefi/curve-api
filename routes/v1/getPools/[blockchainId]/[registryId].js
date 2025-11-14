@@ -1457,7 +1457,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
             (USE_CURVE_PRICES_DATA ? curvePrices[lc(tokenAddress)] : undefined) ||
             augmentedCoin.usdPrice ||
             tokenCoingeckoPrice ||
-            (USE_CURVE_PRICES_DATA ? (await getPricesCurveTokenPrice(lc(tokenAddress))) : undefined) || // Use prices.curve.finance as fallback value (since it's invididual api requests)
+            (USE_CURVE_PRICES_DATA ? (await getPricesCurveTokenPrice(lc(tokenAddress))) : undefined) || // Use prices.curve.finance as fallback value (since it's individual api requests)
             undefined
           );
           const apy = (

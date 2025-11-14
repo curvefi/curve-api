@@ -766,7 +766,7 @@ const getAllGauges = fn(async () => {
             factoGauge.hasCrv &&
             (isKilled || !hasCrv)
           ));
-          if (isSupersededByOtherGauge) return null; // Ignore this gauge, a prefered one exists
+          if (isSupersededByOtherGauge) return null; // Ignore this gauge, a preferred one exists
 
           const gaugeCrvBaseApy = (
             !isKilled ? (
