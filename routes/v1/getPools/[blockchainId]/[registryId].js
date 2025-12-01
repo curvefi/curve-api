@@ -119,6 +119,7 @@ const IGNORED_COINS = {
     '0x62199B909FB8B8cf870f97BEf2cE6783493c4908', // causing issues
     '0xe2f3D42443605Fc4ad5bcE82F0e9BFffBCffA6Ca', // causing issues
     '0x85E30b8b263bC64d94b827ed450F2EdFEE8579dA', // causing issues
+    '0x1BED97CBC3c24A4fb5C069C6E311a967386131f7', // causing issues
   ].map(lc),
   arbitrum: [
     '0xF6c1c9Bf800E0431D350f9C32a90365241787C08', // causing issues
