@@ -132,6 +132,7 @@ const CoinAddressCoingeckoIdMap = {
     '0x152b9d0fdc40c096757f570a51e494bd4b943e50': 'bitcoin-avalanche-bridged-btc-b', // BTC.b
     '0x14A84F1a61cCd7D1BE596A6cc11FE33A36Bc1646': 'treehouse-avax', // tAVAX
     '0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE': 'benqi-liquid-staked-avax', // sAVAX
+    '0x580d5E1399157FD0d58218b7A514b60974F2AB01': 'staked-uty', // yUTY
   },
   fantom: {
     '0x74b23882a30290451a17c44f4f05243b6b58c76d': 'weth', // WETH
