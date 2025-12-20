@@ -335,7 +335,7 @@ const configs = {
       ['0xB755B949C126C04e0348DD881a5cF55d424742B2', '0x7f90122BF0700F9E7e1F688fe926940E8839F353'], // atricrypto<>aave
     ]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
-    graphEndpoint: `https://subgraph.satsuma-prod.com/${process.env.ALCHEMY_SUBGRAPH_API_KEY}/curve-1/curve-volume-subgraph-avalanche/api`,
+    graphEndpoint: 'https://api.goldsky.com/api/public/project_cmjeawdnxt94h01yg88og6sm5/subgraphs/volume-avalanche/0.0.2/gn',
     approxBlocksPerDay: 43000,
   },
   optimism: {
