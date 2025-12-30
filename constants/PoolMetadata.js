@@ -164,6 +164,12 @@ const EYWA_POOLS_METADATA = [{
 }, {
   sonicFactoryStableNgPoolId: 68,
   shortName: 'CrossCurve BTC GNO',
+}, {
+  sonicFactoryStableNgPoolId: 2,
+  shortName: 'CrossCurve CRV',
+}, {
+  sonicFactoryStableNgPoolId: 106,
+  shortName: 'CrossCurve CRV 2',
 }];
 
 const FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS = EYWA_POOLS_METADATA.map(({ fantomFactoryStableNgPoolId }) => fantomFactoryStableNgPoolId).filter((str) => !!str);
