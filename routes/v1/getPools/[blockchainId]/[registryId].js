@@ -461,7 +461,14 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
   }]))[0]);
   if (poolCount === 0) return { poolData: [], tvlAll: 0, tvl: 0 };
 
-  const unfilteredPoolIds = Array(poolCount).fill(0).map((_, i) => i);
+  let unfilteredPoolIds = Array(poolCount).fill(0).map((_, i) => i);
+
+  // Specific situation were a pool id containing coins not known in other price sources we use
+  // needs to be given precedence in order for the system to derive price data for other pools
+  // containing these coins and others (see deriveMissingCoinPrices())
+  if (blockchainId === 'avalanche' && registryId === 'factory-stable-ng') {
+    unfilteredPoolIds = [29, ...unfilteredPoolIds.filter((id) => id !== 29)];
+  }
 
   const unfilteredPoolAddresses = await multiCall(unfilteredPoolIds.map((id) => ({
     contract: registry,
