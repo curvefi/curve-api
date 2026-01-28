@@ -133,6 +133,8 @@ const CoinAddressCoingeckoIdMap = {
     '0x14A84F1a61cCd7D1BE596A6cc11FE33A36Bc1646': 'treehouse-avax', // tAVAX
     '0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE': 'benqi-liquid-staked-avax', // sAVAX
     '0x580d5E1399157FD0d58218b7A514b60974F2AB01': 'staked-uty', // yUTY
+    '0x9eE1963f05553eF838604Dd39403be21ceF26AA4': 'parallel-usdp', // USDp
+    '0x80Eede496655FB9047dd39d9f418d5483ED600df': 'frax-usd', // frxUSD
   },
   fantom: {
     '0x74b23882a30290451a17c44f4f05243b6b58c76d': 'weth', // WETH
