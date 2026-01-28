@@ -105,6 +105,8 @@ const CoinAddressCoingeckoIdMap = {
     '0x179F38f78346F5942E95C5C59CB1da7F55Cf7CAd': 'fxn-token',
     '0xca5ca9083702c56b481d1eec86f1776fdbd2e594': 'reserve-rights-token',
   },
+  // avalanche has been downgraded to a core deployment, please update this file instead:
+  // https://github.com/curvefi/curve-api-core/blob/main/constants/CoinAddressCoingeckoIdMap.js
   avalanche: {
     '0xd586e7f844cea2f87f50152665bcbc2c279d8d70': 'dai', // DAI
     '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e': 'usd-coin', // USDC
@@ -136,6 +138,8 @@ const CoinAddressCoingeckoIdMap = {
     '0x9eE1963f05553eF838604Dd39403be21ceF26AA4': 'parallel-usdp', // USDp
     '0x80Eede496655FB9047dd39d9f418d5483ED600df': 'frax-usd', // frxUSD
   },
+  // fantom has been downgraded to a core deployment, please update this file instead:
+  // https://github.com/curvefi/curve-api-core/blob/main/constants/CoinAddressCoingeckoIdMap.js
   fantom: {
     '0x74b23882a30290451a17c44f4f05243b6b58c76d': 'weth', // WETH
     '0x321162cd933e2be498cd2267a90534a804051b11': 'wrapped-bitcoin', // WBTC
