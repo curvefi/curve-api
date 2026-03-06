@@ -53,6 +53,7 @@ const HIDDEN_POOLS_IDS = {
     'factory-twocrypto-275', // duplicate and empty
     'factory-twocrypto-279', // IDRS token has broken balanceOf
     'factory-stable-ng-506', // Team asked to hide, pool will not used
+    'factory-stable-ng-685', // Team asked to hide
   ],
   fantom: [
     'factory-v2-2', // Exact duplicate of another facto pool, with 0 liquidity
