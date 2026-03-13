@@ -170,7 +170,10 @@ const overrideSymbol = (coin, blockchainId) => ({
   symbol: (
     CURVE_POOL_LP_SYMBOLS_OVERRIDES.get(lc(coin.address)) ||
     CURVE_POOL_SYMBOLS_OVERRIDES.get(`${blockchainId}-${lc(coin.address)}`) ||
-    coin.symbol
+    coin.symbol.replaceAll('\n', '').replaceAll('\u0000', '')
+  ),
+  name: (
+    coin.name.replaceAll('\n', '').replaceAll('\u0000', '')
   ),
 });
 
