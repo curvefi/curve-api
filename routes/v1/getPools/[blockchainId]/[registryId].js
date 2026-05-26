@@ -60,6 +60,7 @@ import getMainRegistryPoolsFn from '#root/routes/v1/getMainRegistryPools.js';
 import getMainRegistryPoolsAndLpTokensFn from '#root/routes/v1/getMainRegistryPoolsAndLpTokens.js';
 import getMainPoolsGaugeRewardsFn from '#root/routes/v1/getMainPoolsGaugeRewards.js';
 import getAllGaugesFn, { SIDECHAINS_WITH_FACTORY_GAUGES } from '#root/routes/v1/getAllGauges.js';
+import getFactoGaugesFn from '#root/routes/v1/getFactoGauges/[blockchainId].js';
 import configs from '#root/constants/configs/index.js'
 import allCoins from '#root/constants/coins/index.js'
 import POOLS_ZAPS from '#root/constants/pools-zaps/index.js';
@@ -190,21 +191,91 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
         (await import('#root/utils/data/getFactoryV2SidechainGaugeRewards.js')).default
     );
 
-    gaugesData = (
-      (blockchainId === 'ethereum' || SIDECHAINS_WITH_FACTORY_GAUGES.includes(blockchainId)) ?
-        await getAllGaugesFn.straightCall() :
-        {}
-    );
-
     if (blockchainId === 'ethereum') {
+      gaugesData = await getAllGaugesFn.straightCall();
+
       const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain, blockchainId: blockchainIdProp }) => !side_chain && blockchainIdProp === blockchainId);
       const factoryGaugesAddresses = factoryGauges.map(({ gauge }) => gauge).filter((s) => s); // eslint-disable-line no-param-reassign
 
       gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, factoryGaugesAddresses });
-    } else {
-      const factoryGauges = Array.from(Object.values(gaugesData)).filter(({ side_chain, blockchainId: blockchainIdProp }) => side_chain && blockchainIdProp === blockchainId);
+    } else if (SIDECHAINS_WITH_FACTORY_GAUGES.includes(blockchainId)) {
+      const { gauges: perChainGauges } = await getFactoGaugesFn.straightCall({ blockchainId });
+      const {
+        [allCoins.crv.coingeckoId]: crvPrice,
+      } = await getAssetsPrices([allCoins.crv.coingeckoId]);
+
+      const factoryGauges = perChainGauges.map(({
+        gauge,
+        rootGauge,
+        name,
+        side_chain,
+        gauge_data: {
+          gauge_relative_weight: gaugeRelativeWeight,
+          gauge_future_relative_weight: gaugeFutureRelativeWeight,
+          get_gauge_weight: getGaugeWeight,
+          inflation_rate: inflationRate,
+          working_supply: workingSupply,
+        },
+        swap,
+        swap_token,
+        type,
+        lpTokenPrice,
+        hasCrv,
+        areCrvRewardsStuckInBridge,
+        rewardsNeedNudging,
+        isKilled,
+        extraRewards,
+      }) => {
+        const gaugeCrvBaseApy = (
+          !isKilled ? (
+            (inflationRate / 1e18) * 31536000 / (workingSupply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
+          ) : undefined
+        );
+
+        return {
+          blockchainId,
+          gauge: lc(gauge),
+          rootGauge: lc(rootGauge),
+          name,
+          side_chain,
+          gauge_data: {
+            inflation_rate: inflationRate,
+            working_supply: workingSupply,
+          },
+          gauge_controller: {
+            gauge_relative_weight: gaugeRelativeWeight,
+            gauge_future_relative_weight: gaugeFutureRelativeWeight,
+            get_gauge_weight: getGaugeWeight,
+            inflation_rate: inflationRate,
+          },
+          hasNoCrv: !hasCrv,
+          is_killed: isKilled,
+          lpTokenPrice,
+          gaugeCrvApy: (
+            !isKilled ?
+              [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)] :
+              undefined
+          ),
+          gaugeStatus: {
+            areCrvRewardsStuckInBridge,
+            rewardsNeedNudging,
+          },
+          swap: lc(swap),
+          swap_token: lc(swap_token),
+          type,
+          factory: true,
+          extraRewards,
+        };
+      });
+
+      gaugesData = arrayToHashmap(factoryGauges.map((gaugeData) => [
+        gaugeData.name,
+        gaugeData,
+      ]));
 
       gaugeRewards = await getFactoryV2GaugeRewards({ blockchainId, gauges: factoryGauges });
+    } else {
+      gaugesData = {};
     }
   }
 

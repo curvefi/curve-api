@@ -32,7 +32,7 @@ import allCoins from '#root/constants/coins/index.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import { maxChars } from '#root/utils/String.js';
 import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
-import getExternalGaugeListAddresses from '#root/utils/data/prices.curve.fi/gauges.js';
+import { getExternalGaugeList } from '#root/utils/data/prices.curve.fi/gauges.js';
 import Request, { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
@@ -142,6 +142,26 @@ const NON_STANDARD_OUTDATED_GAUGES = [
 
 const GAUGE_CONTROLLER_ADDRESS = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB';
 
+const hasGaugeEmissionSignal = ({
+  emissions,
+  prev_epoch_emissions,
+  prev_prev_epoch_emissions,
+  gauge_weight,
+  gauge_relative_weight,
+  crv_apr_base,
+  crv_apr_boosted,
+}) => (
+  [
+    emissions,
+    prev_epoch_emissions,
+    prev_prev_epoch_emissions,
+    gauge_weight,
+    gauge_relative_weight,
+    crv_apr_base,
+    crv_apr_boosted,
+  ].some((value) => Number(value) > 0)
+);
+
 const getPoolName = (pool) => {
   const prefix = pool.blockchainId === 'ethereum' ? '' : `${pool.blockchainId}-`;
   return `${prefix}${pool.coins.map((coin) => coin.symbol).join('+')} (${pool.address.slice(0, 6)}…${pool.address.slice(-4)})`;
@@ -183,11 +203,11 @@ const getAllGauges = fn(async () => {
   const [
     allPools,
     allLendingVaults,
-    externalIncompleteGaugeListAddresses,
+    externalIncompleteGaugeList,
   ] = await Promise.all([
     getAllCurvePoolsData(blockchainIds),
     getAllCurveLendingVaultsData(blockchainIds),
-    getExternalGaugeListAddresses(),
+    getExternalGaugeList(),
   ]);
 
   const getPoolByLpTokenAddress = (lpTokenAddress, blockchainId) => (
@@ -850,14 +870,23 @@ const getAllGauges = fn(async () => {
   * reason, anything was to miss.
   */
   const allGaugesLcAddresses = Object.values(gauges).map(({ gauge }) => lc(gauge));
-  const externalGaugesAddressesMinusIgnoredOnes = externalIncompleteGaugeListAddresses.filter((gaugeAddress) => !GAUGES_ADDRESSES_TO_IGNORE.some((gaugeAddress2) => lc(gaugeAddress2) === lc(gaugeAddress)));
+  const externalGaugesToRequire = externalIncompleteGaugeList.filter((gaugeData) => {
+    const gaugeAddress = gaugeData.effective_address ?? gaugeData.address;
+
+    return (
+      !GAUGES_ADDRESSES_TO_IGNORE.some((gaugeAddress2) => lc(gaugeAddress2) === lc(gaugeAddress)) &&
+      hasGaugeEmissionSignal(gaugeData)
+    );
+  });
   const passesSanityCheck = (
-    externalGaugesAddressesMinusIgnoredOnes.every((gaugeAddress) => allGaugesLcAddresses.includes(lc(gaugeAddress)))
+    externalGaugesToRequire.every((gaugeData) => allGaugesLcAddresses.includes(lc(gaugeData.effective_address ?? gaugeData.address)))
   );
   if (!passesSanityCheck) {
     console.log('Gauges are missing from the tentatively returned value from getAllGauges: throwing instead to serve old accurate data');
     console.log('Missing gauges addresses ↓');
-    console.log(externalGaugesAddressesMinusIgnoredOnes.filter((gaugeAddress) => !allGaugesLcAddresses.includes(lc(gaugeAddress))));
+    console.log(externalGaugesToRequire
+      .filter((gaugeData) => !allGaugesLcAddresses.includes(lc(gaugeData.effective_address ?? gaugeData.address)))
+      .map(({ address, effective_address }) => effective_address ?? address));
     throw new Error('Gauges sanity check 1 error');
   }
 
