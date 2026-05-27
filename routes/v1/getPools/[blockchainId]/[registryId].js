@@ -66,7 +66,7 @@ import allCoins from '#root/constants/coins/index.js'
 import POOLS_ZAPS from '#root/constants/pools-zaps/index.js';
 import COIN_ADDRESS_COINGECKO_ID_MAP from '#root/constants/CoinAddressCoingeckoIdMap.js';
 import { getHardcodedPoolId } from '#root/constants/PoolAddressInternalIdMap.js';
-import { deriveMissingCoinPrices, getImplementation } from '#root/routes/v1/getPools/_utils.js';
+import { deriveMissingCoinPrices, filterSupersededDuplicateGauges, getImplementation } from '#root/routes/v1/getPools/_utils.js';
 import { lc } from '#root/utils/String.js';
 import getCurvePrices from '#root/utils/data/curve-prices.js';
 import { IS_DEV } from '#root/constants/AppConstants.js';
@@ -204,7 +204,9 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
         [allCoins.crv.coingeckoId]: crvPrice,
       } = await getAssetsPrices([allCoins.crv.coingeckoId]);
 
-      const factoryGauges = perChainGauges.map(({
+      const preferredPerChainGauges = filterSupersededDuplicateGauges(perChainGauges, blockchainId);
+
+      const factoryGauges = preferredPerChainGauges.map(({
         gauge,
         rootGauge,
         name,
@@ -269,7 +271,7 @@ const getEthereumOnlyData = async ({ preventQueryingFactoData, blockchainId }) =
       });
 
       gaugesData = arrayToHashmap(factoryGauges.map((gaugeData) => [
-        gaugeData.name,
+        `${gaugeData.blockchainId}-${gaugeData.gauge}`,
         gaugeData,
       ]));
 

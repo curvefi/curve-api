@@ -18,6 +18,7 @@ import getFactoGaugesFn from '#root/routes/v1/getFactoGauges/[blockchainId].js';
 import { lc } from '#root/utils/String.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 import getAllCurveLendingVaultsData from '#root/utils/data/curve-lending-vaults-data.js';
+import { filterSupersededDuplicateGauges } from '#root/routes/v1/getPools/_utils.js';
 
 const NON_STANDARD_OUTDATED_GAUGES = [
   'celo-0x4969e38b8d37fc42a1897295Ea6d7D0b55944497',
@@ -30,17 +31,19 @@ export default fn(async ({ blockchainId }) => {
     getAllCurveLendingVaultsData([blockchainId]),
   ]);
 
-  const sideChainGauges = gauges.filter(({
-    side_chain: isSideChain,
-    name,
-    is_killed: isKilled,
-    gauge,
-  }) => (
-    isSideChain &&
-    // name.startsWith(`${blockchainId}-`) &&
-    !isKilled &&
-    !NON_STANDARD_OUTDATED_GAUGES.includes(`${blockchainId}-${lc(gauge)}`)
-  ));
+  const sideChainGauges = filterSupersededDuplicateGauges(gauges, blockchainId).filter((gaugeData) => {
+    const {
+      side_chain: isSideChain,
+      gauge,
+    } = gaugeData;
+    const isKilled = gaugeData.isKilled ?? gaugeData.is_killed;
+
+    return (
+      isSideChain &&
+      !isKilled &&
+      !NON_STANDARD_OUTDATED_GAUGES.includes(`${blockchainId}-${lc(gauge)}`)
+    );
+  });
 
   if (sideChainGauges.length === 0) {
     return { sideChainGaugesApys: [] };
