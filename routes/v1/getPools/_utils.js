@@ -265,7 +265,24 @@ const deriveMissingCoinPrices = async ({
   return augmentedCoins;
 };
 
+const filterSupersededDuplicateGauges = (gauges, blockchainId) => (
+  gauges.filter((gaugeData) => !gauges.some((otherGaugeData) => {
+    const gaugeBlockchainId = gaugeData.blockchainId || blockchainId;
+    const otherGaugeBlockchainId = otherGaugeData.blockchainId || blockchainId;
+
+    return (
+      lc(otherGaugeData.gauge) !== lc(gaugeData.gauge) &&
+      otherGaugeBlockchainId === gaugeBlockchainId &&
+      lc(otherGaugeData.swap) === lc(gaugeData.swap) &&
+      !otherGaugeData.isKilled &&
+      otherGaugeData.hasCrv &&
+      (gaugeData.isKilled || !gaugeData.hasCrv)
+    );
+  }))
+);
+
 export {
   getImplementation,
   deriveMissingCoinPrices,
+  filterSupersededDuplicateGauges,
 };
