@@ -227,6 +227,9 @@ const CoinAddressCoingeckoIdMap = {
     '0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111': 'ethereum',
     '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000': 'mantle',
   },
+  hyperliquid: {
+    '0x64445f0aecC51E94aD52d8AC56b7190e764E561a': 'wrapped-frax', // WFRAX
+  },
 };
 
 export default CoinAddressCoingeckoIdMap;
