@@ -33,6 +33,7 @@ import getAssetsPrices from '#root/utils/data/assets-prices.js';
 import { maxChars } from '#root/utils/String.js';
 import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
 import { getExternalGaugeList } from '#root/utils/data/prices.curve.fi/gauges.js';
+import { getMissingRequiredGauges } from '#root/utils/data/gauges.js';
 import Request, { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
@@ -141,26 +142,6 @@ const NON_STANDARD_OUTDATED_GAUGES = [
 ].map(lc);
 
 const GAUGE_CONTROLLER_ADDRESS = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB';
-
-const hasGaugeEmissionSignal = ({
-  emissions,
-  prev_epoch_emissions,
-  prev_prev_epoch_emissions,
-  gauge_weight,
-  gauge_relative_weight,
-  crv_apr_base,
-  crv_apr_boosted,
-}) => (
-  [
-    emissions,
-    prev_epoch_emissions,
-    prev_prev_epoch_emissions,
-    gauge_weight,
-    gauge_relative_weight,
-    crv_apr_base,
-    crv_apr_boosted,
-  ].some((value) => Number(value) > 0)
-);
 
 const getPoolName = (pool) => {
   const prefix = pool.blockchainId === 'ethereum' ? '' : `${pool.blockchainId}-`;
@@ -869,24 +850,22 @@ const getAllGauges = fn(async () => {
   * endpoint returns *at least* all gauges from curve-prices is a good sanity check in case, for an unknown
   * reason, anything was to miss.
   */
-  const allGaugesLcAddresses = Object.values(gauges).map(({ gauge }) => lc(gauge));
-  const externalGaugesToRequire = externalIncompleteGaugeList.filter((gaugeData) => {
-    const gaugeAddress = gaugeData.effective_address ?? gaugeData.address;
+  const builtGauges = Object.values(gauges);
+  const allGaugesLcAddresses = builtGauges.map(({ gauge }) => lc(gauge));
 
-    return (
-      !GAUGES_ADDRESSES_TO_IGNORE.some((gaugeAddress2) => lc(gaugeAddress2) === lc(gaugeAddress)) &&
-      hasGaugeEmissionSignal(gaugeData)
-    );
+  // Gauges curve-prices reports that we must return at least all of, minus the
+  // ones we deliberately ignore. The missing-gauge matching accounts for cross-chain
+  // root gauges (which curve-prices lists by root address, but we index by child
+  // address with the root stored in `rootGauge`); see getMissingRequiredGauges.
+  const requireableExternalGauges = externalIncompleteGaugeList.filter((gaugeData) => {
+    const gaugeAddress = gaugeData.effective_address ?? gaugeData.address;
+    return !GAUGES_ADDRESSES_TO_IGNORE.some((gaugeAddress2) => lc(gaugeAddress2) === lc(gaugeAddress));
   });
-  const passesSanityCheck = (
-    externalGaugesToRequire.every((gaugeData) => allGaugesLcAddresses.includes(lc(gaugeData.effective_address ?? gaugeData.address)))
-  );
-  if (!passesSanityCheck) {
+  const missingGaugesAddresses = getMissingRequiredGauges(requireableExternalGauges, builtGauges);
+  if (missingGaugesAddresses.length > 0) {
     console.log('Gauges are missing from the tentatively returned value from getAllGauges: throwing instead to serve old accurate data');
     console.log('Missing gauges addresses ↓');
-    console.log(externalGaugesToRequire
-      .filter((gaugeData) => !allGaugesLcAddresses.includes(lc(gaugeData.effective_address ?? gaugeData.address)))
-      .map(({ address, effective_address }) => effective_address ?? address));
+    console.log(missingGaugesAddresses);
     throw new Error('Gauges sanity check 1 error');
   }
 
