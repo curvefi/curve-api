@@ -22,7 +22,7 @@ import { multiCall } from '#root/utils/Calls.js';
 import getAllCurvePoolsData from '#root/utils/data/curve-pools-data.js';
 import getAllCurveLendingVaultsData from '#root/utils/data/curve-lending-vaults-data.js';
 import { arrayOfIncrements, flattenArray, arrayToHashmap } from '#root/utils/Array.js';
-import { sequentialPromiseFlatMap, sequentialPromiseMap } from '#root/utils/Async.js';
+import { sequentialPromiseMap } from '#root/utils/Async.js';
 import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
 import GAUGE_CONTROLLER_ABI from '#root/constants/abis/gauge_controller.json' assert { type: 'json' };
 import GAUGE_ABI from '#root/constants/abis/example_gauge_2.json' assert { type: 'json' };
@@ -30,11 +30,13 @@ import META_REGISTRY_ABI from '#root/constants/abis/meta-registry.json' assert {
 import { getNowTimestamp } from '#root/utils/Date.js';
 import allCoins from '#root/constants/coins/index.js';
 import getAssetsPrices from '#root/utils/data/assets-prices.js';
-import { maxChars } from '#root/utils/String.js';
+import { lc, maxChars } from '#root/utils/String.js';
 import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
 import { getExternalGaugeList } from '#root/utils/data/prices.curve.fi/gauges.js';
 import { getMissingRequiredGauges } from '#root/utils/data/gauges.js';
 import Request, { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
+import swr from '#root/utils/swr.js';
+import CACHE_SETTINGS from '#root/constants/CacheSettings.js';
 
 /* eslint-disable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
@@ -69,7 +71,17 @@ const LITE_SIDECHAINS_WITH_CRV_EMISSIONS = [
   'etherlink',
 ];
 
-const lc = (str) => str.toLowerCase();
+const GAUGE_SCOPE_CACHE_PREFIX = 'getAllGaugesScope-v1';
+const GAUGE_SCOPE_STATUS_CACHE_PREFIX = 'getAllGaugesScopeStatus-v1';
+const GAUGE_SCOPE_MAX_AGE_MS = 5 * 60 * 1000;
+const GAUGE_SCOPE_STATUS_MAX_AGE_MS = CACHE_SETTINGS.maxTimeToLive - (60 * 1000);
+const GAUGE_SCOPE_CONCURRENCY = 8;
+
+const EXTERNAL_GAUGE_CHAIN_ALIASES = {
+  gnosis: 'xdai',
+  xlayer: 'x-layer',
+};
+
 const GAUGES_ADDRESSES_TO_IGNORE = [
   '0xbAF05d7aa4129CA14eC45cC9d4103a9aB9A9fF60', // vefunder
   '0x34eD182D0812D119c92907852D2B429f095A9b07', // Not a gauge
@@ -174,7 +186,234 @@ const getLendingVaultShortName = (lendingVault) => {
   return `${maxChars(`${prefix}lend-${lendingVault.assets.borrowed.symbol}(${lendingVault.assets.collateral.symbol})`, 22)} (${lendingVault.address.slice(0, 6)}…)`; // Max 32 chars long
 };
 
-const getAllGauges = fn(async () => {
+const getGaugeScopeCacheKey = ({ scopeId }) => `${GAUGE_SCOPE_CACHE_PREFIX}-${scopeId}`;
+const getGaugeScopeStatusCacheKey = ({ scopeId }) => `${GAUGE_SCOPE_STATUS_CACHE_PREFIX}-${scopeId}`;
+
+const getErrorMessage = (err) => (
+  err?.message ||
+  String(err)
+);
+
+class MissingRequiredGaugeScopeError extends Error {
+  constructor(scopeId, missingRequiredGauges) {
+    super(`getAllGauges scope ${scopeId} is missing required gauges: ${missingRequiredGauges.join(', ')}`);
+    this.name = this.constructor.name;
+    this.missingRequiredGauges = missingRequiredGauges;
+    this.missingRequiredGaugeCount = missingRequiredGauges.length;
+  }
+}
+
+const getMissingRequiredGaugesFromError = (err) => ({
+  missingRequiredGauges: err?.missingRequiredGauges ?? [],
+  missingRequiredGaugeCount: err?.missingRequiredGaugeCount ?? 0,
+});
+
+const getExternalGaugeAddress = (gaugeData) => (
+  lc(gaugeData.effective_address ?? gaugeData.address)
+);
+
+const getExternalGaugeBlockchainId = (gaugeData) => {
+  const chain = lc(
+    gaugeData.pool?.chain ??
+    gaugeData.market?.chain ??
+    gaugeData.chain ??
+    gaugeData.blockchainId ??
+    gaugeData.blockchain_id ??
+    gaugeData.network
+  );
+
+  return EXTERNAL_GAUGE_CHAIN_ALIASES[chain] ?? chain;
+};
+
+const getRequireableExternalGauges = (externalIncompleteGaugeList) => (
+  externalIncompleteGaugeList.filter((gaugeData) => {
+    const gaugeAddress = getExternalGaugeAddress(gaugeData);
+    return gaugeAddress && !GAUGES_ADDRESSES_TO_IGNORE.includes(gaugeAddress);
+  })
+);
+
+const getScopeMissingRequiredGauges = ({ blockchainId }, requireableExternalGauges, builtGauges) => (
+  getMissingRequiredGauges(
+    requireableExternalGauges.filter((gaugeData) => getExternalGaugeBlockchainId(gaugeData) === blockchainId),
+    builtGauges
+  )
+);
+
+const persistGaugeScopeStatus = async (scopeDefinition, status) => {
+  try {
+    await swr.persist(getGaugeScopeStatusCacheKey(scopeDefinition), {
+      scopeId: scopeDefinition.scopeId,
+      blockchainId: scopeDefinition.blockchainId,
+      source: scopeDefinition.source,
+      ...status,
+    });
+  } catch (err) {
+    console.log('Failed to persist getAllGauges scope status', scopeDefinition.scopeId, getErrorMessage(err));
+  }
+};
+
+const readGaugeScopeStatus = async (scopeDefinition) => {
+  try {
+    return (await swr(
+      getGaugeScopeStatusCacheKey(scopeDefinition),
+      async () => ({
+        scopeId: scopeDefinition.scopeId,
+        blockchainId: scopeDefinition.blockchainId,
+        source: scopeDefinition.source,
+        lastAttemptTimeMs: null,
+        lastSuccessTimeMs: null,
+        lastErrorTimeMs: null,
+        lastError: null,
+      }),
+      { minTimeToStale: GAUGE_SCOPE_STATUS_MAX_AGE_MS }
+    )).value;
+  } catch (err) {
+    return {
+      scopeId: scopeDefinition.scopeId,
+      blockchainId: scopeDefinition.blockchainId,
+      source: scopeDefinition.source,
+      lastAttemptTimeMs: null,
+      lastSuccessTimeMs: null,
+      lastErrorTimeMs: Date.now(),
+      lastError: getErrorMessage(err),
+    };
+  }
+};
+
+const getCachedGaugeScope = async (scopeDefinition, buildScopeGauges, getMissingGauges) => {
+  const cacheKey = getGaugeScopeCacheKey(scopeDefinition);
+
+  try {
+    const response = await swr(
+      cacheKey,
+      async () => {
+        const buildStartTimeMs = Date.now();
+
+        try {
+          const gauges = await buildScopeGauges();
+          const builtGauges = Object.values(gauges);
+          const missingRequiredGauges = await getMissingGauges(gauges);
+          const generatedTimeMs = Date.now();
+          const buildDurationMs = generatedTimeMs - buildStartTimeMs;
+
+          if (missingRequiredGauges.length > 0) {
+            console.log(`getAllGauges scope ${scopeDefinition.scopeId} is missing required gauges`);
+            console.log(missingRequiredGauges);
+            throw new MissingRequiredGaugeScopeError(scopeDefinition.scopeId, missingRequiredGauges);
+          }
+
+          const value = {
+            gauges,
+            generatedTimeMs,
+            metadata: {
+              buildDurationMs,
+              gaugeCount: builtGauges.length,
+              missingRequiredGauges: [],
+              missingRequiredGaugeCount: 0,
+            },
+          };
+
+          await persistGaugeScopeStatus(scopeDefinition, {
+            lastAttemptTimeMs: generatedTimeMs,
+            lastSuccessTimeMs: generatedTimeMs,
+            lastErrorTimeMs: null,
+            lastError: null,
+            buildDurationMs,
+            gaugeCount: builtGauges.length,
+            missingRequiredGauges: [],
+            missingRequiredGaugeCount: 0,
+          });
+
+          console.log('Run time (ms):', buildDurationMs, cacheKey);
+
+          return value;
+        } catch (err) {
+          const failedTimeMs = Date.now();
+          const missingRequiredGaugeStatus = getMissingRequiredGaugesFromError(err);
+          await persistGaugeScopeStatus(scopeDefinition, {
+            lastAttemptTimeMs: failedTimeMs,
+            lastErrorTimeMs: failedTimeMs,
+            lastError: getErrorMessage(err),
+            ...missingRequiredGaugeStatus,
+          });
+          throw err;
+        }
+      },
+      { minTimeToStale: GAUGE_SCOPE_MAX_AGE_MS }
+    );
+    const persistedStatus = await readGaugeScopeStatus(scopeDefinition);
+    const now = Date.now();
+    const metadata = response.value.metadata;
+    const hasNewerErrorThanSuccess = (
+      persistedStatus.lastErrorTimeMs &&
+      (!persistedStatus.lastSuccessTimeMs || persistedStatus.lastErrorTimeMs > persistedStatus.lastSuccessTimeMs)
+    );
+    const missingRequiredGauges = (
+      hasNewerErrorThanSuccess ?
+        (persistedStatus.missingRequiredGauges ?? []) :
+        (metadata.missingRequiredGauges ?? [])
+    );
+
+    return {
+      gauges: response.value.gauges,
+      status: {
+        scopeId: scopeDefinition.scopeId,
+        blockchainId: scopeDefinition.blockchainId,
+        source: scopeDefinition.source,
+        cacheKey,
+        cacheStatus: response.status,
+        isStale: response.status === 'stale' || now >= response.staleAt,
+        generatedTimeMs: response.value.generatedTimeMs,
+        cachedAt: response.cachedAt,
+        staleAt: response.staleAt,
+        expireAt: response.expireAt,
+        gaugeCount: metadata.gaugeCount,
+        missingRequiredGauges,
+        missingRequiredGaugeCount: missingRequiredGauges.length,
+        buildDurationMs: metadata.buildDurationMs,
+        lastAttemptTimeMs: persistedStatus.lastAttemptTimeMs,
+        lastSuccessTimeMs: persistedStatus.lastSuccessTimeMs,
+        lastErrorTimeMs: persistedStatus.lastErrorTimeMs,
+        lastError: persistedStatus.lastError,
+      },
+    };
+  } catch (err) {
+    const failedTimeMs = Date.now();
+    const lastError = getErrorMessage(err);
+    const missingRequiredGaugeStatus = getMissingRequiredGaugesFromError(err);
+    await persistGaugeScopeStatus(scopeDefinition, {
+      lastAttemptTimeMs: failedTimeMs,
+      lastErrorTimeMs: failedTimeMs,
+      lastError,
+      ...missingRequiredGaugeStatus,
+    });
+
+    return {
+      gauges: {},
+      status: {
+        scopeId: scopeDefinition.scopeId,
+        blockchainId: scopeDefinition.blockchainId,
+        source: scopeDefinition.source,
+        cacheKey,
+        cacheStatus: 'failed',
+        isStale: true,
+        generatedTimeMs: null,
+        cachedAt: null,
+        staleAt: null,
+        expireAt: null,
+        gaugeCount: 0,
+        ...missingRequiredGaugeStatus,
+        buildDurationMs: null,
+        lastAttemptTimeMs: failedTimeMs,
+        lastSuccessTimeMs: null,
+        lastErrorTimeMs: failedTimeMs,
+        lastError,
+      },
+    };
+  }
+};
+
+const getGaugeBuildContext = async () => {
   const chainsToQuery = SIDECHAINS_WITH_FACTORY_GAUGES;
   const blockchainIds = [
     'ethereum',
@@ -220,6 +459,27 @@ const getAllGauges = fn(async () => {
     [allCoins.crv.coingeckoId]: crvPrice,
   } = await getAssetsPrices([allCoins.crv.coingeckoId]);
 
+  return {
+    allPools,
+    allLendingVaults,
+    requireableExternalGauges: getRequireableExternalGauges(externalIncompleteGaugeList),
+    getPoolByLpTokenAddress,
+    getPoolByAddress,
+    getLendingVaultByLpTokenAddress,
+    web3Data,
+    crvPrice,
+  };
+};
+
+const buildEthereumGaugeScope = async ({
+  allPools,
+  allLendingVaults,
+  getPoolByLpTokenAddress,
+  getPoolByAddress,
+  getLendingVaultByLpTokenAddress,
+  web3Data,
+  crvPrice,
+}) => {
   /**
    * Step 1: Retrieve mainnet gauges that are in the gauge registry (dao vote has passed)
    */
@@ -646,246 +906,270 @@ const getAllGauges = fn(async () => {
     }];
   }).filter((o) => o !== null));
 
+  return {
+    ...nonVotedGaugesEthereumData,
+    ...mainGaugesEthereum,
+  };
+};
+
+const buildSidechainFactoryGaugeScope = async ({
+  crvPrice,
+  getPoolByLpTokenAddress,
+  getLendingVaultByLpTokenAddress,
+}, blockchainId) => {
   /**
-   * Step 3: Retrieve sidechain factory gauges
+   * Retrieve sidechain factory gauges.
    *
    * NOTE: There are no lending vaults on sidechains yet. Will need to add support
    * for sidechain lending vaults to getFactoGauges when necessary.
    */
-  const factoGauges = await sequentialPromiseMap(blockchainIds, (blockchainIdsChunk) => (
-    Promise.all(blockchainIdsChunk.map((blockchainId) => (
-      getFactoGaugesFn.straightCall({ blockchainId }).then(({ gauges }) => (
-        gauges.map((gaugeData) => ({
-          ...gaugeData,
+  const { gauges } = await getFactoGaugesFn.straightCall({ blockchainId });
+  const blockchainFactoGauges = gauges.map((gaugeData) => ({
+    ...gaugeData,
+    blockchainId,
+  }));
+
+  return arrayToHashmap(blockchainFactoGauges
+    .filter(({ gauge }) => (
+      !NON_STANDARD_OUTDATED_GAUGES.includes(`${blockchainId}-${lc(gauge)}`)
+    ))
+    .map(({
+      gauge,
+      rootGauge,
+      gauge_data: {
+        gauge_relative_weight,
+        gauge_future_relative_weight,
+        get_gauge_weight,
+        inflation_rate,
+        working_supply,
+      },
+      swap,
+      swap_token,
+      type,
+      lpTokenPrice,
+      hasCrv,
+      areCrvRewardsStuckInBridge,
+      rewardsNeedNudging,
+      isKilled,
+    }) => {
+      const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
+      const lendingVault = getLendingVaultByLpTokenAddress(swap_token, blockchainId);
+      if (!pool && !lendingVault) {
+        if (swap_token !== ZERO_ADDRESS) {
+          throw new Error(`Couldn’t match this LP token address with any Curve pool or lending vault address: ${swap_token}`);
+        }
+      }
+
+      const isPool = !!pool;
+      const name = isPool ? getPoolName(pool) : getLendingVaultName(lendingVault);
+      const shortName = isPool ? getPoolShortName(pool) : getLendingVaultShortName(lendingVault);
+
+      const isSupersededByOtherGauge = blockchainFactoGauges.some((factoGauge) => (
+        factoGauge.gauge !== gauge &&
+        factoGauge.blockchainId === blockchainId &&
+        factoGauge.swap === swap &&
+        !factoGauge.isKilled &&
+        factoGauge.hasCrv &&
+        (isKilled || !hasCrv)
+      ));
+      if (isSupersededByOtherGauge) return null; // Ignore this gauge, a preferred one exists
+
+      const gaugeCrvBaseApy = (
+        !isKilled ? (
+          (inflation_rate / 1e18) * 1 * 31536000 / (working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
+        ) : undefined
+      );
+
+      return [
+        name, {
+          isPool,
+          name,
+          shortName,
+          gauge: lc(gauge),
+          rootGauge: lc(rootGauge),
+          side_chain: true,
+          gauge_data: {
+            inflation_rate,
+            working_supply,
+          },
+          gauge_controller: {
+            gauge_relative_weight,
+            gauge_future_relative_weight,
+            get_gauge_weight,
+            inflation_rate,
+          },
+          hasNoCrv: !hasCrv,
+          is_killed: isKilled,
+          lpTokenPrice,
+          gaugeCrvApy: (
+            !isKilled ?
+              [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)] :
+              undefined
+          ),
+          gaugeStatus: {
+            areCrvRewardsStuckInBridge,
+            rewardsNeedNudging,
+          },
           blockchainId,
-        }))
-      ))
-    )))
-  ), 8);
 
-  /**
-   * Step 4: Retrieve gauges from lite deployments that have CRV emissions
-   */
-  const liteDeploymentsGauges = await sequentialPromiseFlatMap(LITE_SIDECHAINS_WITH_CRV_EMISSIONS, async (chainId) => {
-    const chainGauges = await Request.get(`https://api-core.curve.finance/v1/getPools/all/${chainId}`, undefined, {
-      dispatcher: httpsAgentWithoutStrictSsl,
-    })
-      .then((response) => response.json())
-      .then(({ data: { poolData } }) => (
-        poolData.filter(({ gaugeAddress }) => !!gaugeAddress).map((pool) => {
-          const name = getPoolName(pool);
-          const shortName = getPoolShortName(pool);
-
-          return {
-            isPool: true,
-            name,
-            shortName,
-            gauge: lc(pool.gaugeAddress),
-            rootGauge: lc(pool.rootGaugeAddress),
-            side_chain: true,
-            gauge_data: {
-              inflation_rate: pool.gaugeData.inflationRate,
-              working_supply: pool.gaugeData.workingSupply,
-            },
-            gauge_controller: {
-              gauge_relative_weight: pool.gaugeData.gaugeRelativeWeight,
-              gauge_future_relative_weight: pool.gaugeData.gaugeFutureRelativeWeight,
-              get_gauge_weight: pool.gaugeData.getGaugeWeight,
-              inflation_rate: pool.gaugeData.inflationRate,
-            },
-            hasNoCrv: !pool.gaugeHasCrv,
-            is_killed: pool.gaugeIsKilled,
-            lpTokenPrice: pool.lpTokenPrice,
-            gaugeCrvApy: pool.gaugeCrvApy,
-            gaugeStatus: {
-              areCrvRewardsStuckInBridge: false, // Hardcoded to false for lite deployments
-              rewardsNeedNudging: false, // Hardcoded to false for lite deployments
-            },
-            blockchainId: pool.blockchainId,
+          ...(isPool ? {
+            // Props for pools only
             poolUrls: pool.poolUrls,
-            swap: lc(pool.address),
-            swap_token: lc(pool.lpTokenAddress),
-            type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
+            swap: lc(swap),
+            swap_token: lc(swap_token),
+            type,
             factory: true,
 
             // Props for lending vaults only
             lendingVaultAddress: undefined,
             lendingVaultUrls: undefined,
-          };
-        })
-      ))
-      .catch((err) => {
-        console.log('Error:')
-        console.log(err)
+          } : {
+            // Props for pools only
+            poolUrls: undefined,
+            swap: undefined,
+            swap_token: undefined,
+            type: undefined,
+            factory: undefined,
 
-        return [];
-      });
+            // Props for lending vaults only
+            lendingVaultAddress: lendingVault.address,
+            lendingVaultUrls: lendingVault.lendingVaultUrls,
+          }),
+        },
+      ];
+    }).filter((o) => o !== null));
+};
 
-    return chainGauges;
-  }, 1);
+const buildLiteDeploymentGaugeScope = async (chainId) => {
+  const chainGauges = await Request.get(`https://api-core.curve.finance/v1/getPools/all/${chainId}`, undefined, {
+    dispatcher: httpsAgentWithoutStrictSsl,
+  })
+    .then((response) => response.json())
+    .then(({ data: { poolData } }) => (
+      poolData.filter(({ gaugeAddress }) => !!gaugeAddress).map((pool) => {
+        const name = getPoolName(pool);
+        const shortName = getPoolShortName(pool);
 
-  const gauges = {
-    ...nonVotedGaugesEthereumData,
-    ...mainGaugesEthereum,
-    ...arrayToHashmap(flattenArray(factoGauges.map((blockchainFactoGauges) => (
-      blockchainFactoGauges
-        .filter(({ gauge, blockchainId }) => (
-          !NON_STANDARD_OUTDATED_GAUGES.includes(`${blockchainId}-${lc(gauge)}`)
-        ))
-        .map(({
-          blockchainId,
-          gauge,
-          rootGauge,
+        return {
+          isPool: true,
+          name,
+          shortName,
+          gauge: lc(pool.gaugeAddress),
+          rootGauge: lc(pool.rootGaugeAddress),
+          side_chain: true,
           gauge_data: {
-            gauge_relative_weight,
-            gauge_future_relative_weight,
-            get_gauge_weight,
-            inflation_rate,
-            working_supply,
+            inflation_rate: pool.gaugeData.inflationRate,
+            working_supply: pool.gaugeData.workingSupply,
           },
-          swap,
-          swap_token,
-          type,
-          lpTokenPrice,
-          hasCrv,
-          areCrvRewardsStuckInBridge,
-          rewardsNeedNudging,
-          isKilled,
-        }) => {
-          const pool = getPoolByLpTokenAddress(swap_token, blockchainId);
-          const lendingVault = getLendingVaultByLpTokenAddress(swap_token, blockchainId);
-          if (!pool && !lendingVault) {
-            if (swap_token !== ZERO_ADDRESS) {
-              throw new Error(`Couldn’t match this LP token address with any Curve pool or lending vault address: ${swap_token}`);
-            }
-          }
+          gauge_controller: {
+            gauge_relative_weight: pool.gaugeData.gaugeRelativeWeight,
+            gauge_future_relative_weight: pool.gaugeData.gaugeFutureRelativeWeight,
+            get_gauge_weight: pool.gaugeData.getGaugeWeight,
+            inflation_rate: pool.gaugeData.inflationRate,
+          },
+          hasNoCrv: !pool.gaugeHasCrv,
+          is_killed: pool.gaugeIsKilled,
+          lpTokenPrice: pool.lpTokenPrice,
+          gaugeCrvApy: pool.gaugeCrvApy,
+          gaugeStatus: {
+            areCrvRewardsStuckInBridge: false, // Hardcoded to false for lite deployments
+            rewardsNeedNudging: false, // Hardcoded to false for lite deployments
+          },
+          blockchainId: pool.blockchainId,
+          poolUrls: pool.poolUrls,
+          swap: lc(pool.address),
+          swap_token: lc(pool.lpTokenAddress),
+          type: ((pool.registryId === 'crypto' || pool.registryId === 'factory-crypto') ? 'crypto' : 'stable'),
+          factory: true,
 
-          const isPool = !!pool;
-          const name = isPool ? getPoolName(pool) : getLendingVaultName(lendingVault);
-          const shortName = isPool ? getPoolShortName(pool) : getLendingVaultShortName(lendingVault);
+          // Props for lending vaults only
+          lendingVaultAddress: undefined,
+          lendingVaultUrls: undefined,
+        };
+      })
+    ));
 
-          const isSupersededByOtherGauge = blockchainFactoGauges.some((factoGauge) => (
-            factoGauge.gauge !== gauge &&
-            factoGauge.blockchainId === blockchainId &&
-            factoGauge.swap === swap &&
-            !factoGauge.isKilled &&
-            factoGauge.hasCrv &&
-            (isKilled || !hasCrv)
-          ));
-          if (isSupersededByOtherGauge) return null; // Ignore this gauge, a preferred one exists
+  return arrayToHashmap(chainGauges.map((gauge) => [gauge.name, gauge]));
+};
 
-          const gaugeCrvBaseApy = (
-            !isKilled ? (
-              (inflation_rate / 1e18) * 1 * 31536000 / (working_supply / 1e18) * 0.4 * crvPrice / lpTokenPrice * 100
-            ) : undefined
-          );
+const getGaugeScopeDefinitions = () => [
+  {
+    scopeId: 'ethereum',
+    blockchainId: 'ethereum',
+    source: 'ethereum',
+    build: buildEthereumGaugeScope,
+  },
+  ...SIDECHAINS_WITH_FACTORY_GAUGES.map((blockchainId) => ({
+    scopeId: `factory-${blockchainId}`,
+    blockchainId,
+    source: 'factory',
+    build: (context) => buildSidechainFactoryGaugeScope(context, blockchainId),
+  })),
+  ...LITE_SIDECHAINS_WITH_CRV_EMISSIONS.map((blockchainId) => ({
+    scopeId: `lite-${blockchainId}`,
+    blockchainId,
+    source: 'lite',
+    build: () => buildLiteDeploymentGaugeScope(blockchainId),
+  })),
+];
 
-          return [
-            name, {
-              isPool,
-              name,
-              shortName,
-              gauge: lc(gauge),
-              rootGauge: lc(rootGauge),
-              side_chain: true,
-              gauge_data: {
-                inflation_rate,
-                working_supply,
-              },
-              gauge_controller: {
-                gauge_relative_weight,
-                gauge_future_relative_weight,
-                get_gauge_weight,
-                inflation_rate,
-              },
-              hasNoCrv: !hasCrv,
-              is_killed: isKilled,
-              lpTokenPrice,
-              gaugeCrvApy: (
-                !isKilled ?
-                  [gaugeCrvBaseApy, (gaugeCrvBaseApy * 2.5)] :
-                  undefined
-              ),
-              ...(blockchainId !== 'ethereum' ? {
-                gaugeStatus: {
-                  areCrvRewardsStuckInBridge,
-                  rewardsNeedNudging,
-                },
-              } : {}),
-              blockchainId,
-
-              ...(isPool ? {
-                // Props for pools only
-                poolUrls: pool.poolUrls,
-                swap: lc(swap),
-                swap_token: lc(swap_token),
-                type,
-                factory: true,
-
-                // Props for lending vaults only
-                lendingVaultAddress: undefined,
-                lendingVaultUrls: undefined,
-              } : {
-                // Props for pools only
-                poolUrls: undefined,
-                swap: undefined,
-                swap_token: undefined,
-                type: undefined,
-                factory: undefined,
-
-                // Props for lending vaults only
-                lendingVaultAddress: lendingVault.address,
-                lendingVaultUrls: lendingVault.lendingVaultUrls,
-              }),
-            },
-          ];
-        }).filter((o) => o !== null)
-    )))),
-    ...arrayToHashmap(liteDeploymentsGauges.map((gauge) => [gauge.name, gauge])),
+const getAllGaugeScopes = async () => {
+  let contextPromise = null;
+  const getContext = () => {
+    if (contextPromise === null) contextPromise = getGaugeBuildContext();
+    return contextPromise;
   };
 
-  /**
-  * Check if the list of gauges returned by this endpoint contains all gauges retrieved from curve-prices:
-  * curve-prices doesn't return as many gauges as the present endpoint does, but making sure the present
-  * endpoint returns *at least* all gauges from curve-prices is a good sanity check in case, for an unknown
-  * reason, anything was to miss.
-  */
-  const builtGauges = Object.values(gauges);
-  const allGaugesLcAddresses = builtGauges.map(({ gauge }) => lc(gauge));
+  const scopeResults = await sequentialPromiseMap(getGaugeScopeDefinitions(), (scopeDefinitionsChunk) => (
+    Promise.all(scopeDefinitionsChunk.map((scopeDefinition) => (
+      getCachedGaugeScope(
+        scopeDefinition,
+        async () => {
+          const context = await getContext();
+          return scopeDefinition.build(context);
+        },
+        async (gauges) => {
+          const context = await getContext();
+          return getScopeMissingRequiredGauges(
+            scopeDefinition,
+            context.requireableExternalGauges,
+            Object.values(gauges)
+          );
+        }
+      )
+    )))
+  ), GAUGE_SCOPE_CONCURRENCY);
 
-  // Gauges curve-prices reports that we must return at least all of, minus the
-  // ones we deliberately ignore. The missing-gauge matching accounts for cross-chain
-  // root gauges (which curve-prices lists by root address, but we index by child
-  // address with the root stored in `rootGauge`); see getMissingRequiredGauges.
-  const requireableExternalGauges = externalIncompleteGaugeList.filter((gaugeData) => {
-    const gaugeAddress = gaugeData.effective_address ?? gaugeData.address;
-    return !GAUGES_ADDRESSES_TO_IGNORE.some((gaugeAddress2) => lc(gaugeAddress2) === lc(gaugeAddress));
-  });
-  const missingGaugesAddresses = getMissingRequiredGauges(requireableExternalGauges, builtGauges);
-  if (missingGaugesAddresses.length > 0) {
-    console.log('Gauges are missing from the tentatively returned value from getAllGauges: throwing instead to serve old accurate data');
-    console.log('Missing gauges addresses ↓');
-    console.log(missingGaugesAddresses);
-    throw new Error('Gauges sanity check 1 error');
-  }
+  return {
+    scopeResults,
+    gauges: Object.assign({}, ...scopeResults.map(({ gauges }) => gauges)),
+  };
+};
 
-  const passesSanityCheck2 = (
-    allGaugesLcAddresses.length >= 1704 // Ugly hard limit to try to tame down that issue for good for now
-  );
-  if (!passesSanityCheck2) {
-    console.log('Gauges are too few to be complete from the tentatively returned value from getAllGauges: throwing instead to serve old accurate data')
-    console.log('Number of gauges ↓');
-    console.log(allGaugesLcAddresses.length);
-    throw new Error('Gauges sanity check 2 error');
-  }
+const getAllGaugeScopeStatuses = async () => {
+  const { scopeResults } = await getAllGaugeScopes();
+  const scopes = scopeResults.map(({ status }) => status);
 
+  return {
+    scopes,
+    staleScopes: scopes.filter(({ isStale }) => isStale).map(({ scopeId }) => scopeId),
+    failedScopes: scopes.filter(({ cacheStatus }) => cacheStatus === 'failed').map(({ scopeId }) => scopeId),
+    scopesWithMissingRequiredGauges: scopes
+      .filter(({ missingRequiredGaugeCount }) => missingRequiredGaugeCount > 0)
+      .map(({ scopeId }) => scopeId),
+  };
+};
+
+const getAllGauges = fn(async () => {
+  const { gauges } = await getAllGaugeScopes();
   return gauges;
 }, {
-  maxAge: 5 * 60,
-  cacheKey: 'getAllGauges',
+  maxAgeCDN: 30,
+  cacheKeyCDN: 'getAllGauges',
 });
 
 export default getAllGauges;
 export {
+  getAllGaugeScopeStatuses,
   SIDECHAINS_WITH_FACTORY_GAUGES,
 };
