@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "jest ./utils/*.test.js",
+    "test": "jest utils/.*\\.test\\.js",
     "test:Number": "jest ./utils/Number.test.js",
     "test:Function": "jest ./utils/Function.test.js"
   },
