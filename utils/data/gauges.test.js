@@ -81,6 +81,13 @@ describe('getMissingRequiredGauges()', () => {
     ]);
   });
 
+  test('only an explicit boolean true kill flag exempts an emitting gauge', () => {
+    const required = [{ address: '0x9999999999999999999999999999999999999999', prev_prev_epoch_emissions: 4130, is_killed: 'false' }];
+    expect(getMissingRequiredGauges(required, builtSetWithChild)).toEqual([
+      '0x9999999999999999999999999999999999999999',
+    ]);
+  });
+
   // Regression: a cross-chain Avalanche root gauge (0xE40D…438A) gained an emission
   // signal after a 2026-05-27 vote. curve-prices listed it by its root address while
   // getAllGauges indexed it by its Avalanche child gauge (rootGauge=root). The old

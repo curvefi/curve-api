@@ -58,7 +58,7 @@ const getMissingRequiredGauges = (requiredExternalGauges, builtGauges) => {
   }
 
   return requiredExternalGauges
-    .filter((gaugeData) => !gaugeData.is_killed && hasGaugeEmissionSignal(gaugeData))
+    .filter((gaugeData) => gaugeData.is_killed !== true && hasGaugeEmissionSignal(gaugeData))
     .map((gaugeData) => lc(gaugeData.effective_address ?? gaugeData.address))
     .filter((address) => address && !builtAddresses.has(address));
 };
