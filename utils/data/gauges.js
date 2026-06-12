@@ -45,6 +45,10 @@ const hasGaugeEmissionSignal = ({
  * *child* (sidechain) address and only stores the root in `rootGauge`. Without
  * this, every root gauge that gains an emission signal would be reported as
  * missing, failing the sanity check and freezing the whole endpoint on stale data.
+ *
+ * Killed gauges are never required: curve-prices keeps reporting their recent
+ * emissions for an epoch or two after they're killed, but getAllGauges legitimately
+ * drops killed/superseded gauges, so requiring them would fail the sanity check.
  */
 const getMissingRequiredGauges = (requiredExternalGauges, builtGauges) => {
   const builtAddresses = new Set();
@@ -54,7 +58,7 @@ const getMissingRequiredGauges = (requiredExternalGauges, builtGauges) => {
   }
 
   return requiredExternalGauges
-    .filter(hasGaugeEmissionSignal)
+    .filter((gaugeData) => gaugeData.is_killed !== true && hasGaugeEmissionSignal(gaugeData))
     .map((gaugeData) => lc(gaugeData.effective_address ?? gaugeData.address))
     .filter((address) => address && !builtAddresses.has(address));
 };
