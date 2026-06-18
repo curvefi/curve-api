@@ -153,6 +153,10 @@ const NON_STANDARD_OUTDATED_GAUGES = [
   'celo-0x4969e38b8d37fc42a1897295Ea6d7D0b55944497',
 ].map(lc);
 
+const NON_LP_GAUGE_TYPE_NAMES = [
+  'fundraising',
+];
+
 const GAUGE_CONTROLLER_ADDRESS = '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB';
 
 const getPoolName = (pool) => {
@@ -185,6 +189,13 @@ const getLendingVaultShortName = (lendingVault) => {
   const prefix = lendingVault.blockchainId === 'ethereum' ? '' : `${configs[lendingVault.blockchainId].shortId}-`;
   return `${maxChars(`${prefix}lend-${lendingVault.assets.borrowed.symbol}(${lendingVault.assets.collateral.symbol})`, 22)} (${lendingVault.address.slice(0, 6)}…)`; // Max 32 chars long
 };
+
+const getNonLpGaugeName = ({ address, gaugeTypeName }) => `${gaugeTypeName} Gauge (${address.slice(0, 6)}…${address.slice(-4)})`;
+const getNonLpGaugeShortName = ({ address, gaugeTypeName }) => `${maxChars(gaugeTypeName, 20)} (${address.slice(0, 6)}…)`;
+const isNonLpGauge = ({ lpTokenAddress, gaugeTypeName }) => (
+  lc(lpTokenAddress) === ZERO_ADDRESS &&
+  NON_LP_GAUGE_TYPE_NAMES.includes(lc(gaugeTypeName))
+);
 
 const getGaugeScopeCacheKey = ({ scopeId }) => `${GAUGE_SCOPE_CACHE_PREFIX}-${scopeId}`;
 const getGaugeScopeStatusCacheKey = ({ scopeId }) => `${GAUGE_SCOPE_STATUS_CACHE_PREFIX}-${scopeId}`;
@@ -575,10 +586,17 @@ const buildEthereumGaugeScope = async ({
       methodName: 'get_gauge_weight',
       params: [gaugeAddress],
       metaData: { gaugeAddress, type: 'getGaugeWeight' },
+    }, {
+      address: GAUGE_CONTROLLER_ADDRESS,
+      abi: GAUGE_CONTROLLER_ABI,
+      web3Data,
+      methodName: 'gauge_types',
+      params: [gaugeAddress],
+      metaData: { gaugeAddress, type: 'gaugeType' },
     }];
   })));
 
-  const gaugesData = gaugeList.map((gaugeAddress) => ({
+  const intermediateGaugesData = gaugeList.map((gaugeAddress) => ({
     address: gaugeAddress,
     isKilled: (
       gaugesKilledInfo.find(({ metaData }) => lc(metaData.gaugeAddress) === lc(gaugeAddress)).data
@@ -587,10 +605,52 @@ const buildEthereumGaugeScope = async ({
       type,
       data,
     ])),
-  })).map((gaugeData) => {
+  }));
+
+  const gaugeTypes = Array.from(new Set(intermediateGaugesData
+    .map(({ gaugeType }) => gaugeType)
+    .filter((gaugeType) => Number(gaugeType) >= 0)
+    .map((gaugeType) => String(gaugeType))));
+
+  const gaugeTypeNames = arrayToHashmap((await multiCall(gaugeTypes.map((gaugeType) => ({
+    address: GAUGE_CONTROLLER_ADDRESS,
+    abi: GAUGE_CONTROLLER_ABI,
+    web3Data,
+    methodName: 'gauge_type_names',
+    params: [gaugeType],
+    metaData: { gaugeType },
+  })))).map(({ data, metaData: { gaugeType } }) => [
+    String(gaugeType),
+    data,
+  ]));
+
+  const gaugesData = intermediateGaugesData.map((gaugeData) => {
+    const gaugeTypeName = gaugeTypeNames[String(gaugeData.gaugeType)];
     const pool = getPoolByLpTokenAddress(gaugeData.lpTokenAddress, 'ethereum');
     const lendingVault = getLendingVaultByLpTokenAddress(gaugeData.lpTokenAddress, 'ethereum');
     if (!pool && !lendingVault) {
+      if (isNonLpGauge({ lpTokenAddress: gaugeData.lpTokenAddress, gaugeTypeName })) {
+        const name = getNonLpGaugeName({ address: gaugeData.address, gaugeTypeName });
+
+        return {
+          ...gaugeData,
+          isPool: false,
+          name,
+          shortName: getNonLpGaugeShortName({ address: gaugeData.address, gaugeTypeName }),
+          poolAddress: ZERO_ADDRESS,
+          virtualPrice: 0,
+          factory: false,
+          type: lc(gaugeTypeName),
+          lendingVaultAddress: undefined,
+          lpTokenAddress: ZERO_ADDRESS,
+          workingSupply: '0',
+          totalSupply: '0',
+          lpTokenPrice: undefined,
+          gaugeCrvApy: undefined,
+          gaugeFutureCrvApy: undefined,
+        };
+      }
+
       if (gaugeData.lpTokenAddress !== ZERO_ADDRESS) {
         throw new Error(`Couldn’t match this LP token address with any Curve pool or lending vault address: ${gaugeData.lpTokenAddress} (gauge address: ${gaugeData.address})`)
       } else {
@@ -678,6 +738,7 @@ const buildEthereumGaugeScope = async ({
     lpTokenPrice,
     gaugeCrvApy,
     gaugeFutureCrvApy,
+    gaugeType,
 
     // Props for pools only
     poolAddress,
@@ -693,6 +754,7 @@ const buildEthereumGaugeScope = async ({
     name,
     shortName,
     gauge: lc(address),
+    gaugeType,
     gauge_data: {
       inflation_rate: inflationRate,
       working_supply: workingSupply,
@@ -727,15 +789,15 @@ const buildEthereumGaugeScope = async ({
     } : {
       // Props for pools only
       poolUrls: undefined,
-      swap: undefined,
-      swap_token: undefined,
+      swap: poolAddress ? lc(poolAddress) : undefined,
+      swap_token: poolAddress ? lc(lpTokenAddress) : undefined,
       swap_data: undefined,
-      type: undefined,
-      factory: undefined,
+      type: poolAddress ? type : undefined,
+      factory: poolAddress ? factory : undefined,
 
       // Props for lending vaults only
       lendingVaultAddress,
-      lendingVaultUrls: getLendingVaultByLpTokenAddress(lpTokenAddress, 'ethereum').lendingVaultUrls,
+      lendingVaultUrls: lendingVaultAddress ? getLendingVaultByLpTokenAddress(lpTokenAddress, 'ethereum').lendingVaultUrls : undefined,
     }),
   }]));
 
