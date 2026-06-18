@@ -93,7 +93,7 @@ export default fn(async ({ gauges }) => {
     delete gauges[p]
   })
 
-  const mainPoolsGauges = Array.from(Object.values(gauges)).filter(({ gauge, side_chain, factory }) => (!side_chain && !factory && gauge));
+  const mainPoolsGauges = Array.from(Object.values(gauges)).filter(({ gauge, side_chain, factory, isPool }) => (isPool && !side_chain && !factory && gauge));
 
   const mainPoolsGaugesAddressesAndVersion = mainPoolsGauges.map(({ gauge, name }, i) => ({
     address: gauge,
