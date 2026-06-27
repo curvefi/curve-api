@@ -25,7 +25,7 @@ const CoinAddressCoingeckoIdMap = {
     '0x26ea744e5b887e5205727f55dfbe8685e3b21951': 'usd-coin', // yUSDC
     '0x04bc0ab673d88ae9dbc9da2380cb6b79c4bca9ae': 'binance-usd', // yBUSD
     '0x16de59092dae5ccf4a1e6439d611fd0653f0bd01': 'dai', // yDAI
-    '0xdb25f211ab05b1c97d595516f45794528a807ad8': 'tether-eurt', // EURS patch
+    '0xdb25f211ab05b1c97d595516f45794528a807ad8': 'stasis-eurs', // EURS patch
     '0x8e870d67f660d95d5be530380d0ec0bd388289e1': 'paxos-standard', // USDP
     '0xd6ad7a6750a7593e092a9b218d66c0a814a3436e': 'usd-coin', // ycUSDC
     '0x8cb24ed2e4f7e2065f4eb2be5f6b0064b1919850': 'south-african-tether', // ZARP
