@@ -106,7 +106,6 @@ const CURVE_PRICES_AVAILABLE_CHAIN_IDS = [
   'arbitrum',
   'xdai',
   'optimism',
-  'fantom',
   'sonic',
   'hyperliquid',
 ];

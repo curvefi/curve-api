@@ -8,7 +8,6 @@ const PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS = [
   'arbitrum',
   'base',
   'optimism',
-  'fantom',
   'xdai',
   'fraxtal',
   'sonic',
