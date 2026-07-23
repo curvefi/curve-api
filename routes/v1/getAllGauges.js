@@ -42,7 +42,12 @@ import CACHE_SETTINGS from '#root/constants/CacheSettings.js';
 const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function", "name": "bridger", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }];
 const GAUGE_IS_ROOT_GAUGE_2_ABI = [{ "stateMutability": "view", "type": "function", "name": "emissions", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 2778 }];
 const LENDING_VAULT_FACTORY_GAUGE_FOR_VAULT_ABI = [{ "stateMutability": "view", "type": "function", "name": "gauge_for_vault", "inputs": [{ "name": "_vault", "type": "address" }], "outputs": [{ "name": "", "type": "address" }] }];
+const GAUGE_FACTORY_GET_GAUGE_FROM_LP_TOKEN_ABI = [{ "stateMutability": "view", "type": "function", "name": "get_gauge_from_lp_token", "inputs": [{ "name": "arg0", "type": "address" }], "outputs": [{ "name": "", "type": "address" }] }];
 /* eslint-enable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
+
+// The oneway-v2 lending factory doesn’t deploy gauges itself; they’re deployed by
+// this separate gauge factory, which exposes a vault -> gauge lookup.
+const ETHEREUM_LENDING_GAUGE_FACTORY_V2_ADDRESS = '0x64e1a69732fAC63F6790b3d8a34C5D713cC623E6';
 
 const SIDECHAINS_WITH_FACTORY_GAUGES = [
   'fantom',
@@ -827,14 +832,23 @@ const buildEthereumGaugeScope = async ({
   })));
 
   const lendingEthereumFactoAddress = configs.ethereum.lendingVaultRegistries.oneway;
-  const allGaugesEthereumLendingFacto = await multiCall(allLendingVaults.filter(({ blockchainId }) => blockchainId === 'ethereum').map(({ address }) => ({
-    address: lendingEthereumFactoAddress,
-    abi: LENDING_VAULT_FACTORY_GAUGE_FOR_VAULT_ABI,
-    methodName: 'gauge_for_vault',
-    params: [address],
-    metaData: { poolAddress: address },
-    web3Data,
-  })));
+  const allGaugesEthereumLendingFacto = await multiCall(allLendingVaults.filter(({ blockchainId }) => blockchainId === 'ethereum').map(({ address, registryId }) => (
+    registryId === 'oneway-v2' ? {
+      address: ETHEREUM_LENDING_GAUGE_FACTORY_V2_ADDRESS,
+      abi: GAUGE_FACTORY_GET_GAUGE_FROM_LP_TOKEN_ABI,
+      methodName: 'get_gauge_from_lp_token',
+      params: [address],
+      metaData: { poolAddress: address },
+      web3Data,
+    } : {
+      address: lendingEthereumFactoAddress,
+      abi: LENDING_VAULT_FACTORY_GAUGE_FOR_VAULT_ABI,
+      methodName: 'gauge_for_vault',
+      params: [address],
+      metaData: { poolAddress: address },
+      web3Data,
+    }
+  )));
 
   const nonVotedGaugesEthereum = [
     ...allGaugesEthereumMetaregistry,

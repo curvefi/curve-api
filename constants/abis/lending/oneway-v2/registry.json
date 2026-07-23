@@ -1,0 +1,61 @@
+[
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "market_count",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "markets",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "components": [
+          {
+            "name": "vault",
+            "type": "address"
+          },
+          {
+            "name": "controller",
+            "type": "address"
+          },
+          {
+            "name": "amm",
+            "type": "address"
+          },
+          {
+            "name": "collateral_token",
+            "type": "address"
+          },
+          {
+            "name": "borrowed_token",
+            "type": "address"
+          },
+          {
+            "name": "price_oracle",
+            "type": "address"
+          },
+          {
+            "name": "monetary_policy",
+            "type": "address"
+          }
+        ]
+      }
+    ]
+  }
+]

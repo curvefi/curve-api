@@ -87,9 +87,11 @@ const configs = {
     lendingVaultsBaseUrl: 'https://curve.finance/lend/#/ethereum/markets/',
     lendingVaultRegistries: {
       oneway: '0xea6876dde9e3467564acbee1ed5bac88783205e0',
+      'oneway-v2': '0x8f6B56EC5ddF1F2691a1059f1D3cd97Ac9EaB0bd',
     },
     lendingVaultRegistriesUrlFragments: {
       oneway: 'one-way-market', // e.g. https://curve.finance/lend/#/ethereum/markets/one-way-market-3/vault/deposit
+      'oneway-v2': 'one-way-market-v2',
     },
   },
   polygon: {
@@ -393,9 +395,11 @@ const configs = {
     lendingVaultsBaseUrl: 'https://curve.finance/lend/#/optimism/markets/',
     lendingVaultRegistries: {
       oneway: '0x5EA8f3D674C70b020586933A0a5b250734798BeF',
+      'oneway-v2': '0x5F94073E3f51c1FFf92ffc6b4B06b7Af193B3640',
     },
     lendingVaultRegistriesUrlFragments: {
       oneway: 'one-way-market', // e.g. https://curve.finance/lend/#/ethereum/markets/one-way-market-3/vault/deposit
+      'oneway-v2': 'one-way-market-v2',
     },
   },
   xdai: {

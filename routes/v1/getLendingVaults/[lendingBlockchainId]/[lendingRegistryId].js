@@ -23,6 +23,7 @@ import onewayVaultAbi from '#root/constants/abis/lending/oneway/vault.json' asse
 import vaultControllerAbi from '#root/constants/abis/lending/controller.json' assert { type: 'json' };
 import vaultAmmAbi from '#root/constants/abis/lending/amm.json' assert { type: 'json' };
 import onewayRegistryAbi from '#root/constants/abis/lending/oneway/registry.json' assert { type: 'json' };
+import onewayV2RegistryAbi from '#root/constants/abis/lending/oneway-v2/registry.json' assert { type: 'json' };
 import ERC20_ABI from '#root/constants/abis/erc20.json' assert { type: 'json' };
 import { flattenArray, sum, uniq } from '#root/utils/Array.js';
 import getTokensData from '#root/utils/data/tokens-data.js';
@@ -119,7 +120,8 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
 
   const REGISTRY_ABI = (
     lendingRegistryId === 'twoway' ? undefined :
-      onewayRegistryAbi
+      lendingRegistryId === 'oneway-v2' ? onewayV2RegistryAbi :
+        onewayRegistryAbi
   );
 
   const web3 = new Web3(rpcUrl);
@@ -140,14 +142,29 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
 
   const marketIds = Array(Number(marketCount)).fill(0).map((_, i) => i);
 
-  const vaultAddresses = await multiCall(marketIds.map((id) => ({
-    address: registryAddress,
-    abi: REGISTRY_ABI,
-    methodName: 'vaults',
-    params: [id],
-    metaData: { vaultId: id },
-    ...networkSettingsParam,
-  })));
+  // The oneway-v2 registry doesn’t expose a `vaults(i)` getter; vault addresses are
+  // retrieved from its `markets(i)` struct instead.
+  const vaultAddresses = (
+    lendingRegistryId === 'oneway-v2' ? (
+      (await multiCall(marketIds.map((id) => ({
+        address: registryAddress,
+        abi: REGISTRY_ABI,
+        methodName: 'markets',
+        params: [id],
+        metaData: { vaultId: id },
+        ...networkSettingsParam,
+      })))).map(({ data, metaData }) => ({ data: data.vault, metaData }))
+    ) : (
+      await multiCall(marketIds.map((id) => ({
+        address: registryAddress,
+        abi: REGISTRY_ABI,
+        methodName: 'vaults',
+        params: [id],
+        metaData: { vaultId: id },
+        ...networkSettingsParam,
+      })))
+    )
+  );
 
   const vaultsData = await multiCall(flattenArray(vaultAddresses.map(({ data: address, metaData: { vaultId } }) => [{
     address,
