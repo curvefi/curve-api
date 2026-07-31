@@ -84,14 +84,10 @@ const configs = {
       '0xCA7546B0b740Ad0a29cec8eC245A5E34FC639175', // Causing issues
       '0x8299E673008948Eb78539Bd4b0eA7Cf707Cf196C', // Causing issues
     ].map(lc),
-    lendingVaultsBaseUrl: 'https://curve.finance/lend/#/ethereum/markets/',
+    lendingVaultsBaseUrl: 'https://www.curve.finance/lend/ethereum/markets/',
     lendingVaultRegistries: {
       oneway: '0xea6876dde9e3467564acbee1ed5bac88783205e0',
       'oneway-v2': '0x8f6B56EC5ddF1F2691a1059f1D3cd97Ac9EaB0bd',
-    },
-    lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://curve.finance/lend/#/ethereum/markets/one-way-market-3/vault/deposit
-      'oneway-v2': 'one-way-market-v2',
     },
   },
   polygon: {
@@ -276,12 +272,9 @@ const configs = {
     ]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     graphEndpoint: undefined,
-    lendingVaultsBaseUrl: 'https://curve.finance/lend/#/arbitrum/markets/',
+    lendingVaultsBaseUrl: 'https://www.curve.finance/lend/arbitrum/markets/',
     lendingVaultRegistries: {
       oneway: '0xcaEC110C784c9DF37240a8Ce096D352A75922DeA',
-    },
-    lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://curve.finance/lend/#/arbitrum/markets/one-way-market-3/vault/deposit
     },
   },
   avalanche: {
@@ -392,14 +385,10 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
     graphEndpoint: undefined,
-    lendingVaultsBaseUrl: 'https://curve.finance/lend/#/optimism/markets/',
+    lendingVaultsBaseUrl: 'https://www.curve.finance/lend/optimism/markets/',
     lendingVaultRegistries: {
       oneway: '0x5EA8f3D674C70b020586933A0a5b250734798BeF',
       'oneway-v2': '0x5F94073E3f51c1FFf92ffc6b4B06b7Af193B3640',
-    },
-    lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://curve.finance/lend/#/ethereum/markets/one-way-market-3/vault/deposit
-      'oneway-v2': 'one-way-market-v2',
     },
   },
   xdai: {
@@ -766,12 +755,9 @@ const configs = {
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     approxBlocksPerDay: 43000, // Very approx from list of blocks on https://fraxscan.com/blocks
     graphEndpoint: undefined,
-    lendingVaultsBaseUrl: 'https://curve.finance/lend/#/fraxtal/markets/',
+    lendingVaultsBaseUrl: 'https://www.curve.finance/lend/fraxtal/markets/',
     lendingVaultRegistries: {
       oneway: '0xf3c9bdAB17B7016fBE3B77D17b1602A7db93ac66',
-    },
-    lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://curve.finance/lend/#/ethereum/markets/one-way-market-3/vault/deposit
     },
   },
   bsc: {
@@ -903,12 +889,9 @@ const configs = {
     BASE_POOL_LP_TO_GAUGE_LP_MAP: new Map([]),
     DISABLED_POOLS_ADDRESSES: [].map(lc),
     graphEndpoint: undefined,
-    lendingVaultsBaseUrl: 'https://curve.finance/lend/#/sonic/markets/',
+    lendingVaultsBaseUrl: 'https://www.curve.finance/lend/sonic/markets/',
     lendingVaultRegistries: {
       oneway: '0x30D1859DaD5A52aE03B6e259d1b48c4b12933993',
-    },
-    lendingVaultRegistriesUrlFragments: {
-      oneway: 'one-way-market', // e.g. https://curve.finance/lend/#/arbitrum/markets/one-way-market-3/vault/deposit
     },
   },
   hyperliquid: {

@@ -383,9 +383,9 @@ const getLendingVaults = async ({ lendingBlockchainId, lendingRegistryId, preven
     const name = `Borrow ${borrowedTokenData.symbol} (${collateralTokenData.symbol} collateral)`;
 
     const lendingVaultUrls = {
-      deposit: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${vaultId}/vault/deposit`,
-      withdraw: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${vaultId}/vault/withdraw`,
-      borrow: `${config.lendingVaultsBaseUrl}${config.lendingVaultRegistriesUrlFragments[lendingRegistryId]}-${vaultId}/create`,
+      deposit: `${config.lendingVaultsBaseUrl}${controllerAddress}/vault`,
+      withdraw: `${config.lendingVaultsBaseUrl}${controllerAddress}/vault`,
+      borrow: `${config.lendingVaultsBaseUrl}${controllerAddress}`,
     };
 
     const totalSuppliedUsd = pricePerShare * totalShares * assetTokenPrice;
