@@ -383,6 +383,9 @@ const configs = {
     //   ['0x1337BedC9D22ecbe766dF105c9623922A27963EC', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858'], // no gauge yet but will need to be added
     // ])
     DISABLED_POOLS_ADDRESSES: [].map(lc),
+    BROKEN_POOLS_ADDRESSES: [
+      '0xCE10ED95C69F57aE2FCe0830E0b3655dDbD31362', // Causing issues
+    ].map(lc),
     approxBlocksPerDay: 43000, // https://optimistic.etherscan.io/chart/blocks
     graphEndpoint: undefined,
     lendingVaultsBaseUrl: 'https://www.curve.finance/lend/optimism/markets/',
