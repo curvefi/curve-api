@@ -156,6 +156,7 @@ const configs = {
       '0x1197Ae7F43695Be80127365b494E8BF850f4752A', // Broken pool
       '0x40caB7C05fc1686e198C8d6d6aA4aaCF77BE8590', // Broken pool
       '0x64FFf0e27c223097c824f9d9278eFD5B55c3430e', // Broken pool
+      '0xB9f6c31943b92561927f6F23C50C2820f8871Be4', // Causing issues, scammy tokens
     ].map(lc),
     approxBlocksPerDay: 40000, // https://polygonscan.com/chart/blocks
     graphEndpoint: undefined,
