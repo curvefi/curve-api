@@ -113,6 +113,8 @@ const CURVE_PRICES_AVAILABLE_CHAIN_IDS = [
 const IGNORED_COINS = {
   polygon: [
     '0x8dacf090f8803f53ee3c44f0d7a07b9d70453c42', // spam
+    '0x3D6297B9606C8AB3bb073956c3C662087e53Fb0e', // spam
+    '0xB8ba371d0c10aa22093fbdee6E5aDCE454e95842', // spam
   ].map(lc),
   ethereum: [
     '0xc7D9c108D4E1dD1484D3e2568d7f74bfD763d356', // depegged stable, incorrect price on defillama
