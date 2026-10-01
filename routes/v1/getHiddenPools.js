@@ -70,6 +70,11 @@ const HIDDEN_POOLS_IDS = {
     'factory-v2-25', // wrong implementation
     'factory-v2-42', // broken
     'factory-stable-ng-212', // redeployed, team asked to hide it
+    'factory-twocrypto-130', // Team asked to hide
+    'factory-twocrypto-134', // Team asked to hide
+    'factory-twocrypto-135', // Team asked to hide
+    'factory-twocrypto-136', // Team asked to hide
+    'factory-twocrypto-137', // Team asked to hide
   ],
   polygon: [
     'factory-v2-0', // Test pools not meant to be useful
