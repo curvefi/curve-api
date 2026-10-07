@@ -128,6 +128,10 @@ const HIDDEN_POOLS_IDS = {
   base: [
     'factory-crypto-0',
     'factory-tricrypto-0',
+    'factory-stable-ng-743', // rate oracle is an EOA-owned upgradeable proxy (same as 744)
+    'factory-stable-ng-744', // rate oracle is an EOA-owned upgradeable proxy, test drain 2026-09-30
+    'factory-stable-ng-745', // rate oracle is an EOA-owned upgradeable proxy, pool drained 2026-10-04
+    'factory-stable-ng-746', // rate oracle is an EOA-owned upgradeable proxy, pool drained 2026-10-04
   ],
   hyperliquid: [
     'factory-stable-ng-6', // test pool, team asked to hide it
