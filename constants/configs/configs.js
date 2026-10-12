@@ -6,7 +6,6 @@ import { ZERO_ADDRESS } from '#root/utils/Web3/index.js';
 const configs = {
   ethereum: {
     poolsBaseUrlOld: 'https://classic.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/ethereum/pools/',
     nativeCurrencySymbol: 'ETH',
     chainId: 1,
     nativeCurrencyCoingeckoId: 'ethereum',
@@ -92,7 +91,6 @@ const configs = {
   },
   polygon: {
     poolsBaseUrlOld: 'https://polygon.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/polygon/pools/',
     shortId: 'poly',
     nativeCurrencySymbol: 'POL',
     chainId: 137,
@@ -163,7 +161,6 @@ const configs = {
   },
   fantom: {
     poolsBaseUrlOld: 'https://ftm.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/fantom/pools/',
     shortId: 'ftm',
     nativeCurrencySymbol: 'FTM',
     chainId: 250,
@@ -220,7 +217,6 @@ const configs = {
   },
   arbitrum: {
     poolsBaseUrlOld: 'https://arbitrum.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/arbitrum/pools/',
     shortId: 'arbi',
     nativeCurrencySymbol: 'ETH',
     chainId: 42161,
@@ -280,7 +276,6 @@ const configs = {
   },
   avalanche: {
     poolsBaseUrlOld: 'https://avax.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/avalanche/pools/',
     shortId: 'ava',
     nativeCurrencySymbol: 'AVAX',
     chainId: 43114,
@@ -337,7 +332,6 @@ const configs = {
   },
   optimism: {
     poolsBaseUrlOld: 'https://optimism.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/optimism/pools/',
     shortId: 'op',
     nativeCurrencySymbol: 'ETH',
     chainId: 10,
@@ -397,7 +391,6 @@ const configs = {
   },
   xdai: {
     poolsBaseUrlOld: 'https://xdai.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/gnosis/pools/',
     shortId: 'xdai',
     nativeCurrencySymbol: 'xDAI',
     chainId: 100,
@@ -446,7 +439,6 @@ const configs = {
   },
   aurora: {
     poolsBaseUrlOld: 'https://aurora.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/aurora/pools/',
     shortId: 'aur',
     nativeCurrencySymbol: 'AURORA',
     chainId: 1313161555,
@@ -472,7 +464,6 @@ const configs = {
   },
   harmony: {
     poolsBaseUrlOld: 'https://harmony.curve.finance/',
-    poolsBaseUrl: null,
     shortId: 'hmny',
     nativeCurrencySymbol: 'ONE',
     chainId: 1666600000,
@@ -488,7 +479,6 @@ const configs = {
   },
   moonbeam: {
     poolsBaseUrlOld: 'https://moonbeam.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/moonbeam/pools/',
     shortId: 'moon',
     nativeCurrencySymbol: 'GLMR',
     chainId: 1284,
@@ -522,7 +512,6 @@ const configs = {
   },
   kava: {
     poolsBaseUrlOld: 'https://kava.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/kava/pools/',
     shortId: 'kava',
     nativeCurrencySymbol: 'KAVA',
     chainId: 2222,
@@ -567,7 +556,6 @@ const configs = {
   celo: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: 'https://celo.curve.finance/',
-    poolsBaseUrl: 'https://curve.finance/dex/#/celo/pools/',
     shortId: 'celo',
     nativeCurrencySymbol: 'CELO',
     chainId: 42220,
@@ -613,7 +601,6 @@ const configs = {
   zkevm: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: null,
     shortId: 'zkevm',
     nativeCurrencySymbol: 'ETH',
     chainId: 1101,
@@ -655,7 +642,6 @@ const configs = {
   zksync: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: null,
     shortId: 'zksync',
     nativeCurrencySymbol: 'ETH',
     chainId: 324,
@@ -684,7 +670,6 @@ const configs = {
   base: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.finance/dex/#/base/pools/',
     shortId: 'base',
     nativeCurrencySymbol: 'ETH',
     chainId: 8453,
@@ -731,7 +716,6 @@ const configs = {
   fraxtal: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.finance/dex/#/fraxtal/pools/',
     shortId: 'fraxtal',
     nativeCurrencySymbol: 'frxETH',
     chainId: 252,
@@ -767,7 +751,6 @@ const configs = {
   bsc: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.finance/dex/#/bsc/pools/',
     shortId: 'bsc',
     nativeCurrencySymbol: 'BNB',
     chainId: 56,
@@ -815,7 +798,6 @@ const configs = {
   'x-layer': {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.finance/dex/#/x-layer/pools/',
     shortId: 'x-layer',
     nativeCurrencySymbol: 'OKB',
     chainId: 196,
@@ -842,7 +824,6 @@ const configs = {
   mantle: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.finance/dex/#/mantle/pools/',
     shortId: 'mantle',
     nativeCurrencySymbol: 'MNT',
     chainId: 5000,
@@ -870,7 +851,6 @@ const configs = {
   sonic: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.finance/dex/#/sonic/pools/',
     shortId: 'sonic',
     nativeCurrencySymbol: 'S',
     chainId: 146,
@@ -901,7 +881,6 @@ const configs = {
   hyperliquid: {
     hasNoMainRegistry: true, // No main registry deployed nor address provider
     poolsBaseUrlOld: null,
-    poolsBaseUrl: 'https://curve.finance/dex/#/hyperliquid/pools/',
     shortId: 'hyperliquid',
     nativeCurrencySymbol: 'HYPE',
     chainId: 999,

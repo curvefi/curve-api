@@ -1477,11 +1477,7 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     );
 
     const poolsUrlsIds = [
-      (config.poolsBaseUrl ? (
-        (registryId === 'main' || registryId === 'crypto') ?
-          (getHardcodedPoolId(blockchainId, poolInfo.address) || null) :
-          poolInfo.id
-      ) : null),
+      null,
       (config.poolsBaseUrlOld ? (
         (registryId === 'main' || registryId === 'crypto') ?
           (getHardcodedPoolId(blockchainId, poolInfo.address) || null) :
@@ -1490,21 +1486,21 @@ const getPools = async ({ blockchainId, registryId, preventQueryingFactoData }) 
     ];
 
     const poolUrls = [
-      (poolsUrlsIds[0] !== null ? `${config.poolsBaseUrl}${poolsUrlsIds[0]}` : null),
+      `https://www.curve.finance/dex/${blockchainId}/pools/${poolInfo.address}`,
       (poolsUrlsIds[1] !== null ? `${config.poolsBaseUrlOld}${poolsUrlsIds[1]}` : null),
     ];
 
     const detailedPoolUrls = {
       swap: [
-        (poolUrls[0] !== null ? `${poolUrls[0]}/swap` : null),
+        (poolUrls[0] !== null ? `${poolUrls[0]}` : null),
         (poolUrls[1] !== null ? `${poolUrls[1]}` : null),
       ].filter((o) => o !== null),
       deposit: [
-        (poolUrls[0] !== null ? `${poolUrls[0]}/deposit` : null),
+        (poolUrls[0] !== null ? `${poolUrls[0]}` : null),
         (poolUrls[1] !== null ? `${poolUrls[1]}/deposit` : null),
       ].filter((o) => o !== null),
       withdraw: [
-        (poolUrls[0] !== null ? `${poolUrls[0]}/withdraw` : null),
+        (poolUrls[0] !== null ? `${poolUrls[0]}` : null),
         (poolUrls[1] !== null ? `${poolUrls[1]}/withdraw` : null),
       ].filter((o) => o !== null),
     };
