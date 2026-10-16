@@ -34,7 +34,7 @@ import { lc, maxChars } from '#root/utils/String.js';
 import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
 import { getExternalGaugeList } from '#root/utils/data/prices.curve.fi/gauges.js';
 import { getMissingRequiredGauges } from '#root/utils/data/gauges.js';
-import Request, { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
+import Request from '#root/utils/Request.js';
 import swr from '#root/utils/swr.js';
 import CACHE_SETTINGS from '#root/constants/CacheSettings.js';
 
@@ -1117,9 +1117,7 @@ const buildSidechainFactoryGaugeScope = async ({
 };
 
 const buildLiteDeploymentGaugeScope = async (chainId) => {
-  const chainGauges = await Request.get(`https://api-core.curve.finance/v1/getPools/all/${chainId}`, undefined, {
-    dispatcher: httpsAgentWithoutStrictSsl,
-  })
+  const chainGauges = await Request.get(`https://api-core.curve.finance/v1/getPools/all/${chainId}`)
     .then((response) => response.json())
     .then(({ data: { poolData } }) => (
       poolData.filter(({ gaugeAddress }) => !!gaugeAddress).map((pool) => {

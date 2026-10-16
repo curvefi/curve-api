@@ -1,4 +1,3 @@
-import { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
 import memoize from 'memoizee';
 import { PRICES_CURVE_FI_AVAILABLE_CHAIN_IDS } from './chains.js';
 
@@ -7,9 +6,7 @@ const getPricesCurveTokenPrice = memoize(async (blockchainId, tokenAddress) => {
     return undefined;
   }
 
-  const { data } = await (await fetch(`https://prices.curve.finance/v1/usd_price/${blockchainId}/${tokenAddress}`, {
-    dispatcher: httpsAgentWithoutStrictSsl,
-  })).json();
+  const { data } = await (await fetch(`https://prices.curve.finance/v1/usd_price/${blockchainId}/${tokenAddress}`)).json();
 
   return data?.usd_price; // Will be undefined or a Number
 }, {

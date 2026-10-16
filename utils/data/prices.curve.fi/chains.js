@@ -1,4 +1,3 @@
-import { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
 import memoize from 'memoizee';
 
 // Note: keep the openapi description of `routes/v1/getVolumes/[blockchainId].js` up to date when editing this array
@@ -20,9 +19,7 @@ const getPricesCurveFiChainsBlockchainId = memoize(async (blockchainId) => {
     return [];
   }
 
-  const { data } = await (await fetch(`https://prices.curve.finance/v1/chains/${blockchainId}`, {
-    dispatcher: httpsAgentWithoutStrictSsl,
-  })).json();
+  const { data } = await (await fetch(`https://prices.curve.finance/v1/chains/${blockchainId}`)).json();
   return data;
 }, {
   promise: true,

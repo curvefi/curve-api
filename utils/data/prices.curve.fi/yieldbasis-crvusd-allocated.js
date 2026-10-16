@@ -1,10 +1,7 @@
-import { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
 import memoize from 'memoizee';
 
 const getCrvusdAllocatedToYieldbasis = memoize(async () => {
-  const { data } = await (await fetch('https://prices.curve.finance/v1/crvusd/yield_basis/ethereum/supply', {
-    dispatcher: httpsAgentWithoutStrictSsl,
-  })).json();
+  const { data } = await (await fetch('https://prices.curve.finance/v1/crvusd/yield_basis/ethereum/supply')).json();
   return data.yb_total_amm_debt;
 }, {
   promise: true,

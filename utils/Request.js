@@ -10,8 +10,6 @@
  */
 
 import formUrlEncoded from 'form-urlencoded';
-import https from 'https';
-import { Agent } from 'undici';
 
 class Request {
   static send(url, data = {}, customSettings = {}) {
@@ -69,13 +67,4 @@ class Request {
   }
 }
 
-const httpsAgentWithoutStrictSsl = new Agent({
-  connect: {
-    rejectUnauthorized: false,
-  },
-});
-
 export default Request;
-export {
-  httpsAgentWithoutStrictSsl,
-};

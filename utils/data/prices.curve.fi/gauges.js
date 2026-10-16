@@ -1,10 +1,7 @@
-import { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
 import memoize from 'memoizee';
 
 const getExternalGaugeList = memoize(async () => {
-  const { gauges } = await (await fetch('https://prices.curve.finance/v1/dao/gauges/overview', {
-    dispatcher: httpsAgentWithoutStrictSsl,
-  })).json();
+  const { gauges } = await (await fetch('https://prices.curve.finance/v1/dao/gauges/overview')).json();
   return gauges;
 }, {
   promise: true,

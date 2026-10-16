@@ -16,7 +16,6 @@ import { lc } from '#root/utils/String.js';
 import swr from '#root/utils/swr.js';
 import { backOff } from 'exponential-backoff';
 import { IS_DEV } from '#root/constants/AppConstants.js';
-import { httpsAgentWithoutStrictSsl } from '#root/utils/Request.js';
 
 const MAX_AGE_SEC = 86400; // 24 hours
 
@@ -30,9 +29,7 @@ const getPricesCurveFiPoolsMetadataBlockchainId = memoize(async (address, blockc
   const metaData = (await swr(
     `getPricesCurveFiPoolsMetadataBlockchainId-${blockchainId}-${lcAddress}`,
     async () => backOff(async () => {
-      return (await fetch(`https://prices.curve.finance/v1/pools/${blockchainId}/${lcAddress}/metadata`, {
-        dispatcher: httpsAgentWithoutStrictSsl,
-      })).json();
+      return (await fetch(`https://prices.curve.finance/v1/pools/${blockchainId}/${lcAddress}/metadata`)).json();
     }, {
       numOfAttempts: 1,
       retry: (e, attemptNumber) => {
