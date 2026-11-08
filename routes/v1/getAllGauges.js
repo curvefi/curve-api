@@ -8,6 +8,7 @@
  *     description: |
  *       Returns all Curve gauges, on all chains, in all registries. If any Curve pool, anywhere, has a gauge, then it’ll be returned by this endpoint.
  *       The only exception are sidechain non-factory gauges, which aren’t indexed by any registry, and have been discontinued for a long time now. On sidechains, only factory gauges exist; on Ethereum, both "main" (non-factory) and factory gauges exist.
+ *       LlamaLend/crvUSD LM callbacks that are in the gauge controller are returned too: they work like gauges for a market’s collateral, and have an `lmCallback` property describing that market.
  *     responses:
  *       200:
  *         description:
@@ -34,6 +35,7 @@ import { lc, maxChars } from '#root/utils/String.js';
 import { EYWA_POOLS_METADATA, FANTOM_FACTO_STABLE_NG_EYWA_POOL_IDS, SONIC_FACTO_STABLE_NG_EYWA_POOL_IDS } from '#root/constants/PoolMetadata.js';
 import { getExternalGaugeList } from '#root/utils/data/prices.curve.fi/gauges.js';
 import { getMissingRequiredGauges } from '#root/utils/data/gauges.js';
+import { isLmCallbackGauge, getLmCallbackGaugeEntry } from '#root/utils/data/lm-callback-gauges.js';
 import Request from '#root/utils/Request.js';
 import swr from '#root/utils/swr.js';
 import CACHE_SETTINGS from '#root/constants/CacheSettings.js';
@@ -43,6 +45,7 @@ const GAUGE_IS_ROOT_GAUGE_ABI = [{ "stateMutability": "view", "type": "function"
 const GAUGE_IS_ROOT_GAUGE_2_ABI = [{ "stateMutability": "view", "type": "function", "name": "emissions", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 2778 }];
 const LENDING_VAULT_FACTORY_GAUGE_FOR_VAULT_ABI = [{ "stateMutability": "view", "type": "function", "name": "gauge_for_vault", "inputs": [{ "name": "_vault", "type": "address" }], "outputs": [{ "name": "", "type": "address" }] }];
 const GAUGE_FACTORY_GET_GAUGE_FROM_LP_TOKEN_ABI = [{ "stateMutability": "view", "type": "function", "name": "get_gauge_from_lp_token", "inputs": [{ "name": "arg0", "type": "address" }], "outputs": [{ "name": "", "type": "address" }] }];
+const LM_CALLBACK_ABI = [{ "stateMutability": "view", "type": "function", "name": "AMM", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }, { "stateMutability": "view", "type": "function", "name": "COLLATERAL_TOKEN", "inputs": [], "outputs": [{ "name": "", "type": "address" }] }, { "stateMutability": "view", "type": "function", "name": "detached", "inputs": [], "outputs": [{ "name": "", "type": "bool" }] }];
 /* eslint-enable object-curly-spacing, object-curly-newline, quote-props, quotes, key-spacing, comma-spacing */
 
 // The oneway-v2 lending factory doesn’t deploy gauges itself; they’re deployed by
@@ -467,6 +470,13 @@ const getGaugeBuildContext = async () => {
     ))
   );
 
+  const getLendingVaultByAmmAddress = (ammAddress, blockchainId) => (
+    allLendingVaults.find((lendingVault) => (
+      lendingVault.blockchainId === blockchainId &&
+      lc(lendingVault.ammAddress) === lc(ammAddress)
+    ))
+  );
+
   const { rpcUrl, chainId } = configs.ethereum;
   const web3 = new Web3(rpcUrl);
   const web3Data = { account: '', library: web3, chainId };
@@ -482,6 +492,7 @@ const getGaugeBuildContext = async () => {
     getPoolByLpTokenAddress,
     getPoolByAddress,
     getLendingVaultByLpTokenAddress,
+    getLendingVaultByAmmAddress,
     web3Data,
     crvPrice,
   };
@@ -493,6 +504,7 @@ const buildEthereumGaugeScope = async ({
   getPoolByLpTokenAddress,
   getPoolByAddress,
   getLendingVaultByLpTokenAddress,
+  getLendingVaultByAmmAddress,
   web3Data,
   crvPrice,
 }) => {
@@ -598,6 +610,18 @@ const buildEthereumGaugeScope = async ({
       methodName: 'gauge_types',
       params: [gaugeAddress],
       metaData: { gaugeAddress, type: 'gaugeType' },
+    }, {
+      address: gaugeAddress,
+      abi: LM_CALLBACK_ABI,
+      web3Data,
+      methodName: 'AMM',
+      metaData: { gaugeAddress, type: 'lmCallbackAmmAddress' },
+    }, {
+      address: gaugeAddress,
+      abi: LM_CALLBACK_ABI,
+      web3Data,
+      methodName: 'COLLATERAL_TOKEN',
+      metaData: { gaugeAddress, type: 'lmCallbackCollateralTokenAddress' },
     }];
   })));
 
@@ -629,7 +653,12 @@ const buildEthereumGaugeScope = async ({
     data,
   ]));
 
-  const gaugesData = intermediateGaugesData.map((gaugeData) => {
+  // LM callbacks' `lp_token()` returns their market's collateral, which can be a Curve
+  // LP token that already has its own gauge: they're kept out of the LP gauges, whose
+  // entries are keyed by pool name, and get their own entries below
+  const [lmCallbackGaugesData, lpGaugesData] = partition(intermediateGaugesData, isLmCallbackGauge);
+
+  const gaugesData = lpGaugesData.map((gaugeData) => {
     const gaugeTypeName = gaugeTypeNames[String(gaugeData.gaugeType)];
     const pool = getPoolByLpTokenAddress(gaugeData.lpTokenAddress, 'ethereum');
     const lendingVault = getLendingVaultByLpTokenAddress(gaugeData.lpTokenAddress, 'ethereum');
@@ -805,6 +834,23 @@ const buildEthereumGaugeScope = async ({
       lendingVaultUrls: lendingVaultAddress ? getLendingVaultByLpTokenAddress(lpTokenAddress, 'ethereum').lendingVaultUrls : undefined,
     }),
   }]));
+
+  const lmCallbacksDetachedInfo = await multiCall(lmCallbackGaugesData.map(({ address }) => ({
+    address,
+    abi: LM_CALLBACK_ABI,
+    methodName: 'detached',
+    metaData: { gaugeAddress: address },
+    web3Data,
+  })));
+
+  const lmCallbackGaugesEthereum = arrayToHashmap(lmCallbackGaugesData.map((gaugeData) => (
+    getLmCallbackGaugeEntry({
+      ...gaugeData,
+      lmCallbackIsDetached: lmCallbacksDetachedInfo.find(({ metaData }) => lc(metaData.gaugeAddress) === lc(gaugeData.address)).data,
+    }, {
+      lendingVault: getLendingVaultByAmmAddress(gaugeData.lmCallbackAmmAddress, 'ethereum'),
+    })
+  )));
 
   /**
    * Step 2: Retrieve mainnet gauges that aren't in the gauge registry (no dao vote yet),
@@ -985,6 +1031,7 @@ const buildEthereumGaugeScope = async ({
   return {
     ...nonVotedGaugesEthereumData,
     ...mainGaugesEthereum,
+    ...lmCallbackGaugesEthereum,
   };
 };
 
